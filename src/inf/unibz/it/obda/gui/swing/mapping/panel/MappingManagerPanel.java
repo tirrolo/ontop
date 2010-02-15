@@ -21,6 +21,7 @@ import inf.unibz.it.obda.domain.SourceQuery;
 import inf.unibz.it.obda.domain.TargetQuery;
 import inf.unibz.it.obda.gui.IconLoader;
 import inf.unibz.it.obda.gui.swing.MappingValidationDialog;
+import inf.unibz.it.obda.gui.swing.datasource.panels.SQLQueryPanel;
 import inf.unibz.it.obda.gui.swing.exception.NoDatasourceSelectedException;
 import inf.unibz.it.obda.gui.swing.mapping.tree.MappingBodyNode;
 import inf.unibz.it.obda.gui.swing.mapping.tree.MappingHeadNode;
@@ -38,6 +39,7 @@ import inf.unibz.it.ucq.parser.exception.QueryParseException;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
@@ -47,6 +49,7 @@ import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -87,6 +90,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 	KeyStroke editBody = null;
 	KeyStroke editHead = null;
 	KeyStroke editID = null;
+	
 	
 	/** Creates new form MappingManagerPanel */
 	public MappingManagerPanel(APIController apic, MappingController mapc, DatasourcesController dsc) {
@@ -249,6 +253,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		editHead = KeyStroke.getKeyStroke(head);
 		String id = pref.getShortCut(MappingManagerPreferences.EDIT_ID);
 		editID = KeyStroke.getKeyStroke(id);
+
 		
 		AbstractAction addAction = new AbstractAction() {
 		      public void actionPerformed(ActionEvent actionEvent) {
@@ -273,6 +278,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 						return;
 					}
 					startEditBodyOfMapping(path);
+					
 		      }
 		};
 		inputmap.put(editBody, MappingManagerPreferences.EDIT_BODY);
@@ -416,8 +422,20 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		});
 		menuMappings.add(menuValidateHead);
 		
+		menuMappings.addSeparator(); 
+		
+		menuExecuteQuery.setText("Execute Query");
+		menuExecuteQuery.setEnabled(true);
+		menuExecuteQuery.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				menuExecuteQueryActionPerformed(evt);
+			}
+		});
+		menuMappings.add(menuExecuteQuery);
+		
 	}
 	
+	    
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -434,6 +452,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		menuValidateAll = new javax.swing.JMenuItem();
 		menuValidateBody = new javax.swing.JMenuItem();
 		menuValidateHead = new javax.swing.JMenuItem();
+		menuExecuteQuery = new javax.swing.JMenuItem();
 		scrollMappingsManager = new javax.swing.JScrollPane();
 		panelMappingManager = new javax.swing.JPanel();
 		panelMappingButtons = new javax.swing.JPanel();
@@ -677,6 +696,16 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		// TODO add your handling code here:
 	}// GEN-LAST:event_menuValidateHeadActionPerformed
 
+	private void menuExecuteQueryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuExecuteQueryActionPerformed
+		TreePath path =treeMappingsTree.getSelectionPath();
+				if(path == null){
+					return;
+				}
+				startExecuteQueryOfMapping(path);
+		
+	}// GEN-LAST:event_menuExecuteQueryActionPerformed
+	
+	
 	private void menuDeleteActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuDeleteActionPerformed
 		// TODO add your handling code here:
 	}// GEN-LAST:event_menuDeleteActionPerformed
@@ -783,6 +812,20 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		editedNode = body;
 		treeMappingsTree.startEditingAtPath(new TreePath(body.getPath()));
 	}
+	
+	private void startExecuteQueryOfMapping(TreePath path){
+		final JDialog resultquery=new JDialog();
+		MappingNode mapping  =(MappingNode)path.getLastPathComponent();
+		MappingBodyNode body =mapping.getBodyNode();
+		SQLQueryPanel query_panel = new SQLQueryPanel (dsc,body.toString());
+  
+		resultquery.setSize(panelMappingManager.getWidth(), panelMappingManager.getHeight());
+        resultquery.setLocationRelativeTo(null);
+        resultquery.add(query_panel);
+        resultquery.setVisible(true);
+        resultquery.setTitle("Query Results");
+        
+	}
 
 	// private JPopupMenu menu;
 	// private JDialog dialog;
@@ -795,6 +838,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 	private javax.swing.JMenuItem	menuValidateAll;
 	private javax.swing.JMenuItem	menuValidateBody;
 	private javax.swing.JMenuItem	menuValidateHead;
+	private javax.swing.JMenuItem	menuExecuteQuery; //Add E
 	private javax.swing.JPanel		panelMappingButtons;
 	private javax.swing.JPanel		panelMappingManager;
 	private javax.swing.JButton		removeMappingButton;
