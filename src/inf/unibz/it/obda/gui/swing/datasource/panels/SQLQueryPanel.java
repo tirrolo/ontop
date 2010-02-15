@@ -65,47 +65,61 @@ public class SQLQueryPanel extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        jSplitPane1 = new javax.swing.JSplitPane();
+        jPanel1 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
         queryField = new javax.swing.JTextArea();
         executeButton = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         queryTable = new javax.swing.JTable();
-        
 
-        setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.BorderLayout());
 
-        jLabel13.setText("SQL Query:"); 
+        jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+
+        jPanel1.setMinimumSize(new java.awt.Dimension(156, 100));
+        jPanel1.setPreferredSize(new java.awt.Dimension(156, 100));
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        jLabel13.setText("SQL Query:");
         jLabel13.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jLabel13.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         jLabel13.setRequestFocusEnabled(false);
         jLabel13.setVerifyInputWhenFocusTarget(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
-        add(jLabel13, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(jLabel13, gridBagConstraints);
 
-        queryField.setPreferredSize(new java.awt.Dimension(400, 19));
-        
-      /*  queryField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                queryFieldActionPerformed(evt);
-            }
-        });MAriano original*/
+        queryField.setColumns(20);
+        queryField.setRows(2);
+        queryField.setBorder(null);
+        jScrollPane2.setViewportView(queryField);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        add(queryField, gridBagConstraints);
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 2.0;
+        gridBagConstraints.weighty = 2.0;
+        jPanel1.add(jScrollPane2, gridBagConstraints);
 
-        executeButton.setText("Execute");
+        executeButton.setText("Excecute");
         executeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 executeButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 0;
-        add(executeButton, gridBagConstraints);
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel1.add(executeButton, gridBagConstraints);
+
+        jSplitPane1.setLeftComponent(jPanel1);
+
+        jPanel2.setLayout(new java.awt.BorderLayout());
 
         queryTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -117,18 +131,14 @@ public class SQLQueryPanel extends javax.swing.JPanel {
         ));
         jScrollPane1.setViewportView(queryTable);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(jScrollPane1, gridBagConstraints);
-        
-        
+        jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jSplitPane1.setRightComponent(jPanel2);
+
+        add(jSplitPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void executeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeButtonActionPerformed 
+    private void executeButtonActionPerformed(java.awt.event.ActionEvent evt) {                                               
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -178,12 +188,8 @@ public class SQLQueryPanel extends javax.swing.JPanel {
 					}
 			}
 		});
-    }//GEN-LAST:event_executeButtonActionPerformed
+    }                                             
 //throw new RuntimeException(e);
-
-    private void queryFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_queryFieldActionPerformed
-    	executeButtonActionPerformed(evt);
-    }//GEN-LAST:event_queryFieldActionPerformed
     
  
 //    /***************************************************************************
@@ -248,7 +254,11 @@ public class SQLQueryPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton executeButton;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextArea queryField;
     private javax.swing.JTable queryTable;
     // End of variables declaration//GEN-END:variables
