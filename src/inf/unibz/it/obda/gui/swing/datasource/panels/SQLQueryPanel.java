@@ -37,16 +37,24 @@ import javax.swing.table.TableModel;
 public class SQLQueryPanel extends javax.swing.JPanel {
     
 	
-	DatasourcesController dsc = null;
-	
+	DatasourcesController dsc=null;
+	String execute_Query;
     /** Creates new form SQLQueryPanel */
+    public SQLQueryPanel(DatasourcesController dsc,String execute_Query) {
+    	
+    	this(dsc);
+    	this.execute_Query=execute_Query;
+    	show_Result_Query();    
+    }
+    
+    
     public SQLQueryPanel(DatasourcesController dsc) {
     	this.dsc = dsc;
         initComponents();
-        
         this.queryTable.setFont(new Font("Arial", Font.PLAIN, 18));
         this.queryTable.setRowHeight(21);
     }
+    
     
     /** This method is called from within the constructor to
      * initialize the form.
@@ -58,14 +66,15 @@ public class SQLQueryPanel extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jLabel13 = new javax.swing.JLabel();
-        queryField = new javax.swing.JTextField();
+        queryField = new javax.swing.JTextArea();
         executeButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         queryTable = new javax.swing.JTable();
+        
 
         setLayout(new java.awt.GridBagLayout());
 
-        jLabel13.setText("SQL Query:");
+        jLabel13.setText("SQL Query:"); 
         jLabel13.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         jLabel13.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         jLabel13.setRequestFocusEnabled(false);
@@ -76,18 +85,19 @@ public class SQLQueryPanel extends javax.swing.JPanel {
         add(jLabel13, gridBagConstraints);
 
         queryField.setPreferredSize(new java.awt.Dimension(400, 19));
-        queryField.addActionListener(new java.awt.event.ActionListener() {
+        
+      /*  queryField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 queryFieldActionPerformed(evt);
             }
-        });
+        });MAriano original*/
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         add(queryField, gridBagConstraints);
 
-        executeButton.setText("Excecute");
+        executeButton.setText("Execute");
         executeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 executeButtonActionPerformed(evt);
@@ -114,9 +124,11 @@ public class SQLQueryPanel extends javax.swing.JPanel {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(jScrollPane1, gridBagConstraints);
+        
+        
     }// </editor-fold>//GEN-END:initComponents
 
-    private void executeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeButtonActionPerformed
+    private void executeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeButtonActionPerformed 
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -138,7 +150,7 @@ public class SQLQueryPanel extends javax.swing.JPanel {
 //					queryTable.setModel(modelfactory.getResultSetTableModel(queryField.getText()));
 
 					DataSource current_ds = dsc.getCurrentDataSource();
-					if(current_ds == null){
+					if(current_ds == null){ 				
 						JOptionPane.showMessageDialog(null, "Pleas select a data source first");
 					}else{
 						JDBCConnectionManager man =JDBCConnectionManager.getJDBCConnectionManager();
@@ -153,7 +165,8 @@ public class SQLQueryPanel extends javax.swing.JPanel {
 								}
 							}
 						
-							java.sql.ResultSet set = man.executeQuery(current_ds.getUri(), queryField.getText(),current_ds);
+							java.sql.ResultSet set = man.executeQuery(current_ds.getUri(), queryField.getText(),current_ds); 
+							//java.sql.ResultSet set = man.executeQuery(current_ds.getUri(), execute_query,current_ds); //EK
 							IncrementalResultSetTableModel model = new IncrementalResultSetTableModel(set);
 							queryTable.setModel(model);
 						} catch (Exception e) {
@@ -166,12 +179,13 @@ public class SQLQueryPanel extends javax.swing.JPanel {
 			}
 		});
     }//GEN-LAST:event_executeButtonActionPerformed
+//throw new RuntimeException(e);
 
     private void queryFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_queryFieldActionPerformed
     	executeButtonActionPerformed(evt);
     }//GEN-LAST:event_queryFieldActionPerformed
     
-    
+ 
 //    /***************************************************************************
 //	 * Verifies that there is a connected result set factory for the current
 //	 * data sources. If there is no factory it creates it, if there is, but the
@@ -188,12 +202,54 @@ public class SQLQueryPanel extends javax.swing.JPanel {
 //			ClassNotFoundException, SQLException {
 //
 //	}
+    private void show_Result_Query(){
+    	queryField.setText(execute_Query);
+    	TableModel oldmodel = queryTable.getModel();
+    	
+		if ((oldmodel != null) && (oldmodel instanceof IncrementalResultSetTableModel)) {
+
+			IncrementalResultSetTableModel rstm = (IncrementalResultSetTableModel) oldmodel;
+			rstm.close();
+		}
+		
+		DataSource current_ds = dsc.getCurrentDataSource();
+		if(current_ds == null){ 
+		
+			JOptionPane.showMessageDialog(null, "Pleas select a data source first");
+		}else{
+			JDBCConnectionManager man =JDBCConnectionManager.getJDBCConnectionManager();
+			try {
+				man.setProperty(JDBCConnectionManager.JDBC_AUTOCOMMIT, false);
+				man.setProperty(JDBCConnectionManager.JDBC_RESULTSETTYPE, ResultSet.TYPE_FORWARD_ONLY);
+				if(!man.isConnectionAlive(current_ds.getUri())){
+					try {
+						man.createConnection(current_ds);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			
+				//java.sql.ResultSet set = man.executeQuery(current_ds.getUri(), queryField.getText(),current_ds); original
+				java.sql.ResultSet set = man.executeQuery(current_ds.getUri(), execute_Query,current_ds); //EK
+				IncrementalResultSetTableModel model = new IncrementalResultSetTableModel(set);
+				queryTable.setModel(model);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				
+				
+			}
+		}
+}
+    	
+    
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton executeButton;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField queryField;
+    private javax.swing.JTextArea queryField;
     private javax.swing.JTable queryTable;
     // End of variables declaration//GEN-END:variables
     
