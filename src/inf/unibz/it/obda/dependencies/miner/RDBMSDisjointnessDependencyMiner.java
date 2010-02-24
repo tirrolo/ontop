@@ -305,7 +305,7 @@ public class RDBMSDisjointnessDependencyMiner implements IMiner {
 		if(tm1 instanceof FunctionTerm && tm2 instanceof FunctionTerm){
 			FunctionTerm ft1 = (FunctionTerm) tm1;
 			FunctionTerm ft2 = (FunctionTerm) tm2;
-			if(ft1.getName().equals(ft2.getName())){
+			if(ft1.getName().equals(ft2.getName()) && ft1.getParameters().size() == ft2.getParameters().size()){
 				
 				if(currentDriver.equals(DB2_DRIVER)){
 					return produceSQLForDB2(m1,m2,ft1,ft2);

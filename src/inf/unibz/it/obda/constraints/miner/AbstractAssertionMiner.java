@@ -212,6 +212,7 @@ public class AbstractAssertionMiner {
 			    		}
 			    	}
 		    	}
+		    	rs.close();
 	    	}
 	    }
 		
