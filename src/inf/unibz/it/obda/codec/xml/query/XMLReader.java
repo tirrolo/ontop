@@ -14,33 +14,37 @@
 package inf.unibz.it.obda.codec.xml.query;
 
 //TODO: Refactor so that this is actually an instance of a codec
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryGroupTreeElement;
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryTreeElement;
+/*import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryGroupTreeElement;
+import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryTreeElement;*/
+import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryControllerGroup;
+import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryControllerQuery;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class XMLReader {
 	
-	public QueryTreeElement readQuery(Element dom_query) {
+	
+	public QueryControllerQuery readQuery(Element dom_query) {
 		if (!dom_query.getNodeName().equals("Query"))
 			return null;
 		String id = dom_query.getAttribute("id");
 		String text = dom_query.getAttribute("text");
-		QueryTreeElement query = new QueryTreeElement(id);
+		QueryControllerQuery query = new QueryControllerQuery(id);
 		query.setQuery(text);
 		return query;
 	}
 	
-	public QueryGroupTreeElement readQueryGroup(Element dom_group) {
+
+	public QueryControllerGroup readQueryGroup(Element dom_group) {
 		if (!dom_group.getNodeName().equals("QueryGroup"))
 			return null;
 		String id = dom_group.getAttribute("id");
-		QueryGroupTreeElement group = new QueryGroupTreeElement(id);
+		QueryControllerGroup group = new QueryControllerGroup(id);
 		NodeList queries = dom_group.getElementsByTagName("Query");
 		for (int i = 0; i < queries.getLength(); i++) {
 			Element dom_query = (Element)queries.item(i);
-			QueryTreeElement query = readQuery(dom_query);
+			QueryControllerQuery query = readQuery(dom_query);
 			group.addQuery(query);
 		}
 		return group;

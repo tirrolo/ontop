@@ -13,10 +13,9 @@
  */
 package inf.unibz.it.obda.codec.xml.query;
 
-
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryGroupTreeElement;
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryTreeElement;
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.TreeElement;
+import inf.unibz.it.obda.api.controller.QueryControllerEntity;
+import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryControllerGroup;
+import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryControllerQuery;
 
 import java.util.Vector;
 
@@ -25,32 +24,31 @@ import org.w3c.dom.Element;
 
 //TODO: refactor as a codec
 public class XMLRenderer {
-	public Element render(Element parent, QueryTreeElement query) {
+	public Element render(Element parent, QueryControllerQuery query) {
 		Document doc = parent.getOwnerDocument();
 		Element query_element = doc.createElement("Query");
 		query_element.setAttribute("id", query.getID());
 		query_element.setAttribute("text", query.getQuery());
 		return query_element;
 	}
-	
-	
-	public Element render(Element parent, QueryGroupTreeElement group) {
+
+	public Element render(Element parent, QueryControllerGroup group) {
 		Document doc = parent.getOwnerDocument();
 		Element group_element = doc.createElement("QueryGroup");
 		group_element.setAttribute("id", group.getID());
-		Vector<QueryTreeElement> queries = group.getQueries();
-		for (QueryTreeElement query : queries) {
+		Vector<QueryControllerQuery> queries = group.getQueries();
+		for (QueryControllerQuery query : queries) {
 			Element query_element = render(group_element, query);
 			group_element.appendChild(query_element);
 		}
 		return group_element;
 	}
-	
-	public Element render(Element parent, TreeElement element) {
-		if (element instanceof QueryTreeElement) {
-			return render(parent, (QueryTreeElement)element);
-		} else if (element instanceof QueryGroupTreeElement) {
-			return render(parent, (QueryGroupTreeElement)element);
+
+	public Element render(Element parent, QueryControllerEntity element) {
+		if (element instanceof QueryControllerQuery) {
+			return render(parent, (QueryControllerQuery) element);
+		} else if (element instanceof QueryControllerGroup) {
+			return render(parent, (QueryControllerGroup) element);
 		}
 		return null;
 	}

@@ -13,19 +13,19 @@
  */
 package inf.unibz.it.obda.gui.swing.querycontroller.tree;
 
-
-
 import javax.swing.tree.DefaultMutableTreeNode;
 
-public class QueryTreeElement extends DefaultMutableTreeNode implements TreeElement {
+public class QueryTreeElement extends DefaultMutableTreeNode implements
+		TreeElement {
 	private String id = "";
 	private String query = "";
-	
-	public QueryTreeElement(String id) {
+
+	public QueryTreeElement(String id, String query) {
 		this.id = id;
+		setQuery(query);
 		setAllowsChildren(false);
 	}
-	
+
 	public String getID() {
 		return id;
 	}
@@ -41,18 +41,14 @@ public class QueryTreeElement extends DefaultMutableTreeNode implements TreeElem
 	public String getNodeName() {
 		return id + ": " + query.toString();
 	}
-	
+
 	public String toString() {
 		return getNodeName();
 	}
-	
+
 	@Override
 	public Object getUserObject() {
 		return getNodeName();
 	}
-	
-	
-	
-	
-	
+
 }

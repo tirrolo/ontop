@@ -14,5 +14,11 @@
 package inf.unibz.it.obda.gui.swing.dataquery.panel;
 
 public interface SavedQueriesPanelListener {
-	public void selectedQuerychanged(String new_query);
+	/**
+	 * The parameters new_group and new_id were added to initialize the SaveQueryPanel with this values
+	 * @param new_group
+	 * @param new_query
+	 * @param new_id
+	 */
+	public void selectedQuerychanged(String new_group,String new_query,String new_id);
 }

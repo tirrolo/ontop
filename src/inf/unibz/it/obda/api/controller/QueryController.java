@@ -14,10 +14,9 @@ package inf.unibz.it.obda.api.controller;
 
 import inf.unibz.it.obda.codec.xml.query.XMLReader;
 import inf.unibz.it.obda.codec.xml.query.XMLRenderer;
+import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryControllerGroup;
+import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryControllerQuery;
 import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryControllerTreeModel;
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryGroupTreeElement;
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryTreeElement;
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.TreeElement;
 
 import java.util.Iterator;
 import java.util.Vector;
@@ -34,14 +33,14 @@ import org.w3c.dom.NodeList;
  */
 public class QueryController {
 
-	private static QueryController			instance	= null;
-	private Vector<TreeElement>				collection	= null;
-	private Vector<QueryControllerListener>	listeners	= null;
-	private QueryControllerTreeModel		treemodel	= null;
+	private static QueryController instance = null;
+	private Vector<QueryControllerEntity> collection = null;
+	private Vector<QueryControllerListener> listeners = null;
+	private QueryControllerTreeModel treemodel = null;
+	private boolean eventDisabled = false;
 
 	public QueryController() {
-
-		collection = new Vector<TreeElement>();
+		collection = new Vector<QueryControllerEntity>();
 		listeners = new Vector<QueryControllerListener>();
 		this.treemodel = new QueryControllerTreeModel(this);
 		addListener(treemodel);
@@ -61,41 +60,49 @@ public class QueryController {
 		listeners.remove(listener);
 	}
 
-	//TODO remove static method, no more static Controllers
+	// TODO remove static method, no more static Controllers
 	/***
 	 * @deprecated
 	 */
-//	public static QueryController getInstance() {
-//		// if (model==null)
-//		// return new QueryController();
-//		// if (instances == null) {
-//		// instances = new HashMap<OWLModel, QueryController>();
-//		// }
-//		// QueryController cinstance = instances.get(model);
-//		if (instance == null) {
-//			instance = new QueryController();
-//			// instances.put(model, cinstance);
-//		}
-//		return instance;
-//	}
-
+	// public static QueryController getInstance() {
+	// // if (model==null)
+	// // return new QueryController();
+	// // if (instances == null) {
+	// // instances = new HashMap<OWLModel, QueryController>();
+	// // }
+	// // QueryController cinstance = instances.get(model);
+	// if (instance == null) {
+	// instance = new QueryController();
+	// // instances.put(model, cinstance);
+	// }
+	// return instance;
+	// }
+	/**
+	 * Creates a new group and adds it to the vector QueryControllerEntity 
+	 */
 	public void createGroup(String group_name) {
 
 		if (getElementPosition(group_name) == -1) {
-			QueryGroupTreeElement group = new QueryGroupTreeElement(group_name);
+			QueryControllerGroup group = new QueryControllerGroup(group_name);
 			collection.add(group);
 			fireElementAdded(group);
+
 		} else {
 
 			System.out.println("Group already exists!");
 		}
 	}
-
+	
+	/**
+	 * Removes a group from the vector QueryControllerEntity 
+	 */
 	public void removeGroup(String group_name) {
-		for (Iterator<TreeElement> iterator = collection.iterator(); iterator.hasNext();) {
-			TreeElement element = (TreeElement) iterator.next();
-			if (element instanceof QueryGroupTreeElement) {
-				QueryGroupTreeElement group = (QueryGroupTreeElement) element;
+		for (Iterator<QueryControllerEntity> iterator = collection.iterator(); iterator
+				.hasNext();) {
+			QueryControllerGroup element = (QueryControllerGroup) iterator
+					.next();
+			if (element instanceof QueryControllerGroup) {
+				QueryControllerGroup group = (QueryControllerGroup) element;
 				if (group.getID().equals(group_name)) {
 					collection.remove(group);
 					fireElementRemoved(group);
@@ -105,11 +112,15 @@ public class QueryController {
 		}
 
 	}
-
-	public void addQuery(String querystr, String id) {
-
+	
+	/**
+	 * Creates a new query and adds it to the vector QueryControllerEntity 
+	 */
+	@SuppressWarnings("unchecked")
+	public QueryControllerQuery addQuery(String querystr, String id) {
+		QueryControllerQuery query = null;
 		if (getElementPosition(id) == -1) {
-			QueryTreeElement query = new QueryTreeElement(id);
+			query = new QueryControllerQuery(id);
 			query.setQuery(querystr);
 			collection.add(query);
 			fireElementAdded(query);
@@ -117,43 +128,61 @@ public class QueryController {
 
 			System.out.println("Query already exists!");
 		}
+		return query;
 	}
-
+	
+	/**
+	 * Removes all the elements from the vector QueryControllerEntity 
+	 */
 	public void removeAllQueriesAndGroups() {
-		Vector<TreeElement> elements = getElements();
-
-		for (TreeElement treeElement : elements) {
+		Vector<QueryControllerEntity> elements = getElements();
+		for (QueryControllerEntity treeElement : elements) {
 			fireElementRemoved(treeElement);
 		}
 		collection.removeAllElements();
 	}
-
-	public void addQuery(String querystr, String id, String groupid) {
-
+	
+	/**
+	 * Creates a new query into a group and adds it to the vector QueryControllerEntity 
+	 */
+	public QueryControllerQuery addQuery(String querystr, String id,
+			String groupid) {
+		QueryControllerQuery query = null;
 		if (getElementPosition(id) == -1) {
-			QueryTreeElement query = new QueryTreeElement(id);
+			query = new QueryControllerQuery(id);
 			query.setQuery(querystr);
-			QueryGroupTreeElement group = getGroup(groupid);
+			QueryControllerGroup group = getGroup(groupid);
 			group.addQuery(query);
 			fireElementAdded(query, group);
 		} else {
 
 			System.out.println("Query already exists!");
 		}
+		return query;
 	}
-
+	
+	/**
+	 * Removes a query from the vector QueryControllerEntity 
+	 */
 	public void removeQuery(String id) {
 		int index = getElementPosition(id);
-		TreeElement element = (TreeElement) collection.get(index);
-		if (element instanceof QueryTreeElement) {
+
+		QueryControllerEntity element = (QueryControllerEntity) collection
+				.get(index);
+
+		if (element instanceof QueryControllerQuery) {
 			collection.remove(index);
 			fireElementRemoved(element);
 			return;
 		} else {
-			QueryGroupTreeElement group = (QueryGroupTreeElement) collection.get(index);
-			QueryTreeElement query = group.removeQuery(id);
-			fireElementRemoved(query, group);
-			return;
+			QueryControllerGroup group = (QueryControllerGroup) element;
+			Vector<QueryControllerQuery> queries_ingroup = group.getQueries();
+			for (QueryControllerQuery query : queries_ingroup) {
+				if (query.getID().equals(id)) {
+					fireElementRemoved(group.removeQuery(query.getID()), group);
+					return;
+				}
+			}
 		}
 
 	}
@@ -167,13 +196,14 @@ public class QueryController {
 			if (node instanceof Element) {
 				Element element = (Element) xml_elements.item(i);
 				if (element.getNodeName().equals("Query")) {
-					QueryTreeElement query = xml_reader.readQuery(element);
+					QueryControllerQuery query = xml_reader.readQuery(element);
 					addQuery(query.getQuery(), query.getID());
 				} else if ((element.getNodeName().equals("QueryGroup"))) {
-					QueryGroupTreeElement group = xml_reader.readQueryGroup(element);
+					QueryControllerGroup group = xml_reader
+							.readQueryGroup(element);
 					createGroup(group.getID());
-					Vector<QueryTreeElement> queries = group.getQueries();
-					for (QueryTreeElement query : queries) {
+					Vector<QueryControllerQuery> queries = group.getQueries();
+					for (QueryControllerQuery query : queries) {
 						addQuery(query.getQuery(), query.getID(), group.getID());
 					}
 				}
@@ -185,18 +215,21 @@ public class QueryController {
 		Document doc = parent.getOwnerDocument();
 		XMLRenderer xmlrendrer = new XMLRenderer();
 		Element savedqueries = doc.createElement("SavedQueries");
-		for (TreeElement element : collection) {
+		for (QueryControllerEntity element : collection) {
 			Element xmlconstraint = xmlrendrer.render(savedqueries, element);
 			savedqueries.appendChild(xmlconstraint);
 		}
 		return savedqueries;
 	}
-
-	public QueryGroupTreeElement getGroup(String groupid) {
+	/**
+	 * Searches a group and returns the object else returns null
+	 */
+	public QueryControllerGroup getGroup(String groupid) {
 		int index = getElementPosition(groupid);
 		if (index == -1)
 			return null;
-		QueryGroupTreeElement group = (QueryGroupTreeElement) collection.get(index);
+		QueryControllerGroup group = (QueryControllerGroup) collection
+				.get(index);
 		return group;
 	}
 
@@ -212,28 +245,31 @@ public class QueryController {
 		int index = -1;
 
 		for (int i = 0; i < collection.size(); i++) {
-			TreeElement element = (TreeElement) collection.get(i);
+			QueryControllerEntity element = (QueryControllerEntity) collection
+					.get(i);
 
-			if (element.getID().equals(element_id)) {
-				index = i;
-				break;
-			}
-
-			if (element instanceof QueryTreeElement) {
-				QueryTreeElement query = (QueryTreeElement) element;
+			if (element instanceof QueryControllerQuery) {
+				QueryControllerQuery query = (QueryControllerQuery) element;
 				if (query.getID().equals(element_id)) {
 					index = i;
 					break;
 				}
-			} else {
+			}
 
+			if (element instanceof QueryControllerGroup) {
+				QueryControllerGroup group = (QueryControllerGroup) element;
+				if (group.getID().equals(element_id)) {
+					index = i;
+					break;
+				}
 				/***************************************************************
 				 * Searching inside the group.
 				 */
-				QueryGroupTreeElement group = (QueryGroupTreeElement) element;
-				{
-					Vector<QueryTreeElement> queries_ingroup = group.getQueries();
-					for (QueryTreeElement query : queries_ingroup) {
+				else {
+
+					Vector<QueryControllerQuery> queries_ingroup = group
+							.getQueries();
+					for (QueryControllerQuery query : queries_ingroup) {
 						if (query.getID().equals(element_id)) {
 							index = i;
 							break;
@@ -245,42 +281,86 @@ public class QueryController {
 		return index;
 	}
 
-	public Vector<TreeElement> getElements() {
+	public Vector<QueryControllerEntity> getElements() {
 		return this.collection;
 	}
 
-	public Vector<QueryGroupTreeElement> getGroups() {
-		Vector<QueryGroupTreeElement> groups = new Vector<QueryGroupTreeElement>();
-		for (TreeElement element : collection) {
-			if (element instanceof QueryGroupTreeElement) {
-				groups.add((QueryGroupTreeElement) element);
+	/**
+	 * Returns all the groups added
+	 */
+	public Vector<QueryControllerGroup> getGroups() {
+		Vector<QueryControllerGroup> groups = new Vector<QueryControllerGroup>();
+		for (QueryControllerEntity element : collection) {
+			if (element instanceof QueryControllerGroup) {
+				groups.add((QueryControllerGroup) element);
 			}
 		}
 		return groups;
 	}
 
-	public void fireElementAdded(TreeElement element) {
-		for (QueryControllerListener listener : listeners) {
-			listener.elementAdded(element);
+	public void fireElementAdded(QueryControllerEntity element) {
+		if (!eventDisabled) {
+			for (QueryControllerListener listener : listeners) {
+				listener.elementAdded(element);
+			}
 		}
 	}
 
-	public void fireElementAdded(QueryTreeElement query, QueryGroupTreeElement group) {
-		for (QueryControllerListener listener : listeners) {
-			listener.elementAdded(query, group);
+	public void fireElementAdded(QueryControllerQuery query,
+			QueryControllerGroup group) {
+		if (!eventDisabled) {
+			for (QueryControllerListener listener : listeners) {
+				listener.elementAdded(query, group);
+			}
 		}
 	}
 
-	public void fireElementRemoved(TreeElement element) {
-		for (QueryControllerListener listener : listeners) {
-			listener.elementRemoved(element);
+	public void fireElementRemoved(QueryControllerEntity element) {
+		if (element instanceof QueryControllerGroup
+				|| element instanceof QueryControllerQuery) {
+			if (!eventDisabled) {
+				for (QueryControllerListener listener : listeners) {
+					listener.elementRemoved(element);
+				}
+			}
 		}
 	}
 
-	public void fireElementRemoved(QueryTreeElement query, QueryGroupTreeElement group) {
-		for (QueryControllerListener listener : listeners) {
-			listener.elementRemoved(query, group);
+	public void fireElementRemoved(QueryControllerQuery query,
+			QueryControllerGroup group) {
+		if (!eventDisabled) {
+			for (QueryControllerListener listener : listeners) {
+				listener.elementRemoved(query, group);
+			}
 		}
+	}
+
+	public void fireElementChanged(QueryControllerQuery query) {
+		if (!eventDisabled) {
+			for (QueryControllerListener listener : listeners) {
+				listener.elementChanged(query);
+			}
+		}
+	}
+
+	public void fireElementChanged(QueryControllerQuery query,
+			QueryControllerGroup group) {
+		if (!eventDisabled) {
+			for (QueryControllerListener listener : listeners) {
+				listener.elementChanged(query, group);
+			}
+		}
+	}
+
+	public void setEventsDisabled(boolean value) {
+		eventDisabled = value;
+		return;
+
+	}
+
+	public boolean getEventsDisabled() {
+		return eventDisabled;
+
 	}
 
 }

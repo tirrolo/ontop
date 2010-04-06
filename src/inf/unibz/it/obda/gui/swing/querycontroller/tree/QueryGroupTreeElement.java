@@ -17,15 +17,16 @@ import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-public class QueryGroupTreeElement extends DefaultMutableTreeNode implements TreeElement {
+public class QueryGroupTreeElement extends DefaultMutableTreeNode implements
+		TreeElement {
 
-	private Vector<QueryTreeElement>	queries		= null;
+	private Vector<QueryTreeElement> queries = null;
 
-	private String						group_id	= "";
+	private String group_id = "";
 
 	public QueryGroupTreeElement(String group_id) {
 		this.setID(group_id);
-		queries = new Vector<QueryTreeElement>();
+
 	}
 
 	public void setID(String group_id) {
@@ -69,6 +70,12 @@ public class QueryGroupTreeElement extends DefaultMutableTreeNode implements Tre
 		return queries;
 	}
 
+	/**
+	 * Searches a specific query and returns the object query else returns null
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public QueryTreeElement getQuery(String id) {
 		for (QueryTreeElement query : queries) {
 			if (query.getID().equals(id)) {

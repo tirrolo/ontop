@@ -13,13 +13,23 @@
  */
 package inf.unibz.it.obda.api.controller;
 
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryGroupTreeElement;
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryTreeElement;
-import inf.unibz.it.obda.gui.swing.querycontroller.tree.TreeElement;
+import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryControllerGroup;
+import inf.unibz.it.obda.gui.swing.querycontroller.tree.QueryControllerQuery;
 
 public interface QueryControllerListener {
-	public void elementAdded(TreeElement element);
-	public void elementAdded(QueryTreeElement query, QueryGroupTreeElement group);
-	public void elementRemoved(TreeElement element);
-	public void elementRemoved(QueryTreeElement query, QueryGroupTreeElement group);
+
+	public void elementAdded(QueryControllerEntity element);
+
+	public void elementAdded(QueryControllerQuery query,
+			QueryControllerGroup group);
+
+	public void elementRemoved(QueryControllerEntity element);
+
+	public void elementRemoved(QueryControllerQuery query,
+			QueryControllerGroup group);
+
+	public void elementChanged(QueryControllerQuery query);
+
+	public void elementChanged(QueryControllerQuery query,
+			QueryControllerGroup group);
 }

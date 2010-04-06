@@ -14,7 +14,6 @@
 package inf.unibz.it.obda.gui.swing.dataquery.panel;
 
 import inf.unibz.it.obda.api.controller.QueryController;
-import inf.unibz.it.obda.gui.IconLoader;
 import inf.unibz.it.obda.gui.swing.action.GetDefaultSPARQLPrefixAction;
 import inf.unibz.it.obda.gui.swing.action.OBDADataQueryAction;
 import inf.unibz.it.ucq.swing.IncrementalQueryResultTableModel;
@@ -25,7 +24,6 @@ import java.awt.Color;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.text.Style;
@@ -44,23 +42,27 @@ import javax.swing.text.StyleContext;
  * 
  * @author mariano
  */
-public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQueriesPanelListener, TableModelListener {
+public class QueryInterfacePanel extends javax.swing.JPanel implements
+		SavedQueriesPanelListener, TableModelListener {
 
 	/**
-	 * 
+	 * Variable currentGroup is the group's id to which belongs the selected query
+	 * Variable currentId  is the query's id that is selected
 	 */
-	private static final long			serialVersionUID			= -5902798157183352944L;
-	private ResultViewTablePanel		viewpanel;
-	private SPARQLQueryStyledDocument	_styled_doc					= null;
-	private OBDADataQueryAction			executeUCQAction			= null;
-	private OBDADataQueryAction			executeEQLAction			= null;
-	private OBDADataQueryAction			retrieveUCQExpansionAction	= null;
-	private OBDADataQueryAction			retrieveUCQUnfoldingAction	= null;
-	private OBDADataQueryAction			retrieveEQLUnfoldingAction	= null;
-	private QueryController				qc							= null;
-	private QueryInterfacePanel 		instance 					= null;
-	private double execTime = 0;			
-	
+	private static final long serialVersionUID = -5902798157183352944L;
+	private ResultViewTablePanel viewpanel;
+	private SPARQLQueryStyledDocument _styled_doc = null;
+	private OBDADataQueryAction executeUCQAction = null;
+	private OBDADataQueryAction executeEQLAction = null;
+	private OBDADataQueryAction retrieveUCQExpansionAction = null;
+	private OBDADataQueryAction retrieveUCQUnfoldingAction = null;
+	private OBDADataQueryAction retrieveEQLUnfoldingAction = null;
+	private QueryController qc = null;
+	private QueryInterfacePanel instance = null;
+	private double execTime = 0;
+	private String currentGroup = null;
+	private String currentId = null;
+
 	/** Creates new form QueryInterfacePanel */
 	public QueryInterfacePanel(QueryController qc) {
 		this.qc = qc;
@@ -71,7 +73,8 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 		_styled_doc = new SPARQLQueryStyledDocument(style);
 
 		// StyleContext eqlStyleContext = new StyleContext();
-		Style eqlStyle = eqlTextPane.getStyledDocument().getStyle(StyleContext.DEFAULT_STYLE);
+		Style eqlStyle = eqlTextPane.getStyledDocument().getStyle(
+				StyleContext.DEFAULT_STYLE);
 		StyleConstants.setFontFamily(eqlStyle, "Courier New");
 		StyleConstants.setFontSize(eqlStyle, 12);
 		StyleConstants.setForeground(eqlStyle, Color.black);
@@ -94,7 +97,8 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 		this.viewpanel = viewpanel;
 	}
 
-	public void setGetSPARQLDefaultPrefixAction(GetDefaultSPARQLPrefixAction action) {
+	public void setGetSPARQLDefaultPrefixAction(
+			GetDefaultSPARQLPrefixAction action) {
 		_styled_doc.setGetDefaultSPARQLPrefixAction(action);
 	}
 
@@ -107,162 +111,173 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 	// <editor-fold defaultstate="collapsed" desc="Generated
 	// <editor-fold defaultstate="collapsed" desc="Generated
 	// <editor-fold defaultstate="collapsed"
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
+	// <editor-fold defaultstate="collapsed"
+	// desc="Generated Code">//GEN-BEGIN:initComponents
+	private void initComponents() {
+		java.awt.GridBagConstraints gridBagConstraints;
 
-        eqlPopupMenu = new javax.swing.JPopupMenu();
-        getEQLSQLExpansion = new javax.swing.JMenuItem();
-        sparqlPopupMenu = new javax.swing.JPopupMenu();
-        getSPARQLExpansion = new javax.swing.JMenuItem();
-        getSPARQLSQLExpansion = new javax.swing.JMenuItem();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
-        jPanel11 = new javax.swing.JPanel();
-        jLabel18 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        queryTextPane = new javax.swing.JTextPane();
-        eqlPanel = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        eqlTextPane = new javax.swing.JTextPane();
-        panel_query_buttons = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        jLabelStatus = new javax.swing.JLabel();
-        buttonAdvancedProperties = new javax.swing.JButton();
-        buttonExecute = new javax.swing.JButton();
-        buttonSaveQuery = new javax.swing.JButton();
+		eqlPopupMenu = new javax.swing.JPopupMenu();
+		getEQLSQLExpansion = new javax.swing.JMenuItem();
+		sparqlPopupMenu = new javax.swing.JPopupMenu();
+		getSPARQLExpansion = new javax.swing.JMenuItem();
+		getSPARQLSQLExpansion = new javax.swing.JMenuItem();
+		jTabbedPane2 = new javax.swing.JTabbedPane();
+		jPanel11 = new javax.swing.JPanel();
+		jLabel18 = new javax.swing.JLabel();
+		jScrollPane3 = new javax.swing.JScrollPane();
+		queryTextPane = new javax.swing.JTextPane();
+		eqlPanel = new javax.swing.JPanel();
+		jScrollPane4 = new javax.swing.JScrollPane();
+		eqlTextPane = new javax.swing.JTextPane();
+		panel_query_buttons = new javax.swing.JPanel();
+		jPanel1 = new javax.swing.JPanel();
+		jLabelStatus = new javax.swing.JLabel();
+		buttonAdvancedProperties = new javax.swing.JButton();
+		buttonExecute = new javax.swing.JButton();
+		buttonSaveQuery = new javax.swing.JButton();
 
-        getEQLSQLExpansion.setText("Get SQL for EQL query...");
-        getEQLSQLExpansion.setEnabled(false);
-        getEQLSQLExpansion.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getEQLSQLExpansionActionPerformed(evt);
-            }
-        });
-        eqlPopupMenu.add(getEQLSQLExpansion);
+		getEQLSQLExpansion.setText("Get SQL for EQL query...");
+		getEQLSQLExpansion.setEnabled(false);
+		getEQLSQLExpansion
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						getEQLSQLExpansionActionPerformed(evt);
+					}
+				});
+		eqlPopupMenu.add(getEQLSQLExpansion);
 
-        sparqlPopupMenu.setComponentPopupMenu(sparqlPopupMenu);
+		sparqlPopupMenu.setComponentPopupMenu(sparqlPopupMenu);
 
-        getSPARQLExpansion.setText("Get expansion this UCQ...");
-        getSPARQLExpansion.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getSPARQLExpansionActionPerformed(evt);
-            }
-        });
-        sparqlPopupMenu.add(getSPARQLExpansion);
+		getSPARQLExpansion.setText("Get expansion this UCQ...");
+		getSPARQLExpansion
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						getSPARQLExpansionActionPerformed(evt);
+					}
+				});
+		sparqlPopupMenu.add(getSPARQLExpansion);
 
-        getSPARQLSQLExpansion.setText("Get expanded/unfolded query for this UCQ...");
-        getSPARQLSQLExpansion.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getSPARQLSQLExpansionActionPerformed(evt);
-            }
-        });
-        sparqlPopupMenu.add(getSPARQLSQLExpansion);
+		getSPARQLSQLExpansion
+				.setText("Get expanded/unfolded query for this UCQ...");
+		getSPARQLSQLExpansion
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						getSPARQLSQLExpansionActionPerformed(evt);
+					}
+				});
+		sparqlPopupMenu.add(getSPARQLSQLExpansion);
 
-        setLayout(new java.awt.GridBagLayout());
+		setLayout(new java.awt.GridBagLayout());
 
-        jPanel11.setLayout(new java.awt.BorderLayout());
+		jPanel11.setLayout(new java.awt.BorderLayout());
 
-        jLabel18.setFont(new java.awt.Font("Arial", 1, 11));
-        jLabel18.setForeground(new java.awt.Color(153, 153, 153));
-        jLabel18.setText("  Query (SPARQL):");
-        jPanel11.add(jLabel18, java.awt.BorderLayout.NORTH);
+		jLabel18.setFont(new java.awt.Font("Arial", 1, 11));
+		jLabel18.setForeground(new java.awt.Color(153, 153, 153));
+		jLabel18.setText("  Query (SPARQL):");
+		jPanel11.add(jLabel18, java.awt.BorderLayout.NORTH);
 
-        queryTextPane.setFont(new java.awt.Font("Lucida Grande", 0, 14));
-        queryTextPane.setComponentPopupMenu(sparqlPopupMenu);
-        jScrollPane3.setViewportView(queryTextPane);
+		queryTextPane.setFont(new java.awt.Font("Lucida Grande", 0, 14));
+		queryTextPane.setComponentPopupMenu(sparqlPopupMenu);
+		jScrollPane3.setViewportView(queryTextPane);
 
-        jPanel11.add(jScrollPane3, java.awt.BorderLayout.CENTER);
+		jPanel11.add(jScrollPane3, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane2.addTab("SPARQL", null, jPanel11, "For issuing union of conjunctive queries to the reasoner.");
+		jTabbedPane2.addTab("SPARQL", null, jPanel11,
+				"For issuing union of conjunctive queries to the reasoner.");
 
-        eqlPanel.setLayout(new java.awt.BorderLayout());
+		eqlPanel.setLayout(new java.awt.BorderLayout());
 
-        eqlTextPane.setComponentPopupMenu(eqlPopupMenu);
-        jScrollPane4.setViewportView(eqlTextPane);
+		eqlTextPane.setComponentPopupMenu(eqlPopupMenu);
+		jScrollPane4.setViewportView(eqlTextPane);
 
-        eqlPanel.add(jScrollPane4, java.awt.BorderLayout.CENTER);
+		eqlPanel.add(jScrollPane4, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane2.addTab("EQL", null, eqlPanel, "For issuing EQL epistemic queries to the reasoner");
+		jTabbedPane2.addTab("EQL", null, eqlPanel,
+				"For issuing EQL epistemic queries to the reasoner");
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 2.0;
-        add(jTabbedPane2, gridBagConstraints);
+		gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridwidth = 3;
+		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 2.0;
+		add(jTabbedPane2, gridBagConstraints);
 
-        panel_query_buttons.setLayout(new java.awt.GridBagLayout());
+		panel_query_buttons.setLayout(new java.awt.GridBagLayout());
 
-        jPanel1.setLayout(new java.awt.GridBagLayout());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
-        jPanel1.add(jLabelStatus, gridBagConstraints);
+		jPanel1.setLayout(new java.awt.GridBagLayout());
+		gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+		jPanel1.add(jLabelStatus, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        panel_query_buttons.add(jPanel1, gridBagConstraints);
+		gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.gridwidth = 2;
+		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+		gridBagConstraints.weightx = 1.0;
+		panel_query_buttons.add(jPanel1, gridBagConstraints);
 
-        buttonAdvancedProperties.setText("Advanced properties");
-        buttonAdvancedProperties.setEnabled(false);
-        buttonAdvancedProperties.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonAdvancedPropertiesActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        panel_query_buttons.add(buttonAdvancedProperties, gridBagConstraints);
+		buttonAdvancedProperties.setText("Advanced properties");
+		buttonAdvancedProperties.setEnabled(false);
+		buttonAdvancedProperties
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						buttonAdvancedPropertiesActionPerformed(evt);
+					}
+				});
+		gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+		panel_query_buttons.add(buttonAdvancedProperties, gridBagConstraints);
 
-        buttonExecute.setMnemonic('x');
-        buttonExecute.setText("Execute");
-        buttonExecute.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonExecuteActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        panel_query_buttons.add(buttonExecute, gridBagConstraints);
+		buttonExecute.setMnemonic('x');
+		buttonExecute.setText("Execute");
+		buttonExecute.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				buttonExecuteActionPerformed(evt);
+			}
+		});
+		gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+		panel_query_buttons.add(buttonExecute, gridBagConstraints);
 
-        buttonSaveQuery.setText("Save");
-        buttonSaveQuery.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonSaveActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
-        panel_query_buttons.add(buttonSaveQuery, gridBagConstraints);
+		buttonSaveQuery.setText("Save");
+		buttonSaveQuery.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				buttonSaveActionPerformed(evt);
+			}
+		});
+		gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.gridy = 0;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+		panel_query_buttons.add(buttonSaveQuery, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        add(panel_query_buttons, gridBagConstraints);
-    }// </editor-fold>//GEN-END:initComponents
+		gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.gridx = 0;
+		gridBagConstraints.gridwidth = 3;
+		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+		add(panel_query_buttons, gridBagConstraints);
+	}// </editor-fold>//GEN-END:initComponents
 
-	private void getEQLSQLExpansionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_getEQLSQLExpansionActionPerformed
+	private void getEQLSQLExpansionActionPerformed(
+			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_getEQLSQLExpansionActionPerformed
 		OBDADataQueryAction action = this.getRetrieveEQLUnfoldingAction();
 		action.run(eqlTextPane.getText(), null);
 	}// GEN-LAST:event_getEQLSQLExpansionActionPerformed
 
-	private void getSPARQLExpansionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_getSPARQLExpansionActionPerformed
+	private void getSPARQLExpansionActionPerformed(
+			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_getSPARQLExpansionActionPerformed
 		Thread queryRunnerThread = new Thread(new Runnable() {
 			public void run() {
 
-				OBDADataQueryAction action = QueryInterfacePanel.this.getRetrieveUCQExpansionAction();
+				OBDADataQueryAction action = QueryInterfacePanel.this
+						.getRetrieveUCQExpansionAction();
 				action.run(queryTextPane.getText(), null);
 			}
 		});
@@ -270,20 +285,25 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 
 	}// GEN-LAST:event_getSPARQLExpansionActionPerformed
 
-	private void getSPARQLSQLExpansionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_getSPARQLSQLExpansionActionPerformed
+	private void getSPARQLSQLExpansionActionPerformed(
+			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_getSPARQLSQLExpansionActionPerformed
 		Thread queryRunnerThread = new Thread(new Runnable() {
 			public void run() {
-				OBDADataQueryAction action = QueryInterfacePanel.this.getRetrieveUCQUnfoldingAction();
+				OBDADataQueryAction action = QueryInterfacePanel.this
+						.getRetrieveUCQUnfoldingAction();
 				action.run(queryTextPane.getText(), null);
 			}
 		});
 		queryRunnerThread.start();
 	}// GEN-LAST:event_getSPARQLSQLExpansionActionPerformed
 
-	private void buttonAdvancedPropertiesActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_buttonAdvancedPropertiesActionPerformed
-		JFrame protege_main_window = (JFrame) getParent().getParent().getParent().getParent().getParent().getParent().getParent();
+	private void buttonAdvancedPropertiesActionPerformed(
+			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_buttonAdvancedPropertiesActionPerformed
+		JFrame protege_main_window = (JFrame) getParent().getParent()
+				.getParent().getParent().getParent().getParent().getParent();
 		JDialog dialog = new JDialog(protege_main_window);
-		AdvancedQueryPropertiesPanel panel = new AdvancedQueryPropertiesPanel(dialog);
+		AdvancedQueryPropertiesPanel panel = new AdvancedQueryPropertiesPanel(
+				dialog);
 		dialog.getContentPane().add(panel, java.awt.BorderLayout.CENTER);
 		dialog.pack();
 		DialogUtils.centerDialogWRTParent(protege_main_window, dialog);
@@ -308,13 +328,13 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 				Thread queryRunnerThread = new Thread(new Runnable() {
 
 					public void run() {
-						OBDADataQueryAction action = QueryInterfacePanel.this.getExecuteUCQAction();
+						OBDADataQueryAction action = QueryInterfacePanel.this
+								.getExecuteUCQAction();
 						action.run(queryTextPane.getText(), instance);
-						
+
 						execTime = action.getExecutionTime();
 						int rows = action.getNumberOfRows();
 						updateStatus(rows);
-						
 
 					};
 				});
@@ -331,7 +351,8 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 				// progress of the execution
 				Thread queryRunnerThread = new Thread(new Runnable() {
 					public void run() {
-						OBDADataQueryAction action = QueryInterfacePanel.this.getExecuteEQLAction();
+						OBDADataQueryAction action = QueryInterfacePanel.this
+								.getExecuteEQLAction();
 						if (action != null) {
 							action.run(eqlTextPane.getText(), instance);
 							execTime = action.getExecutionTime();
@@ -358,8 +379,8 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 		// JFrame protege_main_window = (JFrame)
 		// ProtegeUI.getTopLevelContainer(OBDAPluginController.getCurrentInstance().getCurrentProject());
 		JDialog saveDialog = new JDialog();
-
 		String query = "";
+		SaveQueryPanel savePanel;
 		int index = jTabbedPane2.getSelectedIndex();
 		boolean isSPARQLquery = false;
 		boolean isEQLquery = false;
@@ -374,16 +395,30 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 			query = this.eqlTextPane.getText();
 		}
 
-		SaveQueryPanel savePanel = new SaveQueryPanel(query, saveDialog, qc);
-		saveDialog.getContentPane().add(savePanel, java.awt.BorderLayout.CENTER);
+		if ((currentGroup != null && currentGroup != "")
+				&& (currentId != null && currentId != ""))
+			savePanel = new SaveQueryPanel(query, saveDialog, qc, currentGroup,
+					currentId);
+		else if ((currentGroup != null && currentGroup != "")
+				&& (currentId == null || currentId == ""))
+			savePanel = new SaveQueryPanel(query, saveDialog, qc, currentGroup,
+					currentId);
+		else
+			savePanel = new SaveQueryPanel(query, saveDialog, qc, currentId);// ?????
+
+		saveDialog.getContentPane()
+				.add(savePanel, java.awt.BorderLayout.CENTER);
 		saveDialog.pack();
 		DialogUtils.centerDialogWRTParent(this, saveDialog);
 		saveDialog.setVisible(true);
 	}// GEN-LAST:event_buttonSaveActionPerformed
 
-	public void selectedQuerychanged(String new_query) {
+	public void selectedQuerychanged(String new_group, String new_query,
+			String new_id) {
 		eqlTextPane.setText(new_query);
 		queryTextPane.setText(new_query);
+		currentGroup = new_group;
+		currentId = new_id;
 	}
 
 	public void setExecuteUCQAction(OBDADataQueryAction executeUCQAction) {
@@ -402,7 +437,8 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 		return executeEQLAction;
 	}
 
-	public void setRetrieveUCQExpansionAction(OBDADataQueryAction retrieveUCQExpansionAction) {
+	public void setRetrieveUCQExpansionAction(
+			OBDADataQueryAction retrieveUCQExpansionAction) {
 		this.retrieveUCQExpansionAction = retrieveUCQExpansionAction;
 	}
 
@@ -410,7 +446,8 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 		return retrieveUCQExpansionAction;
 	}
 
-	public void setRetrieveUCQUnfoldingAction(OBDADataQueryAction retrieveUCQUnfoldingAction) {
+	public void setRetrieveUCQUnfoldingAction(
+			OBDADataQueryAction retrieveUCQUnfoldingAction) {
 		this.retrieveUCQUnfoldingAction = retrieveUCQUnfoldingAction;
 	}
 
@@ -418,61 +455,66 @@ public class QueryInterfacePanel extends javax.swing.JPanel implements SavedQuer
 		return retrieveUCQUnfoldingAction;
 	}
 
-	public void setRetrieveEQLUnfoldingAction(OBDADataQueryAction retrieveEQLUnfoldingAction) {
+	public void setRetrieveEQLUnfoldingAction(
+			OBDADataQueryAction retrieveEQLUnfoldingAction) {
 		this.retrieveEQLUnfoldingAction = retrieveEQLUnfoldingAction;
 	}
 
 	public OBDADataQueryAction getRetrieveEQLUnfoldingAction() {
 		return retrieveEQLUnfoldingAction;
 	}
-	
-	public void updateStatus(int rows){
-		
-		Double d = Double.valueOf(execTime/1000);
-		String s = "Execution time: "+ d + " sec     Number of tuples retrieved: " + rows;
+
+	public void updateStatus(int rows) {
+
+		Double d = Double.valueOf(execTime / 1000);
+		String s = "Execution time: " + d
+				+ " sec     Number of tuples retrieved: " + rows;
 		jLabelStatus.setText(s);
 	}
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonAdvancedProperties;
-    private javax.swing.JButton buttonExecute;
-    private javax.swing.JButton buttonSaveQuery;
-    private javax.swing.JPanel eqlPanel;
-    private javax.swing.JPopupMenu eqlPopupMenu;
-    private javax.swing.JTextPane eqlTextPane;
-    private javax.swing.JMenuItem getEQLSQLExpansion;
-    private javax.swing.JMenuItem getSPARQLExpansion;
-    private javax.swing.JMenuItem getSPARQLSQLExpansion;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabelStatus;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel11;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JPanel panel_query_buttons;
-    private javax.swing.JTextPane queryTextPane;
-    private javax.swing.JPopupMenu sparqlPopupMenu;
-    // End of variables declaration//GEN-END:variables
+	// Variables declaration - do not modify//GEN-BEGIN:variables
+	private javax.swing.JButton buttonAdvancedProperties;
+	private javax.swing.JButton buttonExecute;
+	private javax.swing.JButton buttonSaveQuery;
+	private javax.swing.JPanel eqlPanel;
+	private javax.swing.JPopupMenu eqlPopupMenu;
+	private javax.swing.JTextPane eqlTextPane;
+	private javax.swing.JMenuItem getEQLSQLExpansion;
+	private javax.swing.JMenuItem getSPARQLExpansion;
+	private javax.swing.JMenuItem getSPARQLSQLExpansion;
+	private javax.swing.JLabel jLabel18;
+	private javax.swing.JLabel jLabelStatus;
+	private javax.swing.JPanel jPanel1;
+	private javax.swing.JPanel jPanel11;
+	private javax.swing.JScrollPane jScrollPane3;
+	private javax.swing.JScrollPane jScrollPane4;
+	private javax.swing.JTabbedPane jTabbedPane2;
+	private javax.swing.JPanel panel_query_buttons;
+	private javax.swing.JTextPane queryTextPane;
+	private javax.swing.JPopupMenu sparqlPopupMenu;
 
-//	@Override
+	// End of variables declaration//GEN-END:variables
+
+	// @Override
 	public void tableChanged(TableModelEvent e) {
-		Double d = Double.valueOf(execTime/1000);
-		int rows = ((IncrementalQueryResultTableModel)e.getSource()).getRowCount();
-		String s = "Execution time: "+ d + " sec     Number of tuples retrieved: " + rows;
+		Double d = Double.valueOf(execTime / 1000);
+		int rows = ((IncrementalQueryResultTableModel) e.getSource())
+				.getRowCount();
+		String s = "Execution time: " + d
+				+ " sec     Number of tuples retrieved: " + rows;
 		jLabelStatus.setText(s);
-		
+
 	}
-	
-	public String getSPARQLQuery(){
-		return queryTextPane.getText();
-	}
-	
-	public String getEQLQuery(){
+
+	public String getSPARQLQuery() {
 		return queryTextPane.getText();
 	}
 
-	public int getSelecetTab(){
+	public String getEQLQuery() {
+		return queryTextPane.getText();
+	}
+
+	public int getSelecetTab() {
 		return jTabbedPane2.getSelectedIndex();
 	}
 }
