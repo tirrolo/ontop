@@ -14,6 +14,7 @@
 package inf.unibz.it.ucq.domain;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class UnionOfConjunctiveQueries {
 	
@@ -40,4 +41,5 @@ public class UnionOfConjunctiveQueries {
 	public boolean isDistinct() {
 		return this.uniqueResults;
 	}
+	
 }

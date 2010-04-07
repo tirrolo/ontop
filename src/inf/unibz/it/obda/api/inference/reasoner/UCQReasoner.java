@@ -27,7 +27,7 @@ public interface UCQReasoner {
 	
 	public String unfoldEQL(String query) throws Exception;
 	
-	public String getRewritting(UnionOfConjunctiveQueries query) throws Exception;
+	public UnionOfConjunctiveQueries getRewritting(UnionOfConjunctiveQueries query) throws Exception;
 	
 	public String getUnfolding(UnionOfConjunctiveQueries query) throws Exception;
 	

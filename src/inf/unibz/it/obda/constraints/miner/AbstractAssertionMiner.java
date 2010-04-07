@@ -1,6 +1,7 @@
 package inf.unibz.it.obda.constraints.miner;
 
 import inf.unibz.it.obda.api.controller.APIController;
+import inf.unibz.it.obda.api.datasource.JDBCConnectionManager;
 import inf.unibz.it.obda.constraints.domain.imp.RDBMSForeignKeyConstraint;
 import inf.unibz.it.obda.constraints.domain.imp.RDBMSPrimaryKeyConstraint;
 import inf.unibz.it.obda.dependencies.domain.imp.RDBMSInclusionDependency;
@@ -33,6 +34,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -76,32 +78,63 @@ public class AbstractAssertionMiner {
 		tables = new Vector<String>();
 		
 		try {
-			Connection conn = getConnection();
+			Connection con = getConnection();
+			DataSource source = ds;
 			DatabaseMetaData meta;
-			ResultSet r = null;
-			meta = conn.getMetaData();
-			String types[] = { "TABLE" };
-			r = meta.getTables(null, schemaPattern, tableNamePattern, types);
-			while (r.next()) {
-				String name = r.getString("TABLE_NAME");
-				 tables.add(name);
-				 
-				 ResultSet rs = meta.getColumns(conn.getCatalog(), "%", name, "%");
-				 Vector<String> aux = new Vector<String>();
-				 while(rs.next()){
-					 String column = rs.getString("COLUMN_NAME");
-					 aux.add(column);
-				 }
-				 rs.close();
-				 tableColumns.put(name, aux);
+			meta = con.getMetaData();
+			if(con != null){
+				if (source.getParameter(RDBMSsourceParameterConstants.DATABASE_DRIVER).equals("com.ibm.db2.jcc.DB2Driver")) {
+
+					Statement statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+					String dbname = source.getParameter(RDBMSsourceParameterConstants.DATABASE_NAME);
+					// jdbc:db2://5.90.168.104:50000/MINIST:currentSchema=PROP;
+					String[] sp1 = dbname.split("/");
+					String catalog = sp1[sp1.length - 1].split(":")[0];
+					String t2 = dbname.split("=")[1];
+					String schema = t2.substring(0, t2.length() - 1);
+					ResultSet r = statement.executeQuery("SELECT TABLE_NAME FROM SYSIBM.TABLES WHERE TABLE_CATALOG = '" + catalog
+							+ "' AND TABLE_SCHEMA = '" + schema + "'");
+					makeTableMap(r, meta, con);
+				} if (source.getParameter(RDBMSsourceParameterConstants.DATABASE_DRIVER).equals("oracle.jdbc.driver.OracleDriver")) {
+					// select table_name from user_tables
+					Statement statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+					ResultSet r = statement.executeQuery("select table_name from user_tables");
+					makeTableMap(r, meta, con);
+				} else {
+					//postgres and mysql
+					DatabaseMetaData metdata = con.getMetaData();
+					String catalog = null;
+					String schemaPattern = "%";
+					String tableNamePattern = "%";
+					String types[] = { "TABLE" };
+					con.setAutoCommit(true);
+					ResultSet r = metdata.getTables(catalog, schemaPattern, tableNamePattern, types);
+					con.setAutoCommit(false);
+					makeTableMap(r, meta, con);
+				}
+			}else{
+				throw new SQLException("No connection established for id: " + source.getUri());
 			}
-			r.close();
-			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
-		
+	}
+	
+	private void makeTableMap(ResultSet r, DatabaseMetaData meta, Connection con) throws Exception{
+		while (r.next()) {
+			String name = r.getString("TABLE_NAME");
+			 tables.add(name);
+			 ResultSet rs = meta.getColumns(con.getCatalog(), "%", name, "%");
+			 
+			 Vector<String> aux = new Vector<String>();
+			 while(rs.next()){
+				 String column = rs.getString("COLUMN_NAME");
+				 aux.add(column);
+			 }
+			 rs.close();
+			 tableColumns.put(name, aux);
+		}
+		r.close();
 	}
 	
 	private void createTableIndex(){
@@ -358,32 +391,34 @@ public class AbstractAssertionMiner {
 	    Iterator<String> it = tables.iterator();
 	    while(it.hasNext()){
 	    	String table = it.next();
-	    	ResultSet rs =meta.getPrimaryKeys(conn.getCatalog(), null, table);
-	    	Vector<String> var = new Vector<String>();
-	    	while(rs.next()){
-	    		var.add(rs.getString("COLUMN_NAME"));
-	    	}
-	    	
-	    	HashSet<OBDAMappingAxiom> ma = tableToMappingIndex.get(table);
-	    	if(ma != null){
-		    	Iterator<OBDAMappingAxiom> mit = ma.iterator();
-		    	while(mit.hasNext()){
-		    		OBDAMappingAxiom axiom = mit.next();
-		    		HashMap<String, String> aliases = tablesAliasMap.get(axiom);
-		    		Vector<QueryTerm> terms = new Vector<QueryTerm>();
-		    		Iterator<String> varit = var.iterator();
-		    		while(varit.hasNext()){
-		    			String name = varit.next();
-		    			String alias = aliases.get(name);
-		    			if(alias == null){
-		    				terms.add(new VariableTerm(name));
-		    			}else{
-		    				terms.add(new VariableTerm(alias));
-		    			}
-		    		}
-		    		pkconstraints.add(new RDBMSPrimaryKeyConstraint(axiom.getId(), (RDBMSSQLQuery)axiom.getSourceQuery(), terms));
-		    	}
-	    	}
+		    ResultSet rs =meta.getPrimaryKeys(conn.getCatalog(), null, table);
+		    Vector<String> var = new Vector<String>();
+		    while(rs.next()){
+		    	var.add(rs.getString("COLUMN_NAME"));
+		    }
+		    
+		    HashSet<OBDAMappingAxiom> ma = tableToMappingIndex.get(table);
+		    if(ma != null){
+			    Iterator<OBDAMappingAxiom> mit = ma.iterator();
+			    while(mit.hasNext()){
+			    	OBDAMappingAxiom axiom = mit.next();
+			    	HashMap<String, String> aliases = tablesAliasMap.get(axiom);
+			    	Vector<QueryTerm> terms = new Vector<QueryTerm>();
+			    	Iterator<String> varit = var.iterator();
+			    	while(varit.hasNext()){
+			    		String name = varit.next();
+			    		String alias = aliases.get(name);
+			    		if(alias == null){
+			    			terms.add(new VariableTerm(name));
+			    		}else{
+			    			terms.add(new VariableTerm(alias));
+			    		}
+			    	}
+			    	if(terms.size()>0){
+			    		pkconstraints.add(new RDBMSPrimaryKeyConstraint(axiom.getId(), (RDBMSSQLQuery)axiom.getSourceQuery(), terms));
+			    	}
+			   	}
+		    }
 	    }
 		return pkconstraints;
 	}

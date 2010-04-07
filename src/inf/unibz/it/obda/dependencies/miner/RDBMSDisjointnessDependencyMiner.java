@@ -375,7 +375,7 @@ public class RDBMSDisjointnessDependencyMiner implements IMiner {
 			var2 = var2 + "table2."+it1.next().getName();
 		}
 		
-		String query = "SELECT " + var1 +" FROM ROW(" + candidate + ") table1 WHERE ("+
+		String query = "SELECT " + var1 +" FROM (" + candidate + ") table1 WHERE ("+
 						var1+") IN (SELECT " + var2 + " FROM (" + container +") table2)";
 		return query; 
 	}
