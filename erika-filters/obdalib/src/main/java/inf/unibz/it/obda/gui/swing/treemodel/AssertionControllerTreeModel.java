@@ -3,6 +3,8 @@ package inf.unibz.it.obda.gui.swing.treemodel;
 import inf.unibz.it.dl.assertion.Assertion;
 import inf.unibz.it.obda.api.controller.AssertionController;
 import inf.unibz.it.obda.api.controller.AssertionControllerListener;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.FilteredTreeModel;
+
 
 import java.util.Collection;
 import java.util.Enumeration;
@@ -13,7 +15,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 public abstract class AssertionControllerTreeModel<AssertionClass extends Assertion> extends DefaultTreeModel implements
-		AssertionControllerListener<AssertionClass> {
+		AssertionControllerListener<AssertionClass>,FilteredTreeModel {
 
 	private static final long					serialVersionUID	= -5753951688449284609L;
 

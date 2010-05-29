@@ -18,6 +18,7 @@ import inf.unibz.it.obda.gui.swing.treemodel.AssertionControllerTreeModel;
 import inf.unibz.it.obda.gui.swing.treemodel.AssertionTreeNode;
 import inf.unibz.it.obda.gui.swing.treemodel.AssertionTreeNodeFactory;
 import inf.unibz.it.obda.gui.swing.treemodel.DefaultAssertionTreeNode;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.TreeModelFilter;
 
 /**
  * A modified tree model, adapted to the needs for handling inclusion
@@ -68,5 +69,35 @@ public class InclusionDependencyTreeModel extends
 			insertNodeInto(node, (MutableTreeNode) root, root.getChildCount());
 		}
 		nodeStructureChanged(root);
+	}
+
+	@Override
+	public void addFilter(TreeModelFilter T) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addFilters(List<TreeModelFilter> T) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeAllFilters() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeFilter(TreeModelFilter T) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeFilter(List<TreeModelFilter> T) {
+		// TODO Auto-generated method stub
+		
 	}
 }

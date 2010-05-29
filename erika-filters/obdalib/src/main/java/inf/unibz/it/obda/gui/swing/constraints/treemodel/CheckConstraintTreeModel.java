@@ -7,10 +7,12 @@ import inf.unibz.it.obda.dependencies.domain.imp.RDBMSDisjointnessDependency;
 import inf.unibz.it.obda.gui.swing.treemodel.AssertionControllerTreeModel;
 import inf.unibz.it.obda.gui.swing.treemodel.AssertionTreeNode;
 import inf.unibz.it.obda.gui.swing.treemodel.AssertionTreeNodeFactory;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.TreeModelFilter;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.tree.MutableTreeNode;
 
@@ -45,6 +47,36 @@ AssertionControllerTreeModel<RDBMSCheckConstraint>{
 			insertNodeInto(node, (MutableTreeNode) root, root.getChildCount());
 		}
 		nodeStructureChanged(root);
+	}
+
+	@Override
+	public void addFilter(TreeModelFilter T) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addFilters(List<TreeModelFilter> T) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeAllFilters() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeFilter(TreeModelFilter T) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeFilter(List<TreeModelFilter> T) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

@@ -16,8 +16,11 @@ package inf.unibz.it.obda.gui.swing.querycontroller.tree;
 import inf.unibz.it.obda.api.controller.QueryController;
 import inf.unibz.it.obda.api.controller.QueryControllerEntity;
 import inf.unibz.it.obda.api.controller.QueryControllerListener;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.FilteredTreeModel;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.TreeModelFilter;
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -26,7 +29,7 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 public class QueryControllerTreeModel extends DefaultTreeModel implements
-		QueryControllerListener {
+		QueryControllerListener,FilteredTreeModel  {
 
 	/**
 	 * 
@@ -270,6 +273,36 @@ public class QueryControllerTreeModel extends DefaultTreeModel implements
 				continue;
 		}
 		return node;
+	}
+
+	@Override
+	public void addFilter(TreeModelFilter T) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addFilters(List<TreeModelFilter> T) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeAllFilters() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeFilter(TreeModelFilter T) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeFilter(List<TreeModelFilter> T) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
