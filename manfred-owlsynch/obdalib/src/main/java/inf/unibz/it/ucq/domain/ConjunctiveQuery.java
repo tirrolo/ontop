@@ -77,6 +77,13 @@ public class ConjunctiveQuery extends TargetQuery {
 		atoms.add(atom);
 		inputquery = toString();
 	}
+	
+	public void addQueryAtom(ArrayList<QueryAtom> a) {
+		if (atoms == null)
+			throw new IllegalArgumentException("received null");
+		atoms.addAll(a);
+		inputquery = toString();
+	}
 
 	public ArrayList<QueryAtom> getAtoms() {
 		return atoms;

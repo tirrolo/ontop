@@ -18,6 +18,8 @@ import inf.unibz.it.dl.domain.DataProperty;
 import inf.unibz.it.dl.domain.NamedProperty;
 import inf.unibz.it.dl.domain.ObjectProperty;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class BinaryQueryAtom extends QueryAtom {
@@ -58,5 +60,18 @@ public class BinaryQueryAtom extends QueryAtom {
 		return null;
 	}
 	
-
+	public void setName(String newName){
+		
+		try {
+			if(relation instanceof DataProperty){
+				DataProperty newprop = new DataProperty(new URI(newName));
+				relation = newprop;
+			}else{
+				ObjectProperty newprop = new ObjectProperty(new URI(newName));
+				relation = newprop;
+			}
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
 }

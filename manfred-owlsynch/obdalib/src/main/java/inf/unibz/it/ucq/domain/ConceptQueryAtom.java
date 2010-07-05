@@ -14,8 +14,12 @@
 package inf.unibz.it.ucq.domain;
 
 
+import inf.unibz.it.dl.domain.DataProperty;
 import inf.unibz.it.dl.domain.NamedConcept;
+import inf.unibz.it.dl.domain.ObjectProperty;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class ConceptQueryAtom extends QueryAtom {
@@ -50,4 +54,13 @@ public class ConceptQueryAtom extends QueryAtom {
 		return new ConceptQueryAtom(concept.clone(), term.clone());
 	}
 	
+	public void setName(String newName){
+		
+		try {
+			NamedConcept newCon = new NamedConcept(new URI(newName));
+			concept = newCon;
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
 }

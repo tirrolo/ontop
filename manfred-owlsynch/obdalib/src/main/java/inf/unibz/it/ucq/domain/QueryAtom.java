@@ -21,4 +21,5 @@ public abstract class QueryAtom implements Cloneable {
 	public abstract ArrayList<QueryTerm> getTerms();
 	public abstract QueryAtom clone();
 	public abstract String toString();
+	public abstract void setName(String newName);
 }

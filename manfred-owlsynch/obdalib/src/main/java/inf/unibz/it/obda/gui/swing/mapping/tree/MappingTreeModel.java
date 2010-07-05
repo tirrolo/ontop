@@ -133,7 +133,7 @@ public class MappingTreeModel extends DefaultTreeModel implements MappingControl
 	 */
 	public void mappingDeleted(String srcuri, String mapping_id) {
 
-		if (!srcuri.equals(dsc.getCurrentDataSource().getName())) {
+		if (dsc.getCurrentDataSource()== null || !srcuri.equals(dsc.getCurrentDataSource().getName())) {
 			return;
 		}
 		try {
@@ -197,7 +197,7 @@ public class MappingTreeModel extends DefaultTreeModel implements MappingControl
 
 		// SYNCWITH EVERYBODY EXCEPT WITH THE CONTROLLER SINCE IT WAS THE SOURCE
 		// OF THIS EVENT
-		if (!srcuri.equals(dsc.getCurrentDataSource().getName())) {
+		if (dsc.getCurrentDataSource() == null || !srcuri.equals(dsc.getCurrentDataSource().getName())) {
 			return;
 		}
 
