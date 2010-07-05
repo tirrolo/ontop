@@ -5,6 +5,8 @@ import inf.unibz.it.obda.api.controller.APICoupler;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.protege.editor.owl.model.OWLModelManager;
@@ -14,8 +16,16 @@ import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.model.find.EntityFinder;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owl.model.OWLOntologyChangeException;
+import org.semanticweb.owl.model.OWLOntologyChangeListener;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.util.OWLOntologyImportsClosureSetProvider;
+import org.semanticweb.owl.util.OWLOntologyMerger;
 
 /***
  * 
@@ -33,40 +43,66 @@ import org.semanticweb.owl.model.OWLOntology;
 public class OWLAPICoupler implements APICoupler {
 
 	// OWLModelManager owlman = null;
-	EntityFinder			finder	= null;
+//	EntityFinder			finder	= null;
 	private APIController	apic;
 
 	// private OWLModelManager mmgr;
+	
+	private OWLOntologyManager mmgr = null;
+	
+	private OWLOntology merged = null;
 
-	public OWLAPICoupler(APIController apic, EntityFinder finder) {
+	private OWLOntology	mergedOntology;
+
+	private HashSet<String>	dataProperties;
+
+	private HashSet<String>	classesURIs;
+
+	private HashSet<String>	objectProperties;
+	
+	
+
+	public OWLAPICoupler(APIController apic, OWLOntologyManager mmgr, OWLOntology root) {
 		// this.mmgr = manager;
 		this.apic = apic;
-		// this.owlman = manager;
-		this.finder = finder;
-		// mmgr.addListener(this);
+		this.mmgr = mmgr;
+		
+//		synchWithOntology(root);
 	}
 
-	public boolean isDatatypeProperty(URI propertyURI) {
+	public void synchWithOntology(OWLOntology root){
+		mergedOntology = root;
 		
-		Set<OWLDataProperty> properties = finder.getMatchingOWLDataProperties("*" + propertyURI.toString());
-		if (!properties.isEmpty())
-			return true;
-		return false;
+		classesURIs = new HashSet<String>();
+		dataProperties = new HashSet<String>();
+		objectProperties = new HashSet<String>();
+		
+		Set<OWLClass> set = mergedOntology.getReferencedClasses();
+		Iterator<OWLClass> it = set.iterator();
+		while(it.hasNext()){
+			classesURIs.add(it.next().getURI().toString());
+		}
+		for (OWLDataProperty c: mergedOntology.getReferencedDataProperties()) {
+			dataProperties.add(c.getURI().toString());
+		}
+		for (OWLObjectProperty c: mergedOntology.getReferencedObjectProperties()) {
+			objectProperties.add(c.getURI().toString());
+		}
+	}
+	
+	public boolean isDatatypeProperty(URI propertyURI) {
+		return dataProperties.contains(propertyURI.toString());
 	}
 
 	public boolean isNamedConcept(URI propertyURI) {
-		Set<OWLClass> classes = finder.getMatchingOWLClasses("*" + propertyURI.toString());
-		if (!classes.isEmpty())
-			return true;
-		return false;
-		// return classesURIs.contains(propertyURI);
+		return classesURIs.contains(propertyURI.toString());
 	}
 
 	public boolean isObjectProperty(URI propertyURI) {
-		Set<OWLObjectProperty> properties = finder.getMatchingOWLObjectProperties("*" + propertyURI.toString());
-		if (!properties.isEmpty())
-			return true;
-		return false;
+		return objectProperties.contains(propertyURI.toString());
 	}
 
+	public OWLOntologyManager getOWLOntologyManager(){
+		return mmgr;
+	}
 }

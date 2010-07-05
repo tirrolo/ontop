@@ -9,6 +9,7 @@ import inf.unibz.it.obda.api.controller.DatasourcesControllerListener;
 import inf.unibz.it.obda.api.controller.MappingControllerListener;
 import inf.unibz.it.obda.api.controller.QueryControllerEntity;
 import inf.unibz.it.obda.api.controller.QueryControllerListener;
+import inf.unibz.it.obda.api.io.DataManager;
 import inf.unibz.it.obda.constraints.AbstractConstraintAssertionController;
 import inf.unibz.it.obda.dependencies.AbstractDependencyAssertionController;
 import inf.unibz.it.obda.domain.DataSource;
@@ -39,6 +40,7 @@ import org.protege.editor.core.prefs.PreferencesManager;
 import org.protege.editor.core.ui.workspace.WorkspaceManager;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.OWLModelManagerImpl;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
@@ -47,6 +49,7 @@ import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.RemoveAxiom;
 
 public class OBDAPluginController extends APIController implements Disposable {
@@ -62,7 +65,6 @@ public class OBDAPluginController extends APIController implements Disposable {
 
 	public OBDAPluginController(EditorKit editorKit) {
 		super();
-
 		// loading JDBC Drivers
 
 		// OBDAPluginController.class.getClassLoader().
@@ -72,13 +74,14 @@ public class OBDAPluginController extends APIController implements Disposable {
 					"Received non OWLEditorKit editor kit");
 		}
 		this.owlEditorKit = (OWLEditorKit) editorKit;
-
+		mapcontroller = new SynchronizedMappingController(dscontroller, this);
+		ioManager = new DataManager(dscontroller, mapcontroller, queryController);
+		owlEditorKit.getOWLModelManager().addOntologyChangeListener((SynchronizedMappingController)mapcontroller);
 		// registerAsListener(owlEditorKit);
-
-		apicoupler = new OWLAPICoupler(this, owlEditorKit.getOWLModelManager()
-				.getEntityFinder());
+		OWLOntologyManager mmgr = ((OWLModelManagerImpl)editorKit.getModelManager()).getOWLOntologyManager();
+		OWLOntology root = owlEditorKit.getOWLModelManager().getActiveOntology();
+		apicoupler = new OWLAPICoupler(this, mmgr, root);
 		setCoupler(apicoupler);
-
 		/***
 		 * Setting up the current reasoner factories to have a reference to this
 		 * OBDA Plugin controller
@@ -144,7 +147,7 @@ public class OBDAPluginController extends APIController implements Disposable {
 				new MappingControllerListener() {
 
 					public void allMappingsRemoved() {
-						triggerOntologyChanged();
+//						triggerOntologyChanged();
 					}
 
 					public void currentSourceChanged(String oldsrcuri,
@@ -153,16 +156,16 @@ public class OBDAPluginController extends APIController implements Disposable {
 					}
 
 					public void mappingDeleted(String srcuri, String mapping_id) {
-						triggerOntologyChanged();
+//						triggerOntologyChanged();
 					}
 
 					public void mappingInserted(String srcuri, String mapping_id) {
-						triggerOntologyChanged();
+//						triggerOntologyChanged();
 					}
 
 					public void mappingUpdated(String srcuri,
 							String mapping_id, OBDAMappingAxiom mapping) {
-						triggerOntologyChanged();
+//						triggerOntologyChanged();
 					}
 
 				});
@@ -170,35 +173,35 @@ public class OBDAPluginController extends APIController implements Disposable {
 		queryController.addListener(new QueryControllerListener() {
 
 			public void elementAdded(QueryControllerEntity element) {
-				triggerOntologyChanged();
+//				triggerOntologyChanged();
 
 			}
 
 			public void elementAdded(QueryControllerQuery query,
 					QueryControllerGroup group) {
-				triggerOntologyChanged();
+//				triggerOntologyChanged();
 
 			}
 
 			public void elementRemoved(QueryControllerEntity element) {
-				triggerOntologyChanged();
+//				triggerOntologyChanged();
 
 			}
 
 			public void elementRemoved(QueryControllerQuery query,
 					QueryControllerGroup group) {
-				triggerOntologyChanged();
+//				triggerOntologyChanged();
 
 			}
 
 			public void elementChanged(QueryControllerQuery query) {
-				triggerOntologyChanged();
+//				triggerOntologyChanged();
 
 			}
 
 			public void elementChanged(QueryControllerQuery query,
 					QueryControllerGroup group) {
-				triggerOntologyChanged();
+//				triggerOntologyChanged();
 
 			}
 
@@ -216,23 +219,23 @@ public class OBDAPluginController extends APIController implements Disposable {
 		AssertionControllerListener<Assertion> defaultAssertionControllerListener = new AssertionControllerListener<Assertion>() {
 
 			public void assertionAdded(Assertion assertion) {
-				triggerOntologyChanged();
+//				triggerOntologyChanged();
 
 			}
 
 			public void assertionChanged(Assertion oldAssertion,
 					Assertion newAssertion) {
-				triggerOntologyChanged();
+//				triggerOntologyChanged();
 
 			}
 
 			public void assertionRemoved(Assertion assertion) {
-				triggerOntologyChanged();
+//				triggerOntologyChanged();
 
 			}
 
 			public void assertionsCleared() {
-				triggerOntologyChanged();
+//				triggerOntologyChanged();
 
 			}
 
@@ -342,13 +345,6 @@ public class OBDAPluginController extends APIController implements Disposable {
 	private OWLAPICoupler apicoupler;
 	private boolean loadingData;
 
-	// public void removeListener() {
-	//		
-	//
-	// // final OWLModelManager owlmm = owlEditorKit.getOWLModelManager();
-	// // owlmm.addListener(modelManagerListener);
-	// }
-
 	private void triggerOntologyChanged() {
 		if (!this.loadingData) {
 			OWLModelManager owlmm = owlEditorKit.getOWLModelManager();
@@ -391,6 +387,7 @@ public class OBDAPluginController extends APIController implements Disposable {
 	public void loadData(URI owlFile) {
 		loadingData = true;
 		try {
+			apicoupler.synchWithOntology(currentOntology);
 			URI obdafile = getIOManager().getOBDAFile(owlFile);
 			getIOManager().loadOBDADataFromURI(obdafile);
 		} catch (Exception e) {
