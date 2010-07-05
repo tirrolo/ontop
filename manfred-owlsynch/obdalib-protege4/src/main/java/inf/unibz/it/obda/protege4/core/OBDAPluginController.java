@@ -147,7 +147,7 @@ public class OBDAPluginController extends APIController implements Disposable {
 				new MappingControllerListener() {
 
 					public void allMappingsRemoved() {
-//						triggerOntologyChanged();
+						triggerOntologyChanged();
 					}
 
 					public void currentSourceChanged(String oldsrcuri,
@@ -156,16 +156,16 @@ public class OBDAPluginController extends APIController implements Disposable {
 					}
 
 					public void mappingDeleted(String srcuri, String mapping_id) {
-//						triggerOntologyChanged();
+						triggerOntologyChanged();
 					}
 
 					public void mappingInserted(String srcuri, String mapping_id) {
-//						triggerOntologyChanged();
+						triggerOntologyChanged();
 					}
 
 					public void mappingUpdated(String srcuri,
 							String mapping_id, OBDAMappingAxiom mapping) {
-//						triggerOntologyChanged();
+						triggerOntologyChanged();
 					}
 
 				});
@@ -173,42 +173,42 @@ public class OBDAPluginController extends APIController implements Disposable {
 		queryController.addListener(new QueryControllerListener() {
 
 			public void elementAdded(QueryControllerEntity element) {
-//				triggerOntologyChanged();
+				triggerOntologyChanged();
 
 			}
 
 			public void elementAdded(QueryControllerQuery query,
 					QueryControllerGroup group) {
-//				triggerOntologyChanged();
+				triggerOntologyChanged();
 
 			}
 
 			public void elementRemoved(QueryControllerEntity element) {
-//				triggerOntologyChanged();
+				triggerOntologyChanged();
 
 			}
 
 			public void elementRemoved(QueryControllerQuery query,
 					QueryControllerGroup group) {
-//				triggerOntologyChanged();
+				triggerOntologyChanged();
 
 			}
 
 			public void elementChanged(QueryControllerQuery query) {
-//				triggerOntologyChanged();
+				triggerOntologyChanged();
 
 			}
 
 			public void elementChanged(QueryControllerQuery query,
 					QueryControllerGroup group) {
-//				triggerOntologyChanged();
+				triggerOntologyChanged();
 
 			}
 
 		});
 
 		/***
-		 * Looking for intances of AssertionControllerFactory Plugins
+		 * Looking for instances of AssertionControllerFactory Plugins
 		 */
 		loadAssertionControllerFactoryPlugins();
 		loadPreferences();
@@ -219,23 +219,23 @@ public class OBDAPluginController extends APIController implements Disposable {
 		AssertionControllerListener<Assertion> defaultAssertionControllerListener = new AssertionControllerListener<Assertion>() {
 
 			public void assertionAdded(Assertion assertion) {
-//				triggerOntologyChanged();
+				triggerOntologyChanged();
 
 			}
 
 			public void assertionChanged(Assertion oldAssertion,
 					Assertion newAssertion) {
-//				triggerOntologyChanged();
+				triggerOntologyChanged();
 
 			}
 
 			public void assertionRemoved(Assertion assertion) {
-//				triggerOntologyChanged();
+				triggerOntologyChanged();
 
 			}
 
 			public void assertionsCleared() {
-//				triggerOntologyChanged();
+				triggerOntologyChanged();
 
 			}
 
