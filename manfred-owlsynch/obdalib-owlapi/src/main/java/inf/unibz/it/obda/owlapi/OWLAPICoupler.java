@@ -74,7 +74,7 @@ public class OWLAPICoupler implements APICoupler {
 		dataProperties = new HashSet<String>();
 		objectProperties = new HashSet<String>();
 		
-		Set<OWLClass> set = mergedOntology.getClassesInSignature();
+		Set<OWLClass> set = mergedOntology.getReferencedClasses();
 		Iterator<OWLClass> it = set.iterator();
 		while(it.hasNext()){
 			classesURIs.add(it.next().getURI().toString());
@@ -82,10 +82,10 @@ public class OWLAPICoupler implements APICoupler {
 //		for (OWLClass c: mergedOntology.getClassesInSignature()) {
 //			classesURIs.add(c.getURI().toString());
 //		}
-		for (OWLDataProperty c: mergedOntology.getDataPropertiesInSignature()) {
+		for (OWLDataProperty c: mergedOntology.getReferencedDataProperties()) {
 			dataProperties.add(c.getURI().toString());
 		}
-		for (OWLObjectProperty c: mergedOntology.getObjectPropertiesInSignature()) {
+		for (OWLObjectProperty c: mergedOntology.getReferencedObjectProperties()) {
 			objectProperties.add(c.getURI().toString());
 		}
 		
@@ -103,4 +103,27 @@ public class OWLAPICoupler implements APICoupler {
 		return objectProperties.contains(propertyURI.toString());
 	}
 
+	public OWLOntologyManager getOWLOntologyManager(){
+		return mmgr;
+	}
+	
+	public void synchWithOntology(OWLOntology root){
+		mergedOntology = root;
+		
+		classesURIs = new HashSet<String>();
+		dataProperties = new HashSet<String>();
+		objectProperties = new HashSet<String>();
+		
+		Set<OWLClass> set = mergedOntology.getReferencedClasses();
+		Iterator<OWLClass> it = set.iterator();
+		while(it.hasNext()){
+			classesURIs.add(it.next().getURI().toString());
+		}
+		for (OWLDataProperty c: mergedOntology.getReferencedDataProperties()) {
+			dataProperties.add(c.getURI().toString());
+		}
+		for (OWLObjectProperty c: mergedOntology.getReferencedObjectProperties()) {
+			objectProperties.add(c.getURI().toString());
+		}
+	}
 }
