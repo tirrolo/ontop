@@ -713,6 +713,7 @@ public class MappingController implements TreeModelListener, DatasourcesControll
 
 		fireMappigUpdated(datasource_uri, mapping.getId(), mapping);
 	}
+	
 
 	@Override
 	public void addFilter(TreeModelFilter T) {
@@ -743,5 +744,11 @@ public class MappingController implements TreeModelListener, DatasourcesControll
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void datasourcParametersUpdated() {}
+
+	@Override
+	public void datasourcParametersUpdated() {}
 
 }
