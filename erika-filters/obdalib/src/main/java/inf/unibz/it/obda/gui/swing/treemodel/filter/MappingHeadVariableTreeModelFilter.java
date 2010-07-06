@@ -8,15 +8,30 @@ import inf.unibz.it.ucq.domain.QueryAtom;
 import inf.unibz.it.ucq.domain.QueryTerm;
 import inf.unibz.it.ucq.domain.VariableTerm;
 
+/**
+ * @author This Filter receives a string and returns true if any mapping contains the string given in any of
+ *         its head atoms
+ */
 public class MappingHeadVariableTreeModelFilter implements
 		TreeModelFilter<OBDAMappingAxiom> {
-	//Accepts any mapping containing the variable in any of its head atoms
+
 	private String srtHeadVariableFilter;
 
+	/**
+	 * @param srtHeadVariableFilter
+	 *            Constructor of the MappingHeadVariableTreeModelFilter
+	 */
 	public MappingHeadVariableTreeModelFilter(String srtHeadVariableFilter) {
 		this.srtHeadVariableFilter = srtHeadVariableFilter;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * inf.unibz.it.obda.gui.swing.treemodel.filter.TreeModelFilter#match(java
+	 * .lang.Object)
+	 */
 	@Override
 	public boolean match(OBDAMappingAxiom object) {
 		// TODO Auto-generated method stub
