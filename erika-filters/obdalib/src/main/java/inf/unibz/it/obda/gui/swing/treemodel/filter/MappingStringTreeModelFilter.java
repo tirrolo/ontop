@@ -14,17 +14,30 @@ import inf.unibz.it.ucq.domain.QueryTerm;
 import inf.unibz.it.ucq.domain.VariableTerm;
 import inf.unibz.it.ucq.parser.exception.QueryParseException;
 
-//Receives a mapping
-//Check string in head or body
+/**
+ * @author This filter receives a string in the constructor and returns true if accepts any mapping containing the string in the head or
+ *         body
+ * 
+ */
 public class MappingStringTreeModelFilter implements
 		TreeModelFilter<OBDAMappingAxiom> {
 	private String srtModelFilter;
 
+	/**
+	 * @param strModeFilter
+	 *            Constructor of the filter that receives a mapping
+	 */
 	public MappingStringTreeModelFilter(String strModeFilter) {
 		this.srtModelFilter = strModeFilter;
 	}
 
-	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * inf.unibz.it.obda.gui.swing.treemodel.filter.TreeModelFilter#match(java
+	 * .lang.Object)
+	 */
 	@Override
 	public boolean match(OBDAMappingAxiom object) {
 		boolean filterValue = false;
@@ -32,7 +45,7 @@ public class MappingStringTreeModelFilter implements
 		ConjunctiveQuery headquery = (ConjunctiveQuery) mapping
 				.getTargetQuery();
 		RDBMSSQLQuery bodyquery = (RDBMSSQLQuery) mapping.getSourceQuery();
-		
+
 		ArrayList<QueryAtom> atoms = headquery.getAtoms();
 		int atomscount = atoms.size();
 		for (int i = 0; i < atomscount; i++) {
