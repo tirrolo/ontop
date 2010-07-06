@@ -59,9 +59,6 @@ public class MappingTreeModel extends DefaultTreeModel implements
 		this.dsc = dsc;
 		root = (DefaultMutableTreeNode) getRoot();
 		this.controller = controller;
-		//MappingStringTreeModelFilter filter = new MappingStringTreeModelFilter("Company");
-		//MappingFunctorTreeModelFilter
-		//this.addFilter(filter);
 	}
 
 	/***************************************************************************
@@ -161,7 +158,7 @@ public class MappingTreeModel extends DefaultTreeModel implements
 	 * is srcuri.
 	 */
 	public void mappingInserted(String srcuri, String mapping_id) {
-		
+
 		try {
 
 			DataSource currentsource = dsc.getCurrentDataSource();
@@ -173,12 +170,10 @@ public class MappingTreeModel extends DefaultTreeModel implements
 			String src_uri = dsc.getCurrentDataSource().getName();
 			RDBMSOBDAMappingAxiom mapping = (RDBMSOBDAMappingAxiom) controller
 					.getMapping(src_uri, mapping_id);
-			
-		
-				
+
 			MappingNode mappingNode = MappingNode
 					.getMappingNodeFromMapping(mapping);
-			
+
 			// SYNCWITH EVERYBODY EXCEPT WITH THE CONTROLLER SINCE IT WAS THE
 			// SOURCE
 			// OF THIS EVENT
@@ -186,9 +181,7 @@ public class MappingTreeModel extends DefaultTreeModel implements
 			removeTreeModelListener(controller);
 			insertNodeInto(mappingNode, (DefaultMutableTreeNode) root, root
 					.getChildCount());
-			
-			
-			
+
 			// int newchildindex = root.getIndex(mappingNode);
 			// int si = mappingNode.getIndex(mappingNode.getBodyNode());
 			// int ti = mappingNode.getIndex(mappingNode.getHeadNode());
@@ -204,8 +197,7 @@ public class MappingTreeModel extends DefaultTreeModel implements
 		} finally {
 			addTreeModelListener(controller);
 		}
-		
-		
+
 	}
 
 	/***************************************************************************
@@ -269,29 +261,29 @@ public class MappingTreeModel extends DefaultTreeModel implements
 	// CopyOfMappingTreeModel(controller);
 	// return mappingTreeModel;
 	// }
-	
+
 	/***************************************************************************
 	 * Called from the mapping controller when anew mapping is deleted. Updates
 	 * the model to delete the corresponding node. Only if the current source is
 	 * srcuri.
 	 */
 	public void mappingDeleted(String srcuri, String mapping_id) {
-	
+
 		if (!srcuri.equals(dsc.getCurrentDataSource().getName())) {
 			return;
 		}
 		try {
 			removeTreeModelListener(controller);
-	
+
 			MappingNode mapping = getMappingNode(mapping_id);
 			removeNodeFromParent(mapping);
-	
+
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		} finally {
 			addTreeModelListener(controller);
 		}
-	
+
 	}
 
 	/***************************************************************************
@@ -313,21 +305,23 @@ public class MappingTreeModel extends DefaultTreeModel implements
 			}
 			ArrayList<MappingNode> newnodes = new ArrayList<MappingNode>();
 			ArrayList<OBDAMappingAxiom> newmappings = controller
-				.getMappings(newsrcuri);
-			 
+					.getMappings(newsrcuri);
+
 			if (newmappings != null) {
 				for (OBDAMappingAxiom dataSourceMapping : newmappings) {
-					RDBMSOBDAMappingAxiom mappingTest=(RDBMSOBDAMappingAxiom)dataSourceMapping;
-			    		if(testFilters(mappingTest))
-					newnodes.add(getMappingNodeFromMapping((OBDAMappingAxiom)mappingTest));
+					RDBMSOBDAMappingAxiom mappingTest = (RDBMSOBDAMappingAxiom) dataSourceMapping;
+					if (testFilters(mappingTest))
+						newnodes
+								.add(getMappingNodeFromMapping((OBDAMappingAxiom) mappingTest));
 				}
 			}
-			
-				/*for (OBDAMappingAxiom dataSourceMapping : newmappings) {
-					newnodes
-							.add(getMappingNodeFromMapping((OBDAMappingAxiom) dataSourceMapping));
-				}*/
-			
+
+			/*
+			 * for (OBDAMappingAxiom dataSourceMapping : newmappings) { newnodes
+			 * .add(getMappingNodeFromMapping((OBDAMappingAxiom)
+			 * dataSourceMapping)); }
+			 */
+
 			root.removeAllChildren();
 			for (MappingNode newnode : newnodes) {
 				root.insert(newnode, root.getChildCount());
@@ -367,7 +361,7 @@ public class MappingTreeModel extends DefaultTreeModel implements
 	 * @return
 	 */
 	private MappingNode getMappingNodeFromMapping(OBDAMappingAxiom mapping) {
-		
+
 		MappingNode mappingnode = new MappingNode(mapping.getId());
 		SourceQuery srcquery = mapping.getSourceQuery();
 		TargetQuery tgtquery = mapping.getTargetQuery();
@@ -383,15 +377,18 @@ public class MappingTreeModel extends DefaultTreeModel implements
 		} else {
 			head = new MappingHeadNode("");
 		}
-		
-			
-			mappingnode.add(head);
-			mappingnode.add(body);
-			
-		
+
+		mappingnode.add(head);
+		mappingnode.add(body);
+
 		return mappingnode;
 	}
 
+	/*
+	 * @see
+	 * inf.unibz.it.obda.api.controller.MappingControllerListener#allMappingsRemoved
+	 * ()
+	 */
 	public void allMappingsRemoved() {
 		try {
 			removeTreeModelListener(controller);
@@ -404,12 +401,22 @@ public class MappingTreeModel extends DefaultTreeModel implements
 		}
 	}
 
+	/*
+	 * @see
+	 * inf.unibz.it.obda.gui.swing.treemodel.filter.FilteredTreeModel#addFilter
+	 * (inf.unibz.it.obda.gui.swing.treemodel.filter.TreeModelFilter)
+	 */
 	@Override
 	public void addFilter(TreeModelFilter T) {
 		ListFilters.add(T);
 
 	}
 
+	/*
+	 * @see
+	 * inf.unibz.it.obda.gui.swing.treemodel.filter.FilteredTreeModel#addFilters
+	 * (java.util.List)
+	 */
 	@Override
 	public void addFilters(List<TreeModelFilter> T) {
 		// TODO Auto-generated method stub
@@ -419,6 +426,10 @@ public class MappingTreeModel extends DefaultTreeModel implements
 
 	}
 
+	/*
+	 * @seeinf.unibz.it.obda.gui.swing.treemodel.filter.FilteredTreeModel#
+	 * removeAllFilters()
+	 */
 	@Override
 	public void removeAllFilters() {
 		// TODO Auto-generated method stub
@@ -428,6 +439,11 @@ public class MappingTreeModel extends DefaultTreeModel implements
 
 	}
 
+	/*
+	 * @see
+	 * inf.unibz.it.obda.gui.swing.treemodel.filter.FilteredTreeModel#removeFilter
+	 * (inf.unibz.it.obda.gui.swing.treemodel.filter.TreeModelFilter)
+	 */
 	@Override
 	public void removeFilter(TreeModelFilter T) {
 		// TODO Auto-generated method stub
@@ -443,6 +459,11 @@ public class MappingTreeModel extends DefaultTreeModel implements
 
 	}
 
+	/*
+	 * @see
+	 * inf.unibz.it.obda.gui.swing.treemodel.filter.FilteredTreeModel#removeFilter
+	 * (java.util.List)
+	 */
 	@Override
 	public void removeFilter(List<TreeModelFilter> T) {
 		// TODO Auto-generated method stub
@@ -453,19 +474,25 @@ public class MappingTreeModel extends DefaultTreeModel implements
 		}
 
 	}
-	@SuppressWarnings("unchecked")
-	public boolean testFilters(RDBMSOBDAMappingAxiom mapping){
-		boolean allFiltersTrue=false;
-		for(int i=0; i<ListFilters.size(); i++)
-		{	
-			
-			if(!(ListFilters.get(i).match(mapping))){
-				allFiltersTrue=false;
+
+	/******
+	 * This function compares with all the elements of the list of filters
+	 * "ListFilters", if any of it doesn't match then it returns false
+	 * 
+	 * @param mapping
+	 * @return allFiltersTrue
+	 * 
+	 */
+	private boolean testFilters(RDBMSOBDAMappingAxiom mapping) {
+		boolean allFiltersTrue = false;
+		for (int i = 0; i < ListFilters.size(); i++) {
+
+			if (!(ListFilters.get(i).match(mapping))) {
+				allFiltersTrue = false;
 				break;
-			}
-			else
-				allFiltersTrue=true;
-				
+			} else
+				allFiltersTrue = true;
+
 		}
 		return allFiltersTrue;
 	}
