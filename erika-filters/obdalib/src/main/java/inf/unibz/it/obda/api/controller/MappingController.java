@@ -748,7 +748,5 @@ public class MappingController implements TreeModelListener, DatasourcesControll
 	@Override
 	public void datasourcParametersUpdated() {}
 
-	@Override
-	public void datasourcParametersUpdated() {}
 
 }
