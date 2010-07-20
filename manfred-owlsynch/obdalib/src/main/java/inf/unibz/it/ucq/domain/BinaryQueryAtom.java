@@ -15,6 +15,8 @@ package inf.unibz.it.ucq.domain;
 
 
 import inf.unibz.it.dl.domain.DataProperty;
+import inf.unibz.it.dl.domain.NamedConcept;
+import inf.unibz.it.dl.domain.NamedPredicate;
 import inf.unibz.it.dl.domain.NamedProperty;
 import inf.unibz.it.dl.domain.ObjectProperty;
 
@@ -33,10 +35,6 @@ public class BinaryQueryAtom extends QueryAtom {
 		this.term2 = term2;
 	}
 	
-	@Override
-	public String getName() {
-		return relation.getName();
-	}
 
 	@Override
 	public ArrayList<QueryTerm> getTerms() {
@@ -46,10 +44,13 @@ public class BinaryQueryAtom extends QueryAtom {
 		return terms;
 	}
 
-	@Override
-	public String toString() {
-		return relation.toString() + "(" + term1.toString()+ "," + term2.toString() + ")";
-	}
+//	@Override
+//	public String toString() {
+//		URI uri = relation.getUri();
+//		String pref = relation.getNamespacePrefix();
+//		String name = uri.getFragment();
+//		return pref+":"+ name + "(" + term1.toString()+ "," + term2.toString() + ")";
+//	}
 
 	@Override
 	public BinaryQueryAtom clone() {
@@ -59,19 +60,10 @@ public class BinaryQueryAtom extends QueryAtom {
 			return new BinaryQueryAtom(((ObjectProperty)relation).clone(), term1.clone(), term2.clone());
 		return null;
 	}
-	
-	public void setName(String newName){
-		
-		try {
-			if(relation instanceof DataProperty){
-				DataProperty newprop = new DataProperty(new URI(newName));
-				relation = newprop;
-			}else{
-				ObjectProperty newprop = new ObjectProperty(new URI(newName));
-				relation = newprop;
-			}
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+
+
+	@Override
+	public NamedPredicate getNamedPredicate() {
+		return relation;
 	}
 }

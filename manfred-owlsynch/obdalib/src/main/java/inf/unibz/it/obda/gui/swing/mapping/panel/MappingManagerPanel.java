@@ -39,9 +39,9 @@ import inf.unibz.it.ucq.parser.exception.QueryParseException;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -722,7 +722,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 				return;
 			}
 			MappingController controller = mapc;
-			String current_srcuri = dsc.getCurrentDataSource().getName();
+			URI current_srcuri = dsc.getCurrentDataSource().getSourceID();
 	
 			if (currentSelection != null) {
 				for (int i = 0; i < currentSelection.length; i++) {
@@ -755,7 +755,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		// DefaultTreeModel model = (DefaultTreeModel)
 		// treeMappingsTree.getModel();
 		MappingController controller = mapc;
-		String srcuri = dsc.getCurrentDataSource().getName();
+		URI srcuri = dsc.getCurrentDataSource().getSourceID();
 
 		if (currentSelection != null) {
 			for (int i = 0; i < currentSelection.length; i++) {
@@ -876,11 +876,11 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 
 		try {
 			MappingController con = mapc;
-			String sourceName = dsc.getCurrentDataSource().getName();
+			URI sourceURI = dsc.getCurrentDataSource().getSourceID();
 			String nodeContent = (String) editedNode.getUserObject();
 			if (editedNode instanceof MappingNode) {
 
-				con.updateMapping(sourceName, nodeContent, str);
+				con.updateMapping(sourceURI, nodeContent, str);
 
 			} else if (editedNode instanceof MappingBodyNode) {
 
@@ -888,7 +888,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 				MappingNode parent = (MappingNode) node.getParent();
 
 				SourceQuery b = new RDBMSSQLQuery(str, apic);
-				con.updateMapping(sourceName, parent.getMappingID(), b);
+				con.updateMapping(sourceURI, parent.getMappingID(), b);
 
 			} else if (editedNode instanceof MappingHeadNode) {
 
@@ -896,7 +896,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 				MappingNode parent = (MappingNode) node.getParent();
 
 				TargetQuery h = new ConjunctiveQuery(str, apic);
-				con.updateMapping(sourceName, parent.getMappingID(), h);
+				con.updateMapping(sourceURI, parent.getMappingID(), h);
 			}
 		} catch (QueryParseException e) {
 			e.printStackTrace();

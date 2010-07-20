@@ -22,9 +22,15 @@ import java.net.URI;
  */
 public interface APICoupler {
 
-	public boolean isDatatypeProperty(URI propertyURI);
+	public boolean isDatatypeProperty(URI ontouri,URI propertyURI);
 	
-	public boolean isObjectProperty(URI propertyURI);
+	public boolean isObjectProperty(URI ontouri,URI propertyURI);
 	
-	public boolean isNamedConcept(URI propertyURI);
+	public boolean isNamedConcept(URI ontouri,URI propertyURI);
+	
+	public String getPrefixForUri(URI uri);
+	
+	public String getUriForPrefix(String prefix);
+	
+	public void removeOntology(URI ontouri);
 }

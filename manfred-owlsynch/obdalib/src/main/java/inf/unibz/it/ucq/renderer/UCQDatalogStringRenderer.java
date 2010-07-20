@@ -1,5 +1,6 @@
 package inf.unibz.it.ucq.renderer;
 
+import inf.unibz.it.obda.api.controller.APIController;
 import inf.unibz.it.ucq.domain.ConjunctiveQuery;
 import inf.unibz.it.ucq.domain.ConstantTerm;
 import inf.unibz.it.ucq.domain.QueryAtom;
@@ -10,7 +11,12 @@ import inf.unibz.it.utils.codec.ObjectToTextCodec;
 import java.util.Iterator;
 import java.util.List;
 
-public class CQDatalogStringRenderer extends ObjectToTextCodec<UnionOfConjunctiveQueries> {
+public class UCQDatalogStringRenderer extends ObjectToTextCodec<UnionOfConjunctiveQueries> {
+
+	public UCQDatalogStringRenderer(APIController apic) {
+		super(apic);
+		// TODO Auto-generated constructor stub
+	}
 
 	@Override
 	public UnionOfConjunctiveQueries decode(String input) {
@@ -47,7 +53,7 @@ public class CQDatalogStringRenderer extends ObjectToTextCodec<UnionOfConjunctiv
 			if(str2.length()>0){
 				str2.append(",");
 			}
-			str2.append(it.next().getName());
+			str2.append(it.next().getVariableName());
 		}
 		str.append(str2.toString());
 		str.append(")");
@@ -70,7 +76,8 @@ public class CQDatalogStringRenderer extends ObjectToTextCodec<UnionOfConjunctiv
 	private String renderQueryAtom(QueryAtom atom){
 		
 		StringBuffer str = new StringBuffer();
-		str.append(atom.getName());
+		String aux = apic.getEntityNameRenderer().getPredicateName(atom);
+		str.append(aux);
 		str.append("(");
 		StringBuffer str2 = new StringBuffer();
 		Iterator<QueryTerm> it =atom.getTerms().iterator();
@@ -81,10 +88,10 @@ public class CQDatalogStringRenderer extends ObjectToTextCodec<UnionOfConjunctiv
 			}
 			if(t instanceof ConstantTerm){
 				str2.append("'");
-				str2.append(t.getName());
+				str2.append(t.getVariableName());
 				str2.append("'");
 			}else{
-				str2.append(t.getName());
+				str2.append(t.getVariableName());
 			}
 		}
 		str.append(str2.toString());

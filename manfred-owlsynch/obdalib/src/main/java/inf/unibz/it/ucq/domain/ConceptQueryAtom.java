@@ -16,6 +16,7 @@ package inf.unibz.it.ucq.domain;
 
 import inf.unibz.it.dl.domain.DataProperty;
 import inf.unibz.it.dl.domain.NamedConcept;
+import inf.unibz.it.dl.domain.NamedPredicate;
 import inf.unibz.it.dl.domain.ObjectProperty;
 
 import java.net.URI;
@@ -33,34 +34,28 @@ public class ConceptQueryAtom extends QueryAtom {
 	}
 
 	@Override
-	public String getName() {
-		return concept.getName();
-	}
-
-	@Override
 	public ArrayList<QueryTerm> getTerms() {
 		ArrayList<QueryTerm> terms = new ArrayList<QueryTerm>();
 		terms.add(term);
 		return terms;
 	}
-
-	@Override
-	public String toString() {
-		return concept.toString() + "(" + term.toString() + ")";
-	}
+//
+//	@Override
+//	public String toString() {
+//		URI uri = concept.getUri();
+//		String name = uri.getFragment();
+//		return pref+":"+name + "(" + term.toString() + ")";
+//	}
 
 	@Override
 	public ConceptQueryAtom clone() {
 		return new ConceptQueryAtom(concept.clone(), term.clone());
 	}
+
+	@Override
+	public NamedPredicate getNamedPredicate() {
+		return concept;
+}
 	
-	public void setName(String newName){
-		
-		try {
-			NamedConcept newCon = new NamedConcept(new URI(newName));
-			concept = newCon;
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-	}
+	
 }
