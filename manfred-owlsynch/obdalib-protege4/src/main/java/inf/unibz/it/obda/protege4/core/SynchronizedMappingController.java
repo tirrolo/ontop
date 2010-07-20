@@ -6,9 +6,11 @@ import inf.unibz.it.obda.api.controller.DatasourcesController;
 import inf.unibz.it.obda.api.controller.MappingController;
 import inf.unibz.it.obda.domain.DataSource;
 import inf.unibz.it.obda.domain.OBDAMappingAxiom;
+import inf.unibz.it.obda.rdbmsgav.domain.RDBMSsourceParameterConstants;
 import inf.unibz.it.ucq.domain.ConjunctiveQuery;
 import inf.unibz.it.ucq.domain.QueryAtom;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,9 +27,12 @@ import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLException;
+import org.semanticweb.owl.model.OWLImportsDeclaration;
+import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeListener;
 import org.semanticweb.owl.model.RemoveAxiom;
+import org.semanticweb.owl.model.SetOntologyURI;
 
 public class SynchronizedMappingController extends MappingController implements OWLOntologyChangeListener{
 
@@ -45,7 +50,8 @@ public class SynchronizedMappingController extends MappingController implements 
 	public void ontologiesChanged(List<? extends OWLOntologyChange> changes)
 			throws OWLException {
 		
-		((OWLAPICoupler)apic.getCoupler()).synchWithOntology(changes.get(0).getOntology());
+		((OWLAPICoupler)apic.getCoupler()).updateOntologies();
+		String ontoprefix = apic.getCoupler().getPrefixForUri(changes.get(0).getOntology().getURI());
 		boolean replace = allRemoveAxioms(changes);
 		if(replace){
 			if(changes.size()>2){
@@ -67,16 +73,18 @@ public class SynchronizedMappingController extends MappingController implements 
 							}
 						}
 						if(!found){
-							old = aux;
+							old = ontoprefix+":"+aux;
 							break;
 						}
 					}
 					
 					it1 = r.iterator();
 					it2 = a.iterator();
+					URI newUri = null;
 					String neu = "";
 					while(it2.hasNext()){
-						String aux = it2.next().toString();
+						OWLEntity ent = it2.next();
+						String aux = ent.toString();
 						boolean found = false;
 						while(it1.hasNext() && !found){
 							String aux2 = it1.next().toString();
@@ -85,22 +93,61 @@ public class SynchronizedMappingController extends MappingController implements 
 							}
 						}
 						if(!found){
-							neu = aux;
+							neu = ontoprefix+":"+aux;
+							newUri = ent.getURI();
 							break;
 						}
 					}
 					if(!neu.equals("") && !old.equals("")){
-						replaceAxiom(old, neu);
+						replaceAxiom(old, neu, newUri);
 					}
 				}
 			}	
+		}else if (changes.size()==1 && changes.get(0) instanceof SetOntologyURI){
+			DatasourcesController con = apic.getDatasourcesController();
+			SetOntologyURI ch =  (SetOntologyURI) changes.get(0);
+			Set<DataSource> sources =con.getDatasources(ch.getOriginalURI());
+			Iterator<DataSource> it = sources.iterator();
+			String neu = ch.getNewURI().toString();
+			String old = ch.getOriginalURI().toString();
+			while(it.hasNext()){
+				DataSource ds = it.next();
+				String ontouri = ds.getParameter(RDBMSsourceParameterConstants.ONTOLOGY_URI);
+				if(ontouri.equals(old)){
+					ds.setParameter(RDBMSsourceParameterConstants.ONTOLOGY_URI, neu);
+				}
+			}
+			
+		}else if (changes.size()==1 && changes.get(0) instanceof AddAxiom){
+			
+			OWLOntologyChange ch = changes.get(0);
+			if(ch.getAxiom() instanceof OWLImportsDeclaration){
+				OWLImportsDeclaration imp = (OWLImportsDeclaration) ch.getAxiom();
+				if(apic instanceof OBDAPluginController){
+					OBDAPluginController c =(OBDAPluginController)apic;
+					c.addOntologyToCoupler(imp.getImportedOntologyURI());
+				}
+				
+				URI fileuri = apic.getPhysicalURIOfOntology(imp.getImportedOntologyURI());
+				fileuri = apic.getIOManager().getOBDAFile(fileuri);
+				apic.setCurrentOntologyURI(imp.getImportedOntologyURI());
+				apic.getIOManager().loadOBDADataFromURI(fileuri);
+				apic.markAsLoaded(imp.getImportedOntologyURI());
+			}
+		}else if (changes.size()==1 && changes.get(0) instanceof RemoveAxiom){
+			
+			OWLOntologyChange ch = changes.get(0);
+			if(ch.getAxiom() instanceof OWLImportsDeclaration){
+				OWLImportsDeclaration imp = (OWLImportsDeclaration) ch.getAxiom();
+				apic.unloaded(imp.getImportedOntologyURI());
+			}
 		}else{
 			Set<OWLEntity> entities = getInvolvedEntities(changes);
 			Iterator<OWLEntity> nit = entities.iterator();
 			while(nit.hasNext()){
 				OWLEntity ent = nit.next();
 				if(!stillExists(ent)){
-					removeAxiom(ent.toString());
+					removeAxiom(ontoprefix+":"+ent.toString());
 				}
 			}
 		}
@@ -109,13 +156,14 @@ public class SynchronizedMappingController extends MappingController implements 
 	private boolean stillExists(OWLEntity ent){
 		
 		APICoupler coupler = apic.getCoupler(); 
+		URI uri = apic.getCurrentOntologyURI();
 		boolean extists = true;
 		if(ent instanceof OWLClass){
-			extists = coupler.isNamedConcept(ent.getURI());
+			extists = coupler.isNamedConcept(uri,ent.getURI());
 		}else if(ent instanceof OWLDataProperty){
-			extists = coupler.isDatatypeProperty(ent.getURI());
+			extists = coupler.isDatatypeProperty(uri,ent.getURI());
 		}else{
-			extists = coupler.isObjectProperty(ent.getURI());
+			extists = coupler.isObjectProperty(uri,ent.getURI());
 		}
 		
 		if(extists){
@@ -160,6 +208,9 @@ public class SynchronizedMappingController extends MappingController implements 
 	
 	private boolean allRemoveAxioms(List<? extends OWLOntologyChange> changes){
 		
+		if(changes.size()<2){
+			return false;
+		}
 		Iterator<? extends OWLOntologyChange> it = changes.iterator();
 		while(it.hasNext()){
 			OWLOntologyChange ch = it.next();
@@ -174,12 +225,12 @@ public class SynchronizedMappingController extends MappingController implements 
 	
 	private void removeAxiom(String name){
 		
-		HashMap<String, DataSource> datasources = dscontroller.getAllSources();
-		Set<String> keys = datasources.keySet();
-		Iterator<String> kit = keys.iterator();
+		HashMap<URI, DataSource> datasources = dscontroller.getAllSources();
+		Set<URI> keys = datasources.keySet();
+		Iterator<URI> kit = keys.iterator();
 		while(kit.hasNext()){
-			DataSource ds = dscontroller.getDataSource(kit.next());
-			ArrayList<OBDAMappingAxiom> maps = getMappings(ds.getName());
+			DataSource ds = datasources.get(kit.next());
+			ArrayList<OBDAMappingAxiom> maps = getMappings(ds.getSourceID());
 			Iterator<OBDAMappingAxiom> it = maps.iterator();
 			Vector<String> mappingsToRemove = new Vector<String>();
 			Map<String, ArrayList<QueryAtom>> mappingsToUpdate = new HashMap<String, ArrayList<QueryAtom>>();
@@ -192,7 +243,7 @@ public class SynchronizedMappingController extends MappingController implements 
 				boolean update = false;
 				while(it2.hasNext()){
 					QueryAtom atom = it2.next();
-					String n = atom.getName();
+					String n = apic.getEntityNameRenderer().getPredicateName(atom);
 					if(n.equals(name)){
 						update = true;
 					}else{
@@ -211,7 +262,7 @@ public class SynchronizedMappingController extends MappingController implements 
 			Iterator<String> it3 = mappingsToRemove.iterator();
 			while(it3.hasNext()){
 				String mapID = it3.next();
-				deleteMapping(ds.getName(), mapID);
+				deleteMapping(ds.getSourceID(), mapID);
 			}
 			
 			Iterator<String> it4 = mappingsToUpdate.keySet().iterator();
@@ -220,20 +271,20 @@ public class SynchronizedMappingController extends MappingController implements 
 				ArrayList<QueryAtom> body =mappingsToUpdate.get(key);
 				ConjunctiveQuery cq = new ConjunctiveQuery();
 				cq.addQueryAtom(body);
-				updateMapping(ds.getName(), key, cq);
+				updateMapping(ds.getSourceID(), key, cq);
 			}
 		}
 	}
 
 	
-	private void replaceAxiom(String old, String neu){
+	private void replaceAxiom(String old, String neu, URI newUri){
 		
-		HashMap<String, DataSource> datasources = dscontroller.getAllSources();
-		Set<String> keys = datasources.keySet();
-		Iterator<String> kit = keys.iterator();
+		HashMap<URI, DataSource> datasources = dscontroller.getAllSources();
+		Set<URI> keys = datasources.keySet();
+		Iterator<URI> kit = keys.iterator();
 		while(kit.hasNext()){
-			DataSource ds = dscontroller.getDataSource(kit.next());
-			ArrayList<OBDAMappingAxiom> maps = getMappings(ds.getName());
+			DataSource ds = datasources.get(kit.next());
+			ArrayList<OBDAMappingAxiom> maps = getMappings(ds.getSourceID());
 			Iterator<OBDAMappingAxiom> it = maps.iterator();
 			Map<String, ArrayList<QueryAtom>> mappingsToUpdate = new HashMap<String, ArrayList<QueryAtom>>();
 			while(it.hasNext()){
@@ -245,10 +296,10 @@ public class SynchronizedMappingController extends MappingController implements 
 				boolean update = false;
 				while(it2.hasNext()){
 					QueryAtom atom = it2.next();
-					String n = atom.getName();
+					String n = apic.getEntityNameRenderer().getPredicateName(atom);
 					if(n.equals(old)){
 						update = true;
-						atom.setName(neu);
+						atom.getNamedPredicate().setUri(newUri);
 						newList.add(atom);
 					}else{
 						newList.add(atom);
@@ -265,7 +316,7 @@ public class SynchronizedMappingController extends MappingController implements 
 				ArrayList<QueryAtom> body =mappingsToUpdate.get(key);
 				ConjunctiveQuery cq = new ConjunctiveQuery();
 				cq.addQueryAtom(body);
-				updateMapping(ds.getName(), key, cq);
+				updateMapping(ds.getSourceID(), key, cq);
 			}
 		}
 	}

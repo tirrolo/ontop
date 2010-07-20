@@ -10,6 +10,7 @@ import inf.unibz.it.obda.api.controller.MappingControllerListener;
 import inf.unibz.it.obda.api.controller.QueryControllerEntity;
 import inf.unibz.it.obda.api.controller.QueryControllerListener;
 import inf.unibz.it.obda.api.io.DataManager;
+import inf.unibz.it.obda.api.io.PrefixManager;
 import inf.unibz.it.obda.constraints.AbstractConstraintAssertionController;
 import inf.unibz.it.obda.dependencies.AbstractDependencyAssertionController;
 import inf.unibz.it.obda.domain.DataSource;
@@ -27,9 +28,11 @@ import java.awt.Color;
 import java.io.File;
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.coode.owlapi.owlxml.renderer.OWLXMLRenderer;
 import org.protege.editor.core.Disposable;
 import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.ProtegeManager;
@@ -45,12 +48,16 @@ import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.model.inference.ProtegeOWLReasonerFactory;
+import org.protege.editor.owl.ui.prefix.PrefixMapperManager;
+import org.protege.editor.owl.ui.view.OWLImportsDeclarationsViewComponent;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.RemoveAxiom;
+
+import com.hp.hpl.jena.vocabulary.OWL;
 
 public class OBDAPluginController extends APIController implements Disposable {
 
@@ -60,8 +67,8 @@ public class OBDAPluginController extends APIController implements Disposable {
 	ProtegeManager pmanager = null;
 	EditorKitManager ekmanager = null;
 	WorkspaceManager wsmanager = null;
-
 	OWLEditorKit owlEditorKit = null;
+	PrefixMapperManager prefixmanager = null;
 
 	public OBDAPluginController(EditorKit editorKit) {
 		super();
@@ -75,7 +82,7 @@ public class OBDAPluginController extends APIController implements Disposable {
 		}
 		this.owlEditorKit = (OWLEditorKit) editorKit;
 		mapcontroller = new SynchronizedMappingController(dscontroller, this);
-		ioManager = new DataManager(dscontroller, mapcontroller, queryController);
+		ioManager = new OBDAPluginDataManager(dscontroller, mapcontroller, queryController, this, new PrefixManager());
 		owlEditorKit.getOWLModelManager().addOntologyChangeListener((SynchronizedMappingController)mapcontroller);
 		// registerAsListener(owlEditorKit);
 		OWLOntologyManager mmgr = ((OWLModelManagerImpl)editorKit.getModelManager()).getOWLOntologyManager();
@@ -150,22 +157,28 @@ public class OBDAPluginController extends APIController implements Disposable {
 						triggerOntologyChanged();
 					}
 
-					public void currentSourceChanged(String oldsrcuri,
-							String newsrcuri) {
+					public void currentSourceChanged(URI oldsrcuri,
+							URI newsrcuri) {
 
 					}
 
-					public void mappingDeleted(String srcuri, String mapping_id) {
+					public void mappingDeleted(URI srcuri, String mapping_id) {
 						triggerOntologyChanged();
 					}
 
-					public void mappingInserted(String srcuri, String mapping_id) {
+					public void mappingInserted(URI srcuri, String mapping_id) {
 						triggerOntologyChanged();
 					}
 
-					public void mappingUpdated(String srcuri,
+					public void mappingUpdated(URI srcuri,
 							String mapping_id, OBDAMappingAxiom mapping) {
 						triggerOntologyChanged();
+					}
+
+					@Override
+					public void ontologyChanged() {
+						triggerOntologyChanged();
+						
 					}
 
 				});
@@ -321,10 +334,18 @@ public class OBDAPluginController extends APIController implements Disposable {
 			case ONTOLOGY_CLASSIFIED:
 				break;
 			case ACTIVE_ONTOLOGY_CHANGED:
-				OBDAPluginController.this.currentOntology = ontology;
-				OBDAPluginController.this.currentOntologyURI = ontology
-						.getURI();
-				loadData(source.getOntologyPhysicalURI(ontology));
+				if(currentOntology != ontology){
+					OBDAPluginController.this.currentOntology = ontology;
+					OBDAPluginController.this.currentOntologyURI = ontology
+							.getURI();
+					String uri = ontology.getURI().toString();
+					if(loadedOntologies.add(uri)){
+						apicoupler.addNewOntologyInfo(ontology);
+						loadData(source.getOntologyPhysicalURI(ontology));
+					}
+					mapcontroller.activeOntologyChanged();
+				}
+				apicoupler.updateOntologies();
 				break;
 			case ENTITY_RENDERING_CHANGED:
 				break;
@@ -374,6 +395,25 @@ public class OBDAPluginController extends APIController implements Disposable {
 	public void removeModelManagerListener() {
 		owlEditorKit.getModelManager().removeListener(modelManagerListener);
 	}
+	
+	public void addOntologyToCoupler(URI uri){
+		OWLOntologyManager mmgr = ((OWLModelManagerImpl)owlEditorKit.getModelManager()).getOWLOntologyManager();
+		apicoupler.addNewOntologyInfo(mmgr.getOntology(uri));
+	}
+	
+	public URI getPhysicalURIOfOntology(URI onto){
+		
+		Set<OWLOntology> set =owlEditorKit.getModelManager().getOntologies();
+		Iterator<OWLOntology> it = set.iterator();
+		while(it.hasNext()){
+			OWLOntology o = it.next();
+			if(o.getURI().equals(onto)){
+				return owlEditorKit.getModelManager().getOntologyPhysicalURI(o);
+			}
+		}
+		
+		return null;
+	}
 
 	/***
 	 * Called from ModelManager dispose method since this object is setup as the
@@ -387,9 +427,11 @@ public class OBDAPluginController extends APIController implements Disposable {
 	public void loadData(URI owlFile) {
 		loadingData = true;
 		try {
-			apicoupler.synchWithOntology(currentOntology);
+			apicoupler.addNewOntologyInfo(currentOntology);
 			URI obdafile = getIOManager().getOBDAFile(owlFile);
 			getIOManager().loadOBDADataFromURI(obdafile);
+			String uri = currentOntology.getURI().toString();
+			loadedOntologies.add(uri);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -724,6 +766,11 @@ public class OBDAPluginController extends APIController implements Disposable {
 		String aux5 = pref.getString(MappingManagerPreferences.EDIT_ID, editID);
 		mmp.setFontFamily(MappingManagerPreferences.EDIT_ID, aux5);
 
+	}
+	
+	public void setCurrentOntologyURI(URI uri) {
+		currentOntologyURI = uri;
+		apicoupler.updateOntology(uri);
 	}
 
 }
