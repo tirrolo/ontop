@@ -2,6 +2,7 @@ package inf.unibz.it.obda.owlapi;
 
 import inf.unibz.it.obda.api.controller.APIController;
 import inf.unibz.it.obda.api.io.DataManager;
+import inf.unibz.it.obda.api.io.PrefixManager;
 import inf.unibz.it.obda.constraints.controller.RDBMSCheckConstraintController;
 import inf.unibz.it.obda.constraints.controller.RDBMSForeignKeyConstraintController;
 import inf.unibz.it.obda.constraints.controller.RDBMSPrimaryKeyConstraintController;
@@ -46,7 +47,7 @@ public class OWLAPIController extends APIController {
 	public OWLAPIController(OWLOntologyManager owlman, OWLOntology root) {
 		super();
 		mapcontroller = new SyncronizedMappingController(dscontroller, this);
-		ioManager = new DataManager(dscontroller, mapcontroller, queryController);
+		ioManager = new OWLAPIDataManager(dscontroller, mapcontroller, queryController, new PrefixManager());
 		owlman.addOntologyChangeListener((OWLOntologyChangeListener) mapcontroller);
 		try {
 			mmger = owlman;
@@ -68,7 +69,7 @@ public class OWLAPIController extends APIController {
 			RDBMSUniquenessConstraintController uqc = new RDBMSUniquenessConstraintController();
 			addAssertionController(RDBMSUniquenessConstraint.class, uqc, new RDBMSUniquenessConstraintXMLCodec());
 			dscontroller.addDatasourceControllerListener(uqc);
-			apicoupler = new OWLAPICoupler(this, owlman, root);
+			apicoupler = new OWLAPICoupler(this, owlman, root,(OWLAPIDataManager) ioManager);
 			setCoupler(apicoupler);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -153,6 +154,13 @@ public class OWLAPIController extends APIController {
 			uris.add(owlOntology.getURI());
 		}
 		return uris;
+	}
+
+
+
+	public URI getPhysicalURIOfOntology(URI onto) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
