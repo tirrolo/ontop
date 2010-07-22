@@ -16,7 +16,9 @@ package inf.unibz.it.obda.gui.swing.mapping.panel;
 import inf.unibz.it.obda.api.controller.APIController;
 import inf.unibz.it.obda.api.controller.DatasourcesController;
 import inf.unibz.it.obda.api.controller.MappingController;
+import inf.unibz.it.obda.api.controller.MappingControllerListener;
 import inf.unibz.it.obda.api.controller.exception.DuplicateMappingException;
+import inf.unibz.it.obda.domain.OBDAMappingAxiom;
 import inf.unibz.it.obda.domain.SourceQuery;
 import inf.unibz.it.obda.domain.TargetQuery;
 import inf.unibz.it.obda.gui.IconLoader;
@@ -50,6 +52,7 @@ import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -58,13 +61,15 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import com.hp.hpl.jena.reasoner.rulesys.builtins.UriConcat;
+
 // import edu.stanford.smi.protege.resource.Icons;
 
 /**
  * 
  * @author mariano
  */
-public class MappingManagerPanel extends JPanel implements MappingManagerPreferenceChangeListener{
+public class MappingManagerPanel extends JPanel implements MappingManagerPreferenceChangeListener, MappingControllerListener{
 
 	/**
 	 * 
@@ -98,6 +103,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		this.mapc = mapc;
 		this.dsc = dsc;
 		pref =  OBDAPreferences.getOBDAPreferences().getMappingsPreference();
+		apic.getMappingController().addMappingControllerListener(this);
 		initComponents();
 		registerAction();
 		addMenu();
@@ -539,7 +545,24 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		gridBagConstraints.weighty = 1.0;
 		gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
 		panelMappingManager.add(scrollMappingsTree, gridBagConstraints);
-
+		
+		statusbar = new JLabel();
+		URI uri = apic.getCurrentOntologyURI();
+		statusbar.setText("Current Ontology: "+uri.toString());
+		statusbar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+		statusbar.setEnabled(true);
+		statusbar.setForeground(new Color(102,102,102));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+        panelMappingManager.add(statusbar, gridBagConstraints);
+		
+		
 		scrollMappingsManager.setViewportView(panelMappingManager);
 
 		add(scrollMappingsManager, java.awt.BorderLayout.CENTER);
@@ -845,6 +868,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 	private javax.swing.JScrollPane	scrollMappingsManager;
 	private javax.swing.JScrollPane	scrollMappingsTree;
 	private javax.swing.JTree		treeMappingsTree;
+	private javax.swing.JLabel 		statusbar;
 	// End of variables declaration//GEN-END:variables
 
 	public void colorPeferenceChanged(String preference, Color col) {
@@ -964,5 +988,28 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 	public void applyChangedToNode(String txt){
 		
 		updateNode(txt);
+	}
+
+	@Override
+	public void allMappingsRemoved() {}
+
+	@Override
+	public void currentSourceChanged(URI oldsrcid, URI newsrcid) {}
+
+	@Override
+	public void mappingDeleted(URI srcid, String mappingId) {}
+
+	@Override
+	public void mappingInserted(URI srcid, String mappingId) {}
+
+	@Override
+	public void mappingUpdated(URI srcid, String mappingId,
+			OBDAMappingAxiom mapping) {}
+
+	@Override
+	public void ontologyChanged() {
+		
+		URI uri = apic.getCurrentOntologyURI();
+		statusbar.setText("Current Ontology: " + uri.toString());
 	}
 }

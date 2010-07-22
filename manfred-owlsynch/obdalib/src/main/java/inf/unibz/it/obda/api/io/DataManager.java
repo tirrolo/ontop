@@ -14,6 +14,7 @@ package inf.unibz.it.obda.api.io;
 
 import inf.unibz.it.dl.assertion.Assertion;
 import inf.unibz.it.dl.codec.xml.AssertionXMLCodec;
+import inf.unibz.it.obda.api.controller.APIController;
 import inf.unibz.it.obda.api.controller.AssertionController;
 import inf.unibz.it.obda.api.controller.DatasourcesController;
 import inf.unibz.it.obda.api.controller.MappingController;
@@ -22,6 +23,7 @@ import inf.unibz.it.obda.codec.xml.DatasourceXMLCodec;
 import inf.unibz.it.obda.constraints.AbstractConstraintAssertionController;
 import inf.unibz.it.obda.dependencies.AbstractDependencyAssertionController;
 import inf.unibz.it.obda.domain.DataSource;
+import inf.unibz.it.obda.rdbmsgav.domain.RDBMSsourceParameterConstants;
 import inf.unibz.it.ucq.parser.exception.QueryParseException;
 import inf.unibz.it.utils.io.FileUtils;
 import inf.unibz.it.utils.xml.XMLUtils;
@@ -76,16 +78,17 @@ public class DataManager {
 
 	protected PrefixManager			prefixManager = null;
 	
-	
+	protected APIController apic = null;
 	
 	Logger																log								= LoggerFactory
 																												.getLogger(DataManager.class);
 
-	public DataManager(DatasourcesController dscontroller, MappingController mapcontroller, QueryController queryController, PrefixManager prefMan) {
-		this.dscontroller = dscontroller;
-		this.mapcontroller = mapcontroller;
-		this.queryController = queryController;
-		this.prefixManager = prefMan;
+	public DataManager(APIController apic, PrefixManager pref) {
+		this.apic = apic;
+		this.dscontroller = apic.getDatasourcesController();
+		this.mapcontroller = apic.getMappingController();
+		this.queryController = apic.getQueryController();
+		this.prefixManager = pref;
 		assertionControllers = new HashMap<Class<Assertion>, AssertionController<Assertion>>();
 		assertionXMLCodecs = new HashMap<Class<Assertion>, AssertionXMLCodec<Assertion>>();
 	}
@@ -454,6 +457,10 @@ public class DataManager {
 					// FOUND Datasources BLOCK
 
 					DataSource source = dsCodec.decode(node);
+					URI uri= apic.getCurrentOntologyURI();
+					if(uri != null){
+						source.setParameter(RDBMSsourceParameterConstants.ONTOLOGY_URI,uri.toString());
+					}
 					dscontroller.addDataSource(source);
 				}
 

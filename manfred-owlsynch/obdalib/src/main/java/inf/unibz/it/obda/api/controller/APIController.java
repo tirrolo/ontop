@@ -74,7 +74,7 @@ public abstract class APIController {
 		assertionControllers = new HashMap<Class<Assertion>, AssertionController<Assertion>>();
 		assertionXMLCodecs = new HashMap<Class<Assertion>, AssertionXMLCodec<Assertion>>();
 		loadedOntologies = new HashSet<String>();
-		ioManager = new DataManager(dscontroller, mapcontroller, queryController, new PrefixManager());
+		ioManager = new DataManager(this, new PrefixManager());
 		
 		dependencyRenderer = new DependencyAssertionRenderer(this);
 		constraintsRenderer = new ConstraintsRenderer(this);
@@ -188,7 +188,7 @@ public abstract class APIController {
 //		}
 
 //		ioManager.loadOBDADataFromFile(ioManager.getOBDAFile(getCurrentOntologyFile()));
-		
+		mapcontroller.activeOntologyChanged();
 		
 	}
 

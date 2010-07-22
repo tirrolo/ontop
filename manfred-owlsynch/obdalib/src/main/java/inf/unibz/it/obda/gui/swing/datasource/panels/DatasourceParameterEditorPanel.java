@@ -196,7 +196,7 @@ public class DatasourceParameterEditorPanel extends javax.swing.JPanel implement
 
         labelID.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
         labelID.setForeground(new java.awt.Color(153, 153, 153));
-        labelID.setText("  Source ID:");
+        labelID.setText("  Referenced Ontology:");
         labelID.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

@@ -65,8 +65,8 @@ public class DatasourceXMLCodec extends ObjectXMLCodec<DataSource> {
 	public Element encode(DataSource input) {
 		Element element = createElement(TAG);
 		String id = input.getSourceID().toString();
-		String uristring = input.getParameter(RDBMSsourceParameterConstants.DATABASE_DRIVER);
-		String driver = input.getParameter(RDBMSsourceParameterConstants.ONTOLOGY_URI);
+		String driver = input.getParameter(RDBMSsourceParameterConstants.DATABASE_DRIVER);
+		String  uristring= input.getParameter(RDBMSsourceParameterConstants.ONTOLOGY_URI);
 		String dbname = input.getParameter(RDBMSsourceParameterConstants.DATABASE_NAME);
 		String pwd = input.getParameter(RDBMSsourceParameterConstants.DATABASE_PASSWORD);
 		String dburl = input.getParameter(RDBMSsourceParameterConstants.DATABASE_URL);
