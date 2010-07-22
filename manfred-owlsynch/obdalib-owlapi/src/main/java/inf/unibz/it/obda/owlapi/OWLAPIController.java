@@ -47,7 +47,7 @@ public class OWLAPIController extends APIController {
 	public OWLAPIController(OWLOntologyManager owlman, OWLOntology root) {
 		super();
 		mapcontroller = new SyncronizedMappingController(dscontroller, this);
-		ioManager = new OWLAPIDataManager(dscontroller, mapcontroller, queryController, new PrefixManager());
+		ioManager = new OWLAPIDataManager(this, new PrefixManager());
 		owlman.addOntologyChangeListener((OWLOntologyChangeListener) mapcontroller);
 		try {
 			mmger = owlman;

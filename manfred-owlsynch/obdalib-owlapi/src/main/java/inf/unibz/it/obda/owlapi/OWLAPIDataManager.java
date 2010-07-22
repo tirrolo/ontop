@@ -2,6 +2,7 @@ package inf.unibz.it.obda.owlapi;
 
 import inf.unibz.it.dl.assertion.Assertion;
 import inf.unibz.it.dl.codec.xml.AssertionXMLCodec;
+import inf.unibz.it.obda.api.controller.APIController;
 import inf.unibz.it.obda.api.controller.AssertionController;
 import inf.unibz.it.obda.api.controller.DatasourcesController;
 import inf.unibz.it.obda.api.controller.MappingController;
@@ -37,9 +38,8 @@ public class OWLAPIDataManager extends DataManager {
 
 	private Map<String,String> prefixMap = null;
 	
-	public OWLAPIDataManager(DatasourcesController dscontroller,
-			MappingController mapcontroller, QueryController queryController, PrefixManager man) {
-		super(dscontroller, mapcontroller, queryController, man);
+	public OWLAPIDataManager(APIController apic, PrefixManager man) {
+		super(apic, man);
 		prefixMap = new HashMap<String, String>();
 	}
 	
