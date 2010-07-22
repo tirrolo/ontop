@@ -82,7 +82,7 @@ public class OBDAPluginController extends APIController implements Disposable {
 		}
 		this.owlEditorKit = (OWLEditorKit) editorKit;
 		mapcontroller = new SynchronizedMappingController(dscontroller, this);
-		ioManager = new OBDAPluginDataManager(dscontroller, mapcontroller, queryController, this, new PrefixManager());
+		ioManager = new OBDAPluginDataManager(this, new PrefixManager());
 		owlEditorKit.getOWLModelManager().addOntologyChangeListener((SynchronizedMappingController)mapcontroller);
 		// registerAsListener(owlEditorKit);
 		OWLOntologyManager mmgr = ((OWLModelManagerImpl)editorKit.getModelManager()).getOWLOntologyManager();
@@ -771,6 +771,7 @@ public class OBDAPluginController extends APIController implements Disposable {
 	public void setCurrentOntologyURI(URI uri) {
 		currentOntologyURI = uri;
 		apicoupler.updateOntology(uri);
+		mapcontroller.activeOntologyChanged();
 	}
 
 }

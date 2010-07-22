@@ -46,10 +46,8 @@ public class OBDAPluginDataManager extends DataManager {
 	private APIController apic = null;
 	private PrefixManager prefixmanager = null;
 	
-	public OBDAPluginDataManager(DatasourcesController dscontroller,
-			MappingController mapcontroller, QueryController queryController,
-			APIController apic, PrefixManager pref) {
-		super(dscontroller, mapcontroller, queryController,pref);
+	public OBDAPluginDataManager(APIController apic, PrefixManager pref) {
+		super(apic,pref);
 		this.apic = apic;		
 	}
 
