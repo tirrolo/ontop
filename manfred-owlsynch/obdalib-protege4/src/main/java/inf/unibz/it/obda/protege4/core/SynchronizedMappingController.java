@@ -51,10 +51,18 @@ public class SynchronizedMappingController extends MappingController implements 
 			throws OWLException {
 		
 		((OWLAPICoupler)apic.getCoupler()).updateOntologies();
-		String ontoprefix = apic.getCoupler().getPrefixForUri(changes.get(0).getOntology().getURI());
+		URI u = changes.get(0).getOntology().getURI();
+		String ontoprefix= null;
+		if(!u.toString().endsWith("#")){
+			String aux = u.toString()+"#";
+			ontoprefix = apic.getCoupler().getPrefixForUri(URI.create(aux));
+			if(aux.equals(ontoprefix)){
+				ontoprefix = apic.getCoupler().getPrefixForUri(u);
+			}
+		}
 		boolean replace = allRemoveAxioms(changes);
 		if(replace){
-			if(changes.size()>2){
+			if(changes.size()>=2){
 				OWLOntologyChange rem = changes.get(0);
 				OWLOntologyChange add = changes.get(1);
 				if(rem instanceof RemoveAxiom && add instanceof AddAxiom){
