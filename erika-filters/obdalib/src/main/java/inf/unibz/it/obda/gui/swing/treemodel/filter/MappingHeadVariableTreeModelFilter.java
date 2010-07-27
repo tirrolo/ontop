@@ -1,6 +1,7 @@
 package inf.unibz.it.obda.gui.swing.treemodel.filter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import inf.unibz.it.obda.domain.OBDAMappingAxiom;
 import inf.unibz.it.ucq.domain.ConjunctiveQuery;
@@ -9,8 +10,8 @@ import inf.unibz.it.ucq.domain.QueryTerm;
 import inf.unibz.it.ucq.domain.VariableTerm;
 
 /**
- * @author This Filter receives a string and returns true if any mapping contains the string given in any of
- *         its head atoms
+ * @author This Filter receives a string and returns true if any mapping
+ *         contains the string given in any of its head atoms
  */
 public class MappingHeadVariableTreeModelFilter implements
 		TreeModelFilter<OBDAMappingAxiom> {
@@ -39,19 +40,21 @@ public class MappingHeadVariableTreeModelFilter implements
 		OBDAMappingAxiom mapping = (OBDAMappingAxiom) object;
 		ConjunctiveQuery headquery = (ConjunctiveQuery) mapping
 				.getTargetQuery();
-		ArrayList<QueryAtom> atoms = headquery.getAtoms();
-		int atomscount = atoms.size();
-		for (int i = 0; i < atomscount; i++) {
-			QueryAtom atom = atoms.get(i);
-			ArrayList<QueryTerm> queryTerms = atom.getTerms();
-			int termscount = queryTerms.size();
-			for (int j = 0; j < termscount; j++) {
-				QueryTerm term = queryTerms.get(j);
-				if (term instanceof VariableTerm) {
-					if (term.toString().indexOf(srtHeadVariableFilter) != -1)
-						filterValue = true;
+
+		ArrayList<QueryAtom> headAtom = headquery.getAtoms(); // atoms
+
+		for (int i = 0; i < headAtom.size(); i++) {
+			QueryAtom atom = headAtom.get(i);
+			if (atom.getName().indexOf(srtHeadVariableFilter) != -1) {
+				filterValue = true;
+			}
+			ArrayList<QueryTerm> terms = atom.getTerms();
+			for (int j = 0; j < terms.size(); j++) {
+				if ((terms.get(j).toString()).indexOf(srtHeadVariableFilter) != -1) {
+					filterValue = true;
 				}
 			}
+
 		}
 		return filterValue;
 	}
