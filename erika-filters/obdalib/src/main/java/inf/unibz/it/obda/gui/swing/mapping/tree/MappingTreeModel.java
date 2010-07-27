@@ -59,6 +59,12 @@ public class MappingTreeModel extends DefaultTreeModel implements
 		this.dsc = dsc;
 		root = (DefaultMutableTreeNode) getRoot();
 		this.controller = controller;
+		// Just for testing the filters in MappingTreemodel
+		// MappingStringTreeModelFilter filter = new
+		// MappingStringTreeModelFilter("Company");
+		// this.addFilter(filter);
+		// Finish test
+
 	}
 
 	/***************************************************************************
@@ -294,7 +300,7 @@ public class MappingTreeModel extends DefaultTreeModel implements
 	public void currentSourceChanged(String oldsrcuri, String newsrcuri) {
 		// SYNCWITH EVERYBODY EXCEPT WITH THE CONTROLLER SINCE IT WAS THE SOURCE
 		// OF THIS EVENT
-
+		// apic.getDatasourcesController().getCurrentDataSource().get
 		try {
 			removeTreeModelListener(controller);
 
@@ -484,16 +490,12 @@ public class MappingTreeModel extends DefaultTreeModel implements
 	 * 
 	 */
 	private boolean testFilters(RDBMSOBDAMappingAxiom mapping) {
-		boolean allFiltersTrue = false;
+		boolean allFiltersTrue = true;
 		for (int i = 0; i < ListFilters.size(); i++) {
-
-			if (!(ListFilters.get(i).match(mapping))) {
-				allFiltersTrue = false;
-				break;
-			} else
-				allFiltersTrue = true;
-
+			allFiltersTrue = allFiltersTrue
+					&& ListFilters.get(i).match(mapping);
 		}
 		return allFiltersTrue;
 	}
+
 }
