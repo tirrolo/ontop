@@ -15,8 +15,8 @@ import inf.unibz.it.ucq.domain.VariableTerm;
 import inf.unibz.it.ucq.parser.exception.QueryParseException;
 
 /**
- * @author This filter receives a string in the constructor and returns true if accepts any mapping containing the string in the head or
- *         body
+ * @author This filter receives a string in the constructor and returns true if
+ *         accepts any mapping containing the string in the head or body
  * 
  */
 public class MappingStringTreeModelFilter implements
@@ -42,17 +42,22 @@ public class MappingStringTreeModelFilter implements
 	public boolean match(OBDAMappingAxiom object) {
 		boolean filterValue = false;
 		OBDAMappingAxiom mapping = (OBDAMappingAxiom) object;
+		if (mapping.getId().indexOf(srtModelFilter) != -1)
+			filterValue = true;
 		ConjunctiveQuery headquery = (ConjunctiveQuery) mapping
 				.getTargetQuery();
 		RDBMSSQLQuery bodyquery = (RDBMSSQLQuery) mapping.getSourceQuery();
 
 		ArrayList<QueryAtom> atoms = headquery.getAtoms();
-		int atomscount = atoms.size();
-		for (int i = 0; i < atomscount; i++) {
+
+		for (int i = 0; i < atoms.size(); i++) {
 			QueryAtom atom = atoms.get(i);
+			if (atom.getName().indexOf(srtModelFilter) != -1) {
+				filterValue = true;
+			}
 			ArrayList<QueryTerm> queryTerms = atom.getTerms();
-			int termscount = queryTerms.size();
-			for (int j = 0; j < termscount; j++) {
+
+			for (int j = 0; j < queryTerms.size(); j++) {
 				QueryTerm term = queryTerms.get(j);
 				if (term.toString().indexOf(srtModelFilter) != -1)
 					filterValue = true;
