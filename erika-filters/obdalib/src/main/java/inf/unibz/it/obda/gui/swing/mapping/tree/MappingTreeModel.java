@@ -438,10 +438,7 @@ public class MappingTreeModel extends DefaultTreeModel implements
 	 */
 	@Override
 	public void removeAllFilters() {
-		// TODO Auto-generated method stub
-		for (int i = 0; i < ListFilters.size(); i++) {
-			ListFilters.remove(i);
-		}
+		ListFilters.clear();
 
 	}
 
