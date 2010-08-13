@@ -470,6 +470,7 @@ public class MappingManagerPanel extends JPanel implements
 	// <editor-fold defaultstate="collapsed"
 	// <editor-fold defaultstate="collapsed"
 	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
 		java.awt.GridBagConstraints gridBagConstraints;
@@ -555,11 +556,17 @@ public class MappingManagerPanel extends JPanel implements
 		panelMappingButtons.add(jTextField1, gridBagConstraints);
 
 		jCheckBox1.setText("Apply Filters");
-		jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jCheckBox1ActionPerformed(evt);
+		jCheckBox1.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent evt) {
+				try {
+					jCheckBox1ItemStateChanged(evt);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
+
 		panelMappingButtons.add(jCheckBox1, new java.awt.GridBagConstraints());
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -648,25 +655,31 @@ public class MappingManagerPanel extends JPanel implements
 		add(scrollMappingsManager, java.awt.BorderLayout.CENTER);
 	}// </editor-fold>//GEN-END:initComponents
 
-	private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBox1ActionPerformed
-		// TODO add your handling code here:
-		if (jCheckBox1.isEnabled()) {
+	private void jCheckBox1ItemStateChanged(java.awt.event.ItemEvent evt)
+			throws Exception {// GEN-FIRST:event_jCheckBox1ItemStateChanged
+		if (!(jCheckBox1.isSelected())) {
+			this.ListOfFilters.clear();
 			MappingController controller = mapc;
 			MappingTreeModel model = mapc.getTreeModel();
+			model.allMappingsRemoved();
 			model.removeAllFilters();
 			model.currentSourceChanged(apic.getDatasourcesController()
 					.getCurrentDataSource().getName(), apic
 					.getDatasourcesController().getCurrentDataSource()
 					.getName());
 		}
-	}// GEN-LAST:event_jCheckBox1ActionPerformed
+
+		if (jCheckBox1.isSelected()) {
+			textParse(jTextField1.getText());
+		}
+
+	}// GEN-LAST:event_jCheckBox1ItemStateChanged
 
 	private void sendFilters(java.awt.event.KeyEvent evt) throws Exception {// GEN-FIRST:event_sendFilters
 		// TODO add your handling code here:
 		int key = evt.getKeyCode();
 		if (key == java.awt.event.KeyEvent.VK_ENTER) {
 			jCheckBox1.setSelected(true);
-			textParse(jTextField1.getText());
 		}
 
 	}// GEN-LAST:event_sendFilters
@@ -1147,33 +1160,31 @@ public class MappingManagerPanel extends JPanel implements
 	}
 
 	private void textParse(String textToParse) throws Exception {
-		String head="";
-		String body="";
 		String temp = "";
 		// id:"company id" funct:"market"
-
+		ListOfFilters.clear();
 		MappingController controller = mapc;
 		MappingTreeModel model = mapc.getTreeModel();
 
-		model.removeAllFilters();
 		if (textToParse == null) {
 			jCheckBox1.setSelected(false);
-			// model.removeAllFilters();
+			model.removeAllFilters();
+			model.allMappingsRemoved();
 			model.currentSourceChanged(apic.getDatasourcesController()
 					.getCurrentDataSource().getName(), apic
 					.getDatasourcesController().getCurrentDataSource()
 					.getName());
 		}
-		
-		//Part of filter that contains the head ":"
+
+		// Part of filter that contains the head ":"
 		if (textToParse != null && jCheckBox1.isSelected() == true) {
 			String[] textFilter = textToParse.split(" ");
 			for (int i = 0; i < textFilter.length; i++) {
-				
-				if (textFilter[i].contains(":")&& !textFilter[i].endsWith(":")) {
+
+				if (textFilter[i].contains(":") && !textFilter[i].endsWith(":")) {
 					String[] headFilter = textFilter[i].split(":");
-					
-					//base case id:"bro"
+
+					// base case id:"bro"
 					if ((headFilter[1].endsWith("\"") || textFilter[i]
 							.endsWith("'"))
 							&& (headFilter[1].startsWith("\"") || headFilter[1]
@@ -1182,7 +1193,7 @@ public class MappingManagerPanel extends JPanel implements
 								"")).replace("\"", ""));
 						continue;
 					}
-					//Wrong format id:bro"
+					// Wrong format id:bro"
 					if ((headFilter[1].endsWith("\"") || headFilter[1]
 							.endsWith("'"))
 							&& (!headFilter[1].startsWith("\"") || !headFilter[1]
@@ -1192,7 +1203,7 @@ public class MappingManagerPanel extends JPanel implements
 								JOptionPane.ERROR_MESSAGE);
 						break;
 					}
-					//Wrong format id:bro
+					// Wrong format id:bro
 					if ((!headFilter[1].endsWith("\"") || !headFilter[1]
 							.endsWith("'"))
 							&& (!headFilter[1].startsWith("\"") || !headFilter[1]
@@ -1202,14 +1213,14 @@ public class MappingManagerPanel extends JPanel implements
 								JOptionPane.ERROR_MESSAGE);
 						break;
 					}
-					//part of the filter id:"bro
+					// part of the filter id:"bro
 					if ((!headFilter[1].endsWith("\"") || !headFilter[1]
 							.endsWith("'"))
 							&& (headFilter[1].startsWith("\"") || headFilter[1]
 									.startsWith("'"))) {
 						temp = headFilter[0].concat(":").concat(headFilter[1]);
-						
-						//Wrong the filter is incomplete
+
+						// Wrong the filter is incomplete
 						if (i == textFilter.length - 1 && temp != "") {
 
 							JOptionPane.showMessageDialog(this,
@@ -1221,16 +1232,15 @@ public class MappingManagerPanel extends JPanel implements
 
 						continue;
 					}
-					if(textFilter[i].endsWith(":"))
-					{
-						temp=textFilter[i];
+					if (textFilter[i].endsWith(":")) {
+						temp = textFilter[i];
 						continue;
 					}
 
 				}
-				//----------------------------------Filter body
+				// ----------------------------------Filter body
 				if (!textFilter[i].contains(":")) {
-					//complement of the head----> id"
+					// complement of the head----> id"
 					if ((textFilter[i].endsWith("\"") || textFilter[i]
 							.endsWith("'"))) {
 						temp = temp.concat(" ").concat(textFilter[i]);
@@ -1254,7 +1264,7 @@ public class MappingManagerPanel extends JPanel implements
 								"The format is not correct ", "ERROR",
 								JOptionPane.ERROR_MESSAGE);
 					}
-					//Part of the filter assigned to temp
+					// Part of the filter assigned to temp
 					if ((!textFilter[i].endsWith("\"") || !textFilter[i]
 							.endsWith("'"))
 							&& (!textFilter[i].startsWith("\"") || !textFilter[i]
@@ -1262,7 +1272,7 @@ public class MappingManagerPanel extends JPanel implements
 						temp = temp.concat(textFilter[i]);
 						continue;
 					}
-					//Wrong format "id
+					// Wrong format "id
 					if (!textFilter[i].endsWith("\"")
 							|| !textFilter[i].endsWith("'")
 							&& (textFilter[i].startsWith("\"") || textFilter[i]
@@ -1272,27 +1282,30 @@ public class MappingManagerPanel extends JPanel implements
 								JOptionPane.ERROR_MESSAGE);
 
 					}
-					//Body base case "select"
-					
-					if(textFilter[i].startsWith("\"")|| textFilter[i].endsWith("'") && (textFilter[i].startsWith("\"") || textFilter[i]
+					// Body base case "select"
+
+					if (textFilter[i].startsWith("\"")
+							|| textFilter[i].endsWith("'")
+							&& (textFilter[i].startsWith("\"") || textFilter[i]
 									.startsWith("'")))
-						//check this part
+						// check this part
 						temp = temp.concat(textFilter[i]);
-						if (temp.contains(":")) {
-							String[] tokens = temp.split(":");
+					if (temp.contains(":")) {
+						String[] tokens = temp.split(":");
 
 						if ((tokens[1].startsWith("\"") || tokens[1]
 								.startsWith("'"))
 								&& tokens[1].endsWith("\"")
 								|| tokens[1].endsWith("'")) {
-							selectFilter(tokens[0], (tokens[1].replace("'",
-									"")).replace("\"", ""));
+							selectFilter(tokens[0],
+									(tokens[1].replace("'", "")).replace("\"",
+											""));
 
 							temp = "";
 							continue;
 						}
 					}
-					
+
 					if (i == textFilter.length - 1 && temp != "") {
 
 						JOptionPane.showMessageDialog(this,
@@ -1309,8 +1322,11 @@ public class MappingManagerPanel extends JPanel implements
 		}
 
 	}
+
 	/***
-	 * This function given the kind of filter and the string for it, is added to a list of current filters.
+	 * This function given the kind of filter and the string for it, is added to
+	 * a list of current filters.
+	 * 
 	 * @param filter
 	 * @param strFilter
 	 */
@@ -1345,13 +1361,19 @@ public class MappingManagerPanel extends JPanel implements
 		}
 
 	}
+
 	/***
-	 * This function add the list of current filters to the model and then the Tree is refreshed showing just the resulting mappings after apply the filters
+	 * This function add the list of current filters to the model and then the
+	 * Tree is refreshed showing just the resulting mappings after apply the
+	 * filters
+	 * 
 	 * @param ListOfMappings
 	 */
 	private void refreshMappings(List<TreeModelFilter> ListOfMappings) {
 		MappingController controller = mapc;
 		MappingTreeModel model = mapc.getTreeModel();
+		model.allMappingsRemoved();
+		model.removeAllFilters();
 
 		if (!ListOfMappings.isEmpty()) {
 			model.addFilters(ListOfMappings);
