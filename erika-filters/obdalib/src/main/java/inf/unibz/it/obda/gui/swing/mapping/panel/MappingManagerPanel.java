@@ -96,7 +96,6 @@ public class MappingManagerPanel extends JPanel implements
 	protected APIController apic = null;
 
 	DefaultMutableTreeNode editedNode = null;
-	private List<TreeModelFilter> ListOfFilters = new ArrayList<TreeModelFilter>();
 	MappingManagerPreferences pref = null;
 	KeyStroke addMapping = null;
 	KeyStroke editBody = null;
@@ -658,10 +657,9 @@ public class MappingManagerPanel extends JPanel implements
 	private void jCheckBox1ItemStateChanged(java.awt.event.ItemEvent evt)
 			throws Exception {// GEN-FIRST:event_jCheckBox1ItemStateChanged
 		if (!(jCheckBox1.isSelected())) {
-			this.ListOfFilters.clear();
+
 			MappingController controller = mapc;
 			MappingTreeModel model = mapc.getTreeModel();
-			model.allMappingsRemoved();
 			model.removeAllFilters();
 			model.currentSourceChanged(apic.getDatasourcesController()
 					.getCurrentDataSource().getName(), apic
@@ -670,7 +668,9 @@ public class MappingManagerPanel extends JPanel implements
 		}
 
 		if (jCheckBox1.isSelected()) {
-			textParse(jTextField1.getText());
+
+			refreshMappings(textParse(jTextField1.getText()));
+
 		}
 
 	}// GEN-LAST:event_jCheckBox1ItemStateChanged
@@ -1159,25 +1159,17 @@ public class MappingManagerPanel extends JPanel implements
 		updateNode(txt);
 	}
 
-	private void textParse(String textToParse) throws Exception {
+	private List<TreeModelFilter> textParse(String textToParse)
+			throws Exception {
 		String temp = "";
+		List<TreeModelFilter> ListOfFilters = new ArrayList<TreeModelFilter>();
 		// id:"company id" funct:"market"
-		ListOfFilters.clear();
+
 		MappingController controller = mapc;
 		MappingTreeModel model = mapc.getTreeModel();
 
-		if (textToParse == null) {
-			jCheckBox1.setSelected(false);
-			model.removeAllFilters();
-			model.allMappingsRemoved();
-			model.currentSourceChanged(apic.getDatasourcesController()
-					.getCurrentDataSource().getName(), apic
-					.getDatasourcesController().getCurrentDataSource()
-					.getName());
-		}
-
-		// Part of filter that contains the head ":"
-		if (textToParse != null && jCheckBox1.isSelected() == true) {
+		// Part of filter that contains the head":"
+		if (textToParse != null) {
 			String[] textFilter = textToParse.split(" ");
 			for (int i = 0; i < textFilter.length; i++) {
 
@@ -1189,18 +1181,24 @@ public class MappingManagerPanel extends JPanel implements
 							.endsWith("'"))
 							&& (headFilter[1].startsWith("\"") || headFilter[1]
 									.startsWith("'"))) {
-						selectFilter(headFilter[0], (headFilter[1].replace("'",
-								"")).replace("\"", ""));
-						continue;
+						if (createFilter(headFilter[0], (headFilter[1].replace(
+								"'", "")).replace("\"", "")) != null) {
+							ListOfFilters.add(createFilter(headFilter[0],
+									(headFilter[1].replace("'", "")).replace(
+											"\"", "")));
+							continue;
+						}
 					}
 					// Wrong format id:bro"
 					if ((headFilter[1].endsWith("\"") || headFilter[1]
 							.endsWith("'"))
 							&& (!headFilter[1].startsWith("\"") || !headFilter[1]
 									.startsWith("'"))) {
-						JOptionPane.showMessageDialog(this,
-								"The format is not correct ", "ERROR",
-								JOptionPane.ERROR_MESSAGE);
+						// JOptionPane.showMessageDialog(this,
+						// "The format is not correct ", "ERROR",
+						// JOptionPane.ERROR_MESSAGE);
+						// break;
+						ListOfFilters.add(null);
 						break;
 					}
 					// Wrong format id:bro
@@ -1208,9 +1206,12 @@ public class MappingManagerPanel extends JPanel implements
 							.endsWith("'"))
 							&& (!headFilter[1].startsWith("\"") || !headFilter[1]
 									.startsWith("'"))) {
-						JOptionPane.showMessageDialog(this,
-								"The format is not correct ", "ERROR",
-								JOptionPane.ERROR_MESSAGE);
+						/*
+						 * JOptionPane.showMessageDialog(this,
+						 * "The format is not correct ", "ERROR",
+						 * JOptionPane.ERROR_MESSAGE);
+						 */
+						ListOfFilters.add(null);
 						break;
 					}
 					// part of the filter id:"bro
@@ -1223,9 +1224,12 @@ public class MappingManagerPanel extends JPanel implements
 						// Wrong the filter is incomplete
 						if (i == textFilter.length - 1 && temp != "") {
 
-							JOptionPane.showMessageDialog(this,
-									"The format is not correct ", "ERROR",
-									JOptionPane.ERROR_MESSAGE);
+							/*
+							 * JOptionPane.showMessageDialog(this,
+							 * "The format is not correct ", "ERROR",
+							 * JOptionPane.ERROR_MESSAGE);
+							 */
+							ListOfFilters.add(null);
 							break;
 						} else
 							;
@@ -1252,17 +1256,26 @@ public class MappingManagerPanel extends JPanel implements
 									.startsWith("'"))
 									&& tokens[1].endsWith("\"")
 									|| tokens[1].endsWith("'")) {
-								selectFilter(tokens[0], (tokens[1].replace("'",
-										"")).replace("\"", ""));
+								if (createFilter(tokens[0], (tokens[1].replace(
+										"'", "")).replace("\"", "")) != null) {
+									ListOfFilters.add(createFilter(tokens[0],
+											(tokens[1].replace("'", ""))
+													.replace("\"", "")));
 
-								temp = "";
-								continue;
+									temp = "";
+									continue;
+								}
+
 							}
 						}
 					} else {
-						JOptionPane.showMessageDialog(this,
-								"The format is not correct ", "ERROR",
-								JOptionPane.ERROR_MESSAGE);
+						/*
+						 * JOptionPane.showMessageDialog(this,
+						 * "The format is not correct ", "ERROR",
+						 * JOptionPane.ERROR_MESSAGE);
+						 */
+						ListOfFilters.add(null);
+						break;
 					}
 					// Part of the filter assigned to temp
 					if ((!textFilter[i].endsWith("\"") || !textFilter[i]
@@ -1277,9 +1290,13 @@ public class MappingManagerPanel extends JPanel implements
 							|| !textFilter[i].endsWith("'")
 							&& (textFilter[i].startsWith("\"") || textFilter[i]
 									.startsWith("'"))) {
-						JOptionPane.showMessageDialog(this,
-								"The format is not correct ", "ERROR",
-								JOptionPane.ERROR_MESSAGE);
+						/*
+						 * JOptionPane.showMessageDialog(this,
+						 * "The format is not correct ", "ERROR",
+						 * JOptionPane.ERROR_MESSAGE);
+						 */
+						ListOfFilters.add(null);
+						break;
 
 					}
 					// Body base case "select"
@@ -1297,29 +1314,35 @@ public class MappingManagerPanel extends JPanel implements
 								.startsWith("'"))
 								&& tokens[1].endsWith("\"")
 								|| tokens[1].endsWith("'")) {
-							selectFilter(tokens[0],
-									(tokens[1].replace("'", "")).replace("\"",
-											""));
+							if (createFilter(tokens[0], (tokens[1].replace("'",
+									"")).replace("\"", "")) != null) {
+								ListOfFilters.add(createFilter(tokens[0],
+										(tokens[1].replace("'", "")).replace(
+												"\"", "")));
+								temp = "";
+								continue;
+							}
 
-							temp = "";
-							continue;
 						}
 					}
 
 					if (i == textFilter.length - 1 && temp != "") {
 
-						JOptionPane.showMessageDialog(this,
-								"The format is not correct ", "ERROR",
-								JOptionPane.ERROR_MESSAGE);
+						/*
+						 * JOptionPane.showMessageDialog(this,
+						 * "The format is not correct ", "ERROR",
+						 * JOptionPane.ERROR_MESSAGE);
+						 */
+						ListOfFilters.add(null);
 					}
 
 				}
 
 			}
 
-			refreshMappings(ListOfFilters);
-
 		}
+
+		return ListOfFilters;
 
 	}
 
@@ -1330,57 +1353,56 @@ public class MappingManagerPanel extends JPanel implements
 	 * @param filter
 	 * @param strFilter
 	 */
-	private void selectFilter(String filter, String strFilter) {
+	private TreeModelFilter createFilter(String filter, String strFilter) {
+		TreeModelFilter typeOfFilter;
 
 		if (filter.trim().equals(HEAD)) {
-			ListOfFilters
-					.add((TreeModelFilter) (new MappingHeadVariableTreeModelFilter(
-							strFilter)));
+			typeOfFilter = new MappingHeadVariableTreeModelFilter(strFilter);
+
 		} else if (filter.trim().equals(FUNCT)) {
-			ListOfFilters
-					.add((TreeModelFilter) (new MappingFunctorTreeModelFilter(
-							strFilter)));
+			typeOfFilter = new MappingFunctorTreeModelFilter(strFilter);
+
 		} else if (filter.trim().equals(PRED)) {
-			ListOfFilters
-					.add((TreeModelFilter) (new MappingPredicateTreeModelFilter(
-							strFilter)));
+			typeOfFilter = new MappingPredicateTreeModelFilter(strFilter);
+
 		} else if (filter.trim().equals(SQL)) {
-			ListOfFilters
-					.add((TreeModelFilter) (new MappingSQLStringTreeModelFilter(
-							strFilter)));
+			typeOfFilter = new MappingSQLStringTreeModelFilter(strFilter);
+
 		} else if (filter.trim().equals(TEXT)) {
-			ListOfFilters
-					.add((TreeModelFilter) (new MappingStringTreeModelFilter(
-							strFilter)));
+			typeOfFilter = new MappingStringTreeModelFilter(strFilter);
+
 		} else if (filter.trim().equals(ID)) {
-			ListOfFilters.add((TreeModelFilter) (new MappingIDTreeModelFilter(
-					strFilter)));
+			typeOfFilter = new MappingIDTreeModelFilter(strFilter);
 		} else {
-			JOptionPane.showMessageDialog(this, "This filter " + filter
-					+ " doesn't exist", "ERROR", JOptionPane.ERROR_MESSAGE);
+			typeOfFilter = null;
+
 		}
+		return typeOfFilter;
 
 	}
 
 	/***
 	 * This function add the list of current filters to the model and then the
-	 * Tree is refreshed showing just the resulting mappings after apply the
-	 * filters
+	 * Tree is refreshed shows the mappings after the filters have been applied
+	 * 
 	 * 
 	 * @param ListOfMappings
 	 */
-	private void refreshMappings(List<TreeModelFilter> ListOfMappings) {
+	private void refreshMappings(List<TreeModelFilter> ListOfCurrentFilters) {
 		MappingController controller = mapc;
 		MappingTreeModel model = mapc.getTreeModel();
-		model.allMappingsRemoved();
-		model.removeAllFilters();
 
-		if (!ListOfMappings.isEmpty()) {
-			model.addFilters(ListOfMappings);
+		if (!ListOfCurrentFilters.contains(null)) {
+			model.removeAllFilters();
+			model.addFilters(ListOfCurrentFilters);
 			model.currentSourceChanged(apic.getDatasourcesController()
 					.getCurrentDataSource().getName(), apic
 					.getDatasourcesController().getCurrentDataSource()
 					.getName());
+		} else {
+			JOptionPane.showMessageDialog(this, "The sintaxis is not correct ",
+					"ERROR", JOptionPane.ERROR_MESSAGE);
+
 		}
 
 	}
