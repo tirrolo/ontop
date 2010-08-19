@@ -10,20 +10,40 @@ import inf.unibz.it.utils.codec.ObjectToTextCodec;
 
 import java.util.Iterator;
 import java.util.List;
+/**
+ * The UCQDatalogStringRenderer should be used to transform a 
+ * UnionOfConjunctiveQueries object into a String or vice versa.
+ * This renderer should be used instead of the toString function. 
+ * 
+ * @author Manfred Gerstgrasser
+ *
+ */
 
 public class UCQDatalogStringRenderer extends ObjectToTextCodec<UnionOfConjunctiveQueries> {
 
+	/**
+	 * The constructor. Creates a new instance of the UCQDatalogStringRenderer
+	 * 
+	 * @param apic the current api controller
+	 */
 	public UCQDatalogStringRenderer(APIController apic) {
 		super(apic);
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Please do no use this function
+	 */
 	@Override
+	@Deprecated
 	public UnionOfConjunctiveQueries decode(String input) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * Represents the given UnionOfConjunctiveQueries objects as a String
+	 */
 	@Override
 	public String encode(UnionOfConjunctiveQueries input) {
 		
@@ -43,6 +63,11 @@ public class UCQDatalogStringRenderer extends ObjectToTextCodec<UnionOfConjuncti
 		return str.toString();
 	}
 
+	/**
+	 * private method which creates the String of the head of the ucq
+	 * @param head the head of the ucq object
+	 * @return the head as String representation
+	 */
 	private String renderCQHead(List<QueryTerm> head){
 		
 		StringBuffer str = new StringBuffer();
@@ -60,6 +85,11 @@ public class UCQDatalogStringRenderer extends ObjectToTextCodec<UnionOfConjuncti
 		return str.toString();
 	}
 	
+	/**
+	 * private method which creates String of the body of the ucq
+	 * @param body the body of the ucq object
+	 * @return the body as String representation
+	 */
 	private String renderCQBody(List<QueryAtom> body){
 		
 		StringBuffer str = new StringBuffer();
@@ -72,6 +102,12 @@ public class UCQDatalogStringRenderer extends ObjectToTextCodec<UnionOfConjuncti
 		}
 		return str.toString();
 	}
+	
+	/**
+	 * private method to create the String representation of a query atom.
+	 * @param atom a query atom
+	 * @return the String representation of the given atom.
+	 */
 	
 	private String renderQueryAtom(QueryAtom atom){
 		
@@ -99,6 +135,11 @@ public class UCQDatalogStringRenderer extends ObjectToTextCodec<UnionOfConjuncti
 		return str.toString();
 	}
 	
+	/**
+	 *Can be used to create the String representation of a query atom.
+	 * @param atom a query atom
+	 * @return the String representation of the given atom.
+	 */
 	public String encodeAtom(QueryAtom atom){
 		return renderQueryAtom(atom);
 	}

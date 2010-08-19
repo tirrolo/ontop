@@ -62,8 +62,11 @@ public abstract class APIController {
 	private DependencyAssertionRenderer dependencyRenderer = null;
 	private ConstraintsRenderer constraintsRenderer = null;
 	
+	
+	// the entity name renderer provides the name any entity which belongs to a loaded ontology.
 	protected EntityNameRenderer nameRenderer = null;
 	
+	// a set of all currently loaded ontotlogies
 	protected HashSet<String> loadedOntologies = null;
 
 	public APIController() {
@@ -106,7 +109,7 @@ public abstract class APIController {
 	 */
 	public void setCoupler(APICoupler coupler) {
 		APIController.couplerInstance = coupler;
-		nameRenderer = new EntityNameRenderer();
+		nameRenderer = new EntityNameRenderer(this);
 		nameRenderer.setCoupler(coupler);
 	}
 
@@ -254,6 +257,10 @@ public abstract class APIController {
 	 */
 	public abstract Set<URI> getOntologyURIs();
 	
+	/**
+	 * Returns the current entity name renderer
+	 * @return the current entity name renderer
+	 */
 	public EntityNameRenderer getEntityNameRenderer(){
 		return nameRenderer;
 	}
@@ -262,7 +269,6 @@ public abstract class APIController {
 	 * Adds the given ontology uri to the set of already 
 	 * loaded ontologies uri's.
 	 * 
-	 * 
 	 * @param ontoUri
 	 */
 	
@@ -270,6 +276,13 @@ public abstract class APIController {
 		loadedOntologies.add(ontoUri.toString());
 	}
 	
+	
+	/**
+	 * Removes the ontolgy identified by the given URI from the set of all
+	 * currently loaded ontologies and all other objects (data sources, mappings, etc)
+	 * 
+	 * @param ontoUri the URI of the ontology to remove
+	 */
 	public void unloaded(URI ontoUri){
 		loadedOntologies.remove(ontoUri.toString());
 		HashMap<URI, DataSource> map =dscontroller.getAllSources();

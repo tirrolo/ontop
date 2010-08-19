@@ -20,17 +20,42 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The mapping xml codec can be use to encode OBDA mapping axioms
+ * into XML respectively decode them from XML
+ * 
+ * @author Manfred Gerstgrasser
+ *
+ */
+
 public class MappingXMLCodec extends ObjectXMLCodec<OBDAMappingAxiom>{
 
+	/**
+	 * The xml tag used for representing obda mapping axioms
+	 */
 	private static final String	TAG	= "mapping";
+	/**
+	 * the current api controller
+	 */
 	APIController apic = null;
+	/**
+	 * the datalog conjunctive quey codec used to encode respectively decode the
+	 * head of the mappings.
+	 */
 	DatalogConjunctiveQueryCodec cqcodec = null;
 	
+	/**
+	 * The contructor. Creates a new instance of the Codec
+	 * @param apic
+	 */
 	public MappingXMLCodec(APIController apic){
 		this.apic = apic;
 		cqcodec = new DatalogConjunctiveQueryCodec(apic);
 	}
 	
+	/**
+	 * Decodes the given XML element into an obda mapping axiom
+	 */
 	@Override
 	public OBDAMappingAxiom decode(Element mapping) {
 		
@@ -73,6 +98,9 @@ public class MappingXMLCodec extends ObjectXMLCodec<OBDAMappingAxiom>{
 		return newmapping;
 	}
 
+	/**
+	 * Encodes the given obda mapping axiom into XML
+	 */
 	@Override
 	public Element encode(OBDAMappingAxiom input) {
 		
@@ -97,6 +125,9 @@ public class MappingXMLCodec extends ObjectXMLCodec<OBDAMappingAxiom>{
 		return mappingelement;
 	}
 
+	/**
+	 * return all attributes used in an obda mapping axiom XML element
+	 */
 	@Override
 	public Collection<String> getAttributes() {
 		ArrayList<String> fixedAttributes = new ArrayList<String>();
@@ -104,6 +135,9 @@ public class MappingXMLCodec extends ObjectXMLCodec<OBDAMappingAxiom>{
 		return fixedAttributes;
 	}
 
+	/**
+	 * Returns the tag used to represent an obda mapping axiom in XML
+	 */
 	@Override
 	public String getElementTag() {
 		return TAG;

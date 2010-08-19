@@ -13,12 +13,27 @@ import inf.unibz.it.ucq.domain.QueryAtom;
 import inf.unibz.it.ucq.domain.QueryTerm;
 import inf.unibz.it.ucq.parser.exception.QueryParseException;
 
+/**
+ * This class should be used to create a target query from a String respectively 
+ * to create the String representation of a target query.
+ * 
+ * @author obda
+ *
+ */
 public class TargetQeryToTextCodec extends ObjectToTextCodec<TargetQuery> {
 
+	/**
+	 * The constructor. Create a new instance of the TargetQeryToTextCodec
+	 * @param apic the current api controller
+	 */
 	public TargetQeryToTextCodec(APIController apic) {
 		super(apic);
 	}
 
+	/**
+	 * Transforms the given input into a target query, if the String is not a valid
+	 * target query representation null is returned.
+	 */
 	@Override
 	public TargetQuery decode(String input) {
 		
@@ -32,6 +47,9 @@ public class TargetQeryToTextCodec extends ObjectToTextCodec<TargetQuery> {
 		
 	}
 
+	/**
+	 * Create the String representation of the given target query.
+	 */
 	@Override
 	public String encode(TargetQuery input) {
 		

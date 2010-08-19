@@ -90,7 +90,10 @@ public class DatalogCQParser extends Parser {
             return errors;
         }
     	
-
+        private boolean inputModified = false;
+        public void setInputModifiedFlag(boolean b){
+        	inputModified = b;
+        }
 
     boolean error1 = false;
 
@@ -323,7 +326,7 @@ public class DatalogCQParser extends Parser {
             match(input,11,FOLLOW_11_in_concept_query_atom153); 
             			
             			//******* Needed in order to be able to parse old files
-			            if(function_id3.contains(":")){
+			            if(function_id3.contains(":") || function_id3.startsWith("http___")|| function_id3.startsWith("https___")){
 			    			_prefix = _prefix.replace(":", "");
 			    		}
 			            //********************************************************
@@ -349,8 +352,24 @@ public class DatalogCQParser extends Parser {
             					uri = URI.create(onto_uri +"#"+aux);
             				}
             			}else{
-            				uri = URI.create(apic.getCurrentOntologyURI() +"#" + aux);
-            				onto_uri = apic.getCurrentOntologyURI().toString();
+            				
+            				if(aux.startsWith("https___") || aux.startsWith("http___")){
+                				aux = aux.replaceAll("https___", "https://");
+                				aux = aux.replaceAll("http___", "http://");
+                				aux = aux.replaceAll("_TT_", "/");
+                				aux = aux.replaceAll("_RR_", "/");
+                				uri = URI.create(aux);
+                				int indexOfHash = uri.toString().lastIndexOf("#");
+                				if(indexOfHash ==11){
+                					onto_uri = "";
+                				}else{
+                					onto_uri = uri.toString().substring(0,indexOfHash);
+                				}
+                			}else{
+                				uri = URI.create(apic.getCurrentOntologyURI() +"#" + aux);
+                				onto_uri = apic.getCurrentOntologyURI().toString();
+                			}
+            				
             			}
             			concept = new NamedConcept(uri);
             			ConceptQueryAtom atom = new ConceptQueryAtom(concept, term4);
@@ -412,7 +431,7 @@ public class DatalogCQParser extends Parser {
 
             match(input,11,FOLLOW_11_in_binary_query_atom188); 
 
-					            if(function_id5.contains(":")){
+					            if(function_id5.contains(":") || function_id5.startsWith("http___")|| function_id5.startsWith("https___")){
 					    			_prefix = _prefix.replace(":", "");
 					    		}
             					String aux = _prefix+function_id5;
@@ -438,8 +457,22 @@ public class DatalogCQParser extends Parser {
                     					uri = URI.create(onto_uri +"#"+rolename);
                     				}
             					}else{
-            						uri = URI.create(apic.getCurrentOntologyURI() +"#" + rolename);
-            						onto_uri = apic.getCurrentOntologyURI().toString();
+            						if(aux.startsWith("https___") || aux.startsWith("http___")){
+                        				aux = aux.replaceAll("https___", "https://");
+                        				aux = aux.replaceAll("http___", "http://");
+                        				aux = aux.replaceAll("_TT_", "/");
+                        				aux = aux.replaceAll("_RR_", "#");
+                        				uri = URI.create(aux);
+                        				int indexOfHash = uri.toString().lastIndexOf("#");
+                        				if(indexOfHash ==11){
+                        					onto_uri = "";
+                        				}else{
+                        					onto_uri = uri.toString().substring(0,indexOfHash);
+                        				}
+                        			}else{
+                        				uri = URI.create(apic.getCurrentOntologyURI() +"#" + aux);
+                        				onto_uri = apic.getCurrentOntologyURI().toString();
+                        			}
             					}
 //            					if (coupler != null) {
 //            						if ((coupler.isDatatypeProperty(URI.create(rolename)))||(coupler.isDatatypeProperty(uri))) {
@@ -718,8 +751,8 @@ public class DatalogCQParser extends Parser {
             		
             		URI uri = null;
             		
-            		if(function_id13.contains(":")){
-            			_prefix = _prefix.replace(":", "");
+            		if(function_id13.contains(":") || function_id13.startsWith("http___") || function_id13.startsWith("https___")){
+            			_prefix = _prefix.replaceAll(":", "");
             		}
             		String aux = _prefix+function_id13;
             		
@@ -737,7 +770,15 @@ public class DatalogCQParser extends Parser {
             				uri = URI.create(url +"#"+aux);
             			}
             		}else{
-            			uri = URI.create(apic.getCurrentOntologyURI() +"#" + aux);
+            			if(aux.startsWith("https___") || aux.startsWith("http___")){
+            				aux = aux.replaceAll("https___", "https://");
+            				aux = aux.replaceAll("http___", "http://");
+            				aux = aux.replaceAll("_TT_", "/");
+            				aux = aux.replaceAll("_RR_", "#");
+            				uri = URI.create(aux);
+            			}else{
+            				uri = URI.create(apic.getCurrentOntologyURI() +"#" + aux);
+            			}
             		}
             		FunctionTerm new_function = new FunctionTerm(uri, function_parameter_collector);
             		value = new_function;
