@@ -16,5 +16,9 @@ The SynchronizedMappingController is responsible for appling the changes done in
 the mappings. The changes we are talking about are the adding, deleting and renaming entities. 
 This new controller listens to such Change Events and applies them to the mappings.
 
-Note: There might be some other classes which contain some change, but they are of minor interest and 
-are often only some changes in the imports or new lines, etc. 
+Note: 
+Since we have no running scenario, with which we could test the new implementations, the whole new 
+is untested, so the new classes have to used with care.
+
+TODO:
+Test the new classes and esure nothing is missing.
