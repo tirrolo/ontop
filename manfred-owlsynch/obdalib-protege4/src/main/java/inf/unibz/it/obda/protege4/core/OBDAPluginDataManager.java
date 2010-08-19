@@ -38,19 +38,38 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+/**
+ * The obda plugin data manager is an extension of the original data manager in the
+ * obda api. The only difference between this data manager an the original one is
+ * the loading of prefixes. It looks whether an obda file has specified some some 
+ * prefixes and if so they are loaded and administrated by the prefix manager. 
+ * 
+ * @author Manfred Gerstgrasser
+ *
+ */
+
 public class OBDAPluginDataManager extends DataManager {
 
-	private String version = null;
-	private String base = null;
-	private String xmlns = null;
+	/**
+	 * the current api controller
+	 */
 	private APIController apic = null;
-	private PrefixManager prefixmanager = null;
 	
+	/**
+	 * The constructor. Creates a new instance of the OBDAPluginDataManager
+	 * @param apic the current api controller
+	 * @param pref the current prefix manager
+	 */
 	public OBDAPluginDataManager(APIController apic, PrefixManager pref) {
 		super(apic,pref);
-		this.apic = apic;		
+		this.apic = apic;	
+		
 	}
 
+	/**
+	 * Load the given obda file. In contrast to the original it looks whether the obda
+	 * file defines some prefixes. If so they are loaded into the prefix manager.
+	 */
 	public void loadOBDADataFromURI(URI obdaFileURI) {
 		
 		File obdaFile = new File(obdaFileURI);
@@ -118,6 +137,11 @@ public class OBDAPluginDataManager extends DataManager {
 		}
 		super.loadOBDADataFromURI(obdaFileURI);
 	}
+	
+	/**
+	 * If the obda file doesnot contain any prefix definitions. Some prede
+	 * prefixes are loaded into the manager.
+	 */
 	
 	private void fillPrefixManagerWithDefaultValues(){
 		

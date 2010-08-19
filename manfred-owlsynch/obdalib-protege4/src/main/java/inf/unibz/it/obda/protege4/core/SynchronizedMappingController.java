@@ -34,11 +34,33 @@ import org.semanticweb.owl.model.OWLOntologyChangeListener;
 import org.semanticweb.owl.model.RemoveAxiom;
 import org.semanticweb.owl.model.SetOntologyURI;
 
+/**
+ * The synchronized mapping controller is an extension of the origianl mapping
+ * controller of the obda api. The main difference between them is that the 
+ * synchronized mapping controller forwards all updates done on the entities in the
+ * ontology to the mappings, e.g. if a entity is renamed in the ontology the 
+ * synchronized mapping controller will immediately reflect those changes in the mappings.
+ * 
+ * @author obda
+ *
+ */
+
 public class SynchronizedMappingController extends MappingController implements OWLOntologyChangeListener{
 
+	/**
+	 * the current data source controller
+	 */
 	private DatasourcesController	dscontroller			= null;
+	/**
+	 * current api controller
+	 */
 	private APIController 			apic					= null;
 	
+	/**
+	 * The constructor. Creates a new instance of the SynchronizedMappingController
+	 * @param dsc the data source controller	
+	 * @param ac the api controller
+	 */
 	public SynchronizedMappingController(DatasourcesController dsc,
 			APIController ac) {
 		super(dsc, ac);
@@ -46,6 +68,12 @@ public class SynchronizedMappingController extends MappingController implements 
 		apic = ac;
 	}
 
+	/**
+	 * Handles the ontology change event, which is thrown whenever something
+	 * changes in the ontology. Attention: the implementation is strongly coupled
+	 * to the event structure of protege. E.g a renaming is done be adding a new 
+	 * entity and deleting the old, etc.   
+	 */
 	@Override
 	public void ontologiesChanged(List<? extends OWLOntologyChange> changes)
 			throws OWLException {
@@ -161,6 +189,10 @@ public class SynchronizedMappingController extends MappingController implements 
 		}
 	}
 	
+	/**
+	 * private method that is used to check whether an Entity is still in the 
+	 * ontology or not.
+	 */
 	private boolean stillExists(OWLEntity ent){
 		
 		APICoupler coupler = apic.getCoupler(); 
@@ -181,6 +213,9 @@ public class SynchronizedMappingController extends MappingController implements 
 		}
 	}
 	
+	/**
+	 * private method that retrieves all involved entities in an Change Event.
+	 */
 	private Set<OWLEntity> getInvolvedEntities(List<? extends OWLOntologyChange> changes){
 		Set<OWLEntity> set = new HashSet<OWLEntity>();
 		
@@ -214,6 +249,12 @@ public class SynchronizedMappingController extends MappingController implements 
 		return set;
 	}
 	
+	/**
+	 * Private method that checks whether all changes involve a remove axiom. In
+	 * that case we can be sure we have to remove an entity. Otherwise the 
+	 * Change Event is a candidate for a renaming but some further checks
+	 * have to be done. 
+	 */
 	private boolean allRemoveAxioms(List<? extends OWLOntologyChange> changes){
 		
 		if(changes.size()<2){
@@ -230,6 +271,10 @@ public class SynchronizedMappingController extends MappingController implements 
 		
 	}
 	
+	/**
+	 * Removes all entities from the mappings that where involved in the 
+	 * Remove Event.
+	 */
 	
 	private void removeAxiom(String name){
 		
@@ -284,6 +329,10 @@ public class SynchronizedMappingController extends MappingController implements 
 		}
 	}
 
+	/**
+	 * Removes all entities that were involved in the Renaming Event and replaces
+	 * with the new ones.
+	 */
 	
 	private void replaceAxiom(String old, String neu, URI newUri){
 		

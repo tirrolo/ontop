@@ -98,6 +98,9 @@ public class OWLAPICoupler implements APICoupler {
 	}
 	
 	public boolean isDatatypeProperty(URI ontouri, URI propertyURI) {
+		if(ontouri.toString().equals("")){
+			ontouri = apic.getCurrentOntologyURI();
+		}
 		OntologyEntitiyInformation info = infoMap.get(ontouri);
 		if(info == null){
 			return false;
@@ -107,6 +110,9 @@ public class OWLAPICoupler implements APICoupler {
 	}
 
 	public boolean isNamedConcept(URI ontouri,URI propertyURI) {
+		if(ontouri.toString().equals("")){
+			ontouri = apic.getCurrentOntologyURI();
+		}
 		OntologyEntitiyInformation info = infoMap.get(ontouri);
 		if(info == null){
 			return false;
@@ -116,7 +122,9 @@ public class OWLAPICoupler implements APICoupler {
 	}
 
 	public boolean isObjectProperty(URI ontouri,URI propertyURI) {
-		
+		if(ontouri.toString().equals("")){
+			ontouri = apic.getCurrentOntologyURI();
+		}
 		OntologyEntitiyInformation info = infoMap.get(ontouri);
 		if(info == null){
 			return false;
@@ -187,4 +195,5 @@ public class OWLAPICoupler implements APICoupler {
 		
 		infoMap.remove(ontouri);
 	}
+	
 }
