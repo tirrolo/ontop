@@ -34,16 +34,39 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+/**
+ * The obda plugin data manager is an extension of the original data manager in the
+ * obda api. The only difference between this data manager an the original one is
+ * the loading of prefixes. It looks whether an obda file has specified some some 
+ * prefixes and if so they are loaded and administrated by the prefix manager. 
+ * 
+ * @author Manfred Gerstgrasser
+ *
+ */
+
 public class OWLAPIDataManager extends DataManager {
 
+	/**
+	 * a map containing for each prefix the corresponding ontology URI
+	 */
 	private Map<String,String> prefixMap = null;
 	
+	
+	/**
+	 * The constructor. Creates a new instance of the OBDAPluginDataManager
+	 * @param apic the current api controller
+	 */
 	public OWLAPIDataManager(APIController apic, PrefixManager man) {
 		super(apic, man);
 		prefixMap = new HashMap<String, String>();
 	}
 	
-public void loadOBDADataFromURI(URI obdaFileURI) {
+	
+	/**
+	 * Load the given obda file. In contrast to the original it looks whether the obda
+	 * file defines some prefixes. If so they are loaded into the prefix mapper.
+	 */
+	public void loadOBDADataFromURI(URI obdaFileURI) {
 		
 		File obdaFile = new File(obdaFileURI);
 		if (obdaFile == null) {
@@ -145,6 +168,9 @@ public void loadOBDADataFromURI(URI obdaFileURI) {
 		}
 	}
 
+	/**
+	 * Saves all obda data including the prefixes stored by the prefix mapper
+	 */
 	public void saveOBDAData(URI fileuri) throws ParserConfigurationException, FileNotFoundException, IOException {
 		File file = new File(fileuri);
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -235,6 +261,11 @@ public void loadOBDADataFromURI(URI obdaFileURI) {
 
 		XMLUtils.saveDocumentToXMLFile(doc, file.toString());
 	}
+	
+	/**
+	 * Returns the Map containing for each prefix the corresponding onotlogy URI
+	 * @return the prefix map
+	 */
 	
 	public Map<String,String> getPrefixMap(){
 		return prefixMap;

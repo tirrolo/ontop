@@ -46,19 +46,37 @@ import org.slf4j.LoggerFactory;
  */
 
 
-public class SyncronizedMappingController extends MappingController implements OWLOntologyChangeListener{
+public class SynchronizedMappingController extends MappingController implements OWLOntologyChangeListener{
 
-
+	/**
+	 * the current data source controller
+	 */
 	private DatasourcesController	dscontroller			= null;
+	/**
+	 * current api controller
+	 */
 	private APIController 			apic					= null;
 	
-	public SyncronizedMappingController(DatasourcesController dsc,
+	
+	/**
+	 * The constructor. Creates a new instance of the SynchronizedMappingController
+	 * @param dsc the data source controller	
+	 * @param ac the api controller
+	 */
+	public SynchronizedMappingController(DatasourcesController dsc,
 			APIController ap) {
 		super(dsc, ap);
 		dscontroller = dsc;
 		apic = ap;
 	}
 
+	
+	/**
+	 * Handles the ontology change event, which is thrown whenever something
+	 * changes in the ontology. Attention: the implementation is strongly coupled
+	 * to the event structure of protege. E.g a renaming is done be adding a new 
+	 * entity and deleting the old, etc.   
+	 */
 	@Override
 	public void ontologiesChanged(List<? extends OWLOntologyChange> changes)
 			throws OWLException {
@@ -78,6 +96,12 @@ public class SyncronizedMappingController extends MappingController implements O
 		}
 	}
 	
+	/**
+	 * Private method that checks whether all changes involve a remove axiom. In
+	 * that case we can be sure we have to remove an entity. Otherwise the 
+	 * Change Event is a candidate for a renaming but some further checks
+	 * have to be done. 
+	 */
 	private List<RemoveAxiom> getRemoveAxioms(List<? extends OWLOntologyChange> changes){
 		
 		Vector<RemoveAxiom> vec = new Vector<RemoveAxiom>();
@@ -91,6 +115,10 @@ public class SyncronizedMappingController extends MappingController implements O
 		return vec;
 	}
 	
+	/**
+	 * private method that is used to check whether an Entity is still in the 
+	 * ontology or not.
+	 */
 	private boolean stillExists(OWLEntity ent){
 		
 		APICoupler coupler = apic.getCoupler(); 
@@ -110,6 +138,9 @@ public class SyncronizedMappingController extends MappingController implements O
 		}
 	}
 	
+	/**
+	 * private method that retrieves all involved entities in an Change Event.
+	 */
 	private Set<OWLEntity> getInvolvedEntities(List<RemoveAxiom> changes){
 		Set<OWLEntity> set = new HashSet<OWLEntity>();
 		
@@ -143,6 +174,10 @@ public class SyncronizedMappingController extends MappingController implements O
 		return set;
 	}
 		
+	/**
+	 * Removes all entities from the mappings that where involved in the 
+	 * Remove Event.
+	 */
 	private void removeAxiom(String name){
 		
 		HashMap<URI, DataSource> datasources = dscontroller.getAllSources();
