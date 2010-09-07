@@ -19,8 +19,6 @@ import inf.unibz.it.obda.domain.SourceQuery;
 import inf.unibz.it.obda.domain.TargetQuery;
 import inf.unibz.it.obda.gui.swing.exception.NoDatasourceSelectedException;
 import inf.unibz.it.obda.gui.swing.mapping.tree.MappingTreeModel;
-import inf.unibz.it.obda.gui.swing.treemodel.filter.FilteredTreeModel;
-import inf.unibz.it.obda.gui.swing.treemodel.filter.TreeModelFilter;
 import inf.unibz.it.obda.rdbmsgav.domain.RDBMSOBDAMappingAxiom;
 import inf.unibz.it.obda.rdbmsgav.domain.RDBMSSQLQuery;
 import inf.unibz.it.ucq.domain.ConjunctiveQuery;
@@ -41,7 +39,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class MappingController implements TreeModelListener, DatasourcesControllerListener,FilteredTreeModel  {
+public class MappingController implements TreeModelListener, DatasourcesControllerListener {
 
 	private static MappingController						instance				= null;
 
@@ -714,36 +712,6 @@ public class MappingController implements TreeModelListener, DatasourcesControll
 		fireMappigUpdated(datasource_uri, mapping.getId(), mapping);
 	}
 	
-
-	@Override
-	public void addFilter(TreeModelFilter T) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void addFilters(List<TreeModelFilter> T) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeAllFilters() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeFilter(TreeModelFilter T) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeFilter(List<TreeModelFilter> T) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void datasourcParametersUpdated() {}
