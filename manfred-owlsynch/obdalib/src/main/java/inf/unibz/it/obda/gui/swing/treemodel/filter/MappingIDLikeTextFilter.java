@@ -37,4 +37,28 @@ public class MappingIDLikeTextFilter implements TreeModelFilter<OBDAMappingAxiom
 		}
 		return false;
 	}
+
+	
+	public static void main(String args[]) {
+		try {
+			RDBMSOBDAMappingAxiom m = new RDBMSOBDAMappingAxiom("test id"); 
+			ConjunctiveQuery t = new ConjunctiveQuery();
+			t.addQueryAtom(new ConceptQueryAtom(new NamedConcept(URI.create("test")), new VariableTerm("x")));
+			m.setTargetQuery(t);
+			RDBMSSQLQuery q = new RDBMSSQLQuery();
+			q.setInputQuery("SELECT ..", null);
+			m.setSourceQuery(q);
+			
+			MappingIDLikeTextFilter filter = new MappingIDLikeTextFilter("id2");
+			System.out.println(filter.match(m));
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
+
+//Receive
+

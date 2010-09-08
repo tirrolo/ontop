@@ -486,7 +486,7 @@ public class MappingController implements TreeModelListener, DatasourcesControll
 				Element mapping = (Element) child;
 				RDBMSOBDAMappingAxiom newmapping = (RDBMSOBDAMappingAxiom) codec.decode(mapping);
 				if(newmapping == null){
-					deleteMappings(source);
+//					deleteMappings(source);
 					throw new Exception("Error while parsing the conjunctive query of the mapping "+mapping.getAttribute("id"));
 				}
 //				String id = mapping.getAttribute("id");
@@ -741,7 +741,12 @@ public class MappingController implements TreeModelListener, DatasourcesControll
 	
 	public void activeOntologyChanged(){
 		for (MappingControllerListener listener : listeners) {
-			listener.ontologyChanged();
+			try {
+				listener.ontologyChanged();
+			} catch (Exception e) {
+				log.warn("Error while notifying listeners about an active ontology change.");
+			}
+
 		}
 	}
 

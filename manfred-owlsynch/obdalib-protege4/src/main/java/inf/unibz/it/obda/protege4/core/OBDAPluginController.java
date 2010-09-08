@@ -9,7 +9,6 @@ import inf.unibz.it.obda.api.controller.DatasourcesControllerListener;
 import inf.unibz.it.obda.api.controller.MappingControllerListener;
 import inf.unibz.it.obda.api.controller.QueryControllerEntity;
 import inf.unibz.it.obda.api.controller.QueryControllerListener;
-import inf.unibz.it.obda.api.io.DataManager;
 import inf.unibz.it.obda.api.io.PrefixManager;
 import inf.unibz.it.obda.constraints.AbstractConstraintAssertionController;
 import inf.unibz.it.obda.dependencies.AbstractDependencyAssertionController;
@@ -32,7 +31,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.coode.owlapi.owlxml.renderer.OWLXMLRenderer;
 import org.protege.editor.core.Disposable;
 import org.protege.editor.core.ProtegeApplication;
 import org.protege.editor.core.ProtegeManager;
@@ -49,15 +47,13 @@ import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.model.inference.ProtegeOWLReasonerFactory;
 import org.protege.editor.owl.ui.prefix.PrefixMapperManager;
-import org.protege.editor.owl.ui.view.OWLImportsDeclarationsViewComponent;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.RemoveAxiom;
-
-import com.hp.hpl.jena.vocabulary.OWL;
+import org.slf4j.LoggerFactory;
 
 public class OBDAPluginController extends APIController implements Disposable {
 
@@ -69,6 +65,8 @@ public class OBDAPluginController extends APIController implements Disposable {
 	WorkspaceManager wsmanager = null;
 	OWLEditorKit owlEditorKit = null;
 	PrefixMapperManager prefixmanager = null;
+	
+	org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public OBDAPluginController(EditorKit editorKit) {
 		super();
@@ -342,8 +340,13 @@ public class OBDAPluginController extends APIController implements Disposable {
 					if(loadedOntologies.add(uri)){
 						apicoupler.addNewOntologyInfo(ontology);
 						loadData(source.getOntologyPhysicalURI(ontology));
+					} 
+					try {
+						mapcontroller.activeOntologyChanged();
+						
+					} catch (Exception e) {
+						log.warn("Error changing the active ontology.");
 					}
-					mapcontroller.activeOntologyChanged();
 				}
 				apicoupler.updateOntologies();
 				break;
@@ -374,15 +377,20 @@ public class OBDAPluginController extends APIController implements Disposable {
 			if (ontology != null) {
 				OWLClass newClass = owlmm.getOWLDataFactory().getOWLClass(
 						URI.create(ontology.getURI()
-								+ "#RandomMarianoTest6677841155"));
+								+ "#RandomClass6677841155"));
 				OWLAxiom axiom = owlmm.getOWLDataFactory()
 						.getOWLDeclarationAxiom(newClass);
 
-				AddAxiom addChange = new AddAxiom(ontology, axiom);
-				owlmm.applyChange(addChange);
-
-				RemoveAxiom removeChange = new RemoveAxiom(ontology, axiom);
-				owlmm.applyChange(removeChange);
+				try {
+					AddAxiom addChange = new AddAxiom(ontology, axiom);
+					owlmm.applyChange(addChange);
+	
+					RemoveAxiom removeChange = new RemoveAxiom(ontology, axiom);
+					owlmm.applyChange(removeChange);
+				} catch (Exception e) {
+					log.warn("Exception while faking an ontology change. Your OBDA data might have new data that has not been noted and you must force an ontology save operation OR your ontology could have an extra declaration for a temporary class with URI: {}", newClass.getURI() );
+					log.debug(e.getMessage(), e);
+				}
 			}
 		}
 	}

@@ -16,9 +16,7 @@ package inf.unibz.it.obda.gui.swing.mapping.panel;
 import inf.unibz.it.obda.api.controller.APIController;
 import inf.unibz.it.obda.api.controller.DatasourcesController;
 import inf.unibz.it.obda.api.controller.MappingController;
-import inf.unibz.it.obda.api.controller.MappingControllerListener;
 import inf.unibz.it.obda.api.controller.exception.DuplicateMappingException;
-import inf.unibz.it.obda.domain.OBDAMappingAxiom;
 import inf.unibz.it.obda.domain.SourceQuery;
 import inf.unibz.it.obda.domain.TargetQuery;
 import inf.unibz.it.obda.gui.IconLoader;
@@ -33,6 +31,13 @@ import inf.unibz.it.obda.gui.swing.mapping.tree.MappingTreeSelectionModel;
 import inf.unibz.it.obda.gui.swing.preferences.OBDAPreferences;
 import inf.unibz.it.obda.gui.swing.preferences.OBDAPreferences.MappingManagerPreferenceChangeListener;
 import inf.unibz.it.obda.gui.swing.preferences.OBDAPreferences.MappingManagerPreferences;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.MappingFunctorTreeModelFilter;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.MappingHeadVariableTreeModelFilter;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.MappingIDTreeModelFilter;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.MappingPredicateTreeModelFilter;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.MappingSQLStringTreeModelFilter;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.MappingStringTreeModelFilter;
+import inf.unibz.it.obda.gui.swing.treemodel.filter.TreeModelFilter;
 import inf.unibz.it.obda.rdbmsgav.domain.RDBMSSQLQuery;
 import inf.unibz.it.obda.rdbmsgav.validator.RDBMSMappingValidator;
 import inf.unibz.it.obda.rdbmsgav.validator.SQLQueryValidator;
@@ -45,14 +50,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -61,7 +67,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import com.hp.hpl.jena.reasoner.rulesys.builtins.UriConcat;
+import org.slf4j.LoggerFactory;
 
 // import edu.stanford.smi.protege.resource.Icons;
 
@@ -69,41 +75,47 @@ import com.hp.hpl.jena.reasoner.rulesys.builtins.UriConcat;
  * 
  * @author mariano
  */
-public class MappingManagerPanel extends JPanel implements MappingManagerPreferenceChangeListener, MappingControllerListener{
+public class MappingManagerPanel extends JPanel implements MappingManagerPreferenceChangeListener {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 9105604240311706162L;
+	private static final long	serialVersionUID	= 9105604240311706162L;
 
-	Thread					validatorThread	= null;
+	Thread						validatorThread		= null;
 
-	SQLQueryValidator		v				= null;
+	SQLQueryValidator			v					= null;
 
-	boolean					canceled		= false;
+	boolean						canceled			= false;
 
-	MappingController		mapc			= null;
+	boolean						addToModel			= false;
 
-	DatasourcesController	dsc				= null;
+	MappingController			mapc				= null;
 
-	protected APIController	apic 			= null;
-	
-	DefaultMutableTreeNode editedNode 		=null;
-	
-	MappingManagerPreferences pref = null;
-	KeyStroke addMapping = null;
-	KeyStroke editBody = null;
-	KeyStroke editHead = null;
-	KeyStroke editID = null;
-	
-	
+	DatasourcesController		dsc					= null;
+
+	protected APIController		apic				= null;
+
+	DefaultMutableTreeNode		editedNode			= null;
+	MappingManagerPreferences	pref				= null;
+	KeyStroke					addMapping			= null;
+	KeyStroke					editBody			= null;
+	KeyStroke					editHead			= null;
+	KeyStroke					editID				= null;
+
+	final String				ID					= "id";
+	final String				FUNCT				= "funct";
+	final String				PRED				= "pred";
+	final String				HEAD				= "head";
+	final String				SQL					= "sql";
+	final String				TEXT				= "text";
+
 	/** Creates new form MappingManagerPanel */
 	public MappingManagerPanel(APIController apic, MappingController mapc, DatasourcesController dsc) {
 		this.apic = apic;
 		this.mapc = mapc;
 		this.dsc = dsc;
-		pref =  OBDAPreferences.getOBDAPreferences().getMappingsPreference();
-		apic.getMappingController().addMappingControllerListener(this);
+		pref = OBDAPreferences.getOBDAPreferences().getMappingsPreference();
 		initComponents();
 		registerAction();
 		addMenu();
@@ -118,123 +130,129 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		MappingRenderer map_renderer = new MappingRenderer(apic);
 		treeMappingsTree.setCellRenderer(map_renderer);
 		treeMappingsTree.setEditable(true);
-		treeMappingsTree.setCellEditor(new MappingTreeNodeCellEditor(treeMappingsTree, this,apic));
+		treeMappingsTree.setCellEditor(new MappingTreeNodeCellEditor(treeMappingsTree, this, apic));
 		treeMappingsTree.setSelectionModel(new MappingTreeSelectionModel());
 		treeMappingsTree.setRowHeight(0);
 		treeMappingsTree.setMaximumSize(new Dimension(scrollMappingsTree.getWidth() - 50, 65000));
 		treeMappingsTree.setToggleClickCount(1);
 		treeMappingsTree.setInvokesStopCellEditing(true);
-//		MouseListener[] ls = treeMappingsTree.getMouseListeners();
-//		for(int i=0; i<ls.length;i++){
-//			treeMappingsTree.removeMouseListener(ls[i]);
-//		}
-//		treeMappingsTree.addMouseListener(new MouseListener(){
-//
-//			public void mouseClicked(MouseEvent e) {
-//				
-//					treeMappingsTree.requestFocus();
-//					e.consume();
-//					if(e.getButton() == MouseEvent.BUTTON1){	
-//						
-//						if(treeMappingsTree.isEditing()){
-//							MappingTreeNodeCellEditor editor = (MappingTreeNodeCellEditor) treeMappingsTree.getCellEditor();
-//							if(editor.isInputValid()){
-//								if(treeMappingsTree.stopEditing()){
-//									String txt = editor.getCellEditorValue().toString();
-//									updateNode(txt);
-//								}
-//							}
-//						}else{
-//							if(e.getModifiers()==18){
-//								TreePath[] currentSelection = treeMappingsTree.getSelectionPaths();
-//								TreePath path = treeMappingsTree.getPathForLocation(e.getX(), e.getY());
-//								if(path !=null && !treeMappingsTree.isPathSelected(path)){
-//									treeMappingsTree.setSelectionPaths(selectPath(currentSelection, path));
-//								}else{
-//								
-//									String name = System.getProperty("os.name");
-//									if((path == null || treeMappingsTree.isPathSelected(path)) && name.equals("Darwin")){
-//										menuMappings.show(treeMappingsTree, e.getX(), e.getY());
-//									}
-//								}
-//							}else{
-//								TreePath path =treeMappingsTree.getPathForLocation(e.getX(), e.getY());
-//								if(path != null){
-//									treeMappingsTree.setSelectionPath(path);
-//									if(treeMappingsTree.isExpanded(path)){
-//										treeMappingsTree.collapsePath(path);
-//									}else{
-//										treeMappingsTree.expandPath(path);
-//									}
-//								}
-//							}
-//						}
-//					}else if(e.getButton() == MouseEvent.BUTTON3){
-//						TreePath path =treeMappingsTree.getPathForLocation(e.getX(), e.getY());
-//						treeMappingsTree.setSelectionPath(path);
-//						menuMappings.show(treeMappingsTree, e.getX(), e.getY());
-//					}
-//
-//			}
-//			public void mouseEntered(MouseEvent e) {}
-//			public void mouseExited(MouseEvent e) {}
-//			public void mousePressed(MouseEvent e) {}
-//			public void mouseReleased(MouseEvent e) {}
-//			
-//		});
-//		KeyListener[] kl = treeMappingsTree.getKeyListeners();
-//		for(int j=0; j<kl.length;j++){
-//			treeMappingsTree.removeKeyListener(kl[j]);
-//		}
-//		treeMappingsTree.addKeyListener(new KeyListener(){
-//
-//			public void keyPressed(KeyEvent e) {
-//				
-//					int mod = e.getModifiers();
-//					int key = e.getKeyCode();
-//					KeyStroke stroke = KeyStroke.getKeyStroke(key, mod);
-//					if(stroke.equals(addMapping)){
-//						addMapping();
-//					}else if(stroke.equals(deleteMapping)){
-//						try {
-//							e.consume();
-//							removeMapping();
-//						} catch (Exception e1) {
-//							System.out.println("---------------------------------ERROR-----------------------------------------------------");
-//							e1.printStackTrace();
-//							return;
-//						}
-//					}else if(stroke.equals(editBody)){
-//						e.consume();
-//						TreePath path =treeMappingsTree.getSelectionPath();
-//						if(path == null){
-//							return;
-//						}
-//						startEditBodyOfMapping(path);
-//					}else if(stroke.equals(editHead)){
-//						e.consume();
-//						TreePath path =treeMappingsTree.getSelectionPath();
-//						if(path == null){
-//							return;
-//						}
-//						startEditHeadOfMapping(path);
-//					}else if(stroke.equals(editID)){
-//						e.consume();
-//						TreePath path =treeMappingsTree.getSelectionPath();
-//						if(path == null){
-//							return;
-//						}
-//						treeMappingsTree.setEditable(true);
-//						editedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-//						treeMappingsTree.startEditingAtPath(path);
-//					}else{
-//						return;
-//					}			
-//			}
-//			public void keyReleased(KeyEvent e) {}
-//			public void keyTyped(KeyEvent e) {}
-//			
-//		});
+		// MouseListener[] ls = treeMappingsTree.getMouseListeners();
+		// for(int i=0; i<ls.length;i++){
+		// treeMappingsTree.removeMouseListener(ls[i]);
+		// }
+		// treeMappingsTree.addMouseListener(new MouseListener(){
+		//
+		// public void mouseClicked(MouseEvent e) {
+		//				
+		// treeMappingsTree.requestFocus();
+		// e.consume();
+		// if(e.getButton() == MouseEvent.BUTTON1){
+		//						
+		// if(treeMappingsTree.isEditing()){
+		// MappingTreeNodeCellEditor editor = (MappingTreeNodeCellEditor)
+		// treeMappingsTree.getCellEditor();
+		// if(editor.isInputValid()){
+		// if(treeMappingsTree.stopEditing()){
+		// String txt = editor.getCellEditorValue().toString();
+		// updateNode(txt);
+		// }
+		// }
+		// }else{
+		// if(e.getModifiers()==18){
+		// TreePath[] currentSelection = treeMappingsTree.getSelectionPaths();
+		// TreePath path = treeMappingsTree.getPathForLocation(e.getX(),
+		// e.getY());
+		// if(path !=null && !treeMappingsTree.isPathSelected(path)){
+		// treeMappingsTree.setSelectionPaths(selectPath(currentSelection,
+		// path));
+		// }else{
+		//								
+		// String name = System.getProperty("os.name");
+		// if((path == null || treeMappingsTree.isPathSelected(path)) &&
+		// name.equals("Darwin")){
+		// menuMappings.show(treeMappingsTree, e.getX(), e.getY());
+		// }
+		// }
+		// }else{
+		// TreePath path =treeMappingsTree.getPathForLocation(e.getX(),
+		// e.getY());
+		// if(path != null){
+		// treeMappingsTree.setSelectionPath(path);
+		// if(treeMappingsTree.isExpanded(path)){
+		// treeMappingsTree.collapsePath(path);
+		// }else{
+		// treeMappingsTree.expandPath(path);
+		// }
+		// }
+		// }
+		// }
+		// }else if(e.getButton() == MouseEvent.BUTTON3){
+		// TreePath path =treeMappingsTree.getPathForLocation(e.getX(),
+		// e.getY());
+		// treeMappingsTree.setSelectionPath(path);
+		// menuMappings.show(treeMappingsTree, e.getX(), e.getY());
+		// }
+		//
+		// }
+		// public void mouseEntered(MouseEvent e) {}
+		// public void mouseExited(MouseEvent e) {}
+		// public void mousePressed(MouseEvent e) {}
+		// public void mouseReleased(MouseEvent e) {}
+		//			
+		// });
+		// KeyListener[] kl = treeMappingsTree.getKeyListeners();
+		// for(int j=0; j<kl.length;j++){
+		// treeMappingsTree.removeKeyListener(kl[j]);
+		// }
+		// treeMappingsTree.addKeyListener(new KeyListener(){
+		//
+		// public void keyPressed(KeyEvent e) {
+		//				
+		// int mod = e.getModifiers();
+		// int key = e.getKeyCode();
+		// KeyStroke stroke = KeyStroke.getKeyStroke(key, mod);
+		// if(stroke.equals(addMapping)){
+		// addMapping();
+		// }else if(stroke.equals(deleteMapping)){
+		// try {
+		// e.consume();
+		// removeMapping();
+		// } catch (Exception e1) {
+		// System.out.println("---------------------------------ERROR-----------------------------------------------------");
+		// e1.printStackTrace();
+		// return;
+		// }
+		// }else if(stroke.equals(editBody)){
+		// e.consume();
+		// TreePath path =treeMappingsTree.getSelectionPath();
+		// if(path == null){
+		// return;
+		// }
+		// startEditBodyOfMapping(path);
+		// }else if(stroke.equals(editHead)){
+		// e.consume();
+		// TreePath path =treeMappingsTree.getSelectionPath();
+		// if(path == null){
+		// return;
+		// }
+		// startEditHeadOfMapping(path);
+		// }else if(stroke.equals(editID)){
+		// e.consume();
+		// TreePath path =treeMappingsTree.getSelectionPath();
+		// if(path == null){
+		// return;
+		// }
+		// treeMappingsTree.setEditable(true);
+		// editedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+		// treeMappingsTree.startEditingAtPath(path);
+		// }else{
+		// return;
+		// }
+		// }
+		// public void keyReleased(KeyEvent e) {}
+		// public void keyTyped(KeyEvent e) {}
+		//			
+		// });
 		addMappingButton.setIcon(IconLoader.getImageIcon("images/plus.png"));
 		addMappingButton.setToolTipText("Add a new mapping");
 		removeMappingButton.setIcon(IconLoader.getImageIcon("images/minus.png"));
@@ -244,15 +262,16 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		pref.registerPreferenceChangedListener(this);
 	}
 
-	private void registerAction(){
-		
+	private void registerAction() {
+
 		InputMap inputmap = treeMappingsTree.getInputMap();
 		ActionMap actionmap = treeMappingsTree.getActionMap();
-		
+
 		String add = pref.getShortCut(MappingManagerPreferences.ADD_MAPPING);
 		addMapping = KeyStroke.getKeyStroke(add);
-//		String delete = pref.getShortCut(MappingManagerPreferences.DELETE_MAPPING);
-//		KeyStroke deleteMapping = KeyStroke.getKeyStroke(delete);
+		// String delete =
+		// pref.getShortCut(MappingManagerPreferences.DELETE_MAPPING);
+		// KeyStroke deleteMapping = KeyStroke.getKeyStroke(delete);
 		String body = pref.getShortCut(MappingManagerPreferences.EDIT_BODY);
 		editBody = KeyStroke.getKeyStroke(body);
 		String head = pref.getShortCut(MappingManagerPreferences.EDIT_HEAD);
@@ -260,148 +279,149 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		String id = pref.getShortCut(MappingManagerPreferences.EDIT_ID);
 		editID = KeyStroke.getKeyStroke(id);
 
-		
 		AbstractAction addAction = new AbstractAction() {
-		      public void actionPerformed(ActionEvent actionEvent) {
-		    	  addMapping();
-		      }
+			public void actionPerformed(ActionEvent actionEvent) {
+				addMapping();
+			}
 		};
 		inputmap.put(addMapping, MappingManagerPreferences.ADD_MAPPING);
 		actionmap.put(MappingManagerPreferences.ADD_MAPPING, addAction);
-		
-//		AbstractAction deleteAction = new AbstractAction() {
-//		      public void actionPerformed(ActionEvent actionEvent) {
-//		    	  removeMapping();
-//		      }
-//		};
-//		inputmap.put(deleteMapping, MappingManagerPreferences.DELETE_MAPPING);
-//		actionmap.put(MappingManagerPreferences.DELETE_MAPPING, deleteAction);
-		
+
+		// AbstractAction deleteAction = new AbstractAction() {
+		// public void actionPerformed(ActionEvent actionEvent) {
+		// removeMapping();
+		// }
+		// };
+		// inputmap.put(deleteMapping,
+		// MappingManagerPreferences.DELETE_MAPPING);
+		// actionmap.put(MappingManagerPreferences.DELETE_MAPPING,
+		// deleteAction);
+
 		AbstractAction editBodyAction = new AbstractAction() {
-		      public void actionPerformed(ActionEvent actionEvent) {
-					TreePath path =treeMappingsTree.getSelectionPath();
-					if(path == null){
-						return;
-					}
-					startEditBodyOfMapping(path);
-					
-		      }
+			public void actionPerformed(ActionEvent actionEvent) {
+				TreePath path = treeMappingsTree.getSelectionPath();
+				if (path == null) {
+					return;
+				}
+				startEditBodyOfMapping(path);
+
+			}
 		};
 		inputmap.put(editBody, MappingManagerPreferences.EDIT_BODY);
 		actionmap.put(MappingManagerPreferences.EDIT_BODY, editBodyAction);
-		
+
 		AbstractAction editHeadAction = new AbstractAction() {
-		      public void actionPerformed(ActionEvent actionEvent) {
-					TreePath path =treeMappingsTree.getSelectionPath();
-					if(path == null){
-						return;
-					}
-					startEditHeadOfMapping(path);
-		      }
+			public void actionPerformed(ActionEvent actionEvent) {
+				TreePath path = treeMappingsTree.getSelectionPath();
+				if (path == null) {
+					return;
+				}
+				startEditHeadOfMapping(path);
+			}
 		};
 		inputmap.put(editHead, MappingManagerPreferences.EDIT_HEAD);
 		actionmap.put(MappingManagerPreferences.EDIT_HEAD, editHeadAction);
-		
+
 		AbstractAction editIDAction = new AbstractAction() {
-		      public void actionPerformed(ActionEvent actionEvent) {
-					TreePath path =treeMappingsTree.getSelectionPath();
-					if(path == null){
-						return;
-					}
-					treeMappingsTree.setEditable(true);
-					editedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-					treeMappingsTree.startEditingAtPath(path);
-		      }
-		};
-		inputmap.put(editID, MappingManagerPreferences.EDIT_ID);
-		actionmap.put(MappingManagerPreferences.EDIT_ID, editIDAction);
-	}
-	
-	private void addMenu(){
-		
-		JMenuItem add = new JMenuItem();
-		add.setText("Add Mapping");
-		add.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent e) {
-				addMapping();
-			}
-			
-		});
-		add.setMnemonic(addMapping.getKeyCode());
-		add.setAccelerator(addMapping); 
-		menuMappings.add(add);
-		
-		JMenuItem delete = new JMenuItem();
-		delete.setText("Remove Mapping");
-		delete.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent e) {
-				removeMapping();
-			}
-			
-		});
-		menuMappings.add(delete);
-//		delete.setMnemonic(KeyEvent.VK_D);
-//		delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,InputEvent.CTRL_DOWN_MASK)); 
-		
-		menuMappings.addSeparator();
-		
-		JMenuItem editID = new JMenuItem();
-		editID.setText("Edit Mapping ID");
-		editID.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent e) {
-				TreePath path =treeMappingsTree.getSelectionPath();
-				if(path == null){
+			public void actionPerformed(ActionEvent actionEvent) {
+				TreePath path = treeMappingsTree.getSelectionPath();
+				if (path == null) {
 					return;
 				}
 				treeMappingsTree.setEditable(true);
 				editedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 				treeMappingsTree.startEditingAtPath(path);
 			}
-			
-		});
-		editID.setMnemonic(this.editID.getKeyCode());
-		editID.setAccelerator(this.editID); 
-		menuMappings.add(editID);
-		
-		JMenuItem editHead = new JMenuItem();
-		editHead.setText("Edit Mapping Head");
-		editHead.addActionListener(new ActionListener(){
+		};
+		inputmap.put(editID, MappingManagerPreferences.EDIT_ID);
+		actionmap.put(MappingManagerPreferences.EDIT_ID, editIDAction);
+	}
+
+	private void addMenu() {
+
+		JMenuItem add = new JMenuItem();
+		add.setText("Add Mapping");
+		add.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				TreePath path =treeMappingsTree.getSelectionPath();
-				if(path == null){
+				addMapping();
+			}
+
+		});
+		add.setMnemonic(addMapping.getKeyCode());
+		add.setAccelerator(addMapping);
+		menuMappings.add(add);
+
+		JMenuItem delete = new JMenuItem();
+		delete.setText("Remove Mapping");
+		delete.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				removeMapping();
+			}
+
+		});
+		menuMappings.add(delete);
+		// delete.setMnemonic(KeyEvent.VK_D);
+		// delete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,InputEvent.CTRL_DOWN_MASK));
+
+		menuMappings.addSeparator();
+
+		JMenuItem editID = new JMenuItem();
+		editID.setText("Edit Mapping ID");
+		editID.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				TreePath path = treeMappingsTree.getSelectionPath();
+				if (path == null) {
+					return;
+				}
+				treeMappingsTree.setEditable(true);
+				editedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+				treeMappingsTree.startEditingAtPath(path);
+			}
+
+		});
+		editID.setMnemonic(this.editID.getKeyCode());
+		editID.setAccelerator(this.editID);
+		menuMappings.add(editID);
+
+		JMenuItem editHead = new JMenuItem();
+		editHead.setText("Edit Mapping Head");
+		editHead.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				TreePath path = treeMappingsTree.getSelectionPath();
+				if (path == null) {
 					return;
 				}
 				startEditHeadOfMapping(path);
 			}
-			
+
 		});
 		editHead.setMnemonic(this.editHead.getKeyCode());
-		editHead.setAccelerator(this.editHead); 
+		editHead.setAccelerator(this.editHead);
 		menuMappings.add(editHead);
-		
+
 		JMenuItem editBody = new JMenuItem();
 		editBody.setText("Edit Mapping Body");
-		editBody.addActionListener(new ActionListener(){
+		editBody.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				TreePath path =treeMappingsTree.getSelectionPath();
-				if(path == null){
+				TreePath path = treeMappingsTree.getSelectionPath();
+				if (path == null) {
 					return;
 				}
 				startEditBodyOfMapping(path);
 			}
-			
+
 		});
 		editBody.setMnemonic(this.editBody.getKeyCode());
-		editBody.setAccelerator(this.editBody); 
+		editBody.setAccelerator(this.editBody);
 		menuMappings.add(editBody);
-		
+
 		menuMappings.addSeparator();
-		
+
 		menuValidateAll.setText("Validate");
 		menuValidateAll.setEnabled(false);
 		menuValidateAll.addActionListener(new java.awt.event.ActionListener() {
@@ -427,26 +447,20 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 			}
 		});
 		menuMappings.add(menuValidateHead);
-		
-		menuMappings.addSeparator(); 
-		
-		menuExecuteQuery.setText("Execute Query");
-		menuExecuteQuery.setEnabled(true);
-		menuExecuteQuery.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				menuExecuteQueryActionPerformed(evt);
-			}
-		});
-		menuMappings.add(menuExecuteQuery);
-		
+
+		menuMappings.addSeparator();
+
 	}
-	
-	    
+
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
 	 * regenerated by the Form Editor.
 	 */
+	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
 	// <editor-fold defaultstate="collapsed"
 	// <editor-fold defaultstate="collapsed"
 	// <editor-fold defaultstate="collapsed"
@@ -462,12 +476,49 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		scrollMappingsManager = new javax.swing.JScrollPane();
 		panelMappingManager = new javax.swing.JPanel();
 		panelMappingButtons = new javax.swing.JPanel();
+		jTextField1 = new javax.swing.JTextField();
+		jCheckBox1 = new javax.swing.JCheckBox();
+		panel1 = new java.awt.Panel();
 		jSeparator1 = new javax.swing.JSeparator();
 		addMappingButton = new javax.swing.JButton();
 		removeMappingButton = new javax.swing.JButton();
 		duplicateMappingButton = new javax.swing.JButton();
 		scrollMappingsTree = new javax.swing.JScrollPane();
 		treeMappingsTree = new javax.swing.JTree();
+
+		menuValidateAll.setText("Validate");
+		menuValidateAll.setEnabled(false);
+		menuValidateAll.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				menuValidateAllActionPerformed(evt);
+			}
+		});
+		menuMappings.add(menuValidateAll);
+
+		menuValidateBody.setText("Validate body");
+		menuValidateBody.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				menuValidateBodyActionPerformed(evt);
+			}
+		});
+		menuMappings.add(menuValidateBody);
+
+		menuValidateHead.setText("Validate head");
+		menuValidateHead.setEnabled(false);
+		menuValidateHead.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				menuValidateHeadActionPerformed(evt);
+			}
+		});
+		menuMappings.add(menuValidateHead);
+
+		menuExecuteQuery.setText("Execute Query");
+		menuExecuteQuery.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				menuExecuteQueryActionPerformed(evt);
+			}
+		});
+		menuMappings.add(menuExecuteQuery);
 
 		setLayout(new java.awt.BorderLayout());
 
@@ -477,10 +528,45 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		panelMappingManager.setPreferredSize(new java.awt.Dimension(400, 200));
 		panelMappingManager.setLayout(new java.awt.GridBagLayout());
 
-		panelMappingButtons.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+		panelMappingButtons.setEnabled(false);
+		panelMappingButtons.setLayout(new java.awt.GridBagLayout());
+
+		jTextField1.setPreferredSize(new java.awt.Dimension(250, 20));
+		jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+			public void keyPressed(java.awt.event.KeyEvent evt) {
+				try {
+					sendFilters(evt);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.weightx = 0.9;
+		panelMappingButtons.add(jTextField1, gridBagConstraints);
+
+		jCheckBox1.setText("Apply Filters");
+		jCheckBox1.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent evt) {
+				try {
+					jCheckBox1ItemStateChanged(evt);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+
+		panelMappingButtons.add(jCheckBox1, new java.awt.GridBagConstraints());
+		gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		gridBagConstraints.weightx = 0.1;
+		panelMappingButtons.add(panel1, gridBagConstraints);
 
 		jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
-		panelMappingButtons.add(jSeparator1);
+		panelMappingButtons.add(jSeparator1, new java.awt.GridBagConstraints());
 
 		addMappingButton.setIcon(IconLoader.getImageIcon("images/plus.png"));
 		addMappingButton.setToolTipText("Add new mapping");
@@ -495,7 +581,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 				addMappingButtonActionPerformed(evt);
 			}
 		});
-		panelMappingButtons.add(addMappingButton);
+		panelMappingButtons.add(addMappingButton, new java.awt.GridBagConstraints());
 
 		removeMappingButton.setIcon(IconLoader.getImageIcon("images/minus.png"));
 		removeMappingButton.setToolTipText("Remove mappings");
@@ -510,7 +596,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 				removeMappingButtonActionPerformed(evt);
 			}
 		});
-		panelMappingButtons.add(removeMappingButton);
+		panelMappingButtons.add(removeMappingButton, new java.awt.GridBagConstraints());
 
 		duplicateMappingButton.setIcon(IconLoader.getImageIcon("images/plus.png"));
 		duplicateMappingButton.setToolTipText("Duplicate mappings");
@@ -525,7 +611,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 				duplicateMappingButtonActionPerformed(evt);
 			}
 		});
-		panelMappingButtons.add(duplicateMappingButton);
+		panelMappingButtons.add(duplicateMappingButton, new java.awt.GridBagConstraints());
 
 		gridBagConstraints = new java.awt.GridBagConstraints();
 		gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -545,28 +631,73 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		gridBagConstraints.weighty = 1.0;
 		gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
 		panelMappingManager.add(scrollMappingsTree, gridBagConstraints);
-		
-		statusbar = new JLabel();
-		URI uri = apic.getCurrentOntologyURI();
-		statusbar.setText("Current Ontology: "+uri.toString());
-		statusbar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-		statusbar.setEnabled(true);
-		statusbar.setForeground(new Color(102,102,102));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
-        panelMappingManager.add(statusbar, gridBagConstraints);
-		
-		
+
 		scrollMappingsManager.setViewportView(panelMappingManager);
 
 		add(scrollMappingsManager, java.awt.BorderLayout.CENTER);
 	}// </editor-fold>//GEN-END:initComponents
+
+	/***
+	 * The action for the search field and the search checkbox. If the checkbox
+	 * is not selected it cleans the filters. If it is selected it updates to the 
+	 * current search string.
+	 */
+	private void processFilterAction() {
+		if (!(jCheckBox1.isSelected())) {
+			applyFilters(new ArrayList<TreeModelFilter>());
+		}
+
+		if (jCheckBox1.isSelected()) {
+			try {
+				List<TreeModelFilter> filters = parseSearchString(jTextField1.getText());
+				if (filters == null) {
+					throw new Exception("Impossible to parse search string.");
+				}
+				applyFilters(filters);
+			} catch (Exception e) {
+				LoggerFactory.getLogger(this.getClass()).debug(e.getMessage(), e);
+				JOptionPane.showMessageDialog(this, e.getMessage());
+			}
+		}
+	}
+
+	/***
+	 * Action for the filter checkbox
+	 * 
+	 * @param evt
+	 * @throws Exception
+	 */
+	private void jCheckBox1ItemStateChanged(java.awt.event.ItemEvent evt) throws Exception {// GEN-FIRST:event_jCheckBox1ItemStateChanged
+		processFilterAction();
+
+	}// GEN-LAST:event_jCheckBox1ItemStateChanged
+
+	/***
+	 * Action for key's entered in the search textbox
+	 * 
+	 * @param evt
+	 * @throws Exception
+	 */
+	private void sendFilters(java.awt.event.KeyEvent evt) throws Exception {// GEN-FIRST:event_sendFilters
+		int key = evt.getKeyCode();
+		if (key == java.awt.event.KeyEvent.VK_ENTER) {
+			if (!jCheckBox1.isSelected()) {
+				jCheckBox1.setSelected(true);
+			} else {
+				processFilterAction();
+			}
+		}
+
+	}// GEN-LAST:event_sendFilters
+
+	private void menuExecuteQueryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuExecuteQueryActionPerformed
+		// TODO add your handling code here:
+		TreePath path = treeMappingsTree.getSelectionPath();
+		if (path == null) {
+			return;
+		}
+		startExecuteQueryOfMapping(path);
+	}// GEN-LAST:event_menuExecuteQueryActionPerformed
 
 	private void menuValidateAllActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuValidateAllActionPerformed
 
@@ -590,8 +721,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 				RDBMSMappingValidator v;
 				try {
 					RDBMSSQLQuery rdbmssqlQuery = new RDBMSSQLQuery(body.getQuery(), apic);
-					ConjunctiveQuery conjunctiveQuery = new ConjunctiveQuery(head
-							.getQuery(), apic);
+					ConjunctiveQuery conjunctiveQuery = new ConjunctiveQuery(head.getQuery(), apic);
 					v = new RDBMSMappingValidator(apic, dsc.getCurrentDataSource(), rdbmssqlQuery, conjunctiveQuery);
 					Enumeration<String> errors = v.validate();
 					if (!errors.hasMoreElements()) {
@@ -614,7 +744,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 					}
 
 				} catch (QueryParseException e) {
-					outputField.addText(id +": syntax error \n", outputField.CRITICAL_ERROR);
+					outputField.addText(id + ": syntax error \n", outputField.CRITICAL_ERROR);
 				}
 
 			}
@@ -719,26 +849,25 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		// TODO add your handling code here:
 	}// GEN-LAST:event_menuValidateHeadActionPerformed
 
-	private void menuExecuteQueryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuExecuteQueryActionPerformed
-		TreePath path =treeMappingsTree.getSelectionPath();
-				if(path == null){
-					return;
-				}
-				startExecuteQueryOfMapping(path);
-		
-	}// GEN-LAST:event_menuExecuteQueryActionPerformed
-	
-	
+	/*
+	 * private void menuExecuteQueryActionPerformed(java.awt.event.ActionEvent
+	 * evt) {// GEN-FIRST:event_menuExecuteQueryActionPerformed TreePath path
+	 * =treeMappingsTree.getSelectionPath(); if(path == null){ return; }
+	 * startExecuteQueryOfMapping(path);
+	 * 
+	 * }// GEN-LAST:event_menuExecuteQueryActionPerformed
+	 */
+
 	private void menuDeleteActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuDeleteActionPerformed
 		// TODO add your handling code here:
 	}// GEN-LAST:event_menuDeleteActionPerformed
 
 	private void duplicateMappingButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_duplicateMappingButtonActionPerformed
-		
+
 		TreePath[] currentSelection = treeMappingsTree.getSelectionPaths();
-		if(currentSelection == null){
-			JOptionPane.showMessageDialog(this, "Please Select a Mapping first", "ERROR", JOptionPane.ERROR_MESSAGE); 
-		}else{
+		if (currentSelection == null) {
+			JOptionPane.showMessageDialog(this, "Please Select a Mapping first", "ERROR", JOptionPane.ERROR_MESSAGE);
+		} else {
 			if (JOptionPane.showConfirmDialog(this, "This will create copies of the selected mappings. \nNumber of mappings selected = "
 					+ treeMappingsTree.getSelectionPaths().length + "\n Continue? ", "Copy confirmation", JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
@@ -746,7 +875,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 			}
 			MappingController controller = mapc;
 			URI current_srcuri = dsc.getCurrentDataSource().getSourceID();
-	
+
 			if (currentSelection != null) {
 				for (int i = 0; i < currentSelection.length; i++) {
 					TreePath current_path = currentSelection[i];
@@ -835,19 +964,19 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 		editedNode = body;
 		treeMappingsTree.startEditingAtPath(new TreePath(body.getPath()));
 	}
-	
-	private void startExecuteQueryOfMapping(TreePath path){
-		final JDialog resultquery=new JDialog();
-		MappingNode mapping  =(MappingNode)path.getLastPathComponent();
-		MappingBodyNode body =mapping.getBodyNode();
-		SQLQueryPanel query_panel = new SQLQueryPanel (dsc,body.toString());
-  
+
+	private void startExecuteQueryOfMapping(TreePath path) {
+		final JDialog resultquery = new JDialog();
+		MappingNode mapping = (MappingNode) path.getLastPathComponent();
+		MappingBodyNode body = mapping.getBodyNode();
+		SQLQueryPanel query_panel = new SQLQueryPanel(dsc, body.toString());
+
 		resultquery.setSize(panelMappingManager.getWidth(), panelMappingManager.getHeight());
-        resultquery.setLocationRelativeTo(null);
-        resultquery.add(query_panel);
-        resultquery.setVisible(true);
-        resultquery.setTitle("Query Results");
-        
+		resultquery.setLocationRelativeTo(null);
+		resultquery.add(query_panel);
+		resultquery.setVisible(true);
+		resultquery.setTitle("Query Results");
+
 	}
 
 	// private JPopupMenu menu;
@@ -856,55 +985,58 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JButton		addMappingButton;
 	private javax.swing.JButton		duplicateMappingButton;
+	private javax.swing.JCheckBox	jCheckBox1;
 	private javax.swing.JSeparator	jSeparator1;
+	private javax.swing.JTextField	jTextField1;
+	private javax.swing.JMenuItem	menuExecuteQuery;
 	private javax.swing.JPopupMenu	menuMappings;
 	private javax.swing.JMenuItem	menuValidateAll;
 	private javax.swing.JMenuItem	menuValidateBody;
 	private javax.swing.JMenuItem	menuValidateHead;
-	private javax.swing.JMenuItem	menuExecuteQuery; //Add E
+	private java.awt.Panel			panel1;
 	private javax.swing.JPanel		panelMappingButtons;
 	private javax.swing.JPanel		panelMappingManager;
 	private javax.swing.JButton		removeMappingButton;
 	private javax.swing.JScrollPane	scrollMappingsManager;
 	private javax.swing.JScrollPane	scrollMappingsTree;
 	private javax.swing.JTree		treeMappingsTree;
-	private javax.swing.JLabel 		statusbar;
+
 	// End of variables declaration//GEN-END:variables
 
 	public void colorPeferenceChanged(String preference, Color col) {
-		
-		DefaultTreeModel model = (DefaultTreeModel)treeMappingsTree.getModel();
+
+		DefaultTreeModel model = (DefaultTreeModel) treeMappingsTree.getModel();
 		model.reload();
 
 	}
 
 	public void fontFamilyPreferenceChanged(String preference, String font) {
-		
-		DefaultTreeModel model = (DefaultTreeModel)treeMappingsTree.getModel();
+
+		DefaultTreeModel model = (DefaultTreeModel) treeMappingsTree.getModel();
 		model.reload();
 	}
 
 	public void fontSizePreferenceChanged(String preference, int size) {
-		
-		DefaultTreeModel model = (DefaultTreeModel)treeMappingsTree.getModel();
+
+		DefaultTreeModel model = (DefaultTreeModel) treeMappingsTree.getModel();
 		model.reload();
 	}
 
 	public void isBoldPreferenceChanged(String preference, Boolean isBold) {
-		
-		DefaultTreeModel model = (DefaultTreeModel)treeMappingsTree.getModel();
+
+		DefaultTreeModel model = (DefaultTreeModel) treeMappingsTree.getModel();
 		model.reload();
 	}
-	
+
 	private void updateNode(String str) {
 
 		try {
 			MappingController con = mapc;
-			URI sourceURI = dsc.getCurrentDataSource().getSourceID();
+			URI sourceName = dsc.getCurrentDataSource().getSourceID();
 			String nodeContent = (String) editedNode.getUserObject();
 			if (editedNode instanceof MappingNode) {
 
-				con.updateMapping(sourceURI, nodeContent, str);
+				con.updateMapping(sourceName, nodeContent, str);
 
 			} else if (editedNode instanceof MappingBodyNode) {
 
@@ -912,7 +1044,7 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 				MappingNode parent = (MappingNode) node.getParent();
 
 				SourceQuery b = new RDBMSSQLQuery(str, apic);
-				con.updateMapping(sourceURI, parent.getMappingID(), b);
+				con.updateMapping(sourceName, parent.getMappingID(), b);
 
 			} else if (editedNode instanceof MappingHeadNode) {
 
@@ -920,24 +1052,24 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 				MappingNode parent = (MappingNode) node.getParent();
 
 				TargetQuery h = new ConjunctiveQuery(str, apic);
-				con.updateMapping(sourceURI, parent.getMappingID(), h);
+				con.updateMapping(sourceName, parent.getMappingID(), h);
 			}
 		} catch (QueryParseException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private TreePath[] selectPath(TreePath[] currentselection, TreePath newPath){
+
+	private TreePath[] selectPath(TreePath[] currentselection, TreePath newPath) {
 		Vector<TreePath> paths = new Vector<TreePath>();
 		boolean found = false;
-		for(int i=0; i<currentselection.length; i++){
-			if(currentselection[i].equals(newPath)){
+		for (int i = 0; i < currentselection.length; i++) {
+			if (currentselection[i].equals(newPath)) {
 				found = true;
-			}else{
+			} else {
 				paths.add(currentselection[i]);
 			}
 		}
-		if(!found){
+		if (!found) {
 			paths.add(newPath);
 		}
 		TreePath[] aux = new TreePath[paths.size()];
@@ -945,71 +1077,262 @@ public class MappingManagerPanel extends JPanel implements MappingManagerPrefere
 	}
 
 	public void shortCutChanged(String preference, String shortcut) {
-		
-//		InputMap inputmap = treeMappingsTree.getInputMap();
-//		
-//		if(preference.equals(MappingManagerPreferences.ADD_MAPPING)){
-//			addMapping = KeyStroke.getKeyStroke(shortcut);
-//			inputmap.put(addMapping, preference);
-//		}else if(preference.equals(MappingManagerPreferences.DELETE_MAPPING)){
-////			deleteMapping = KeyStroke.getKeyStroke(shortcut);
-//		}else if(preference.equals(MappingManagerPreferences.EDIT_BODY)){
-//			editBody = KeyStroke.getKeyStroke(shortcut);
-//			inputmap.put(editBody, preference);
-//		}else if(preference.equals(MappingManagerPreferences.EDIT_HEAD)){
-//			editHead = KeyStroke.getKeyStroke(shortcut);
-//			inputmap.put(editHead, preference);
-//		}else if(preference.equals(MappingManagerPreferences.EDIT_ID)){
-//			editID = KeyStroke.getKeyStroke(shortcut);
-//			inputmap.put(editID, preference);
-//		}else{
-//			try {
-//				throw new Exception("Unknown preference String");
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
+
+		// InputMap inputmap = treeMappingsTree.getInputMap();
+		//		
+		// if(preference.equals(MappingManagerPreferences.ADD_MAPPING)){
+		// addMapping = KeyStroke.getKeyStroke(shortcut);
+		// inputmap.put(addMapping, preference);
+		// }else
+		// if(preference.equals(MappingManagerPreferences.DELETE_MAPPING)){
+		// // deleteMapping = KeyStroke.getKeyStroke(shortcut);
+		// }else if(preference.equals(MappingManagerPreferences.EDIT_BODY)){
+		// editBody = KeyStroke.getKeyStroke(shortcut);
+		// inputmap.put(editBody, preference);
+		// }else if(preference.equals(MappingManagerPreferences.EDIT_HEAD)){
+		// editHead = KeyStroke.getKeyStroke(shortcut);
+		// inputmap.put(editHead, preference);
+		// }else if(preference.equals(MappingManagerPreferences.EDIT_ID)){
+		// editID = KeyStroke.getKeyStroke(shortcut);
+		// inputmap.put(editID, preference);
+		// }else{
+		// try {
+		// throw new Exception("Unknown preference String");
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+		// }
 		registerAction();
 	}
-	
-	public void stopTreeEditing(){
-		
-		if(treeMappingsTree.isEditing()){
+
+	public void stopTreeEditing() {
+
+		if (treeMappingsTree.isEditing()) {
 			MappingTreeNodeCellEditor editor = (MappingTreeNodeCellEditor) treeMappingsTree.getCellEditor();
-			if(editor.isInputValid()){
-				if(treeMappingsTree.stopEditing()){
+			if (editor.isInputValid()) {
+				if (treeMappingsTree.stopEditing()) {
 					String txt = editor.getCellEditorValue().toString();
 					updateNode(txt);
 				}
 			}
 		}
 	}
-	
-	public void applyChangedToNode(String txt){
-		
+
+	public void applyChangedToNode(String txt) {
+
 		updateNode(txt);
 	}
 
-	@Override
-	public void allMappingsRemoved() {}
+	/***
+	 * Parses the string in the search field. 
+	 * 
+	 * @param textToParse
+	 * @return A list of filter objects or null if the string was empty or erroneous
+	 * @throws Exception
+	 */
+	private List<TreeModelFilter> parseSearchString(String textToParse) throws Exception {
+		String temp = "";
+		List<TreeModelFilter> ListOfFilters = new ArrayList<TreeModelFilter>();
+		// id:"company id" funct:"market"
 
-	@Override
-	public void currentSourceChanged(URI oldsrcid, URI newsrcid) {}
+		MappingController controller = mapc;
+		MappingTreeModel model = mapc.getTreeModel();
 
-	@Override
-	public void mappingDeleted(URI srcid, String mappingId) {}
+		// Part of filter that contains the head":"
+		if (textToParse != null) {
+			String[] textFilter = textToParse.split(" ");
+			for (int i = 0; i < textFilter.length; i++) {
 
-	@Override
-	public void mappingInserted(URI srcid, String mappingId) {}
+				if (textFilter[i].contains(":") && !textFilter[i].endsWith(":")) {
+					String[] headFilter = textFilter[i].split(":");
 
-	@Override
-	public void mappingUpdated(URI srcid, String mappingId,
-			OBDAMappingAxiom mapping) {}
+					// base case id:"bro"
+					if ((headFilter[1].endsWith("\"") || textFilter[i].endsWith("'"))
+							&& (headFilter[1].startsWith("\"") || headFilter[1].startsWith("'"))) {
+						if (createFilter(headFilter[0], (headFilter[1].replace("'", "")).replace("\"", "")) != null) {
+							ListOfFilters.add(createFilter(headFilter[0], (headFilter[1].replace("'", "")).replace("\"", "")));
+							continue;
+						}
+					}
+					// Wrong format id:bro"
+					if ((headFilter[1].endsWith("\"") || headFilter[1].endsWith("'"))
+							&& (!headFilter[1].startsWith("\"") || !headFilter[1].startsWith("'"))) {
+						// JOptionPane.showMessageDialog(this,
+						// "The format is not correct ", "ERROR",
+						// JOptionPane.ERROR_MESSAGE);
+						// break;
+						return null;
+					}
+					// Wrong format id:bro
+					if ((!headFilter[1].endsWith("\"") || !headFilter[1].endsWith("'"))
+							&& (!headFilter[1].startsWith("\"") || !headFilter[1].startsWith("'"))) {
+						/*
+						 * JOptionPane.showMessageDialog(this,
+						 * "The format is not correct ", "ERROR",
+						 * JOptionPane.ERROR_MESSAGE);
+						 */
+						return null;
+					}
+					// part of the filter id:"bro
+					if ((!headFilter[1].endsWith("\"") || !headFilter[1].endsWith("'"))
+							&& (headFilter[1].startsWith("\"") || headFilter[1].startsWith("'"))) {
+						temp = headFilter[0].concat(":").concat(headFilter[1]);
 
-	@Override
-	public void ontologyChanged() {
-		
-		URI uri = apic.getCurrentOntologyURI();
-		statusbar.setText("Current Ontology: " + uri.toString());
+						// Wrong the filter is incomplete
+						if (i == textFilter.length - 1 && temp != "") {
+
+							/*
+							 * JOptionPane.showMessageDialog(this,
+							 * "The format is not correct ", "ERROR",
+							 * JOptionPane.ERROR_MESSAGE);
+							 */
+							return null;
+						} else
+							;
+
+						continue;
+					}
+					if (textFilter[i].endsWith(":")) {
+						temp = textFilter[i];
+						continue;
+					}
+
+				}
+				// ----------------------------------Filter body
+				if (!textFilter[i].contains(":")) {
+					// complement of the head----> id"
+					if ((textFilter[i].endsWith("\"") || textFilter[i].endsWith("'"))) {
+						temp = temp.concat(" ").concat(textFilter[i]);
+
+						if (temp.contains(":")) {
+							String[] tokens = temp.split(":");
+
+							if ((tokens[1].startsWith("\"") || tokens[1].startsWith("'")) && tokens[1].endsWith("\"")
+									|| tokens[1].endsWith("'")) {
+								if (createFilter(tokens[0], (tokens[1].replace("'", "")).replace("\"", "")) != null) {
+									ListOfFilters.add(createFilter(tokens[0], (tokens[1].replace("'", "")).replace("\"", "")));
+
+									temp = "";
+									continue;
+								}
+
+							}
+						}
+					} else {
+						/*
+						 * JOptionPane.showMessageDialog(this,
+						 * "The format is not correct ", "ERROR",
+						 * JOptionPane.ERROR_MESSAGE);
+						 */
+						return null;
+					}
+					// Part of the filter assigned to temp
+					if ((!textFilter[i].endsWith("\"") || !textFilter[i].endsWith("'"))
+							&& (!textFilter[i].startsWith("\"") || !textFilter[i].startsWith("'"))) {
+						temp = temp.concat(textFilter[i]);
+						continue;
+					}
+					// Wrong format "id
+					if (!textFilter[i].endsWith("\"") || !textFilter[i].endsWith("'")
+							&& (textFilter[i].startsWith("\"") || textFilter[i].startsWith("'"))) {
+						/*
+						 * JOptionPane.showMessageDialog(this,
+						 * "The format is not correct ", "ERROR",
+						 * JOptionPane.ERROR_MESSAGE);
+						 */
+						return null;
+
+					}
+					// Body base case "select"
+
+					if (textFilter[i].startsWith("\"") || textFilter[i].endsWith("'")
+							&& (textFilter[i].startsWith("\"") || textFilter[i].startsWith("'")))
+						// check this part
+						temp = temp.concat(textFilter[i]);
+					if (temp.contains(":")) {
+						String[] tokens = temp.split(":");
+
+						if ((tokens[1].startsWith("\"") || tokens[1].startsWith("'")) && tokens[1].endsWith("\"")
+								|| tokens[1].endsWith("'")) {
+							if (createFilter(tokens[0], (tokens[1].replace("'", "")).replace("\"", "")) != null) {
+								ListOfFilters.add(createFilter(tokens[0], (tokens[1].replace("'", "")).replace("\"", "")));
+								temp = "";
+								continue;
+							}
+
+						}
+					}
+
+					if (i == textFilter.length - 1 && temp != "") {
+
+						/*
+						 * JOptionPane.showMessageDialog(this,
+						 * "The format is not correct ", "ERROR",
+						 * JOptionPane.ERROR_MESSAGE);
+						 */
+						return null;
+					}
+
+				}
+
+			}
+
+		}
+
+		return ListOfFilters;
+
 	}
+
+	/***
+	 * This function given the kind of filter and the string for it, is added to
+	 * a list of current filters.
+	 * 
+	 * @param filter
+	 * @param strFilter
+	 */
+	private TreeModelFilter createFilter(String filter, String strFilter) {
+		TreeModelFilter typeOfFilter;
+
+		if (filter.trim().equals(HEAD)) {
+			typeOfFilter = new MappingHeadVariableTreeModelFilter(strFilter);
+
+		} else if (filter.trim().equals(FUNCT)) {
+			typeOfFilter = new MappingFunctorTreeModelFilter(strFilter);
+
+		} else if (filter.trim().equals(PRED)) {
+			typeOfFilter = new MappingPredicateTreeModelFilter(strFilter);
+
+		} else if (filter.trim().equals(SQL)) {
+			typeOfFilter = new MappingSQLStringTreeModelFilter(strFilter);
+
+		} else if (filter.trim().equals(TEXT)) {
+			typeOfFilter = new MappingStringTreeModelFilter(strFilter);
+
+		} else if (filter.trim().equals(ID)) {
+			typeOfFilter = new MappingIDTreeModelFilter(strFilter);
+		} else {
+			typeOfFilter = null;
+
+		}
+		return typeOfFilter;
+
+	}
+
+	/***
+	 * This function add the list of current filters to the model and then the
+	 * Tree is refreshed shows the mappings after the filters have been applied
+	 * 
+	 * 
+	 * @param ListOfMappings
+	 */
+	private void applyFilters(List<TreeModelFilter> filters) {
+		MappingTreeModel model = mapc.getTreeModel();
+		model.removeAllFilters();
+		model.addFilters(filters);
+		model.currentSourceChanged(apic.getDatasourcesController().getCurrentDataSource().getSourceID(), apic.getDatasourcesController()
+				.getCurrentDataSource().getSourceID());
+//		JOptionPane.showMessageDialog(this, "The sintaxis is not correct ", "ERROR", JOptionPane.ERROR_MESSAGE);
+
+	}
+
 }
