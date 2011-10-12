@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DAGChain {
 
-	private final Logger	log	= LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	/***
 	 * Modifies the DAG so that \exists R = \exists R-, so that the reachability
@@ -26,11 +26,13 @@ public class DAGChain {
 	 * @param dag
 	 */
 	public static void getChainDAG(DAG dag) {
-		Collection<DAGNode> nodes = new HashSet<DAGNode>(dag.getAllnodes().values());
+		Collection<DAGNode> nodes = new HashSet<DAGNode>(dag.getAllnodes()
+				.values());
 		OntologyFactory fac = OntologyFactoryImpl.getInstance();
 		HashSet<DAGNode> processedNodes = new HashSet<DAGNode>();
 		for (DAGNode node : nodes) {
-			if (!(node.getDescription() instanceof PropertySomeRestriction) || processedNodes.contains(node)) {
+			if (!(node.getDescription() instanceof PropertySomeRestriction)
+					|| processedNodes.contains(node)) {
 				continue;
 			}
 
@@ -38,19 +40,24 @@ public class DAGChain {
 			 * Adding a cycle between exists R and exists R- for each R.
 			 */
 
-			PropertySomeRestriction existsR = (PropertySomeRestriction) node.getDescription();
-			PropertySomeRestriction existsRin = fac.createPropertySomeRestriction(existsR.getPredicate(), !existsR.isInverse());
+			PropertySomeRestriction existsR = (PropertySomeRestriction) node
+					.getDescription();
+			PropertySomeRestriction existsRin = fac
+					.createPropertySomeRestriction(existsR.getPredicate(),
+							!existsR.isInverse());
 			DAGNode existsNode = node;
 			DAGNode existsInvNode = dag.getNode(existsRin);
 
-			Set<DAGNode> childrenExist = new HashSet<DAGNode>(existsNode.getChildren());
-			Set<DAGNode> childrenExistInv = new HashSet<DAGNode>(existsInvNode.getChildren());
+			Set<DAGNode> childrenExist = new HashSet<DAGNode>(
+					existsNode.getChildren());
+			Set<DAGNode> childrenExistInv = new HashSet<DAGNode>(
+					existsInvNode.getChildren());
 
 			for (DAGNode child : childrenExist) {
-				DAGOperations.addParentEdge(child, existsInvNode);
+				dag.addParent(child, existsInvNode);
 			}
 			for (DAGNode child : childrenExistInv) {
-				DAGOperations.addParentEdge(child, existsNode);
+				dag.addParent(child, existsNode);
 			}
 
 			processedNodes.add(existsInvNode);
@@ -60,8 +67,8 @@ public class DAGChain {
 		/* Collapsing the cycles */
 
 		dag.clean();
-		DAGOperations.computeTransitiveReduct(dag.getAllnodes());
-		DAGOperations.buildDescendants(dag.getAllnodes());
+		dag.computeTransitiveReduct();
+		dag.buildDescendants();
 	}
 
 }

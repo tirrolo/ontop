@@ -32,4 +32,9 @@ public class ClassImpl implements OClass {
 	public String toString() {
 		return str;
 	}
+	
+	@Override
+	public ClassImpl clone() {
+		return new ClassImpl(predicate.clone());
+	}
 }

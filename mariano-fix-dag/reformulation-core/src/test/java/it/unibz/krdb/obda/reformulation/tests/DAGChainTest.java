@@ -46,7 +46,7 @@ public class DAGChainTest extends TestCase {
 		ontology.addAssertion(OntologyFactoryImpl.getInstance().createSubClassAxiom(bc, ac));
 		ontology.addAssertion(OntologyFactoryImpl.getInstance().createSubClassAxiom(cc, bc));
 
-		DAG res = DAGConstructor.getISADAG(ontology);
+		DAG res = DAGConstructor.getDAG(ontology);
 		res.clean();
 		DAGChain.getChainDAG(res);
 
@@ -80,7 +80,7 @@ public class DAGChainTest extends TestCase {
 		ontology.addAssertion(OntologyFactoryImpl.getInstance().createSubClassAxiom(er, ac));
 		ontology.addAssertion(OntologyFactoryImpl.getInstance().createSubClassAxiom(cc, ier));
 
-		DAG res = DAGConstructor.getISADAG(ontology);
+		DAG res = DAGConstructor.getDAG(ontology);
 		res.clean();
 		DAGChain.getChainDAG(res);
 
@@ -129,7 +129,7 @@ public class DAGChainTest extends TestCase {
 		ontology.addAssertion(OntologyFactoryImpl.getInstance().createSubClassAxiom(bc, er));
 		ontology.addAssertion(OntologyFactoryImpl.getInstance().createSubClassAxiom(ier, dc));
 
-		DAG res = DAGConstructor.getISADAG(ontology);
+		DAG res = DAGConstructor.getDAG(ontology);
 		res.clean();
 		DAGChain.getChainDAG(res);
 
@@ -178,7 +178,7 @@ public class DAGChainTest extends TestCase {
 		ontology.addAssertion(OntologyFactoryImpl.getInstance().createSubClassAxiom(ier, er));
 		ontology.addAssertion(OntologyFactoryImpl.getInstance().createSubClassAxiom(ac, er));
 
-		DAG res = DAGConstructor.getISADAG(ontology);
+		DAG res = DAGConstructor.getDAG(ontology);
 		res.clean();
 		DAGChain.getChainDAG(res);
 

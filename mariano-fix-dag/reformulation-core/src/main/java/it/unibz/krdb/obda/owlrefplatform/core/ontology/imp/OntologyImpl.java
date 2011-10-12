@@ -23,33 +23,33 @@ import org.slf4j.LoggerFactory;
 
 public class OntologyImpl implements Ontology {
 
-	private Set<SubDescriptionAxiom>					assertions					= null;
+	private Set<SubDescriptionAxiom> assertions = null;
 
-	private Set<Predicate>								concepts					= null;
+	private Set<Predicate> concepts = null;
 
-	private Set<Predicate>								roles						= null;
+	private Set<Predicate> roles = null;
 
-	private URI											ontouri						= null;
+	private URI ontouri = null;
 
-	private Set<Axiom>									originalassertions			= null;
+	private Set<Axiom> originalassertions = null;
 
 	/* Assertions indexed by right side predicate */
-	private Map<Predicate, Set<SubDescriptionAxiom>>	rightAssertionIndex			= null;
+	private Map<Predicate, Set<SubDescriptionAxiom>> rightAssertionIndex = null;
 
-	private Map<Predicate, Set<SubDescriptionAxiom>>	rightNonExistentialIndex	= null;
+	private Map<Predicate, Set<SubDescriptionAxiom>> rightNonExistentialIndex = null;
 
-	private Map<Predicate, Set<SubDescriptionAxiom>>	rightExistentialIndex		= null;
+	private Map<Predicate, Set<SubDescriptionAxiom>> rightExistentialIndex = null;
 
 	/* Assertions indexed by left side predicate */
-	private Map<Predicate, Set<SubDescriptionAxiom>>	leftAssertionIndex			= null;
+	private Map<Predicate, Set<SubDescriptionAxiom>> leftAssertionIndex = null;
 
-	Logger												log							= LoggerFactory.getLogger(this.getClass());
+	Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public boolean										isSaturated					= false;
+	public boolean isSaturated = false;
 
-	private final OntologyFactory						factory						= OntologyFactoryImpl.getInstance();
+	private final OntologyFactory factory = OntologyFactoryImpl.getInstance();
 
-	private Set<PropertyFunctionalAxiom>				functionalAxioms			= new HashSet<PropertyFunctionalAxiom>();
+	private Set<PropertyFunctionalAxiom> functionalAxioms = new HashSet<PropertyFunctionalAxiom>();
 
 	// private Set<PositiveInclusion> assertions = null;
 
@@ -62,7 +62,13 @@ public class OntologyImpl implements Ontology {
 
 	@Override
 	public OntologyImpl clone() {
-		OntologyImpl clone = (OntologyImpl) factory.createOntology(URI.create(ontouri.toString()));
+		OntologyImpl clone = null;
+		if (ontouri != null)
+			clone = (OntologyImpl) factory.createOntology(URI.create(ontouri
+					.toString()));
+		else
+			clone = (OntologyImpl) factory.createOntology();
+
 		clone.originalassertions.addAll(originalassertions);
 		clone.concepts.addAll(concepts);
 		clone.roles.addAll(roles);
@@ -120,8 +126,9 @@ public class OntologyImpl implements Ontology {
 			return;
 
 		if (!referencesPredicates(assertion.getReferencedEntities())) {
-			throw new IllegalArgumentException("At least one of these predicates is unknown: "
-					+ assertion.getReferencedEntities().toString());
+			throw new IllegalArgumentException(
+					"At least one of these predicates is unknown: "
+							+ assertion.getReferencedEntities().toString());
 		}
 
 		isSaturated = false;
@@ -303,26 +310,34 @@ public class OntologyImpl implements Ontology {
 			HashSet<SubDescriptionAxiom> newInclusions = new HashSet<SubDescriptionAxiom>();
 			for (SubDescriptionAxiom pi1 : assertions) {
 				for (SubDescriptionAxiom pi2 : assertions) {
-					if ((pi1 instanceof SubClassAxiomImpl) && (pi2 instanceof SubClassAxiomImpl)) {
+					if ((pi1 instanceof SubClassAxiomImpl)
+							&& (pi2 instanceof SubClassAxiomImpl)) {
 						SubClassAxiomImpl ci1 = (SubClassAxiomImpl) pi1;
 						SubClassAxiomImpl ci2 = (SubClassAxiomImpl) pi2;
 						if (ci1.getSuper().equals(ci2.getSub())) {
-							SubClassAxiomImpl newinclusion = (SubClassAxiomImpl) factory.createSubClassAxiom(ci1.getSub(), ci2.getSuper());
+							SubClassAxiomImpl newinclusion = (SubClassAxiomImpl) factory
+									.createSubClassAxiom(ci1.getSub(),
+											ci2.getSuper());
 							newInclusions.add(newinclusion);
 						} else if (ci1.getSub().equals(ci2.getSuper())) {
-							SubClassAxiomImpl newinclusion = (SubClassAxiomImpl) factory.createSubClassAxiom(ci2.getSub(), ci1.getSuper());
+							SubClassAxiomImpl newinclusion = (SubClassAxiomImpl) factory
+									.createSubClassAxiom(ci2.getSub(),
+											ci1.getSuper());
 							newInclusions.add(newinclusion);
 						}
-					} else if ((pi1 instanceof SubPropertyAxiomImpl) && (pi2 instanceof SubPropertyAxiomImpl)) {
+					} else if ((pi1 instanceof SubPropertyAxiomImpl)
+							&& (pi2 instanceof SubPropertyAxiomImpl)) {
 						SubPropertyAxiomImpl ci1 = (SubPropertyAxiomImpl) pi1;
 						SubPropertyAxiomImpl ci2 = (SubPropertyAxiomImpl) pi2;
 						if (ci1.getSuper().equals(ci2.getSub())) {
-							SubPropertyAxiomImpl newinclusion = (SubPropertyAxiomImpl) factory.createSubPropertyAxiom(ci1.getSub(),
-									ci2.getSuper());
+							SubPropertyAxiomImpl newinclusion = (SubPropertyAxiomImpl) factory
+									.createSubPropertyAxiom(ci1.getSub(),
+											ci2.getSuper());
 							newInclusions.add(newinclusion);
 						} else if (ci1.getSub().equals(ci2.getSuper())) {
-							SubPropertyAxiomImpl newinclusion = (SubPropertyAxiomImpl) factory.createSubPropertyAxiom(ci2.getSub(),
-									ci1.getSuper());
+							SubPropertyAxiomImpl newinclusion = (SubPropertyAxiomImpl) factory
+									.createSubPropertyAxiom(ci2.getSub(),
+											ci1.getSuper());
 							newInclusions.add(newinclusion);
 						}
 					}
@@ -371,30 +386,36 @@ public class OntologyImpl implements Ontology {
 			/* Processing right side */
 			if (description2 instanceof ClassImpl) {
 				ClassImpl acd = (ClassImpl) description2;
-				Set<SubDescriptionAxiom> rightAssertion = getRight(acd.getPredicate());
+				Set<SubDescriptionAxiom> rightAssertion = getRight(acd
+						.getPredicate());
 				rightAssertion.add(pi);
 
-				Set<SubDescriptionAxiom> rightNonExistential = getRightNotExistential(acd.getPredicate());
+				Set<SubDescriptionAxiom> rightNonExistential = getRightNotExistential(acd
+						.getPredicate());
 				rightNonExistential.add(pi);
 
 			} else if (description2 instanceof PropertySomeRestrictionImpl) {
 				PropertySomeRestrictionImpl ecd = (PropertySomeRestrictionImpl) description2;
-				Set<SubDescriptionAxiom> rightAssertion = getRight(ecd.getPredicate());
+				Set<SubDescriptionAxiom> rightAssertion = getRight(ecd
+						.getPredicate());
 				rightAssertion.add(pi);
 
-				Set<SubDescriptionAxiom> rightExistential = getRightExistential(ecd.getPredicate());
+				Set<SubDescriptionAxiom> rightExistential = getRightExistential(ecd
+						.getPredicate());
 				rightExistential.add(pi);
 			}
 
 			/* Processing left side */
 			if (description1 instanceof ClassImpl) {
 				ClassImpl acd = (ClassImpl) description1;
-				Set<SubDescriptionAxiom> leftAssertion = getLeft(acd.getPredicate());
+				Set<SubDescriptionAxiom> leftAssertion = getLeft(acd
+						.getPredicate());
 				leftAssertion.add(pi);
 
 			} else if (description1 instanceof PropertySomeRestrictionImpl) {
 				PropertySomeRestrictionImpl ecd = (PropertySomeRestrictionImpl) description1;
-				Set<SubDescriptionAxiom> leftAssertion = getLeft(ecd.getPredicate());
+				Set<SubDescriptionAxiom> leftAssertion = getLeft(ecd
+						.getPredicate());
 				leftAssertion.add(pi);
 			}
 
@@ -407,10 +428,12 @@ public class OntologyImpl implements Ontology {
 			/* Processing right side */
 			if (description2 instanceof PropertyImpl) {
 				PropertyImpl acd = (PropertyImpl) description2;
-				Set<SubDescriptionAxiom> rightAssertion = getRight(acd.getPredicate());
+				Set<SubDescriptionAxiom> rightAssertion = getRight(acd
+						.getPredicate());
 				rightAssertion.add(pi);
 
-				Set<SubDescriptionAxiom> rightNonExistential = getRightNotExistential(acd.getPredicate());
+				Set<SubDescriptionAxiom> rightNonExistential = getRightNotExistential(acd
+						.getPredicate());
 				rightNonExistential.add(pi);
 
 			}
@@ -418,7 +441,8 @@ public class OntologyImpl implements Ontology {
 			/* Processing left side */
 			if (description1 instanceof PropertyImpl) {
 				PropertyImpl acd = (PropertyImpl) description1;
-				Set<SubDescriptionAxiom> leftAssertion = getLeft(acd.getPredicate());
+				Set<SubDescriptionAxiom> leftAssertion = getLeft(acd
+						.getPredicate());
 				leftAssertion.add(pi);
 
 			}
@@ -454,7 +478,8 @@ public class OntologyImpl implements Ontology {
 	}
 
 	private Set<SubDescriptionAxiom> getRightNotExistential(Predicate pred) {
-		Set<SubDescriptionAxiom> assertions = rightNonExistentialIndex.get(pred);
+		Set<SubDescriptionAxiom> assertions = rightNonExistentialIndex
+				.get(pred);
 		if (assertions == null) {
 			assertions = new LinkedHashSet<SubDescriptionAxiom>();
 			rightNonExistentialIndex.put(pred, assertions);
@@ -487,14 +512,24 @@ public class OntologyImpl implements Ontology {
 				Property r1 = rinclusion.getSub();
 				Property r2 = rinclusion.getSuper();
 
-				PropertySomeRestriction e11 = factory.createPropertySomeRestriction(r1.getPredicate(), r1.isInverse());
+				PropertySomeRestriction e11 = factory
+						.createPropertySomeRestriction(r1.getPredicate(),
+								r1.isInverse());
 				;
-				PropertySomeRestriction e12 = factory.createPropertySomeRestriction(r2.getPredicate(), r2.isInverse());
-				PropertySomeRestriction e21 = factory.createPropertySomeRestriction(r1.getPredicate(), !r1.isInverse());
-				PropertySomeRestriction e22 = factory.createPropertySomeRestriction(r2.getPredicate(), !r2.isInverse());
+				PropertySomeRestriction e12 = factory
+						.createPropertySomeRestriction(r2.getPredicate(),
+								r2.isInverse());
+				PropertySomeRestriction e21 = factory
+						.createPropertySomeRestriction(r1.getPredicate(),
+								!r1.isInverse());
+				PropertySomeRestriction e22 = factory
+						.createPropertySomeRestriction(r2.getPredicate(),
+								!r2.isInverse());
 
-				SubClassAxiomImpl inc1 = (SubClassAxiomImpl) factory.createSubClassAxiom(e11, e12);
-				SubClassAxiomImpl inc2 = (SubClassAxiomImpl) factory.createSubClassAxiom(e21, e22);
+				SubClassAxiomImpl inc1 = (SubClassAxiomImpl) factory
+						.createSubClassAxiom(e11, e12);
+				SubClassAxiomImpl inc2 = (SubClassAxiomImpl) factory
+						.createSubClassAxiom(e21, e22);
 				newassertion.add(inc1);
 				newassertion.add(inc2);
 			}

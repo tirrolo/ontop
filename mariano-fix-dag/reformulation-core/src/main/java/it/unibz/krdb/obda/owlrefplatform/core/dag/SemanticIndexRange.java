@@ -5,167 +5,186 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Represents a set of continues intervals
+ * Represents a set of intervals.
  */
-public class SemanticIndexRange {
+public class SemanticIndexRange implements Cloneable {
 
-    private List<Interval> intervals = new LinkedList<Interval>();
+	public final static SemanticIndexRange NULL_RANGE = new SemanticIndexRange(
+			-1, -1);
+	public final static int NULL_INDEX = -1;
 
-    public SemanticIndexRange() {
-    }
+	private List<Interval> intervals = new LinkedList<Interval>();
 
-    public SemanticIndexRange(SemanticIndexRange range) {
-        intervals = new LinkedList<Interval>(range.getIntervals());
-    }
+	/***
+	 * Constructs an empty set of range.
+	 */
+	public SemanticIndexRange() {
+	}
 
-    public SemanticIndexRange(int start, int end) {
-        intervals.add(new Interval(start, end));
-    }
+	/**
+	 * Constructs a range with 1 interval.
+	 * 
+	 * @param start
+	 * @param end
+	 */
+	public SemanticIndexRange(int start, int end) {
+		intervals.add(new Interval(start, end));
+	}
 
-    public SemanticIndexRange addInterval(int start, int end) {
-        intervals.add(new Interval(start, end));
-        merge();
+	@Override
+	public SemanticIndexRange clone() {
+		SemanticIndexRange clone = new SemanticIndexRange();
+		for (Interval interval : intervals) {
+			clone.intervals.add(interval.clone());
+		}
+		return clone;
+	}
 
-        return this;
-    }
+	/***
+	 * Adds a new interval and performs a merge operation to minimize the set of
+	 * intervals.
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public void addInterval(int start, int end) {
+		intervals.add(new Interval(start, end));
+		merge();
+	}
 
-    public SemanticIndexRange addRange(SemanticIndexRange other) {
+	/***
+	 * Adds a copy of the given intervals and performs a merge operation to
+	 * minimize the set of intervals.
+	 * 
+	 * @param sirange
+	 * @return
+	 */
+	public void addRange(SemanticIndexRange sirange) {
 
-        if (this.intervals == other.intervals)
-            return this;
+		for (Interval it : sirange.intervals) {
+			this.intervals.add(it.clone());
+		}
+		merge();
 
-        for (Interval it : other.intervals) {
-            this.intervals.add(it);
-        }
-        merge();
-        return this;
-    }
+	}
 
-    /**
-     * Sort in ascending order and collapse overlapping intervals
-     */
-    private void merge() {
+	/**
+	 * Computes the minimal set of intervals that have the same covering than
+	 * the existing set. This is done by sorting in ascending order and collapse
+	 * overlapping intervals.
+	 */
+	private void merge() {
 
-        Collections.sort(intervals);
-        List<Interval> new_intervals = new LinkedList<Interval>();
+		Collections.sort(intervals);
+		List<Interval> new_intervals = new LinkedList<Interval>();
 
-        int min = intervals.get(0).start;
-        int max = intervals.get(0).end;
+		int min = intervals.get(0).start;
+		int max = intervals.get(0).end;
 
-        for (int i = 1; i < intervals.size(); ++i) {
-            Interval item = intervals.get(i);
-            if (item.end > max + 1 && item.start > max + 1) {
-                new_intervals.add(new Interval(min, max));
-                min = item.start;
-            }
-            max = (max > item.end) ? max : item.end;
-        }
-        new_intervals.add(new Interval(min, max));
-        intervals = new_intervals;
-    }
+		for (int i = 1; i < intervals.size(); ++i) {
+			Interval item = intervals.get(i);
+			if (item.end > max + 1 && item.start > max + 1) {
+				new_intervals.add(new Interval(min, max));
+				min = item.start;
+			}
+			max = (max > item.end) ? max : item.end;
+		}
+		new_intervals.add(new Interval(min, max));
+		intervals = new_intervals;
+	}
 
-    @Override
-    public boolean equals(Object other) {
+	@Override
+	public String toString() {
+		return intervals.toString();
+	}
 
-        if (other == null)
-            return false;
-        if (other == this)
-            return true;
-        if (this.getClass() != other.getClass())
-            return false;
-        SemanticIndexRange otherRange = (SemanticIndexRange) other;
+	public List<Interval> getIntervals() {
+		return intervals;
+	}
 
-        return this.intervals.equals(otherRange.intervals);
-    }
+	public boolean contained(SemanticIndexRange other) {
+		boolean[] otherContained = new boolean[other.intervals.size()];
+		for (int i = 0; i < otherContained.length; ++i) {
+			otherContained[i] = false;
+		}
 
-    @Override
-    public String toString() {
-        return intervals.toString();
-    }
+		for (Interval it1 : this.intervals) {
 
-    public List<Interval> getIntervals() {
-        return intervals;
-    }
+			for (int i = 0; i < other.intervals.size(); ++i) {
+				Interval it2 = other.intervals.get(i);
+				if ((it1.start <= it2.start) && (it1.end >= it2.end)) {
+					otherContained[i] = true;
+				}
+			}
 
-    /**
-     * Continues interval between 2 points
-     *
-     * @author Sergejs Pugacs
-     */
-    public class Interval implements Comparable<Interval> {
+		}
 
-        private final int start, end;
+		for (boolean it : otherContained) {
+			if (!it) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-        public Interval(int start, int end) {
-            this.start = start;
-            this.end = end;
-        }
+	/**
+	 * An interval or "range"
+	 */
+	public class Interval implements Comparable<Interval>, Cloneable {
 
-        @Override
-        public boolean equals(Object other) {
+		private final int start, end;
 
-            if (other == null)
-                return false;
-            if (other == this)
-                return true;
-            if (this.getClass() != other.getClass())
-                return false;
-            Interval otherInterval = (Interval) other;
+		public Interval(int start, int end) {
+			this.start = start;
+			this.end = end;
+		}
 
-            return (this.start == otherInterval.start && this.end == otherInterval.end);
-        }
+		@Override
+		public Interval clone() {
+			return new Interval(start, end);
+		}
 
-        @Override
-        public int hashCode() {
-            int result = 17;
-            result += 37 * result + start;
-            result += 37 * result + end;
-            return result;
-        }
+		@Override
+		public boolean equals(Object other) {
 
-        @Override
-        public int compareTo(Interval o) {
-            return this.start - o.start;
-        }
+			if (other == null)
+				return false;
+			if (other == this)
+				return true;
+			if (this.getClass() != other.getClass())
+				return false;
+			Interval otherInterval = (Interval) other;
 
-        @Override
-        public String toString() {
-            return String.format("[%s:%s]", start, end);
-        }
+			return (this.start == otherInterval.start && this.end == otherInterval.end);
+		}
 
-        public int getStart() {
-            return start;
-        }
+		@Override
+		public int hashCode() {
+			int result = 17;
+			result += 37 * result + start;
+			result += 37 * result + end;
+			return result;
+		}
 
-        public int getEnd() {
-            return end;
-        }
+		@Override
+		public int compareTo(Interval o) {
+			return this.start - o.start;
+		}
 
-    }
+		@Override
+		public String toString() {
+			return String.format("[%s:%s]", start, end);
+		}
 
-    public boolean contained(SemanticIndexRange other) {
-        boolean[] otherContained = new boolean[other.intervals.size()];
-        for (int i = 0; i < otherContained.length; ++i) {
-            otherContained[i] = false;
-        }
+		public int getStart() {
+			return start;
+		}
 
-        for (Interval it1 : this.intervals) {
+		public int getEnd() {
+			return end;
+		}
 
-            for (int i = 0; i < other.intervals.size(); ++i) {
-                Interval it2 = other.intervals.get(i);
-                if ((it1.start <= it2.start) && (it1.end >= it2.end)) {
-                    otherContained[i] = true;
-                }
-            }
-
-        }
-
-        for (boolean it : otherContained) {
-            if (!it) {
-                return false;
-            }
-        }
-        return true;
-    }
+	}
 
 }

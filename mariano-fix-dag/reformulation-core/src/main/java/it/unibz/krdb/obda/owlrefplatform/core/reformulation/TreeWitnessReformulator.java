@@ -177,7 +177,7 @@ public class TreeWitnessReformulator implements QueryRewriter {
 			log.debug("subclass " + C + " of " + C);
 			out.appendRule(fac.getCQIE(head, Collections.singletonList(getConceptAtom(C,z))));
 
-			DAGNode cnode = conceptDAG.getClassNode(C);
+			DAGNode cnode = conceptDAG.getNode(C);
 			if (cnode != null) {
 				for (DAGNode node : cnode.getDescendants()) {
 					Description D = node.getDescription();
@@ -217,7 +217,7 @@ public class TreeWitnessReformulator implements QueryRewriter {
 			PredicatePosition pp = tw.getLabelTail(t);
 			log.debug("checking tree for predicate position: " + pp + " for " + t);
 			ClassDescription ETi = descFactory.getPropertySomeRestriction(pp.getPredicate(), pp.getPosition() == 2);
-			if (!ETi.equals(C) && !conceptDAG.getClassNode(C).getDescendants().contains(conceptDAG.getClassNode(ETi))) {
+			if (!ETi.equals(C) && !conceptDAG.getNode(C).getDescendants().contains(conceptDAG.getNode(ETi))) {
 				log.debug("falsum in " + C + " " + ETi);
 				return false;
 			}
@@ -351,7 +351,7 @@ public class TreeWitnessReformulator implements QueryRewriter {
 
 	@Override
 	public void setTBox(Ontology ontology) {
-        DAG isa = DAGConstructor.getISADAG((Ontology)ontology);
+        DAG isa = DAGConstructor.getDAG(ontology);
         this.conceptDAG = isa;
 	}
 

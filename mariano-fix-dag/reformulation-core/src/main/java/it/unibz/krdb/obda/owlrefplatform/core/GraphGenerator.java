@@ -169,7 +169,7 @@ public class GraphGenerator {
     public static void dumpReducedOnto(List<Axiom> reducedOnto) throws IOException {
         Ontology ontology = OntologyFactoryImpl.getInstance().createOntology(URI.create(""));
         ontology.addAssertions(reducedOnto);
-        DAG reducedIsa = DAGConstructor.getISADAG(ontology);
+        DAG reducedIsa = DAGConstructor.getDAG(ontology);
         reducedIsa.index();
 
         dumpISA(reducedIsa, "reduced");

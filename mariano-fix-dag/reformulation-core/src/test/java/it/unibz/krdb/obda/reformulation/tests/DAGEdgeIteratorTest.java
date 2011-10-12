@@ -18,7 +18,7 @@ public class DAGEdgeIteratorTest extends TestCase {
 
 	public void testEnumerationOfSubClass() throws Exception {
 		Ontology ontology = helper.load_onto("equivalence-classes");
-		DAG isa = DAGConstructor.getISADAG(ontology);
+		DAG isa = DAGConstructor.getDAG(ontology);
 		isa.clean();
 		
 		DAGEdgeIterator it = new DAGEdgeIterator(isa);
@@ -33,7 +33,7 @@ public class DAGEdgeIteratorTest extends TestCase {
 
 	public void testEnumerationOfSubProperty() throws Exception {
 		Ontology ontology = helper.load_onto("equivalence-roles");
-		DAG isa = DAGConstructor.getISADAG(ontology);
+		DAG isa = DAGConstructor.getDAG(ontology);
 		isa.clean();
 		
 		DAGEdgeIterator it = new DAGEdgeIterator(isa);

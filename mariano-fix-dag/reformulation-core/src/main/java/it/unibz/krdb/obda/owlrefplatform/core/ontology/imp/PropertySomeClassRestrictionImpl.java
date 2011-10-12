@@ -56,4 +56,8 @@ public class PropertySomeClassRestrictionImpl implements PropertySomeClassRestri
 	public OClass getFiller() {
 		return filler;
 	}
+	
+	public PropertySomeClassRestrictionImpl clone() {
+		return new PropertySomeClassRestrictionImpl(predicate.clone(), isInverse, (OClass)filler.clone());
+	}
 }

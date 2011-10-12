@@ -86,7 +86,7 @@ public class SemanticIndexHelper {
 
     public DAG load_dag(String ontoname) throws Exception {
 
-        return DAGConstructor.getISADAG(load_onto(ontoname));
+        return DAGConstructor.getDAG(load_onto(ontoname));
     }
 
     public List<List<DAGNode>> get_results(String resname) {

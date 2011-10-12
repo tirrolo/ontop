@@ -120,7 +120,7 @@ public class DummyOBDAPlatformFactoryImpl implements OBDAOWLReasonerFactory {
 //				ontology.addRoles(new ArrayList<Property>(aux.getRoles()));
 			}
 
-			DAG isa = DAGConstructor.getISADAG(ontology);
+			DAG isa = DAGConstructor.getDAGtology);
 			DAG pureIsa = DAGConstructor.filterPureISA(isa);
 			pureIsa.index();
 			if (GraphGenerator.debugInfoDump) {

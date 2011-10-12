@@ -109,7 +109,7 @@ public class CSVDumper {
 
                 Predicate propPred = predicateFactory.getPredicate(URI.create(p.asOWLObjectProperty().getURI().toString()), 2);
                 Property propDesc = descFactory.createProperty(propPred);
-                DAGNode node = dag.getRoleNode(propDesc);
+                DAGNode node = dag.getNode(propDesc);
 
                 if (node == null) {
                     continue;
@@ -139,7 +139,7 @@ public class CSVDumper {
 
                 Predicate clsPred = predicateFactory.getPredicate(URI.create(cls.asOWLClass().getURI().toString()), 1);
                 ClassDescription clsDesc = descFactory.createClass(clsPred);
-                DAGNode clsNode = dag.getClassNode(clsDesc);
+                DAGNode clsNode = dag.getNode(clsDesc);
 
                 if (clsNode == null) {
                     continue;

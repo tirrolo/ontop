@@ -46,17 +46,17 @@ public class SigmaTBoxOptimizer {
 
 		this.originalSigma = sigmat;
 
-		this.isa = DAGConstructor.getISADAG(isat);
+		this.isa = DAGConstructor.getDAG(isat);
 		this.isa.clean();
-		this.sigma = DAGConstructor.getISADAG(sigmat);
+		this.sigma = DAGConstructor.getDAG(sigmat);
 		this.sigma.clean();
 
-		this.isaChain = DAGConstructor.getISADAG(isat);
+		this.isaChain = DAGConstructor.getDAG(isat);
 		isaChain.clean();
 		DAGChain.getChainDAG(isaChain);
 		
 
-		this.sigmaChain = DAGConstructor.getISADAG(sigmat);
+		this.sigmaChain = DAGConstructor.getDAG(sigmat);
 		sigmaChain.clean();
 		DAGChain.getChainDAG(sigmaChain);
 
@@ -122,8 +122,8 @@ public class SigmaTBoxOptimizer {
 		PropertySomeRestriction existParentDesc = descFactory.getPropertySomeRestriction(parentDesc.getPredicate(), parentDesc.isInverse());
 		PropertySomeRestriction existChildDesc = descFactory.getPropertySomeRestriction(childDesc.getPredicate(), childDesc.isInverse());
 
-		DAGNode exists_parent = isa.getClassNode(existParentDesc);
-		DAGNode exists_child = isa.getClassNode(existChildDesc);
+		DAGNode exists_parent = isa.getNode(existParentDesc);
+		DAGNode exists_child = isa.getNode(existChildDesc);
 
 		return check_directly_redundant(parent, child) && check_directly_redundant(exists_parent, exists_child);
 	}

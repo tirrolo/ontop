@@ -44,5 +44,9 @@ public class PropertySomeRestrictionImpl implements PropertySomeRestriction {
 			bf.append("^-");
 		return bf.toString();
 	}
+	
+	public PropertySomeRestrictionImpl clone() {
+		return new PropertySomeRestrictionImpl(predicate.clone(), isInverse);
+	}
 
 }

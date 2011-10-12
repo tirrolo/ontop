@@ -40,13 +40,13 @@ public class SigmaTest extends TestCase {
         DAG res = DAGConstructor.getSigma(ontology);
         res.clean();
 
-        assertTrue(res.getClassNode(ac).getDescendants().contains(res.getClassNode(er)));
+        assertTrue(res.getNode(ac).getDescendants().contains(res.getNode(er)));
 
-        assertEquals(1, res.getClassNode(ac).getDescendants().size());
+        assertEquals(1, res.getNode(ac).getDescendants().size());
 
-        assertEquals(0, res.getClassNode(er).getDescendants().size());
+        assertEquals(0, res.getNode(er).getDescendants().size());
 
-        assertEquals(0, res.getClassNode(cc).getDescendants().size());
+        assertEquals(0, res.getNode(cc).getDescendants().size());
 
     }
 }

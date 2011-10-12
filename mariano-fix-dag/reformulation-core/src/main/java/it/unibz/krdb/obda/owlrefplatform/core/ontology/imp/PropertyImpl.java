@@ -5,8 +5,8 @@ import it.unibz.krdb.obda.owlrefplatform.core.ontology.Property;
 
 public class PropertyImpl implements Property {
 
-	private boolean		inverse		= false;
-	private Predicate	predicate	= null;
+	private boolean inverse = false;
+	private Predicate predicate = null;
 
 	protected PropertyImpl(Predicate p, boolean isInverse) {
 		this.predicate = p;
@@ -40,6 +40,10 @@ public class PropertyImpl implements Property {
 		if (inverse)
 			bf.append("^-");
 		return bf.toString();
+	}
+
+	public PropertyImpl clone() {
+		return new PropertyImpl(predicate.clone(), inverse);
 	}
 
 }

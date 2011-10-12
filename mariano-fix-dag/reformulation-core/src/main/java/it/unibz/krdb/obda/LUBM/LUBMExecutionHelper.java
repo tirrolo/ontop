@@ -112,7 +112,7 @@ public class LUBMExecutionHelper {
 		}
 
 		p.setCurrentValueOf(ReformulationPlatformPreferences.ABOX_MODE, QuestConstants.CLASSIC);
-		p.setCurrentValueOf(ReformulationPlatformPreferences.DATA_LOCATION, QuestConstants.INMEMORY);
+//		p.setCurrentValueOf(ReformulationPlatformPreferences.DATA_LOCATION, QuestConstants.INMEMORY);
 
 //		factory.setOBDAController(obdamodel);
 		factory.setPreferenceHolder(p);

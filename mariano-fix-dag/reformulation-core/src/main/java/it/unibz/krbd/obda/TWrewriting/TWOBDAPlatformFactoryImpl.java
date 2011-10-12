@@ -78,7 +78,7 @@ public class TWOBDAPlatformFactoryImpl implements OBDAOWLReasonerFactory, OWLRea
 //				ontology.addRoles(new ArrayList<Property>(aux.getRoles()));
 			}
 
-			DAG isa = DAGConstructor.getISADAG(ontology);
+			DAG isa = DAGConstructor.getDAGtology);
 			DAG pureIsa = DAGConstructor.filterPureISA(isa);
 			pureIsa.index();
 			if (GraphGenerator.debugInfoDump) {

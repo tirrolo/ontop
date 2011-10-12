@@ -6,6 +6,7 @@ package it.unibz.krdb.obda.owlrefplatform.core.ontology;
  * @author Mariano Rodriguez Muro
  * 
  */
-public interface Description {
+public interface Description extends Cloneable {
 
+	public Description clone();
 }

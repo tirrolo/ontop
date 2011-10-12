@@ -17,7 +17,7 @@ public class SemanticReductionTest extends TestCase {
 
 	public void test_2_0_0() throws Exception {
 		Ontology ontology = helper.load_onto("test_2_0_0");
-		DAG isa = DAGConstructor.getISADAG(ontology);
+		DAG isa = DAGConstructor.getDAG(ontology);
 		isa.index();
 		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, DAGConstructor.getSigmaOntology(ontology));
 		List<Axiom> rv = reduction.reduce();
@@ -26,7 +26,7 @@ public class SemanticReductionTest extends TestCase {
 
 	public void test_2_0_1() throws Exception {
 		Ontology ontology = helper.load_onto("test_2_0_1");
-		DAG isa = DAGConstructor.getISADAG(ontology);
+		DAG isa = DAGConstructor.getDAG(ontology);
 		isa.index();
 		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, DAGConstructor.getSigmaOntology(ontology));
 		List<Axiom> rv = reduction.reduce();
@@ -35,7 +35,7 @@ public class SemanticReductionTest extends TestCase {
 
 	public void test_2_1_0() throws Exception {
 		Ontology ontology = helper.load_onto("test_2_1_0");
-		DAG isa = DAGConstructor.getISADAG(ontology);
+		DAG isa = DAGConstructor.getDAG(ontology);
 		isa.index();
 		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, DAGConstructor.getSigmaOntology(ontology));
 		List<Axiom> rv = reduction.reduce();
@@ -44,7 +44,7 @@ public class SemanticReductionTest extends TestCase {
 
 	public void test_1_2_0() throws Exception {
 		Ontology ontology = helper.load_onto("test_1_2_0");
-		DAG isa = DAGConstructor.getISADAG(ontology);
+		DAG isa = DAGConstructor.getDAG(ontology);
 		isa.index();
 		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, DAGConstructor.getSigmaOntology(ontology));
 		List<Axiom> rv = reduction.reduce();
@@ -61,7 +61,7 @@ public class SemanticReductionTest extends TestCase {
 		 */
 
 		Ontology ontology = helper.load_onto("equivalence-test");
-		DAG isa = DAGConstructor.getISADAG(ontology);
+		DAG isa = DAGConstructor.getDAG(ontology);
 		isa.index();
 		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, OntologyFactoryImpl.getInstance().createOntology());
 		List<Axiom> rv = reduction.reduce();
