@@ -1,0 +1,19 @@
+<projectDescription>
+  <name>quest-distribution</name>
+  <comment>Builds the distribution files for quest and the core apis. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects>
+    <project>obdalib-core</project>
+    <project>obdalib-owlapi3</project>
+    <project>quest-db</project>
+    <project>quest-owlapi3</project>
+    <project>reformulation-core</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
