@@ -1,0 +1,148 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>inf.unibz.it.obda</groupId>
+	<artifactId>obdalib-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>1.7-alpha</version>
+	<name>obdalib-parent</name>
+	<url>http://obda.inf.unibz.it/</url>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+
+	<modules>
+	    <module>obdalib-core</module>
+  		<module>reformulation-core</module>
+  		<module>obdalib-owlapi3</module>
+  		<module>obdalib-protege41</module>
+  		<module>quest-owlapi3</module>
+   		<module>quest-distribution</module>
+	</modules>  
+	
+	<profiles>
+        <profile>
+          <id>all</id>
+          <modules>
+      		<module>obdalib-owlapi</module>
+      		<module>obdalib-protege4</module>
+      		<module>quest-sesame</module>
+      		<module>quest-owlapi2</module>
+      		<module>quest-db</module>
+      		<module>quest-benchmarks</module>
+      	   </modules>
+        </profile>
+      </profiles>
+
+	<properties>
+		<aversion>1.7</aversion>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>bolzano-nexus-public</id>
+			<url>http://obdavm.inf.unibz.it:8080/nexus/content/groups/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>sesame-official-repository</id>
+			<url>http://repo.aduna-software.org/maven2/releases/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
+
+	<scm>
+		<connection>scm:svn:https://babbage.inf.unibz.it/krdb/obda/obdalib/trunk/</connection>
+		<developerConnection>scm:svn:https://babbage.inf.unibz.it/krdb/obda/obdalib/trunk/</developerConnection>
+	</scm>
+
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>bolzano-obda-snapshots</id>
+			<name>Maven Bolzano OBDA snapshots repository</name>
+			<url>http://obdavm.inf.unibz.it:8080/nexus/content/repositories/bolzano-obda-snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>bolzano-obda-release</id>
+			<name>Maven Bolzano OBDA release repository</name>
+			<url>http://obdavm.inf.unibz.it:8080/nexus/content/repositories/bolzano-obda-release/</url>
+		</repository>
+	</distributionManagement>
+
+	<build>
+		<pluginManagement>
+
+			<plugins>
+				<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-release-plugin</artifactId> 
+					<configuration> <password>${release.password}</password> <username>${release.username}</username> 
+					<tagBase>scm:svn:http://hyper.dis.uniroma1.it/svn/quonto/tags</tagBase> <autoVersionSubmodules>true</autoVersionSubmodules> 
+					</configuration> </plugin> -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.5</version>
+					<configuration>
+						<skip>false</skip>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>buildnumber-maven-plugin</artifactId>
+					<version>1.0</version>
+					<executions>
+						<execution>
+							<phase>validate</phase>
+							<goals>
+								<goal>create</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<doCheck>false</doCheck>
+						<doUpdate>true</doUpdate>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<configuration>
+						<archive>
+							<manifestEntries>
+								<Project-Id>${project.name}</Project-Id>
+								<Project-groupId>${project.groupId}</Project-groupId>
+								<Project-Url>${project.url}</Project-Url>
+								<Project-Version>${project.version}</Project-Version>
+								<Project-Build>${buildNumber}</Project-Build>
+								<Implementation-Version>${project.version}.${buildNumber}</Implementation-Version>
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+
+	</build>
+
+
+
+
+</project>
