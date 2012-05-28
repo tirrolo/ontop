@@ -18,7 +18,7 @@ public class TreeWitness {
 	private Set<ClassDescription> roottype;
 	private PropertySomeClassRestriction gen;
 
-	Logger	log = LoggerFactory.getLogger(TreeWitnessObsolete.class);
+	Logger	log = LoggerFactory.getLogger(TreeWitness.class);
 	
 	public TreeWitness(PropertySomeClassRestriction gen, Set<Term> roots, Set<ClassDescription> roottype, Term nonroot) {
 		this.gen = gen;
