@@ -272,7 +272,7 @@ dataTypeFunction returns [Function value]
     	functionSymbol = dfac.getDataTypePredicateLiteral();
       } else if (functionName.equals(OBDAVocabulary.XSD_STRING_URI)) {
     	functionSymbol = dfac.getDataTypePredicateString();
-      } else if (functionName.equals(OBDAVocabulary.XSD_INTEGER_URI)) {
+      } else if (functionName.equals(OBDAVocabulary.XSD_INTEGER_URI) || functionName.equals(OBDAVocabulary.XSD_INT_URI)) {
      	functionSymbol = dfac.getDataTypePredicateInteger();
       } else if (functionName.equals(OBDAVocabulary.XSD_DECIMAL_URI)) {
     	functionSymbol = dfac.getDataTypePredicateDecimal();
@@ -346,7 +346,7 @@ uriTemplateFunction returns [Function value]
       
       // the URI template is always on the first position in the term list
       terms.add(0, uriTemplate);
-      $value = dfac.getFunctionalTerm(dfac.getPredicate(OBDAVocabulary.QUEST_URI, terms.size(), null), terms);
+      $value = dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(terms.size()), terms);
     }
   ;
 

@@ -1,4 +1,4 @@
-// $ANTLR 3.4 C:\\Project\\Obdalib\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g 2012-05-02 16:56:05
+// $ANTLR 3.4 C:\\Project\\Obdalib\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g 2012-06-01 10:29:04
 
 package it.unibz.krdb.obda.parser;
 
@@ -1730,7 +1730,7 @@ public class TurtleParser extends Parser {
                         	functionSymbol = dfac.getDataTypePredicateLiteral();
                           } else if (functionName.equals(OBDAVocabulary.XSD_STRING_URI)) {
                         	functionSymbol = dfac.getDataTypePredicateString();
-                          } else if (functionName.equals(OBDAVocabulary.XSD_INTEGER_URI)) {
+                          } else if (functionName.equals(OBDAVocabulary.XSD_INTEGER_URI) || functionName.equals(OBDAVocabulary.XSD_INT_URI)) {
                          	functionSymbol = dfac.getDataTypePredicateInteger();
                           } else if (functionName.equals(OBDAVocabulary.XSD_DECIMAL_URI)) {
                         	functionSymbol = dfac.getDataTypePredicateDecimal();
@@ -1835,7 +1835,7 @@ public class TurtleParser extends Parser {
                   
                   // the URI template is always on the first position in the term list
                   terms.add(0, uriTemplate);
-                  value = dfac.getFunctionalTerm(dfac.getPredicate(OBDAVocabulary.QUEST_URI, terms.size(), null), terms);
+                  value = dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(terms.size()), terms);
                 
 
             }
