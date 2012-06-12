@@ -27,6 +27,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.JDBCUtility;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.DLRPerfectReformulator;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeRedReformulator;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.sql.SQLGenerator;
 import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SourceQueryGenerator;
 import it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.EquivalenceTBoxOptimizer;
@@ -505,13 +506,9 @@ public class Quest implements Serializable {
 			/*
 			 * Setting up the reformulation engine
 			 */
-			if (QuestConstants.PERFECTREFORMULATION.equals(reformulationTechnique)) {
-				rewriter = new DLRPerfectReformulator();
-			} else if (QuestConstants.UCQBASED.equals(reformulationTechnique)) {
-				rewriter = new TreeRedReformulator();
-			} else {
-				throw new IllegalArgumentException("Invalid value for argument: " + QuestPreferences.REFORMULATION_TECHNIQUE);
-			}
+				rewriter = new TreeWitnessRewriter();
+			
+			
 
 			rewriter.setTBox(reformulationOntology);
 			rewriter.setCBox(sigma);

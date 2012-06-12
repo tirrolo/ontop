@@ -120,6 +120,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		List<Term> terms = new LinkedList<Term>();
 		terms.add(term1);
 		terms.add(term2);
+		//use getClassPredicate (same for above)
 		return fac.getAtom(fac.getPredicate(name, 1), terms);
 	}
 	
