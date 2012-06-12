@@ -55,7 +55,6 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLRuntimeException;
 import org.semanticweb.owlapi.model.OWLSameIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.AxiomNotInProfileException;
@@ -70,6 +69,8 @@ import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.NullReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.OWLReasonerRuntimeException;
+import org.semanticweb.owlapi.reasoner.ReasonerInternalException;
 import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.TimeOutException;
@@ -117,6 +118,13 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 
 	private boolean prepared = false;
 
+	private boolean questready = false;
+
+	// / holds the error that quest had when initializing
+	private String errorMessage = "";
+
+	private Exception questException = null;
+
 	// //////////////////////////////////////////////////////////////////////////////////////
 	//
 	// From Quest
@@ -157,14 +165,6 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 		}
 
 		man = rootOntology.getOWLOntologyManager();
-		// man.addOntologyChangeListener(new OWLOntologyChangeListener() {
-		//
-		// @Override
-		// public void ontologiesChanged(List<? extends OWLOntologyChange>
-		// changes) throws OWLException {
-		// prepared = false;
-		// }
-		// });
 
 		this.obdaModel = obdaModel;
 		this.preferences.putAll(preferences);
@@ -175,7 +175,11 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 
 	public void flush() {
 		prepared = false;
+		
+		super.flush();
+		
 		prepareReasoner();
+		
 	}
 
 	public void setPreferences(QuestPreferences preferences) {
@@ -184,14 +188,26 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 
 	@Override
 	public OWLStatement getStatement() throws OWLException {
-		ensurePrepared();
+		if (!questready) {
+			OWLReasonerRuntimeException owlReasonerRuntimeException = new OWLReasonerRuntimeException(
+					"Quest was not initialized properly. This is generally indicates, connection problems or error during ontology or mapping pre-processing. \n\nOriginal error message:\n" + questException.getMessage()) {
+
+						/**
+						 * 
+						 */
+				private static final long serialVersionUID = 1L;
+				};
+				owlReasonerRuntimeException.setStackTrace(questException.getStackTrace());
+			throw owlReasonerRuntimeException;
+		}
 		return owlconn.createStatement();
 	}
 
-	private void classify() throws Exception {
+	private void prepareQuestInstance() throws Exception {
 
 		try {
-			questInstance.dispose();
+			if (questInstance != null)
+				questInstance.dispose();
 		} catch (Exception e) {
 			log.debug(e.getMessage());
 		}
@@ -251,9 +267,9 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 			} else {
 				// VIRTUAL MODE - NO-OP
 			}
+			questready = true;
 			log.debug("Quest has completed the setup and it is ready for query answering!");
 		} catch (Exception e) {
-			log.error(e.getMessage());
 			throw e;
 		} finally {
 			// pm.reasonerTaskProgressChanged(4, 4);
@@ -350,18 +366,7 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 	protected void handleChanges(Set<OWLAxiom> addAxioms, Set<OWLAxiom> removeAxioms) {
 		prepared = false;
 		prepareReasoner();
-		// handleChanges(addAxioms, removeAxioms, classHierarchyInfo);
-		// handleChanges(addAxioms, removeAxioms, objectPropertyHierarchyInfo);
-		// handleChanges(addAxioms, removeAxioms, dataPropertyHierarchyInfo);
 	}
-
-	// private <T extends OWLObject> void handleChanges(Set<OWLAxiom> added,
-	// Set<OWLAxiom> removed, HierarchyInfo<T> hierarchyInfo) {
-	// Set<T> sig = hierarchyInfo.getEntitiesInSignature(added);
-	// sig.addAll(hierarchyInfo.getEntitiesInSignature(removed));
-	// hierarchyInfo.processChanges(sig, added, removed);
-	//
-	// }
 
 	public void interrupt() {
 		interrupted = true;
@@ -384,17 +389,31 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 			 */
 
 			loadOntologies();
-			classify();
 
 			classHierarchyInfo.computeHierarchy();
 			objectPropertyHierarchyInfo.computeHierarchy();
 			dataPropertyHierarchyInfo.computeHierarchy();
 
-			prepared = true;
+			questready = false;
+			questException = null;
+			errorMessage = "";
+			try {
+				prepareQuestInstance();
+				questready = true;
+				questException = null;
+				errorMessage = "";
+			} catch (Exception e) {
+				questready = false;
+				questException = e;
+				errorMessage = e.getMessage();
+				log.error("Could not initialize the Quest query answering engine. Answering queries will not be available.");
+				log.error(e.getMessage());
+			}
 
 		} catch (Exception e) {
-			throw new OWLRuntimeException(e.getMessage());
+			throw new ReasonerInternalException(e.getMessage());
 		} finally {
+			prepared = true;
 			pm.reasonerTaskStopped();
 		}
 

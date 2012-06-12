@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -118,8 +119,8 @@ public class Tester {
 		// reasoner.classify();
 
 		queryMap = new HashMap<String, String>();
-		Vector<QueryControllerEntity> vec = apic.getQueryController().getElements();
-		Iterator<QueryControllerEntity> it = vec.iterator();
+		List<QueryControllerEntity> entities = apic.getQueryController().getElements();
+		Iterator<QueryControllerEntity> it = entities.iterator();
 		while (it.hasNext()) {
 			QueryControllerEntity e = it.next();
 			if (e instanceof QueryControllerQuery) {
@@ -185,11 +186,9 @@ public class Tester {
 		OBDADataFactory obdafac = OBDADataFactoryImpl.getInstance();
 		apic = obdafac.getOBDAModel();
 		String obdafile = owlfile.substring(0, owlfile.length() - 3) + "obda";
-		// apic.loadData(new File(owlfile).toURI());
 
 		DataManager ioManager = new DataManager(apic);
-		ioManager.loadOBDADataFromURI(new File(obdafile).toURI(), ontology.getOntologyID().getOntologyIRI().toURI(),
-				apic.getPrefixManager());
+		ioManager.loadOBDADataFromURI(new File(obdafile).toURI(), ontology.getOntologyID().getOntologyIRI().toURI(), apic.getPrefixManager());
 		fillPrefixManager();
 	}
 
@@ -275,27 +274,14 @@ public class Tester {
 	}
 
 	private String getPrefix() {
-		String queryString = "";
-		// String defaultNamespace =
-		// ontology.getOntologyID().getOntologyIRI().toString();
-		// if (defaultNamespace.endsWith("#")) {
-		// queryString += "BASE <" + defaultNamespace.substring(0,
-		// defaultNamespace.length() - 1) + ">\n";
-		// } else {
-		// queryString += "BASE <" + defaultNamespace + ">\n";
-		// }
-		// queryString += "PREFIX :   <" + defaultNamespace + "#>\n";
-
-		String defaultNamespace = "http://obda.inf.unibz.it/ontologies/tests/dllitef/test.owl#";
-		queryString += "BASE <http://obda.inf.unibz.it/ontologies/tests/dllitef/test.owl>\n";
-		queryString += "PREFIX :   <http://obda.inf.unibz.it/ontologies/tests/dllitef/test.owl#>\n";
-
-		queryString += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n";
-		queryString += "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n";
-		queryString += "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n";
-		queryString += "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n";
-		queryString += "PREFIX dllite: <http://obda.inf.unibz.it/ontologies/tests/dllitef/test.owl#>\n";
-		queryString += "PREFIX ucq: <http://www.obda.org/ucq/predicate/queryonly#>\n";
+		String queryString = "BASE <http://obda.inf.unibz.it/ontologies/tests/dllitef/test.owl>\n"
+			+ "PREFIX :   <http://obda.inf.unibz.it/ontologies/tests/dllitef/test.owl#>\n"
+			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+			+ "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+			+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n"
+			+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
+			+ "PREFIX dllite: <http://obda.inf.unibz.it/ontologies/tests/dllitef/test.owl#>\n"
+			+ "PREFIX ucq: <http://www.obda.org/ucq/predicate/queryonly#>\n";
 
 		return queryString;
 	}
@@ -311,12 +297,11 @@ public class Tester {
 
 	private void fillPrefixManager() {
 		PrefixManager man = apic.getPrefixManager();
-		man.setDefaultNamespace(ontology.getOntologyID().getOntologyIRI().toString());
-		man.addUri("http://www.w3.org/2000/01/rdf-schema#", "rdfs");
-		man.addUri("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf");
-		man.addUri("http://www.w3.org/2001/XMLSchema#", "xsd");
-		man.addUri("http://www.w3.org/2002/07/owl#", "owl");
-		// man.addUri(ontology.getURI().toString(), "xml:base");
-		man.addUri("http://obda.inf.unibz.it/ontologies/tests/dllitef/test.owl#", "dllite");
+		man.addPrefix(PrefixManager.DEFAULT_PREFIX, ontology.getOntologyID().getOntologyIRI().toString());
+		man.addPrefix("rdf:", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		man.addPrefix("rdfs:", "http://www.w3.org/2000/01/rdf-schema#");
+		man.addPrefix("owl:", "http://www.w3.org/2002/07/owl#");	
+		man.addPrefix("xsd:", "http://www.w3.org/2001/XMLSchema#");
+		man.addPrefix("dllite:", "http://obda.inf.unibz.it/ontologies/tests/dllitef/test.owl#");
 	}
 }

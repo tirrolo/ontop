@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.protege4.core;
 
+import it.unibz.krdb.obda.gui.swing.utils.DialogUtils;
 import it.unibz.krdb.obda.io.DataManager;
 import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.model.OBDADataFactory;
@@ -20,7 +21,6 @@ import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
 import it.unibz.krdb.obda.utils.VersionInfo;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -39,6 +39,7 @@ import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.model.inference.ProtegeOWLReasonerInfo;
 import org.protege.editor.owl.ui.prefix.PrefixUtilities;
+
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -54,6 +55,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.model.SetOntologyID;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,16 +63,16 @@ public class OBDAModelManager implements Disposable {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 
-	OWLEditorKit owlEditorKit = null;
+	private OWLEditorKit owlEditorKit = null;
 
-	OWLOntologyManager mmgr = null;
+	private OWLOntologyManager mmgr = null;
 
-	// OBDAModel obdacontroller = null;
-
-	Map<URI, OBDAModel> obdamodels = null;
+	private Map<URI, OBDAModel> obdamodels = null;
 
 	private List<OBDAModelManagerListener> obdaManagerListeners = null;
 
+	private static OBDADataFactory dfac = OBDADataFactoryImpl.getInstance();
+	
 	private JDBCConnectionManager connectionManager = JDBCConnectionManager.getJDBCConnectionManager();
 
 	/***
@@ -137,25 +139,26 @@ public class OBDAModelManager implements Disposable {
 					IRI oldiri = ((SetOntologyID) change).getOriginalOntologyID().getOntologyIRI();
 					OBDAModel model = obdamodels.get(oldiri.toURI());
 					PrefixManager prefixManager = model.getPrefixManager();
-					prefixManager.setDefaultNamespace(newiri.toURI().toString());
+					prefixManager.addPrefix(PrefixManager.DEFAULT_PREFIX, newiri.toURI().toString());
 					
 					obdamodels.remove(oldiri.toURI());
 					obdamodels.put(newiri.toURI(), model);
 					continue;
 				}
 
-				if (idx + 1 >= changes.size())
+				if (idx + 1 >= changes.size()) {
 					continue;
+				}
 				if (change instanceof RemoveAxiom && changes.get(idx + 1) instanceof AddAxiom) {
-					/***
+					/*
 					 * Found the pattern of a renaming refactoring
 					 */
 					RemoveAxiom remove = (RemoveAxiom) change;
 					AddAxiom add = (AddAxiom) changes.get(idx + 1);
 
-					if (!(remove.getAxiom() instanceof OWLDeclarationAxiom && add.getAxiom() instanceof OWLDeclarationAxiom))
+					if (!(remove.getAxiom() instanceof OWLDeclarationAxiom && add.getAxiom() instanceof OWLDeclarationAxiom)) {
 						continue;
-
+					}
 					/*
 					 * we found the patter we are looking for, a remove and add
 					 * of declaration axioms
@@ -164,17 +167,16 @@ public class OBDAModelManager implements Disposable {
 					OWLEntity newe = ((OWLDeclarationAxiom) add.getAxiom()).getEntity();
 					renamings.put(olde, newe);
 				} else if (change instanceof RemoveAxiom && ((RemoveAxiom) change).getAxiom() instanceof OWLDeclarationAxiom) {
-					/***
+					/*
 					 * Found the pattern of a deletion
 					 */
 					OWLDeclarationAxiom declaration = (OWLDeclarationAxiom) ((RemoveAxiom) change).getAxiom();
 					OWLEntity removedEntity = declaration.getEntity();
 					removals.add(removedEntity);
-
 				}
 			}
 
-			/***
+			/*
 			 * Applying the renamings to the OBDA model
 			 */
 			OBDAModel obdamodel = getActiveOBDAModel();
@@ -191,7 +193,7 @@ public class OBDAModelManager implements Disposable {
 				obdamodel.renamePredicate(removedPredicate, newPredicate);
 			}
 
-			/***
+			/*
 			 * Applying the deletions to the obda model
 			 */
 			for (OWLEntity removede : removals) {
@@ -199,9 +201,7 @@ public class OBDAModelManager implements Disposable {
 				obdamodel.deletePredicate(removedPredicate);
 
 			}
-
 		}
-
 	}
 
 	public void addListener(OBDAModelManagerListener listener) {
@@ -218,11 +218,12 @@ public class OBDAModelManager implements Disposable {
 			OWLOntologyID ontologyID = ontology.getOntologyID();
 			IRI ontologyIRI = ontologyID.getOntologyIRI();
 			URI uri = null;
-			if (ontologyIRI != null)
+			if (ontologyIRI != null) {
 				uri = ontologyIRI.toURI();
-			else
+			}
+			else {
 				uri = URI.create(ontologyID.toString());
-
+			}
 			return obdamodels.get(uri);
 		}
 		return null;
@@ -241,55 +242,61 @@ public class OBDAModelManager implements Disposable {
 	 * created.
 	 */
 	private void setupNewOBDAModel() {
+		
+		// Get the OBDA active model
 		OBDAModel activeOBDAModel = getActiveOBDAModel();
 
 		if (activeOBDAModel != null) {
 			return;
-		}
-		OBDADataFactory obdafac = OBDADataFactoryImpl.getInstance();
-		activeOBDAModel = obdafac.getOBDAModel();
-
+		}		
+		activeOBDAModel = dfac.getOBDAModel();
 		activeOBDAModel.addSourcesListener(dlistener);
 		activeOBDAModel.addMappingsListener(mlistener);
 		activeOBDAModel.getQueryController().addListener(qlistener);
 
+		// Get OWL active ontology
 		OWLModelManager mmgr = owlEditorKit.getOWLWorkspace().getOWLModelManager();
-		PrefixOWLOntologyFormat prefixManager = PrefixUtilities.getPrefixOWLOntologyFormat(mmgr.getActiveOntology());
-		addOBDADefaultPrefixes(prefixManager);
+		OWLOntology activeOntology = mmgr.getActiveOntology();
+		
+		// Get the active ontology URI. This URI will be the unique ID for the current active OBDA model
+		URI modelId = getActiveOntologyURI(activeOntology);
+		obdamodels.put(modelId, activeOBDAModel);
 
-		// PrefixManager mapper =mmgr.getOWLOntologyManager();
-
-		OWLOntologyID ontologyID = this.owlEditorKit.getModelManager().getActiveOntology().getOntologyID();
-		URI uri = null;
-		if (ontologyID.isAnonymous()) {
-			uri = URI.create(ontologyID.toString());
-		} else {
-			uri = ontologyID.getOntologyIRI().toURI();
-		}
-		obdamodels.put(uri, activeOBDAModel);
-
+		// Get OWL prefix manager and wrap it as a OBDA prefix manager
+		PrefixOWLOntologyFormat prefixManager = PrefixUtilities.getPrefixOWLOntologyFormat(activeOntology);
 		PrefixManagerWrapper prefixwrapper = new PrefixManagerWrapper(prefixManager);
+		
+		// Insert some common prefixes for the OBDA system
+		addOBDACommonPrefixes(prefixwrapper);
+		
+		// Update the default prefix URI so it contains "#" at the end of the string
+		String defaultPrefixURI = prefixManager.getDefaultPrefix();
+		if (defaultPrefixURI == null) { // Make the model ID as the default prefix URI, if not exist yet
+			defaultPrefixURI = modelId.toString();
+		}
+		prefixwrapper.addPrefix(PrefixManager.DEFAULT_PREFIX, defaultPrefixURI);
+		
+		// Attach this prefix manager to the OBDA model
 		activeOBDAModel.setPrefixManager(prefixwrapper);
+	}
 
-		String defaultPrefix = prefixManager.getDefaultPrefix();
-		if (defaultPrefix != null)
-			activeOBDAModel.getPrefixManager().setDefaultNamespace(defaultPrefix);
-		else
-			activeOBDAModel.getPrefixManager().setDefaultNamespace(ontologyID.getOntologyIRI().toURI().toString());
-
-		// triggerOBDAModelChangeEvent(oldcontroller, obdacontroller);
+	private URI getActiveOntologyURI(OWLOntology activeOntology) {
+		OWLOntologyID ontologyID = activeOntology.getOntologyID();
+		if (ontologyID.isAnonymous()) {
+			return URI.create(ontologyID.toString());
+		} else {
+			return ontologyID.getOntologyIRI().toURI();
+		}
 	}
 
 	/**
 	 * Append here all default prefixes used by the system.
 	 */
-	private void addOBDADefaultPrefixes(PrefixOWLOntologyFormat prefixManager) {
-		if (!prefixManager.containsPrefixMapping("quest")) {
-			prefixManager.setPrefix("quest", "http://obda.org/quest#");
-		}
+	private void addOBDACommonPrefixes(PrefixManagerWrapper prefixManager) {
+		prefixManager.addPrefix("quest:", "http://obda.org/quest#");
 	}
-
-	/***
+	
+	/**
 	 * Internal class responsible for coordinating actions related to updates in
 	 * the ontology environment.
 	 */
@@ -299,26 +306,20 @@ public class OBDAModelManager implements Disposable {
 
 		@Override
 		public void handleChange(OWLModelManagerChangeEvent event) {
-			EventType type = event.getType();
+			
+			// Get the active ontology
 			OWLModelManager source = event.getSource();
+			OWLOntology activeOntology = source.getActiveOntology();
 
-			switch (type) {
+			// Initialize the active OBDA model
+			OBDAModel activeOBDAModel = null;
+			
+			// Perform a proper handling for each type of event
+			final EventType eventType = event.getType();
+			switch (eventType) {
 			case ABOUT_TO_CLASSIFY:
-				loadingData = true;
 				log.debug("ABOUT TO CLASSIFY");
-				// if ((!inititializing) && (obdamodels != null) &&
-				// (owlEditorKit != null) && (getActiveOBDAModel() != null)) {
-				// OWLReasoner reasoner =
-				// owlEditorKit.getOWLModelManager().getOWLReasonerManager().getCurrentReasoner();
-				// if (reasoner instanceof QuestOWL) {
-				// QuestOWL quest = (QuestOWL) reasoner;
-				// ProtegeReformulationPlatformPreferences reasonerPreference =
-				// (ProtegeReformulationPlatformPreferences) owlEditorKit
-				// .get(QuestPreferences.class.getName());
-				// quest.setPreferences(reasonerPreference);
-				// quest.loadOBDAModel(getActiveOBDAModel());
-				// }
-				// }
+				loadingData = true;
 				break;
 
 			case ENTITY_RENDERER_CHANGED:
@@ -331,36 +332,27 @@ public class OBDAModelManager implements Disposable {
 
 			case ACTIVE_ONTOLOGY_CHANGED:
 				log.debug("ACTIVE ONTOLOGY CHANGED");
-				inititializing = true;
+				inititializing = true; // flag on
+				
+				// Setting up a new OBDA model and retrieve the object.
 				setupNewOBDAModel();
-
-				OWLModelManager mmgr = owlEditorKit.getOWLWorkspace().getOWLModelManager();
-
-				PrefixOWLOntologyFormat prefixManager = PrefixUtilities.getPrefixOWLOntologyFormat(mmgr.getActiveOntology());
-				String defaultPrefix = prefixManager.getDefaultPrefix();
-				OBDAModel activeOBDAModel = getActiveOBDAModel();
-				OWLOntology ontology = owlEditorKit.getOWLModelManager().getActiveOntology();
-				OWLOntologyID ontologyID = ontology.getOntologyID();
-				if (defaultPrefix != null)
-					activeOBDAModel.getPrefixManager().setDefaultNamespace(defaultPrefix);
-				else
-					activeOBDAModel.getPrefixManager().setDefaultNamespace(ontologyID.getOntologyIRI().toURI().toString());
-
+				activeOBDAModel = getActiveOBDAModel();
+				
 				ProtegeOWLReasonerInfo factory = owlEditorKit.getOWLModelManager().getOWLReasonerManager().getCurrentReasonerFactory();
 				if (factory instanceof ProtegeOBDAOWLReformulationPlatformFactory) {
 					ProtegeOBDAOWLReformulationPlatformFactory questfactory = (ProtegeOBDAOWLReformulationPlatformFactory) factory;
-					ProtegeReformulationPlatformPreferences reasonerPreference = (ProtegeReformulationPlatformPreferences) owlEditorKit
-							.get(QuestPreferences.class.getName());
+					ProtegeReformulationPlatformPreferences reasonerPreference = 
+							(ProtegeReformulationPlatformPreferences) owlEditorKit.get(QuestPreferences.class.getName());
 					questfactory.setPreferences(reasonerPreference);
-					questfactory.setOBDAModel(getActiveOBDAModel());
+					questfactory.setOBDAModel(activeOBDAModel);
 				}
-
 				fireActiveOBDAModelChange();
 
-				inititializing = false;
+				inititializing = false; // flag off
 				break;
 
 			case ENTITY_RENDERING_CHANGED:
+				log.debug("ENTITY RENDERING CHANGED");
 				break;
 
 			case ONTOLOGY_CREATED:
@@ -368,88 +360,48 @@ public class OBDAModelManager implements Disposable {
 				break;
 
 			case ONTOLOGY_LOADED:
-				log.debug("ONTOLOGY LOADED");
-				loadingData = true;
-				try {
-					OWLOntology activeonto = source.getActiveOntology();
-
-					URI owlfile = source.getOWLOntologyManager().getOntologyDocumentIRI(activeonto).toURI();
-					URI obdafile = URI.create(owlfile.toString().substring(0, owlfile.toString().length() - 3) + "obda");
-					getActiveOBDAModel().getPrefixManager().setDefaultNamespace(
-							activeonto.getOntologyID().getOntologyIRI().toURI().toString());
-					DataManager ioManager = new DataManager(getActiveOBDAModel());
-					File file = new File(obdafile);
-					if (file.canRead()) {
-						final OBDAModel obdaModel = getActiveOBDAModel();
-						ioManager.loadOBDADataFromURI(obdafile, activeonto.getOntologyID().getOntologyIRI().toURI(),
-								obdaModel.getPrefixManager());
-						// connectionManager.setupConnection(obdaModel); // fill
-						// in
-						// the
-						// connection
-						// pool.
-						OBDAModelRefactorer refactorer = new OBDAModelRefactorer(obdaModel, activeonto);
-						refactorer.run(); // adding type information to the
-											// mapping predicates.
-					}
-				} catch (Exception e) {
-					log.error(e.getMessage());
-				} finally {
-					loadingData = false;
-				}
-				break;
-
 			case ONTOLOGY_RELOADED:
-				log.debug("ONTOLOGY RELOADED");
-				loadingData = true;
+				log.debug("ONTOLOGY LOADED/RELOADED");
+				loadingData = true; // flag on
 				try {
-					OWLOntology activeonto = source.getActiveOntology();
-					URI owlfile = source.getOWLOntologyManager().getOntologyDocumentIRI(activeonto).toURI();
-					URI obdafile = URI.create(owlfile.toString().substring(0, owlfile.toString().length() - 3) + "obda");
-					getActiveOBDAModel().getPrefixManager().setDefaultNamespace(
-							activeonto.getOntologyID().getOntologyIRI().toURI().toString());
-					DataManager ioManager = new DataManager(getActiveOBDAModel());
-					File file = new File(obdafile);
-					if (file.canRead()) {
-						final OBDAModel obdaModel = getActiveOBDAModel();
-						ioManager.loadOBDADataFromURI(obdafile, activeonto.getOntologyID().getOntologyIRI().toURI(),
-								obdaModel.getPrefixManager());
-						// connectionManager.setupConnection(obdaModel); // fill
-						// in
-						// the
-						// connection
-						// pool.
-						OBDAModelRefactorer refactorer = new OBDAModelRefactorer(obdaModel, activeonto);
-						refactorer.run(); // adding type information to the
-											// mapping predicates.
-					}
-
+					// Get the active OBDA model
+					activeOBDAModel = getActiveOBDAModel();
+					
+					// Construct the IO manager to read the OBDA file
+					DataManager ioManager = new DataManager(activeOBDAModel);
+					
+					URI obdaFileLocation = getOBDAFileLocation(source, activeOntology);
+					ioManager.loadOBDADataFromURI(obdaFileLocation, activeOntology.getOntologyID().getOntologyIRI().toURI(), activeOBDAModel.getPrefixManager());
+						
+					// adding type information to the mapping predicates.
+					OBDAModelRefactorer refactorer = new OBDAModelRefactorer(activeOBDAModel, activeOntology);
+					refactorer.run();
+					
 				} catch (Exception e) {
 					log.error(e.getMessage());
+					
 				} finally {
-					loadingData = false;
+					loadingData = false; // flag off
 				}
 				break;
 
 			case ONTOLOGY_SAVED:
-				log.debug("ACTIVE ONTOLOGY SAVED");
-				OWLOntology activeonto = source.getActiveOntology();
-				URI owlfile = source.getOWLOntologyManager().getOntologyDocumentIRI(activeonto).toURI();
-				URI obdafile = URI.create(owlfile.toString().substring(0, owlfile.toString().length() - 3) + "obda");
-				File file = new File(obdafile);
+				log.debug("ACTIVE ONTOLOGY SAVED");			
 				try {
-					if (!file.exists()) {
-						file.createNewFile();
-					}
-					if (file.canWrite()) {
-						DataManager ioManager = new DataManager(getActiveOBDAModel());
-						ioManager.saveOBDAData(obdafile, true, getActiveOBDAModel().getPrefixManager());
-					} else {
-						log.warn("WARNING: Cannot perform write operation");
-					}
+					// Get the active OBDA model
+					activeOBDAModel = getActiveOBDAModel();
+					
+					// Construct the IO manager to write the OBDA file
+					DataManager ioManager = new DataManager(activeOBDAModel);
+					
+					URI obdaFileLocation = getOBDAFileLocation(source, activeOntology);
+					ioManager.saveOBDAData(obdaFileLocation, true, activeOBDAModel.getPrefixManager());
+					
 				} catch (IOException e) {
-					log.error("Error while saving OBDA file: {}", obdafile.toString());
 					log.error(e.getMessage());
+					Exception newException = new Exception("Error saving the OBDA file. Closing Protege now can result in losing changes in your data sources or mappings. Please resolve the issue that prevents saving in the current location, or do \"Save as..\" to save in an alternative location. \n\nThe error message was: \n" + e.getMessage());
+					DialogUtils.showQuickErrorDialog(owlEditorKit.getOWLWorkspace(), newException, "Error saving OBDA file");
+					triggerOntologyChanged();
 				}
 				break;
 
@@ -458,24 +410,36 @@ public class OBDAModelManager implements Disposable {
 				break;
 
 			case REASONER_CHANGED:
-				log.info("REASONER CHANGED");
-				if ((!inititializing) && (obdamodels != null) && (owlEditorKit != null) && (getActiveOBDAModel() != null)) {
-
+				log.debug("REASONER CHANGED");
+				
+				// Get the active OBDA model
+				activeOBDAModel = getActiveOBDAModel();
+				
+				if ((!inititializing) && (obdamodels != null) && (owlEditorKit != null) && (activeOBDAModel != null)) {
 					ProtegeOWLReasonerInfo fac = owlEditorKit.getOWLModelManager().getOWLReasonerManager().getCurrentReasonerFactory();
 					if (fac instanceof ProtegeOBDAOWLReformulationPlatformFactory) {
 						ProtegeOBDAOWLReformulationPlatformFactory questfactory = (ProtegeOBDAOWLReformulationPlatformFactory) fac;
-						ProtegeReformulationPlatformPreferences reasonerPreference = (ProtegeReformulationPlatformPreferences) owlEditorKit
-								.get(QuestPreferences.class.getName());
+						ProtegeReformulationPlatformPreferences reasonerPreference = 
+								(ProtegeReformulationPlatformPreferences) owlEditorKit.get(QuestPreferences.class.getName());
 						questfactory.setPreferences(reasonerPreference);
-						questfactory.setOBDAModel(getActiveOBDAModel());
+						questfactory.setOBDAModel(activeOBDAModel);
 					}
 					break;
 				}
 			}
 		}
-
 	}
 
+	/**
+	 * A utility method to obtain the location of OBDA file. Since the file is by default located at
+	 * the same place as the OWL file, we utilizes the OWLModelManager to locate it.
+	 */
+	private URI getOBDAFileLocation(OWLModelManager owlManager, OWLOntology targetOntology) {
+		String owlFileLocation = owlManager.getOWLOntologyManager().getOntologyDocumentIRI(targetOntology).toString();
+		String obdaFileLocation = owlFileLocation.substring(0, owlFileLocation.length() - 3) + "obda";
+		return URI.create(obdaFileLocation);
+	}
+	
 	public void fireActiveOBDAModelChange() {
 		for (OBDAModelManagerListener listener : obdaManagerListeners) {
 			try {
@@ -487,7 +451,7 @@ public class OBDAModelManager implements Disposable {
 		}
 	}
 
-	/***
+	/**
 	 * Protege wont trigger a save action unless it detects that the OWLOntology
 	 * currently opened has suffered a change. The OBDA plugin requires that
 	 * protege triggers a save action also in the case when only the OBDA model
@@ -496,13 +460,15 @@ public class OBDAModelManager implements Disposable {
 	 * 
 	 */
 	private void triggerOntologyChanged() {
-		if (loadingData)
+		if (loadingData) {
 			return;
+		}
 		OWLModelManager owlmm = owlEditorKit.getOWLModelManager();
 		OWLOntology ontology = owlmm.getActiveOntology();
 
-		if (ontology == null)
+		if (ontology == null) {
 			return;
+		}
 		
 //		owlmm.setDirty(ontology);
 		
@@ -515,8 +481,7 @@ public class OBDAModelManager implements Disposable {
 			RemoveAxiom removeChange = new RemoveAxiom(ontology, axiom);
 			owlmm.applyChange(removeChange);
 		} catch (Exception e) {
-			log.warn("Exception forcing an ontology change. Your OWL model might contain a new class that you need to remove manually: {}",
-					newClass.getIRI());
+			log.warn("Exception forcing an ontology change. Your OWL model might contain a new class that you need to remove manually: {}", newClass.getIRI());
 			log.warn(e.getMessage());
 			log.debug(e.getMessage(), e);
 		}
@@ -533,22 +498,19 @@ public class OBDAModelManager implements Disposable {
 		} catch (Exception e) {
 			log.warn(e.getMessage());
 		}
-
 	}
 
 	protected OWLModelManagerListener getModelManagerListener() {
 		return modelManagerListener;
 	}
 
-	/***
+	/*
 	 * The following are internal helpers that dispatch "needs save" messages to
 	 * the OWL ontology model when OBDA model changes.
 	 */
 
 	private class ProtegeDatasourcesControllerListener implements OBDAModelListener {
-		/**
-		 * 
-		 */
+		
 		private static final long serialVersionUID = -1633463551656406417L;
 
 		public void datasourceUpdated(String oldname, OBDADataSource currendata) {
@@ -573,9 +535,7 @@ public class OBDAModelManager implements Disposable {
 	}
 
 	private class ProtegeMappingControllerListener implements OBDAMappingListener {
-		/**
-		 * 
-		 */
+		
 		private static final long serialVersionUID = -5794145688669702879L;
 
 		public void allMappingsRemoved() {
@@ -600,9 +560,7 @@ public class OBDAModelManager implements Disposable {
 	}
 
 	private class ProtegeQueryControllerListener implements QueryControllerListener {
-		/**
-		 * 
-		 */
+		
 		private static final long serialVersionUID = 4536639410306364312L;
 
 		public void elementAdded(QueryControllerEntity element) {
