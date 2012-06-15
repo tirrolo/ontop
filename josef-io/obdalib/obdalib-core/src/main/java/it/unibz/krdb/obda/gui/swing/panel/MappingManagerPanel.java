@@ -1,5 +1,5 @@
 /***
- * 
+ * Copyright (c) 2008, Mariano Rodriguez-Muro. All rights reserved.
  * 
  * The OBDA-API is licensed under the terms of the Lesser General Public License
  * v.3 (see OBDAAPI_LICENSE.txt for details). The components of this work
@@ -13,6 +13,7 @@
 package it.unibz.krdb.obda.gui.swing.panel;
 
 import it.unibz.krdb.obda.exception.DuplicateMappingException;
+import it.unibz.krdb.obda.gui.swing.IconLoader;
 import it.unibz.krdb.obda.gui.swing.dialog.MappingValidationDialog;
 import it.unibz.krdb.obda.gui.swing.treemodel.FilteredModel;
 import it.unibz.krdb.obda.gui.swing.treemodel.SynchronizedMappingListModel;
@@ -23,13 +24,9 @@ import it.unibz.krdb.obda.gui.swing.utils.DialogUtils;
 import it.unibz.krdb.obda.gui.swing.utils.MappingFilterLexer;
 import it.unibz.krdb.obda.gui.swing.utils.MappingFilterParser;
 import it.unibz.krdb.obda.gui.swing.utils.OBDAMappingListRenderer;
-import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDADataSource;
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.parser.DatalogProgramParser;
-import it.unibz.krdb.obda.utils.OBDAPreferences;
 import it.unibz.krdb.obda.utils.SourceQueryValidator;
 
 import java.awt.event.ActionEvent;
@@ -56,14 +53,11 @@ import javax.swing.event.ListDataListener;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MappingManagerPanel extends JPanel implements DatasourceSelectorListener {
 
 	private static final long serialVersionUID = -486013653814714526L;
-
-//	private OBDAPreferences preference;
 
 	private Thread validatorThread;
 
@@ -73,16 +67,12 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 
 	private OBDAModel mapc;
 
-	protected OBDAModel apic;
+	private OBDAModel apic;
 
 	private OBDADataSource selectedSource;
 
 	private boolean canceled;
-
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-	private OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
-
+	
 	private JTree mappingsTree;
 
 	private JMenuItem menuValidateBody;
@@ -97,62 +87,31 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 	 * @param preference
 	 *            The preference object.
 	 */
-	public MappingManagerPanel(OBDAModel apic,  TargetQueryVocabularyValidator validator) {
+	public MappingManagerPanel(OBDAModel apic, TargetQueryVocabularyValidator validator) {
 
-//		this.preference = preference;
-//		datalogParser = new DatalogProgramParser();
-		this.validatortrg = validator;
-
+		validatortrg = validator;
+		
 		mappingsTree = new JTree();
 
 		initComponents();
-		registerAction();
 		addMenu();
 
-		/***********************************************************************
-		 * Setting up the mappings tree
-		 */
-		// mappingsTree.setRootVisible(false);
-
-		// MappingTreeCellRenderer map_renderer = new
-		// MappingTreeCellRenderer(apic, preference);
-
-		// MappingTreeCellRenderer2 map_renderer = new
-		// MappingTreeCellRenderer2(preference);
-		// scrMappingsTree.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-		// mappingsTree = new JTree();
-		// mappingsTree.setCellRenderer(map_renderer);
-		// mappingsTree.setEditable(true);
-		// mappingsTree.setCellEditor(new MappingTreeNodeCellEditor(apic,
-		// validatortrg, preference));
-		// mappingsTree.setSelectionModel(new MappingTreeSelectionModel());
-		// mappingsTree.setRowHeight(0);
-		// mappingsTree.setMaximumSize(new Dimension(scrMappingsTree.getWidth()
-		// - 50, 65000));
-		// mappingsTree.setToggleClickCount(1);
-		// mappingsTree.setRootVisible(true);
-		// mappingsTree.setInvokesStopCellEditing(true);
-
+		// Setting up the mappings tree
 		mappingList.setCellRenderer(new OBDAMappingListRenderer(apic, validator));
 		mappingList.setModel(new SynchronizedMappingListModel(apic));
 		mappingList.setFixedCellWidth(-1);
 		mappingList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		mappingList.addMouseListener(new PopupListener());
-
+		
 		mappingList.addKeyListener(new KeyListener() {
-
 			@Override
 			public void keyTyped(KeyEvent e) {
 				// Do nothing
-
 			}
-
 			@Override
 			public void keyReleased(KeyEvent e) {
 				// Do nothing
 			}
-
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_DELETE || e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
@@ -162,65 +121,53 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 				} else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					editMapping();
 				}
-
 			}
 		});
 
 		mappingList.addMouseListener(new MouseListener() {
-
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				// do nothing
-
 			}
-
 			@Override
 			public void mousePressed(MouseEvent e) {
 				// do nothing
-
 			}
-
 			@Override
 			public void mouseExited(MouseEvent e) {
 				// do nothing
-
 			}
-
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				// do nothing
-
 			}
-
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int count = e.getClickCount();
 				if (count == 2) {
 					editMapping();
 				}
-
 			}
 		});
 
 		cmdAddMapping.setToolTipText("Create a new mapping");
 		cmdRemoveMapping.setToolTipText("Remove selected mappings");
 		cmdDuplicateMapping.setToolTipText("Copy selected mappings");
-		// preference.registerPreferenceChangedListener(this);
 
 		setOBDAModel(apic); // TODO Bad code! Change this later!
 	}
 
-	/***
+	/**
 	 * A listener to trigger the context meny of the mapping list.
-	 * 
-	 * @author mariano
-	 * 
 	 */
 	class PopupListener extends MouseAdapter {
+		
+		@Override
 		public void mousePressed(MouseEvent e) {
 			maybeShowPopup(e);
 		}
 
+		@Override
 		public void mouseReleased(MouseEvent e) {
 			maybeShowPopup(e);
 		}
@@ -233,76 +180,41 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 	}
 
 	public void setOBDAModel(OBDAModel omodel) {
+		
 		this.apic = omodel;
 		this.mapc = apic;
 		ListModel model = new SynchronizedMappingListModel(omodel);
+		
 		model.addListDataListener(new ListDataListener() {
-
 			@Override
 			public void intervalRemoved(ListDataEvent e) {
 				fieldMappings.setText(String.valueOf(mappingList.getModel().getSize()));
-
 			}
-
 			@Override
 			public void intervalAdded(ListDataEvent e) {
 				fieldMappings.setText(String.valueOf(mappingList.getModel().getSize()));
-
 			}
-
 			@Override
 			public void contentsChanged(ListDataEvent e) {
 				fieldMappings.setText(String.valueOf(mappingList.getModel().getSize()));
-
 			}
 		});
 		mappingList.setModel(model);
-
 	}
 
 	public void setTargetQueryValidator(TargetQueryVocabularyValidator validator) {
 		this.validatortrg = validator;
 	}
 
-	private void registerAction() {
-
-		// lblInsertFilter.setBackground(new java.awt.Color(153, 153, 153));
-		// lblInsertFilter.setFont(new java.awt.Font("Arial", 1, 11));
-		// lblInsertFilter.setForeground(new java.awt.Color(153, 153, 153));
-		// lblInsertFilter.setPreferredSize(new Dimension(75, 14));
-		// lblInsertFilter.setText("Insert Filter: ");
-
-		// cmdAddMapping.setText("Insert");
-		// cmdAddMapping.setMnemonic('i');
-		// cmdAddMapping.setIcon(null);
-		// cmdAddMapping.setPreferredSize(new Dimension(40, 21));
-		// cmdAddMapping.setMinimumSize(new Dimension(40, 21));
-		//
-		// cmdRemoveMapping.setText("Remove");
-		// cmdRemoveMapping.setMnemonic('r');
-		// cmdRemoveMapping.setIcon(null);
-		// cmdRemoveMapping.setPreferredSize(new Dimension(50, 21));
-		// cmdRemoveMapping.setMinimumSize(new Dimension(50, 21));
-		//
-		// cmdDuplicateMapping.setText("Duplicate");
-		// cmdDuplicateMapping.setMnemonic('d');
-		// cmdDuplicateMapping.setIcon(null);
-		// cmdDuplicateMapping.setPreferredSize(new Dimension(60, 21));
-		// cmdDuplicateMapping.setMinimumSize(new Dimension(60, 21));
-
-	}
-
 	private void addMenu() {
 		JMenuItem add = new JMenuItem();
-		add.setText("Add mapping...");
+		add.setText("Create mapping...");
 		add.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				addMapping();
 			}
 		});
-		// add.setMnemonic(addMapping.getKeyCode());
-		// add.setAccelerator(addMapping);
 		menuMappings.add(add);
 
 		JMenuItem delete = new JMenuItem();
@@ -318,7 +230,6 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 		JMenuItem editMapping = new JMenuItem();
 		editMapping.setText("Edit mapping...");
 		editMapping.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				editMapping();
@@ -350,21 +261,20 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 		menuMappings.add(menuExecuteBody);
 	}
 
-	protected void editMapping() {
-
+	public void editMapping() {
 		OBDAMappingAxiom mapping = (OBDAMappingAxiom) mappingList.getSelectedValue();
-		if (mapping == null)
+		if (mapping == null) {
 			return;
-
+		}
 		JDialog dialog = new JDialog();
 
-		dialog.setTitle("Edit mapping");
+		dialog.setTitle("Edit Mapping");
 		dialog.setModal(true);
 
 		NewMappingDialogPanel panel = new NewMappingDialogPanel(apic, dialog, selectedSource, validatortrg);
 		panel.setMapping(mapping);
 		dialog.setContentPane(panel);
-		dialog.setSize(600, 400);
+		dialog.setSize(600, 500);
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
 	}
@@ -379,7 +289,7 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 	// <editor-fold defaultstate="collapsed"
 	// <editor-fold defaultstate="collapsed"
 	// <editor-fold defaultstate="collapsed"
-    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -401,23 +311,22 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
         mappingScrollPane = new javax.swing.JScrollPane();
         mappingList = new javax.swing.JList();
 
-        menuMappings.setLayout(null);
-
         setLayout(new java.awt.GridBagLayout());
-
-        pnlMappingManager.setLayout(new java.awt.BorderLayout());
 
         pnlMappingManager.setAutoscrolls(true);
         pnlMappingManager.setPreferredSize(new java.awt.Dimension(400, 200));
-        pnlMappingButtons.setLayout(new java.awt.GridBagLayout());
+        pnlMappingManager.setLayout(new java.awt.BorderLayout());
 
         pnlMappingButtons.setEnabled(false);
-        cmdAddMapping.setText("Create...");
-        cmdAddMapping.setToolTipText("Create...");
+        pnlMappingButtons.setLayout(new java.awt.GridBagLayout());
+
+        cmdAddMapping.setIcon(IconLoader.getImageIcon("images/plus.png"));
+        cmdAddMapping.setText("Create");
+        cmdAddMapping.setToolTipText("Create a new mapping");
         cmdAddMapping.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         cmdAddMapping.setContentAreaFilled(false);
-        cmdAddMapping.setIconTextGap(0);
-        cmdAddMapping.setMaximumSize(new java.awt.Dimension(25, 25));
+        cmdAddMapping.setIconTextGap(5);
+        cmdAddMapping.setMaximumSize(new java.awt.Dimension(75, 25));
         cmdAddMapping.setMinimumSize(new java.awt.Dimension(75, 25));
         cmdAddMapping.setPreferredSize(new java.awt.Dimension(75, 25));
         cmdAddMapping.addActionListener(new java.awt.event.ActionListener() {
@@ -425,7 +334,6 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
                 cmdAddMappingActionPerformed(evt);
             }
         });
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -433,11 +341,13 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         pnlMappingButtons.add(cmdAddMapping, gridBagConstraints);
 
-        cmdRemoveMapping.setText("Remove...");
+        cmdRemoveMapping.setIcon(IconLoader.getImageIcon("images/minus.png"));
+        cmdRemoveMapping.setText("Remove");
+        cmdRemoveMapping.setToolTipText("Remove the selected mapping");
         cmdRemoveMapping.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         cmdRemoveMapping.setContentAreaFilled(false);
-        cmdRemoveMapping.setIconTextGap(0);
-        cmdRemoveMapping.setMaximumSize(new java.awt.Dimension(25, 25));
+        cmdRemoveMapping.setIconTextGap(5);
+        cmdRemoveMapping.setMaximumSize(new java.awt.Dimension(75, 25));
         cmdRemoveMapping.setMinimumSize(new java.awt.Dimension(75, 25));
         cmdRemoveMapping.setPreferredSize(new java.awt.Dimension(75, 25));
         cmdRemoveMapping.addActionListener(new java.awt.event.ActionListener() {
@@ -445,7 +355,6 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
                 cmdRemoveMappingActionPerformed(evt);
             }
         });
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -453,27 +362,26 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         pnlMappingButtons.add(cmdRemoveMapping, gridBagConstraints);
 
-        cmdDuplicateMapping.setText("Copy...");
-        cmdDuplicateMapping.setToolTipText("Duplicate mappings");
+        cmdDuplicateMapping.setIcon(IconLoader.getImageIcon("images/copy.png"));
+        cmdDuplicateMapping.setText("Copy");
+        cmdDuplicateMapping.setToolTipText("Make a duplicate of the selected mapping");
         cmdDuplicateMapping.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         cmdDuplicateMapping.setContentAreaFilled(false);
-        cmdDuplicateMapping.setIconTextGap(0);
-        cmdDuplicateMapping.setMaximumSize(new java.awt.Dimension(25, 25));
-        cmdDuplicateMapping.setMinimumSize(new java.awt.Dimension(75, 25));
-        cmdDuplicateMapping.setPreferredSize(new java.awt.Dimension(75, 25));
+        cmdDuplicateMapping.setIconTextGap(5);
+        cmdDuplicateMapping.setMaximumSize(new java.awt.Dimension(70, 25));
+        cmdDuplicateMapping.setMinimumSize(new java.awt.Dimension(70, 25));
+        cmdDuplicateMapping.setPreferredSize(new java.awt.Dimension(70, 25));
         cmdDuplicateMapping.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdDuplicateMappingActionPerformed(evt);
             }
         });
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         pnlMappingButtons.add(cmdDuplicateMapping, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
@@ -481,20 +389,20 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
         gridBagConstraints.weightx = 1.0;
         pnlMappingButtons.add(jPanel1, gridBagConstraints);
 
+        cmdSelectAll.setIcon(IconLoader.getImageIcon("images/select-all.png"));
         cmdSelectAll.setText("Select all");
         cmdSelectAll.setToolTipText("Select all");
         cmdSelectAll.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         cmdSelectAll.setContentAreaFilled(false);
-        cmdSelectAll.setIconTextGap(0);
-        cmdSelectAll.setMaximumSize(new java.awt.Dimension(25, 25));
-        cmdSelectAll.setMinimumSize(new java.awt.Dimension(75, 25));
-        cmdSelectAll.setPreferredSize(new java.awt.Dimension(75, 25));
+        cmdSelectAll.setIconTextGap(5);
+        cmdSelectAll.setMaximumSize(new java.awt.Dimension(83, 25));
+        cmdSelectAll.setMinimumSize(new java.awt.Dimension(83, 25));
+        cmdSelectAll.setPreferredSize(new java.awt.Dimension(83, 25));
         cmdSelectAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdSelectAllActionPerformed(evt);
             }
         });
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
         gridBagConstraints.gridy = 0;
@@ -502,20 +410,20 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         pnlMappingButtons.add(cmdSelectAll, gridBagConstraints);
 
+        cmdDeselectAll.setIcon(IconLoader.getImageIcon("images/select-none.png"));
         cmdDeselectAll.setText("Select none");
         cmdDeselectAll.setToolTipText("Select none");
         cmdDeselectAll.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         cmdDeselectAll.setContentAreaFilled(false);
-        cmdDeselectAll.setIconTextGap(0);
-        cmdDeselectAll.setMaximumSize(new java.awt.Dimension(25, 25));
-        cmdDeselectAll.setMinimumSize(new java.awt.Dimension(75, 25));
-        cmdDeselectAll.setPreferredSize(new java.awt.Dimension(75, 25));
+        cmdDeselectAll.setIconTextGap(5);
+        cmdDeselectAll.setMaximumSize(new java.awt.Dimension(92, 25));
+        cmdDeselectAll.setMinimumSize(new java.awt.Dimension(92, 25));
+        cmdDeselectAll.setPreferredSize(new java.awt.Dimension(92, 25));
         cmdDeselectAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdDeselectAllActionPerformed(evt);
             }
         });
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
@@ -524,10 +432,10 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 
         pnlMappingManager.add(pnlMappingButtons, java.awt.BorderLayout.NORTH);
 
-        pnlExtraButtons.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 2));
-
         pnlExtraButtons.setMinimumSize(new java.awt.Dimension(532, 25));
         pnlExtraButtons.setPreferredSize(new java.awt.Dimension(532, 25));
+        pnlExtraButtons.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 2));
+
         labelMappings.setText("Mapping count:");
         pnlExtraButtons.add(labelMappings);
 
@@ -536,7 +444,7 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
         fieldMappings.setPreferredSize(new java.awt.Dimension(50, 28));
         pnlExtraButtons.add(fieldMappings);
 
-        lblInsertFilter.setFont(new java.awt.Font("Dialog", 1, 12));
+        lblInsertFilter.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         lblInsertFilter.setForeground(new java.awt.Color(53, 113, 163));
         lblInsertFilter.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblInsertFilter.setText("Search:");
@@ -550,7 +458,6 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
                 sendFilters(evt);
             }
         });
-
         pnlExtraButtons.add(txtFilter);
 
         chkFilter.setText("Enable filter");
@@ -559,7 +466,6 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
                 chkFilterItemStateChanged(evt);
             }
         });
-
         pnlExtraButtons.add(chkFilter);
 
         pnlMappingManager.add(pnlExtraButtons, java.awt.BorderLayout.SOUTH);
@@ -578,7 +484,6 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(pnlMappingManager, gridBagConstraints);
-
     }// </editor-fold>//GEN-END:initComponents
 
 	private void cmdSelectAllActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmdSelectAllActionPerformed
@@ -604,7 +509,6 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 				applyFilters(new ArrayList<TreeModelFilter<OBDAMappingAxiom>>());
 				return;
 			}
-
 			try {
 				List<TreeModelFilter<OBDAMappingAxiom>> filters = parseSearchString(txtFilter.getText());
 				if (filters == null) {
@@ -619,10 +523,7 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 	}
 
 	/***
-	 * Action for the filter checkbox
-	 * 
-	 * @param evt
-	 * @throws Exception
+	 * Action for the filter check-box
 	 */
 	private void chkFilterItemStateChanged(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_jCheckBox1ItemStateChanged
 		processFilterAction();
@@ -630,10 +531,7 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 	}// GEN-LAST:event_jCheckBox1ItemStateChanged
 
 	/***
-	 * Action for key's entered in the search textbox
-	 * 
-	 * @param evt
-	 * @throws Exception
+	 * Action for key's entered in the search text box.
 	 */
 	private void sendFilters(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_sendFilters
 		int key = evt.getKeyCode();
@@ -669,9 +567,9 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 					validator = new SourceQueryValidator(selectedSource, o.getSourceQuery());
 					long timestart = System.nanoTime();
 
-					if (canceled)
+					if (canceled) {
 						return;
-
+					}
 					if (validator.validate()) {
 						long timestop = System.nanoTime();
 						String output = " valid  \n";
@@ -684,9 +582,9 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 						outputField.addText(output, outputField.CRITICAL_ERROR);
 					}
 
-					if (canceled)
+					if (canceled) {
 						return;
-
+					}
 				}
 				outputField.setVisible(true);
 			}
@@ -727,8 +625,9 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 
 	private void menuExecuteBodyActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuExecuteBodyActionPerformed
 		OBDAMappingAxiom mapping = (OBDAMappingAxiom) mappingList.getSelectedValue();
-		if (mapping == null)
+		if (mapping == null) {
 			return;
+		}
 		final String sqlQuery = mapping.getSourceQuery().toString();
 
 		SQLQueryPanel pnlQueryResult = new SQLQueryPanel(selectedSource, sqlQuery);
@@ -748,9 +647,13 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 			JOptionPane.showMessageDialog(this, "No mappings have been selected", "ERROR", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		int confirm = JOptionPane.showConfirmDialog(this,
-				"This will create copies of the selected mappings. \nNumber of mappings selected = " + currentSelection.length
-						+ "\nContinue? ", "Copy confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		int confirm = JOptionPane.showConfirmDialog(
+				this,
+				"This will create copies of the selected mappings. \nNumber of mappings selected = " 
+				+ currentSelection.length + "\nContinue? ", 
+				"Copy confirmation", 
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		
 		if (confirm == JOptionPane.NO_OPTION || confirm == JOptionPane.CANCEL_OPTION || confirm == JOptionPane.CLOSED_OPTION) {
 			return;
 		}
@@ -762,8 +665,7 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 
 			String id = mapping.getId();
 
-			/* Computing the next available ID */
-
+			// Computing the next available ID
 			int new_index = -1;
 			for (int index = 0; index < 999999999; index++) {
 				if (controller.indexOf(current_srcuri, id + "(" + index + ")") == -1) {
@@ -773,7 +675,7 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 			}
 			String new_id = id + "(" + new_index + ")";
 
-			/* inserting the new mapping */
+			// inserting the new mapping
 			try {
 
 				OBDAMappingAxiom oldmapping = controller.getMapping(current_srcuri, id);
@@ -796,15 +698,18 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 
 	private void removeMapping() {
 		int[] indexes = mappingList.getSelectedIndices();
-		if (indexes == null)
+		if (indexes == null) {
 			return;
-		int confirm = JOptionPane.showConfirmDialog(this, "Proceed deleting " + indexes.length + " mappings?", "Conform",
+		}
+		int confirm = JOptionPane.showConfirmDialog(
+				this, 
+				"Proceed deleting " + indexes.length + " mappings?", "Conform",
 				JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
 		if (confirm == JOptionPane.CANCEL_OPTION || confirm == JOptionPane.CLOSED_OPTION) {
 			return;
 		}
+		
 		// The manager panel can handle multiple deletions.
-
 		Object[] values = mappingList.getSelectedValues();
 
 		OBDAModel controller = mapc;
@@ -815,7 +720,6 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 			controller.removeMapping(srcuri, mapping.getId());
 		}
 		mappingList.clearSelection();
-
 	}
 
 	private void cmdAddMappingActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_addMappingButtonActionPerformed
@@ -831,8 +735,7 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 
 		URI sourceID = this.selectedSource.getSourceID();
 
-		/* Computing an ID for the new mapping */
-
+		// Computing an ID for the new mapping
 		int index = 0;
 		for (int i = 0; i < 99999999; i++) {
 			index = this.mapc.indexOf(sourceID, "M:" + Integer.toHexString(i));
@@ -845,23 +748,20 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 
 		JDialog dialog = new JDialog();
 
-		dialog.setTitle("Create mapping");
+		dialog.setTitle("New Mapping");
 		dialog.setModal(true);
 
 		NewMappingDialogPanel panel = new NewMappingDialogPanel(apic, dialog, selectedSource, validatortrg);
 		panel.setID(id);
 		dialog.setContentPane(panel);
-		dialog.setSize(600, 400);
+		dialog.setSize(600, 500);
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
 	}
 	
 	public void setFilter(String filter) {
-		
 		txtFilter.setText(filter);
-//		chkFilter.setSelected(true);
 		processFilterAction();
-	
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -884,13 +784,13 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
     private javax.swing.JTextField txtFilter;
     // End of variables declaration//GEN-END:variables
 
-	/***
+	/**
 	 * Parses the string in the search field.
 	 * 
 	 * @param textToParse
+	 *            The target text
 	 * @return A list of filter objects or null if the string was empty or
 	 *         erroneous
-	 * @throws Exception
 	 */
 	private List<TreeModelFilter<OBDAMappingAxiom>> parseSearchString(String textToParse) throws Exception {
 
@@ -911,72 +811,28 @@ public class MappingManagerPanel extends JPanel implements DatasourceSelectorLis
 		return listOfFilters;
 	}
 
-	/***
+	/**
 	 * This function add the list of current filters to the model and then the
-	 * Tree is refreshed shows the mappings after the filters have been applied
-	 * 
-	 * 
-	 * @param ListOfMappings
+	 * Tree is refreshed shows the mappings after the filters have been applied.
 	 */
 	private void applyFilters(List<TreeModelFilter<OBDAMappingAxiom>> filters) {
 		FilteredModel model = (FilteredModel) mappingList.getModel();
 		model.removeAllFilters();
 		model.addFilters(filters);
-		// model.currentSourceChanged(selectedSource.getSourceID(),
-		// selectedSource.getSourceID());
 	}
-
-	// private CQIE parse(String query) {
-	// CQIE cq = null;
-	// query = prepareQuery(query);
-	// try {
-	// datalogParser.parse(query);
-	// cq = datalogParser.getRule(0);
-	// } catch (RecognitionException e) {
-	// log.warn(e.getMessage());
-	// }
-	// return cq;
-	// }
-	//
-	// private String prepareQuery(String input) {
-	// String query = "";
-	// DatalogQueryHelper queryHelper = new
-	// DatalogQueryHelper(apic.getPrefixManager());
-	//
-	// String[] atoms = input.split(OBDALibConstants.DATALOG_IMPLY_SYMBOL, 2);
-	// if (atoms.length == 1) // if no head
-	// query = queryHelper.getDefaultHead() + " " +
-	// OBDALibConstants.DATALOG_IMPLY_SYMBOL + " " + input;
-	//
-	// // Append the prefixes
-	// query = queryHelper.getPrefixes() + query;
-	//
-	// return query;
-	// }
 
 	@Override
 	public void datasourceChanged(OBDADataSource oldSource, OBDADataSource newSource) {
+		
+		if (newSource == null) {
+			return;
+		}		
 		this.selectedSource = newSource;
 
 		// Update the mapping tree.
 		SynchronizedMappingListModel model = (SynchronizedMappingListModel) mappingList.getModel();
-		URI oldSourceUri = null;
-		if (oldSource != null) {
-			oldSourceUri = oldSource.getSourceID();
-		}
-		URI newSourceUri = null;
-		if (newSource != null) {
-			newSourceUri = newSource.getSourceID();
-		}
-
-		model.setFocusedSource(newSourceUri);
+		model.setFocusedSource(newSource.getSourceID());
+		
 		mappingList.revalidate();
-		// repaint();
 	}
-
-	// @Override
-	// public void preferenceChanged() {
-	// DefaultTreeModel model = (DefaultTreeModel) mappingsTree.getModel();
-	// model.reload();
-	// }
 }

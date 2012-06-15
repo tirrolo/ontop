@@ -117,8 +117,16 @@ public class MappingAnalyzer {
 					String[] value = predicate.split("=");
 					String leftValue = value[0];
 					String rightValue = value[1];
-					Term t1 = dfac.getVariable(lookupTable.lookup(leftValue));
-					Term t2 = dfac.getVariable(lookupTable.lookup(rightValue));
+					String lookup1 = lookupTable.lookup(leftValue);
+					String lookup2 = lookupTable.lookup(rightValue);
+					if (lookup1 == null)
+						throw new RuntimeException("Unable to get column name for variable: " + leftValue);
+					if (lookup2 == null)
+						throw new RuntimeException("Unable to get column name for variable: " + rightValue);
+
+					Term t1 = dfac.getVariable(lookup1);
+					Term t2 = dfac.getVariable(lookup2);
+
 					Atom atom = dfac.getEQAtom(t1, t2);
 					atoms.add(atom);
 				}
@@ -198,7 +206,10 @@ public class MappingAnalyzer {
 					datalog.appendRule(rule);
 				}
 			} catch (Exception e) {
-				throw new RuntimeException("Error analyzing mapping with ID=" + axiom.getId() + " Description: " + e.getMessage());
+				RuntimeException r = new RuntimeException("Error analyzing mapping with id: " + axiom.getId() + " \nDescription: "
+						+ e.getMessage() + " \nMapping: [" + axiom.toString() + "]");
+				r.setStackTrace(e.getStackTrace());
+				throw r;
 			}
 		}
 		return datalog;
@@ -209,6 +220,9 @@ public class MappingAnalyzer {
 
 		String columnName = column.toString();
 		String variableName = lookupTable.lookup(columnName);
+		if (variableName == null) {
+			throw new RuntimeException("Unable to find column name for variable: " + columnName);
+		}
 		Term var = dfac.getVariable(variableName);
 
 		if (pred.useIsNullOperator()) {
@@ -224,6 +238,9 @@ public class MappingAnalyzer {
 
 		String leftValueName = left.toString();
 		String termLeftName = lookupTable.lookup(leftValueName);
+		if (termLeftName == null) {
+			throw new RuntimeException("Unable to find column name for variable: " + leftValueName);
+		}
 		Term t1 = dfac.getVariable(termLeftName);
 
 		String termRightName = "";
@@ -231,6 +248,9 @@ public class MappingAnalyzer {
 		if (right instanceof ReferenceValueExpression) {
 			String rightValueName = right.toString();
 			termRightName = lookupTable.lookup(rightValueName);
+			if (termRightName == null) {
+				throw new RuntimeException("Unable to find column name for variable: " + rightValueName);
+			}
 			t2 = dfac.getVariable(termRightName);
 		} else if (right instanceof Literal) {
 			Literal literal = (Literal) right;
@@ -290,10 +310,10 @@ public class MappingAnalyzer {
 				new SimpleDateFormat(formatString).parse(value);
 				return true;
 			} catch (ParseException e) {
+				// NO-OP
 			}
 		}
-		return false; // the string doesn't contain date time info if none of
-						// the formats is suitable.
+		return false; // the string doesn't contain date time info if none of the formats is suitable.
 	}
 
 	/***
@@ -311,9 +331,8 @@ public class MappingAnalyzer {
 			String termName = lookupTable.lookup(varName);
 			if (termName == null) {
 				throw new RuntimeException(
-						String.format(
-								"Column %s not found. Hint: don't use wildecards in your SQL query, e.g., star *, and verify word-casing for case-sensitive database.",
-								var));
+						String.format("Column %s not found. Hint: don't use wildecards in your SQL query, e.g., star *, " +
+								"and verify word-casing for case-sensitive database.", var));
 			}
 			result = dfac.getVariable(termName);
 		} else if (term instanceof Function) {
@@ -343,19 +362,18 @@ public class MappingAnalyzer {
 			}
 			int size = def.countAttribute();
 
-			String[] columnList = new String[2];
+			String[] columnList = new String[3];
 			for (int i = 1; i <= size; i++) {
-				columnList[0] = dbMetaData.getAttributeName(tableName, i); // get
-																			// the
-																			// simple
-																			// attribute
-																			// name
-				columnList[1] = dbMetaData.getFullQualifiedAttributeName(tableName, i); // get
-																						// the
-																						// full
-																						// qualified
-																						// attribute
-																						// name
+				// simple attribute name
+				columnList[0] = dbMetaData.getAttributeName(tableName, i);
+				
+				// full qualified attribute name
+				columnList[1] = dbMetaData.getFullQualifiedAttributeName(tableName, i);
+				
+				if (table.getAlias() != null) {
+					// full qualified attribute name using table alias
+					columnList[2] = dbMetaData.getFullQualifiedAttributeName(tableName, table.getAlias(), i);
+				}
 				lookupTable.add(columnList);
 			}
 		}
