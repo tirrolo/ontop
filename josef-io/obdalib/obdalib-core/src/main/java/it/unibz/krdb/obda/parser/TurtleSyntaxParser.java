@@ -59,9 +59,6 @@ public class TurtleSyntaxParser {
 
 		StringBuffer bf = new StringBuffer(input.trim());
 
-//		if (bf.charAt(bf.length()-1) != '.') {
-//			bf.append(".");
-//		}
 		if (!bf.substring(bf.length() - 2, bf.length()).equals(" .")) {
 			bf.insert(bf.length() - 1, ' ');
 		}
@@ -75,7 +72,6 @@ public class TurtleSyntaxParser {
 		TurtleLexer lexer= new TurtleLexer(inputStream);;
 		CommonTokenStream tokenStream;
 		try {
-			
 			tokenStream = new CommonTokenStream(lexer);
 		} catch (Exception e) {
 			throw new RuntimeException(lexer.getError());
