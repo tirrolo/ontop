@@ -78,12 +78,12 @@ public class IOManagerTest extends TestCase {
 	
 	public void testBlankSave() throws IOException {
 		model.reset(); // clear the model
-		ioManager = new IOManager(model);
+		ioManager = new ModelIOManager(model);
 		ioManager.save("src/test/java/it/unibz/krdb/obda/api/io/TestBlank.obda");
 	}
 	
 	public void testSave() throws IOException {
-		ioManager = new IOManager(model);
+		ioManager = new ModelIOManager(model);
 		ioManager.save("src/test/java/it/unibz/krdb/obda/api/io/TestSave.obda");
 	}
 	
@@ -106,7 +106,7 @@ public class IOManagerTest extends TestCase {
 		model.addMapping(sourceId2, dfac.getRDBMSMappingAxiom(mappings[5][0], mappings[5][1], parser.parse(mappings[5][2])));
 
 		// Save the model
-		ioManager = new IOManager(model);
+		ioManager = new ModelIOManager(model);
 		ioManager.save("src/test/java/it/unibz/krdb/obda/api/io/TestSaveMultipleSources.obda");
 	}
 	
@@ -116,7 +116,7 @@ public class IOManagerTest extends TestCase {
 	
 	public void testBlankLoad() throws IOException {
 		OBDAModel emptyModel = dfac.getOBDAModel();		
-		ioManager = new IOManager(emptyModel);
+		ioManager = new ModelIOManager(emptyModel);
 		ioManager.load("src/test/java/it/unibz/krdb/obda/api/io/TestBlank.obda");
 
 		// Everything should be blank
@@ -127,7 +127,7 @@ public class IOManagerTest extends TestCase {
 
 	public void testLoad() throws IOException {
 		OBDAModel emptyModel = dfac.getOBDAModel();
-		ioManager = new IOManager(emptyModel);
+		ioManager = new ModelIOManager(emptyModel);
 		ioManager.load("src/test/java/it/unibz/krdb/obda/api/io/TestSave.obda");
 		
 		// Check the content
@@ -138,7 +138,7 @@ public class IOManagerTest extends TestCase {
 	
 	public void testMultipleDatasourcesLoad() throws IOException {
 		OBDAModel emptyModel = dfac.getOBDAModel();
-		ioManager = new IOManager(emptyModel);
+		ioManager = new ModelIOManager(emptyModel);
 		ioManager.load("src/test/java/it/unibz/krdb/obda/api/io/TestSaveMultipleSources.obda");
 		
 		// Check the content
