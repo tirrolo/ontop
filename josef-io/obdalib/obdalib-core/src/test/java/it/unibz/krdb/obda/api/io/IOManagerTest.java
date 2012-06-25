@@ -1,6 +1,6 @@
 package it.unibz.krdb.obda.api.io;
 
-import it.unibz.krdb.obda.io.IOManager;
+import it.unibz.krdb.obda.io.ModelIOManager;
 import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.io.SimplePrefixManager;
 import it.unibz.krdb.obda.model.OBDADataFactory;
@@ -25,7 +25,7 @@ public class IOManagerTest extends TestCase {
 	
 	private OBDAModel model;
 	
-	private IOManager ioManager;
+	private ModelIOManager ioManager;
 	
 	private TurtleSyntaxParser parser;
 	
