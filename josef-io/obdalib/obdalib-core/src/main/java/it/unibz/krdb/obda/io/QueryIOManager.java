@@ -114,7 +114,7 @@ public class QueryIOManager {
             }
             if (line.contains(QUERY_GROUP)) {
                 if (hasUnsavedQuery) {
-                    String queryText = removeBlankLinesAtEnd(buffer.toString());
+                    String queryText = removeBlankLines(buffer.toString());
                     addQueryItem(queryText, queryId, groupId);
                     hasUnsavedQuery = false;
                     buffer = new StringBuffer();
@@ -123,7 +123,7 @@ public class QueryIOManager {
                 groupId = line.substring(line.indexOf("\"")+1, line.lastIndexOf("\""));
             } else if (line.contains(QUERY_ITEM)) {
                 if (hasUnsavedQuery) {
-                    String queryText = removeBlankLinesAtEnd(buffer.toString());
+                    String queryText = removeBlankLines(buffer.toString());
                     addQueryItem(queryText, queryId, groupId);
                     buffer = new StringBuffer();
                 }
@@ -132,7 +132,7 @@ public class QueryIOManager {
                 hasUnsavedQuery = true;
             } else if (line.contains(END_COLLECTION_SYMBOL)) {
                 if (hasUnsavedQuery) {
-                    String queryText = removeBlankLinesAtEnd(buffer.toString());
+                    String queryText = removeBlankLines(buffer.toString());
                     addQueryItem(queryText, queryId, groupId);
                     hasUnsavedQuery = false;
                     buffer = new StringBuffer();
@@ -142,7 +142,7 @@ public class QueryIOManager {
             }
         }
         if (hasUnsavedQuery) {
-            String queryText = removeBlankLinesAtEnd(buffer.toString());
+            String queryText = removeBlankLines(buffer.toString());
             addQueryItem(queryText, queryId, groupId);
         }
     }
@@ -153,7 +153,7 @@ public class QueryIOManager {
 
     private void writeQueryGroup(QueryControllerGroup group, BufferedWriter writer) throws IOException {
         writer.append(String.format(QUERY_GROUP_TAG, group.getID()) + " ");
-        writer.append(START_COLLECTION_SYMBOL);
+        writer.append(START_COLLECTION_SYMBOL + "\n");
         for (QueryControllerQuery query : group.getQueries()) {
             writeQueryItem(query, writer);
         }
@@ -163,7 +163,7 @@ public class QueryIOManager {
 
     private void writeQueryItem(QueryControllerQuery query, BufferedWriter writer) throws IOException {
         writer.append(String.format(QUERY_ITEM_TAG, query.getID()) + "\n");
-        writer.append(query.getQuery() + "\n");
+        writer.append(query.getQuery() + "\n\n");
     }
 
     private void addQueryItem(String queryText, String queryId, String groupId) {
@@ -174,8 +174,8 @@ public class QueryIOManager {
         }
     }
 
-    private String removeBlankLinesAtEnd(String input) {
-        return input.replaceFirst("\\n{1,}\\z", "");
+    private String removeBlankLines(String input) {
+        return input.replaceFirst("\\A\\n{1,}", "").replaceFirst("\\n{1,}\\z", "");
     }
 
     private boolean isCommentLine(String line) {
