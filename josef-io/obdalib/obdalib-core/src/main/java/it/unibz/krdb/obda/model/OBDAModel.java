@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 public interface OBDAModel extends Cloneable, Serializable {
 
@@ -30,7 +31,7 @@ public interface OBDAModel extends Cloneable, Serializable {
 	/*
 	 * Methods related to data sources
 	 */
-	
+
 	public void addSourcesListener(OBDAModelListener listener);
 
 	public void removeSourcesListener(OBDAModelListener listener);
@@ -91,7 +92,7 @@ public interface OBDAModel extends Cloneable, Serializable {
 	 * Returns all the mappings in this model.
 	 */
 	public Hashtable<URI, ArrayList<OBDAMappingAxiom>> getMappings();
-	
+
 	/**
 	 * Retrieves the position of the mapping given its id and data source.
 	 */
@@ -99,14 +100,14 @@ public interface OBDAModel extends Cloneable, Serializable {
 	public int indexOf(URI sourceuri, String mappingid);
 
 	/**
-	 * Inserts a mappings into this model. If the mapping id already exits it 
+	 * Inserts a mappings into this model. If the mapping id already exits it
 	 * throws an exception.
 	 */
 	public void addMapping(URI sourceuri, OBDAMappingAxiom mapping) throws DuplicateMappingException;
 
 	/**
-	 * Inserts a collection of mappings into this model. Any duplicates will be failed
-	 * and the system will report such duplication failures.
+	 * Inserts a collection of mappings into this model. Any duplicates will be
+	 * failed and the system will report such duplication failures.
 	 */
 	public void addMappings(URI sourceuri, Collection<OBDAMappingAxiom> mappings) throws DuplicateMappingException;
 
@@ -145,6 +146,31 @@ public interface OBDAModel extends Cloneable, Serializable {
 	public boolean containsMapping(URI datasourceUri, String mappingId);
 
 	public Object clone();
-	
+
 	public void reset();
+
+	public Set<? extends Predicate> getDeclaredPredicates();
+
+	public Set<? extends Predicate> getDeclaredClasses();
+
+	public Set<? extends Predicate> getDeclaredObjectProperties();
+
+	public Set<? extends Predicate> getDeclaredDataProperties();
+
+	public boolean declarePredicate(Predicate predicate);
+
+	public boolean declareClass(Predicate classname);
+
+	public boolean declareObjectProperty(Predicate property);
+
+	public boolean declareDataProperty(Predicate property);
+
+	public boolean isDeclaredClass(Predicate classname);
+
+	public boolean isDeclaredObjectProperty(Predicate property);
+
+	public boolean isDeclaredDataProperty(Predicate property);
+
+	public boolean isDeclared(Predicate predicate);
+
 }
