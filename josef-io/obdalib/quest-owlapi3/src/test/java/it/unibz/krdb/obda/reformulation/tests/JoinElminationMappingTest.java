@@ -10,6 +10,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
 import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
 import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLFactory;
 import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLStatement;
+import it.unibz.krdb.obda.querymanager.QueryController;
 
 import java.io.File;
 import java.io.FileReader;
@@ -20,6 +21,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import javax.management.Query;
+
 import junit.framework.TestCase;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -28,6 +31,8 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.hp.hpl.jena.sparql.core.QueryCompare;
 
 /***
  * The following tests take the Stock exchange scenario and execute the queries
@@ -53,6 +58,7 @@ public class JoinElminationMappingTest extends TestCase {
 
 	Logger log = LoggerFactory.getLogger(this.getClass());
 	private OBDAModel obdaModel;
+	private QueryController controller;
 	private OWLOntology ontology;
 
 	final String owlfile = "src/test/resources/test/ontologies/scenarios/join-elimination-test.owl";
@@ -88,7 +94,8 @@ public class JoinElminationMappingTest extends TestCase {
 
 		// Loading the OBDA data
 		obdaModel = fac.getOBDAModel();
-		DataManager ioManager = new DataManager(obdaModel);
+		controller = new QueryController();
+		DataManager ioManager = new DataManager(obdaModel, controller);
 		ioManager.loadOBDADataFromURI(new File(obdafile).toURI(), ontology.getOntologyID().getOntologyIRI().toURI(),
 				obdaModel.getPrefixManager());
 	}

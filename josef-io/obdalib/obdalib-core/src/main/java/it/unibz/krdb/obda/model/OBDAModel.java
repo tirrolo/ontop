@@ -13,8 +13,6 @@ import java.util.List;
 
 public interface OBDAModel extends Cloneable, Serializable {
 
-	public QueryController getQueryController();
-
 	public String getVersion();
 
 	public String getBuiltDate();
@@ -24,7 +22,9 @@ public interface OBDAModel extends Cloneable, Serializable {
 	public void setPrefixManager(PrefixManager prefman);
 
 	public PrefixManager getPrefixManager();
-	
+
+	public QueryController getQueryController();
+
 	public OBDADataFactory getDataFactory();
 
 	/*

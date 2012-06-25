@@ -47,14 +47,14 @@ public class OBDAModelImpl implements OBDAModel {
 
 	private static final long serialVersionUID = 1L;
 
-	private QueryController queryController;
-
 	private PrefixManager prefixManager;
+	
+	private QueryController queryController;
 
 	private HashMap<URI, OBDADataSource> datasources;
 
 	private ArrayList<OBDAModelListener> sourceslisteners;
-	
+
 	private Hashtable<URI, ArrayList<OBDAMappingAxiom>> mappings;
 
 	private ArrayList<OBDAMappingListener> mappinglisteners;
@@ -96,7 +96,7 @@ public class OBDAModelImpl implements OBDAModel {
 			return "";
 		}
 	}
-	
+
 	@Override
 	public String getBuiltDate() {
 		try {
@@ -137,7 +137,7 @@ public class OBDAModelImpl implements OBDAModel {
 	public OBDADataFactory getDataFactory() {
 		return dfac;
 	}
-	
+
 	@Override
 	public void addSource(OBDADataSource source) {
 		datasources.put(source.getSourceID(), source);
@@ -391,7 +391,7 @@ public class OBDAModelImpl implements OBDAModel {
 			} catch (DuplicateMappingException e) {
 				duplicates.add(map.getId());
 			}
-		}		
+		}
 		if (duplicates.size() > 0) {
 			String msg = String.format("Found %d duplicates in the following ids: %s", duplicates.size(), duplicates.toString());
 			throw new DuplicateMappingException(msg);
@@ -442,7 +442,7 @@ public class OBDAModelImpl implements OBDAModel {
 	public int deletePredicate(Predicate predicate) {
 		int modifiedCount = 0;
 		for (OBDADataSource source : datasources.values()) {
-			List<OBDAMappingAxiom> mp = new ArrayList<OBDAMappingAxiom>(mappings.get(source.getSourceID()));			
+			List<OBDAMappingAxiom> mp = new ArrayList<OBDAMappingAxiom>(mappings.get(source.getSourceID()));
 			for (OBDAMappingAxiom mapping : mp) {
 				CQIE cq = (CQIE) mapping.getTargetQuery();
 				List<Atom> body = cq.getBody();
@@ -467,12 +467,11 @@ public class OBDAModelImpl implements OBDAModel {
 	public void reset() {
 		log.debug("OBDA model is reset");
 
-		queryController = new QueryController();
 		prefixManager = new SimplePrefixManager();
 
 		datasources = new HashMap<URI, OBDADataSource>();
 		sourceslisteners = new ArrayList<OBDAModelListener>();
-		
+
 		mappings = new Hashtable<URI, ArrayList<OBDAMappingAxiom>>();
 		mappinglisteners = new ArrayList<OBDAMappingListener>();
 	}

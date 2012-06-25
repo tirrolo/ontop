@@ -24,10 +24,10 @@ import it.unibz.krdb.obda.model.impl.CQIEImpl;
 import it.unibz.krdb.obda.model.impl.RDBMSMappingAxiomImpl;
 import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
 import it.unibz.krdb.obda.model.impl.SQLQueryImpl;
+import it.unibz.krdb.obda.querymanager.QueryController;
 import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
 import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
 import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
-import it.unibz.krdb.obda.utils.XMLUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -80,14 +80,17 @@ public class DataManager {
     /** The XML codec to load queries. */
     private static final QueryGroupXMLReader xmlReader = new QueryGroupXMLReader();
 
-    protected OBDAModel apic = null;
+    private OBDAModel apic;
 
-    protected Element root;
+    private QueryController queryController;
+
+    private Element root;
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    public DataManager(OBDAModel apic) {
+    public DataManager(OBDAModel apic, QueryController queryController) {
         this.apic = apic;
+        this.queryController = queryController;
         mapCodec = new MappingXMLCodec(apic);
     }
 
@@ -193,10 +196,8 @@ public class DataManager {
         dumpDatasourcesToXML(datasources);
 
         // Create the Query element
-        List<QueryControllerEntity> queries = apic.getQueryController().getElements();
+        List<QueryControllerEntity> queries = queryController.getElements();
         dumpQueriesToXML(queries);
-
-        XMLUtils.saveDocumentToXMLFile(doc, prefixMap, file.toString());
     }
 
     private String removeColon(String prefix) {
@@ -205,9 +206,9 @@ public class DataManager {
 
     /***************************************************************************
      * loads ALL OBDA data from a file
+     * @throws ParserConfigurationException 
      */
-    public void loadOBDADataFromURI(URI obdaFileURI, URI currentOntologyURI, PrefixManager prefixManager)
-            throws IOException, SAXException {
+    public void loadOBDADataFromURI(URI obdaFileURI, URI currentOntologyURI, PrefixManager prefixManager) throws IOException, SAXException {
 
         File obdaFile = new File(obdaFileURI);
 
@@ -216,7 +217,7 @@ public class DataManager {
             throw new IOException(msg);
         }
         if (!obdaFile.canRead()) {
-            String msg = String.format("Error while reading the file: %s", obdaFile.toString());
+            String msg = String.format("Error while reading the file %s", obdaFile.toString());
             throw new IOException(msg);
         }
 
@@ -227,16 +228,10 @@ public class DataManager {
             db = dbf.newDocumentBuilder();
             doc = db.parse(obdaFile);
             doc.getDocumentElement().normalize();
-        } catch (IOException e) {
-            String msg = String.format("Error while reading the file: %s", e.getLocalizedMessage());
-            throw new IOException(msg);
-        } catch (SAXException e) {
-            String msg = String.format("Error on reading the file: %s", e.getLocalizedMessage());
-            throw new SAXException(msg);
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            // NO-OP
         }
-
+        
         /*
          * Processing the prefix definitions
          */
@@ -485,13 +480,13 @@ public class DataManager {
                 Element element = (Element) node;
                 if (element.getNodeName().equals("Query")) {
                     QueryControllerQuery query = xmlReader.readQuery(element);
-                    apic.getQueryController().addQuery(query.getQuery(), query.getID());
+                    queryController.addQuery(query.getQuery(), query.getID());
                 } else if ((element.getNodeName().equals("QueryGroup"))) {
                     QueryControllerGroup group = xmlReader.readQueryGroup(element);
-                    apic.getQueryController().createGroup(group.getID());
+                    queryController.createGroup(group.getID());
                     Vector<QueryControllerQuery> queries = group.getQueries();
                     for (QueryControllerQuery query : queries) {
-                        apic.getQueryController().addQuery(query.getQuery(), query.getID(), group.getID());
+                        queryController.addQuery(query.getQuery(), query.getID(), group.getID());
                     }
                 }
             }

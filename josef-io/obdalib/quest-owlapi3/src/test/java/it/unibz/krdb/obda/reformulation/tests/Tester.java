@@ -10,6 +10,7 @@ import it.unibz.krdb.obda.owlapi3.OWLStatement;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
 import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
 import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLFactory;
+import it.unibz.krdb.obda.querymanager.QueryController;
 import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
 import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
 import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
@@ -47,6 +48,7 @@ public class Tester {
     private OWLOntologyManager manager = null;
     private OWLOntology ontology = null;
     private OBDAModel apic = null;
+    private QueryController controller = null;
     private QuestOWL reasoner = null;
     private String owlloc = null;
     private String xmlLoc = null;
@@ -120,7 +122,7 @@ public class Tester {
         // reasoner.classify();
 
         queryMap = new HashMap<String, String>();
-        List<QueryControllerEntity> vec = apic.getQueryController().getElements();
+        List<QueryControllerEntity> vec = controller.getElements();
         Iterator<QueryControllerEntity> it = vec.iterator();
         while (it.hasNext()) {
             QueryControllerEntity e = it.next();
@@ -186,9 +188,10 @@ public class Tester {
 
         OBDADataFactory obdafac = OBDADataFactoryImpl.getInstance();
         apic = obdafac.getOBDAModel();
+        controller = new QueryController();
         String obdafile = owlfile.substring(0, owlfile.length() - 3) + "obda";
 
-        DataManager ioManager = new DataManager(apic);
+        DataManager ioManager = new DataManager(apic, controller);
         ioManager.loadOBDADataFromURI(new File(obdafile).toURI(), ontology.getOntologyID().getOntologyIRI().toURI(),
                 apic.getPrefixManager());
         fillPrefixManager();

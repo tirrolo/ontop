@@ -18,11 +18,9 @@ import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
 import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLStatement;
 import it.unibz.krdb.obda.protege4.core.OBDAModelManager;
 import it.unibz.krdb.obda.protege4.core.OBDAModelManagerListener;
-import it.unibz.krdb.obda.utils.OBDAPreferences;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.io.File;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -42,9 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class QueryInterfaceView extends AbstractOWLViewComponent implements SavedQueriesPanelListener, OBDAModelManagerListener {
-	/**
-	 *
-	 */
+
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = LoggerFactory.getLogger(QueryInterfaceView.class);
 
@@ -71,7 +67,6 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 				queryInterfaceView.removeListener(this);
 			}
 		}
-
 		obdaController.removeListener(this);
 	}
 
@@ -87,8 +82,7 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 
 		JPanel panel_right_main = new JPanel();
 		JSplitPane split_right_horizontal = new javax.swing.JSplitPane();
-		panel_query_interface = new QueryInterfacePanel(obdaController.getActiveOBDAModel(), this.getOWLModelManager().getActiveOntology()
-				.getOntologyID().getOntologyIRI().toURI());
+		panel_query_interface = new QueryInterfacePanel(obdaController.getActiveOBDAModel(), obdaController.getQueryController());
 		panel_query_interface.setPreferredSize(new Dimension(400, 250));
 		panel_query_interface.setMinimumSize(new Dimension(400, 250));
 		panel_view_results = new ResultViewTablePanel(panel_query_interface);
@@ -319,7 +313,7 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 		panel_view_results.setOBDASaveQueryToFileAction(new OBDASaveQueryResultToFileAction() {
 
 			@Override
-			public void run(String query, File file) {
+			public void run(String fileLocation) {
 
 //				try {
 //					OBDAProgessMonitor monitor = new OBDAProgessMonitor("Saving...");
@@ -636,7 +630,5 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 	@Override
 	public void activeOntologyChanged() {
 		panel_query_interface.setOBDAModel(this.obdaController.getActiveOBDAModel());
-		panel_query_interface.setBaseURI(this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().toURI());
-
 	}
 }

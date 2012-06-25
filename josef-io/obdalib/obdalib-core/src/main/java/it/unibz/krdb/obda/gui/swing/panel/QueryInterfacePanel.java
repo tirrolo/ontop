@@ -66,9 +66,9 @@ public class QueryInterfacePanel extends JPanel implements SavedQueriesPanelList
 	/** 
 	 * Creates new form QueryInterfacePanel
 	 */
-	public QueryInterfacePanel(OBDAModel apic) {
+	public QueryInterfacePanel(OBDAModel apic, QueryController qc) {
 		
-		this.qc = apic.getQueryController();
+		this.qc = qc;
 		this.apic = apic;
 		
 		initComponents();

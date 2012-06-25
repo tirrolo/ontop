@@ -138,7 +138,7 @@ public class StockExchangeTestMySQL extends TestCase {
 
 		// Loading the OBDA data
 		obdaModel = fac.getOBDAModel();
-		DataManager ioManager = new DataManager(obdaModel);
+		DataManager ioManager = new DataManager(obdaModel, null);
 		ioManager.loadOBDADataFromURI(new File(obdafile).toURI(), ontology.getOntologyID().getOntologyIRI().toURI(), obdaModel.getPrefixManager());
 	}
 
