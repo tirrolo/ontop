@@ -260,7 +260,7 @@ public class OBDAModelManager implements Disposable {
         activeOBDAModel.setPrefixManager(prefixwrapper);
 
         String defaultPrefix = prefixManager.getDefaultPrefix();
-        if (defaultPrefix != null) {
+        if (defaultPrefix == null) {
             defaultPrefix = ontologyID.getOntologyIRI().toURI().toString();
         }
         activeOBDAModel.getPrefixManager().addPrefix(PrefixManager.DEFAULT_PREFIX, defaultPrefix);
