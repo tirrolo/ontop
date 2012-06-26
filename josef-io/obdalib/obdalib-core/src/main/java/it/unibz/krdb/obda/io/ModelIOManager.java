@@ -6,6 +6,7 @@ import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDADataSource;
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDAModel;
+import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
 import it.unibz.krdb.obda.parser.TurtleSyntaxParser;
 
@@ -17,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,19 +29,22 @@ import org.slf4j.LoggerFactory;
 public class ModelIOManager {
 
     private enum Label {
-        /* Entity decl.: */concept, objectProperty, dataProperty,
         /* Source decl.: */sourceUri, connectionUrl, username, password, driverClass,
         /* Mapping decl.: */mappingId, targetQuery, sourceQuery
     }
 
     private static final String PREFIX_DECLARATION_TAG = "[PrefixDeclaration]";
-    private static final String ENTITY_DECLARATION_TAG = "[EntityDeclaration]";
+    private static final String CLASS_DECLARATION_TAG = "[ClassDeclaration]";
+    private static final String OBJECT_PROPERTY_DECLARATION_TAG = "[ObjectPropertyDeclaration]";
+    private static final String DATA_PROPERTY_DECLARATION_TAG = "[DataPropertyDeclaration]";
     private static final String SOURCE_DECLARATION_TAG = "[SourceDeclaration]";
     private static final String MAPPING_DECLARATION_TAG = "[MappingDeclaration]";
 
     private static final String START_COLLECTION_SYMBOL = "@collection [[";
     private static final String END_COLLECTION_SYMBOL = "]]";
     private static final String COMMENT_SYMBOL = ";";
+
+    private static final int MAX_ENTITIES_PER_ROW = 10;
 
     private OBDAModel model;
 
@@ -77,7 +82,9 @@ public class ModelIOManager {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             writePrefixDeclaration(writer);
-            writeEntityDeclaration(writer);
+            writeClassEntityDeclaration(writer);
+            writeObjectPropertyDeclaration(writer);
+            writeDataPropertyDeclaration(writer);
             for (OBDADataSource source : model.getSources()) {
                 writeSourceDeclaration(source, writer);
                 writeMappingDeclaration(source, writer);
@@ -129,8 +136,12 @@ public class ModelIOManager {
             }
             if (line.contains(PREFIX_DECLARATION_TAG)) {
                 readPrefixDeclaration(reader);
-            } else if (line.contains(ENTITY_DECLARATION_TAG)) {
-                readEntityDeclaration(reader);
+            } else if (line.contains(CLASS_DECLARATION_TAG)) {
+                readClassDeclaration(reader);
+            } else if (line.contains(OBJECT_PROPERTY_DECLARATION_TAG)) {
+                readObjectPropertyDeclaration(reader);
+            } else if (line.contains(DATA_PROPERTY_DECLARATION_TAG)) {
+                readDataPropertyDeclaration(reader);
             } else if (line.contains(SOURCE_DECLARATION_TAG)) {
                 sourceUri = readSourceDeclaration(reader);
             } else if (line.contains(MAPPING_DECLARATION_TAG)) {
@@ -154,15 +165,53 @@ public class ModelIOManager {
         writer.write("\n");
         for (String prefix : prefixMap.keySet()) {
             String uri = prefixMap.get(prefix);
-            writer.write(prefix + "\t\t" + uri + "\n");
+            writer.write(prefix + (prefix.length() >= 9 ? "\t" : "\t\t") + uri + "\n");
         }
         writer.write("\n");
     }
 
-    private void writeEntityDeclaration(BufferedWriter writer) throws IOException {
-        // NO-OP
+    private void writeClassEntityDeclaration(BufferedWriter writer) throws IOException {
+        writer.write(CLASS_DECLARATION_TAG + " " + START_COLLECTION_SYMBOL);
+        writer.write("\n");
+        writeEntities(model.getDeclaredClasses(), writer);
+        writer.write(END_COLLECTION_SYMBOL);
+        writer.write("\n\n");
     }
 
+    private void writeObjectPropertyDeclaration(BufferedWriter writer) throws IOException {
+        writer.write(OBJECT_PROPERTY_DECLARATION_TAG + " " + START_COLLECTION_SYMBOL);
+        writer.write("\n");
+        writeEntities(model.getDeclaredObjectProperties(), writer);
+        writer.write(END_COLLECTION_SYMBOL);
+        writer.write("\n\n");
+    }
+
+    private void writeDataPropertyDeclaration(BufferedWriter writer) throws IOException {
+        writer.write(DATA_PROPERTY_DECLARATION_TAG + " " + START_COLLECTION_SYMBOL);
+        writer.write("\n");
+        writeEntities(model.getDeclaredDataProperties(), writer);
+        writer.write(END_COLLECTION_SYMBOL);
+        writer.write("\n\n");
+    }
+
+    private void writeEntities(Set<? extends Predicate> predicates, BufferedWriter writer) throws IOException {
+        int count = 1;
+        boolean needComma = false;
+        for (Predicate p : predicates) {
+            if (count > MAX_ENTITIES_PER_ROW) {
+                writer.write("\n");
+                count = 1;
+                needComma = false;
+            }
+            if (needComma) {
+                writer.write(", ");
+            }
+            writer.write(p.toString());
+            needComma = true;
+            count++;
+        }
+    }
+    
     private void writeSourceDeclaration(OBDADataSource source, BufferedWriter writer) throws IOException {
         writer.write(SOURCE_DECLARATION_TAG);
         writer.write("\n");
@@ -179,11 +228,17 @@ public class ModelIOManager {
         CQFormatter formatter = new TurtleFormatter(model.getPrefixManager());
 
         writer.write(MAPPING_DECLARATION_TAG + " " + START_COLLECTION_SYMBOL);
+        writer.write("\n");
+        
+        boolean needLineBreak = false;
         for (OBDAMappingAxiom mapping : model.getMappings(sourceUri)) {
-            writer.write("\n");
+            if (needLineBreak) {
+                writer.write("\n");
+            }
             writer.write(Label.mappingId.name() + "\t" + mapping.getId() + "\n");
             writer.write(Label.targetQuery.name() + "\t" + formatter.print((CQIE) mapping.getTargetQuery()) + "\n");
             writer.write(Label.sourceQuery.name() + "\t" + mapping.getSourceQuery() + "\n");
+            needLineBreak = true;
         }
         writer.write(END_COLLECTION_SYMBOL);
         writer.write("\n\n");
@@ -203,7 +258,15 @@ public class ModelIOManager {
         }
     }
 
-    private void readEntityDeclaration(BufferedReader reader) throws IOException {
+    private void readClassDeclaration(BufferedReader reader) throws IOException {
+        // NO-OP
+    }
+    
+    private void readObjectPropertyDeclaration(BufferedReader reader) throws IOException {
+        // NO-OP
+    }
+    
+    private void readDataPropertyDeclaration(BufferedReader reader) throws IOException {
         // NO-OP
     }
 
