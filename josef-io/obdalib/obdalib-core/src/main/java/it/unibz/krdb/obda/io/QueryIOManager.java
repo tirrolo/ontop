@@ -107,6 +107,14 @@ public class QueryIOManager {
         String groupId = "";
         String queryId = "";
         StringBuffer buffer = new StringBuffer();
+        
+        /* This flag is used to tell the query controller when to load the query item.
+         * The system won't take into account line-breaks to start loading the query item 
+         * since there is a possibility that users put line-breaks in their query string.
+         * Instead, the system will load the query when it recognizes the next query group 
+         * tag or the next query item tag or the closing collection tag has been reached 
+         * by the file reader.
+         */
         boolean hasUnsavedQuery = false;
         while ((line = reader.readLine()) != null) {
             if (isCommentLine(line)) {
@@ -152,18 +160,25 @@ public class QueryIOManager {
      */
 
     private void writeQueryGroup(QueryControllerGroup group, BufferedWriter writer) throws IOException {
+        writer.append("\n");
         writer.append(String.format(QUERY_GROUP_TAG, group.getID()) + " ");
         writer.append(START_COLLECTION_SYMBOL + "\n");
+        
+        boolean needLineBreak = false;
         for (QueryControllerQuery query : group.getQueries()) {
+            if (needLineBreak) {
+                writer.write("\n");
+            }
             writeQueryItem(query, writer);
+            needLineBreak = true;
         }
         writer.append(END_COLLECTION_SYMBOL);
-        writer.append("\n\n");
+        writer.append("\n");
     }
 
     private void writeQueryItem(QueryControllerQuery query, BufferedWriter writer) throws IOException {
         writer.append(String.format(QUERY_ITEM_TAG, query.getID()) + "\n");
-        writer.append(query.getQuery() + "\n\n");
+        writer.append(query.getQuery() + "\n");
     }
 
     private void addQueryItem(String queryText, String queryId, String groupId) {
