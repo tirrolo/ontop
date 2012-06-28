@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.protege4.core;
 
+import it.unibz.krdb.obda.gui.swing.utils.DialogUtils;
 import it.unibz.krdb.obda.io.DataManager;
 import it.unibz.krdb.obda.io.ModelIOManager;
 import it.unibz.krdb.obda.io.PrefixManager;
@@ -45,9 +46,11 @@ import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
@@ -74,6 +77,8 @@ public class OBDAModelManager implements Disposable {
 
     private JDBCConnectionManager connectionManager = JDBCConnectionManager.getJDBCConnectionManager();
 
+    private static OBDADataFactory dfac = OBDADataFactoryImpl.getInstance();
+    
     private static Logger log = LoggerFactory.getLogger(OBDAModelManager.class);
     
     /***
@@ -189,7 +194,6 @@ public class OBDAModelManager implements Disposable {
             for (OWLEntity removede : removals) {
                 Predicate removedPredicate = translator.getPredicate(removede);
                 obdamodel.deletePredicate(removedPredicate);
-
             }
         }
     }
@@ -244,32 +248,45 @@ public class OBDAModelManager implements Disposable {
         queryController.addListener(qlistener);
 
         OWLModelManager mmgr = owlEditorKit.getOWLWorkspace().getOWLModelManager();
-        PrefixOWLOntologyFormat prefixManager = PrefixUtilities.getPrefixOWLOntologyFormat(mmgr.getActiveOntology());
-        addOBDADefaultPrefixes(prefixManager);
-
-        OWLOntologyID ontologyID = this.owlEditorKit.getModelManager().getActiveOntology().getOntologyID();
-        URI uri = null;
-        if (ontologyID.isAnonymous()) {
-            uri = URI.create(ontologyID.toString());
-        } else {
-            uri = ontologyID.getOntologyIRI().toURI();
+        OWLOntology activeOntology = owlEditorKit.getModelManager().getActiveOntology();
+        
+        // Setup the entity declarations
+        for (OWLClass c : activeOntology.getClassesInSignature()) {
+            Predicate pred = dfac.getClassPredicate(c.getIRI().toString());
+            activeOBDAModel.declareClass(pred);
         }
-        obdamodels.put(uri, activeOBDAModel);
-
+        for (OWLObjectProperty r : activeOntology.getObjectPropertiesInSignature()) {
+            Predicate pred = dfac.getObjectPropertyPredicate(r.getIRI().toString());
+            activeOBDAModel.declareObjectProperty(pred);
+        }
+        for (OWLDataProperty p : activeOntology.getDataPropertiesInSignature()) {
+            Predicate pred = dfac.getDataPropertyPredicate(p.getIRI().toString());
+            activeOBDAModel.declareDataProperty(pred);
+        }
+        
+        // Setup the prefixes
+        PrefixOWLOntologyFormat prefixManager = PrefixUtilities.getPrefixOWLOntologyFormat(mmgr.getActiveOntology());
+        addOBDACommonPrefixes(prefixManager);
+        
         PrefixManagerWrapper prefixwrapper = new PrefixManagerWrapper(prefixManager);
         activeOBDAModel.setPrefixManager(prefixwrapper);
 
         String defaultPrefix = prefixManager.getDefaultPrefix();
         if (defaultPrefix == null) {
+            OWLOntologyID ontologyID = activeOntology.getOntologyID();
             defaultPrefix = ontologyID.getOntologyIRI().toURI().toString();
         }
         activeOBDAModel.getPrefixManager().addPrefix(PrefixManager.DEFAULT_PREFIX, defaultPrefix);
+
+        // Add the model
+        URI modelUri = URI.create(defaultPrefix.replace("#", ""));  // Model URI doesn't have hash sign.
+        obdamodels.put(modelUri, activeOBDAModel);
     }
 
     /**
      * Append here all default prefixes used by the system.
      */
-    private void addOBDADefaultPrefixes(PrefixOWLOntologyFormat prefixManager) {
+    private void addOBDACommonPrefixes(PrefixOWLOntologyFormat prefixManager) {
         if (!prefixManager.containsPrefixMapping("quest")) {
             prefixManager.setPrefix("quest", "http://obda.org/quest#");
         }
@@ -386,6 +403,7 @@ public class OBDAModelManager implements Disposable {
                     OBDAModelRefactorer refactorer = new OBDAModelRefactorer(activeOBDAModel, activeOntology);
                     refactorer.run(); // adding type information to the mapping predicates.
                 } catch (Exception e) {
+                    DialogUtils.showQuickErrorDialog(null, e, e.getLocalizedMessage());
                     log.error(e.getMessage());
                 } finally {
                     loadingData = false;
