@@ -1,5 +1,7 @@
 package it.unibz.krdb.obda.api.io;
 
+import it.unibz.krdb.obda.gui.swing.exception.InvalidMappingException;
+import it.unibz.krdb.obda.gui.swing.exception.InvalidPredicateDeclarationException;
 import it.unibz.krdb.obda.io.ModelIOManager;
 import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.io.SimplePrefixManager;
@@ -114,7 +116,7 @@ public class IOManagerTest extends TestCase {
 	 * Test loading the file
 	 */
 	
-	public void testBlankLoad() throws IOException {
+	public void testBlankLoad() throws IOException, InvalidPredicateDeclarationException, InvalidMappingException {
 		OBDAModel emptyModel = dfac.getOBDAModel();		
 		ioManager = new ModelIOManager(emptyModel);
 		ioManager.load("src/test/java/it/unibz/krdb/obda/api/io/TestBlank.obda");
@@ -125,7 +127,7 @@ public class IOManagerTest extends TestCase {
 		assertTrue(countElement(emptyModel.getMappings()) == 0);
 	}
 
-	public void testLoad() throws IOException {
+	public void testLoad() throws IOException, InvalidPredicateDeclarationException, InvalidMappingException {
 		OBDAModel emptyModel = dfac.getOBDAModel();
 		ioManager = new ModelIOManager(emptyModel);
 		ioManager.load("src/test/java/it/unibz/krdb/obda/api/io/TestSave.obda");
@@ -136,7 +138,7 @@ public class IOManagerTest extends TestCase {
 		assertTrue(countElement(emptyModel.getMappings()) == 3);
 	}
 	
-	public void testMultipleDatasourcesLoad() throws IOException {
+	public void testMultipleDatasourcesLoad() throws IOException, InvalidPredicateDeclarationException, InvalidMappingException {
 		OBDAModel emptyModel = dfac.getOBDAModel();
 		ioManager = new ModelIOManager(emptyModel);
 		ioManager.load("src/test/java/it/unibz/krdb/obda/api/io/TestSaveMultipleSources.obda");
