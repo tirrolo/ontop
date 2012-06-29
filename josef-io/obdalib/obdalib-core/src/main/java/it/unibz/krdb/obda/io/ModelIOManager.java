@@ -279,7 +279,7 @@ public class ModelIOManager {
         final PrefixManager pm = model.getPrefixManager();
         String line = "";
         while (!(line = reader.readLine()).isEmpty()) {
-            String[] tokens = line.split("\t+");
+            String[] tokens = line.split("[\t| ]+");
             pm.addPrefix(tokens[0], tokens[1]);
         }
     }
@@ -375,7 +375,7 @@ public class ModelIOManager {
         URI sourceUri = null;
         OBDADataSource datasource = null;
         while (!(line = reader.readLine()).isEmpty()) {
-            String[] tokens = line.split("\t", 2);
+            String[] tokens = line.split("[\t| ]+", 2);
             if (tokens[0].equals(Label.sourceUri.name())) {
                 sourceUri = URI.create(tokens[1]);
                 // TODO: BAD CODE! The data source id should be part of the parameters!
@@ -406,7 +406,7 @@ public class ModelIOManager {
             if (line.isEmpty()) {
                 continue; // ignore blank line
             }
-            String[] tokens = line.split("\t", 2); // split the input line to two parts
+            String[] tokens = line.split("[\t| ]+", 2); // split the input line to two parts
             if (tokens[0].equals(Label.mappingId.name())) {
                 mappingId = tokens[1];
                 if (mappingId.isEmpty()) { // empty or not
