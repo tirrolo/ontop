@@ -40,7 +40,8 @@ public class InvalidMappingException extends Exception {
         StringBuffer sb = new StringBuffer();
         if (!indicators.isEmpty()) {
             sb.append("\n");
-            sb.append("Error while loading mapping: (REASON: Invalid mappings).\n\n");
+            sb.append("The plugin cannot load the OBDA model: (REASON: Invalid mappings)\n");
+            sb.append("Please fix the following mappings and reload the file.\n\n");
             for (Indicator indicator : indicators) {
                 int lineNumber = indicator.getLineNumber();
                 String mappingId = "";
@@ -87,10 +88,5 @@ public class InvalidMappingException extends Exception {
         }
         String message = sb.toString();
         return message;
-    }
-    
-    @Override
-    public String getLocalizedMessage() {
-        return "Invalid mappings";
     }
 }

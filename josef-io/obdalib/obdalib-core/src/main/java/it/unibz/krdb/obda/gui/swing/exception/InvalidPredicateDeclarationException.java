@@ -30,7 +30,8 @@ public class InvalidPredicateDeclarationException extends Exception {
         StringBuffer sb = new StringBuffer();
         if (!indicators.isEmpty()) {
             sb.append("\n");
-            sb.append("WARNING: The plugin could not match the following predicates to the source ontology: Unknown predicate declarations.\n\n");
+            sb.append("The plugin cannot load the OBDA model. (REASON: Unknown predicate declarations)\n");
+            sb.append("Please make sure the following predicates match to the source ontology.\n\n");
             for (Indicator indicator : indicators) {
                 int lineNumber = indicator.getLineNumber();
                 int columnNumber = indicator.getColumnNumber();
@@ -51,10 +52,5 @@ public class InvalidPredicateDeclarationException extends Exception {
         }
         String message = sb.toString();
         return message;
-    }
-
-    @Override
-    public String getLocalizedMessage() {
-        return "Unknown predicate declarations";
     }
 }
