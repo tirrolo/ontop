@@ -400,7 +400,6 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 				public void run() {
 					OWLReasoner reasoner = getOWLEditorKit().getModelManager().getOWLReasonerManager().getCurrentReasoner();
 					if (reasoner instanceof OWLQueryReasoner) {
-
 						try {
 							QuestOWL dqr = (QuestOWL) reasoner;
 							QuestOWLStatement st = (QuestOWLStatement)dqr.getStatement();
@@ -409,15 +408,12 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 						} catch (Exception e) {
 							latch.countDown();
 							log.error(e.getMessage(), e);
-							JOptionPane.showMessageDialog(null, "Error while unfolding query.\n " + e.getMessage()
-									+ "\nPlease refer to the log for more information.");
+							DialogUtils.showQuickErrorDialog(null, e, "Error while unfolding query.");
 						}
-
 					} else {
 						latch.countDown();
-						JOptionPane
-								.showMessageDialog(null,
-										"This feature can only be used in conjunction with an UCQ\nenabled reasoner. Please, select a UCQ enabled reasoner and try again.");
+						JOptionPane.showMessageDialog(null,
+								"This feature can only be used in conjunction with an UCQ\nenabled reasoner. Please, select a UCQ enabled reasoner and try again.");
 					}
 				}
 			};
@@ -433,9 +429,8 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 				latch.countDown();
 			} catch (Exception e) {
 				latch.countDown();
-				JOptionPane.showMessageDialog(null, "Error while canceling unfolding action.\n " + e.getMessage()
-						+ "\nPlease refer to the log file for more information.");
 				log.error("Error while canceling unfolding action.", e);
+				DialogUtils.showQuickErrorDialog(null, e, "Error while canceling unfolding action.");
 			}
 		}
 	}
@@ -462,7 +457,6 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 				public void run() {
 					OWLReasoner reasoner = getOWLEditorKit().getModelManager().getOWLReasonerManager().getCurrentReasoner();
 					if (reasoner instanceof OWLQueryReasoner) {
-
 						try {
 							QuestOWL dqr = (QuestOWL) reasoner;
 							QuestOWLStatement st = (QuestOWLStatement)dqr.getStatement();
@@ -471,15 +465,12 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 						} catch (Exception e) {
 							latch.countDown();
 							log.error(e.getMessage(), e);
-							JOptionPane.showMessageDialog(null, "Error while expanding query.\n " + e.getMessage()
-									+ "\nPlease refer to the log for more information.");
+							DialogUtils.showQuickErrorDialog(null, e, "Error while expanding query.");
 						}
-
 					} else {
 						latch.countDown();
-						JOptionPane
-								.showMessageDialog(null,
-										"This feature can only be used in conjunction with an UCQ\nenabled reasoner. Please, select a UCQ enabled reasoner and try again.");
+						JOptionPane.showMessageDialog(null,
+								"This feature can only be used in conjunction with an UCQ\nenabled reasoner. Please, select a UCQ enabled reasoner and try again.");
 					}
 				}
 			};
@@ -495,9 +486,8 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 				latch.countDown();
 			} catch (Exception e) {
 				latch.countDown();
-				JOptionPane.showMessageDialog(null, "Error while counting.\n " + e.getMessage()
-						+ "\nPlease refer to the log file for more information.");
 				log.error("Error while counting.", e);
+				DialogUtils.showQuickErrorDialog(null, e, "Error while counting.");
 			}
 		}
 	}
@@ -524,7 +514,6 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 				public void run() {
 					OWLReasoner reasoner = getOWLEditorKit().getModelManager().getOWLReasonerManager().getCurrentReasoner();
 					if (reasoner instanceof OWLQueryReasoner) {
-
 						try {
 							OWLQueryReasoner dqr = (OWLQueryReasoner) reasoner;
 							OWLStatement st = dqr.getStatement();
@@ -535,12 +524,10 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 							log.error(e.getMessage(), e);
 							DialogUtils.showQuickErrorDialog(null, e);
 						}
-
 					} else {
 						latch.countDown();
-						JOptionPane
-								.showMessageDialog(null,
-										"This feature can only be used in conjunction with an UCQ\nenabled reasoner. Please, select a UCQ enabled reasoner and try again.");
+						JOptionPane.showMessageDialog(null,
+								"This feature can only be used in conjunction with an UCQ\nenabled reasoner. Please, select a UCQ enabled reasoner and try again.");
 					}
 				}
 			};
@@ -556,9 +543,8 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 				latch.countDown();
 			} catch (Exception e) {
 				latch.countDown();
-				JOptionPane.showMessageDialog(null, "Error while counting.\n " + e.getMessage()
-						+ "\nPlease refer to the log file for more information.");
 				log.error("Error while counting.", e);
+				DialogUtils.showQuickErrorDialog(null, e, "Error while counting.");
 			}
 		}
 
@@ -586,7 +572,6 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 				public void run() {
 					OWLReasoner reasoner = getOWLEditorKit().getModelManager().getOWLReasonerManager().getCurrentReasoner();
 					if (reasoner instanceof OWLQueryReasoner) {
-
 						try {
 							QuestOWL dqr = (QuestOWL) reasoner;
 							OWLStatement st = dqr.getStatement();
@@ -598,12 +583,10 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 							JOptionPane.showMessageDialog(null, "Error while counting tuples.\n " + e.getMessage()
 									+ "\nPlease refer to the log for more information.");
 						}
-
 					} else {
 						latch.countDown();
-						JOptionPane
-								.showMessageDialog(null,
-										"This feature can only be used in conjunction with an UCQ\nenabled reasoner. Please, select a UCQ enabled reasoner and try again.");
+						JOptionPane.showMessageDialog(null,
+								"This feature can only be used in conjunction with an UCQ\nenabled reasoner. Please, select a UCQ enabled reasoner and try again.");
 					}
 				}
 			};
@@ -619,9 +602,8 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 				latch.countDown();
 			} catch (Exception e) {
 				latch.countDown();
-				JOptionPane.showMessageDialog(null, "Error while counting.\n " + e.getMessage()
-						+ "\nPlease refer to the log file for more information.");
 				log.error("Error while counting.", e);
+				DialogUtils.showQuickErrorDialog(null, e, "Error while counting.");
 			}
 		}
 	}
