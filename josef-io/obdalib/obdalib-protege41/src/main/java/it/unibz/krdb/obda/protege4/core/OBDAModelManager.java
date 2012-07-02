@@ -65,6 +65,9 @@ import org.xml.sax.SAXException;
 
 public class OBDAModelManager implements Disposable {
 
+    private static final String OBDA_EXT = "obda"; // The default OBDA file extension.
+    private static final String QUERY_EXT = "q"; // The default query file extension.
+
     private OWLEditorKit owlEditorKit;
 
     private OWLOntologyManager mmgr;
@@ -378,8 +381,8 @@ public class OBDAModelManager implements Disposable {
 
                 try {
                     String owlDocumentIri = source.getOWLOntologyManager().getOntologyDocumentIRI(activeOntology).toString();
-                    String obdaDocumentIri = owlDocumentIri.substring(0, owlDocumentIri.length() - 3) + "obda";
-                    String queryDocumentIri = owlDocumentIri.substring(0, owlDocumentIri.length() - 3) + "q";
+                    String obdaDocumentIri = owlDocumentIri.substring(0, owlDocumentIri.length() - 3) + OBDA_EXT;
+                    String queryDocumentIri = owlDocumentIri.substring(0, owlDocumentIri.length() - 3) + QUERY_EXT;
                     
                     File obdaFile = new File(URI.create(obdaDocumentIri));
                     File queryFile = new File(URI.create(queryDocumentIri));
@@ -392,13 +395,19 @@ public class OBDAModelManager implements Disposable {
                         ioManager.loadOBDADataFromURI(obdaDocumentUri, ontologyIRI.toURI(), activeOBDAModel.getPrefixManager());
                         
                     } catch (SAXException e) { // Migration Plan: Use the new IO manager if the the old one fails to load
-                        // Load the OBDA model
-                        ModelIOManager modelIO = new ModelIOManager(activeOBDAModel);
-                        modelIO.load(obdaFile);
-                        
-                        // Load the saved queries
-                        QueryIOManager queryIO = new QueryIOManager(queryController);
-                        queryIO.load(queryFile); 
+                        try {
+                            // Load the OBDA model
+                            ModelIOManager modelIO = new ModelIOManager(activeOBDAModel);
+                            modelIO.load(obdaFile);
+                            
+                             // Load the saved queries
+                            QueryIOManager queryIO = new QueryIOManager(queryController);
+                            queryIO.load(queryFile);
+                        }
+                        catch (Exception ex) {
+                            activeOBDAModel.reset();
+                            throw ex;
+                        }
                     }
                     OBDAModelRefactorer refactorer = new OBDAModelRefactorer(activeOBDAModel, activeOntology);
                     refactorer.run(); // adding type information to the mapping predicates.
@@ -419,8 +428,8 @@ public class OBDAModelManager implements Disposable {
 
                 try {
                     String owlDocumentIri = source.getOWLOntologyManager().getOntologyDocumentIRI(activeOntology).toString();
-                    String obdaDocumentIri = owlDocumentIri.substring(0, owlDocumentIri.length() - 3) + "obda";
-                    String queryDocumentIri = owlDocumentIri.substring(0, owlDocumentIri.length() - 3) + "q";
+                    String obdaDocumentIri = owlDocumentIri.substring(0, owlDocumentIri.length() - 3) + OBDA_EXT;
+                    String queryDocumentIri = owlDocumentIri.substring(0, owlDocumentIri.length() - 3) + QUERY_EXT;
                     
                     // Save the OBDA model
                     File obdaFile = new File(URI.create(obdaDocumentIri));
