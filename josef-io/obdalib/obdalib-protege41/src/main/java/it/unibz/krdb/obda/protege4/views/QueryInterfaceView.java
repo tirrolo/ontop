@@ -533,8 +533,7 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 						} catch (Exception e) {
 							latch.countDown();
 							log.error(e.getMessage(), e);
-							DialogUtils.showQuickErrorDialog(QueryInterfaceView.this, e);
-
+							DialogUtils.showQuickErrorDialog(null, e);
 						}
 
 					} else {
