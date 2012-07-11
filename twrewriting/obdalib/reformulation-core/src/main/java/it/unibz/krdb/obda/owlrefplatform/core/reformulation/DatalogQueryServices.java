@@ -6,7 +6,9 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
+import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,18 +35,37 @@ public class DatalogQueryServices {
 			substituition.put(rule.getHead().getTerm(i), atom.getTerm(i));
 		
 		// invent names for other variables
-		for (Atom sa : rule.getBody())
+		for (Atom sa : rule.getBody()) {			
 			for (Term t : sa.getTerms())
-				if (!substituition.containsKey(t) && !rule.getHead().getTerms().contains(t))
-					substituition.put(t, fac.getVariable("local" + nextVariableIndex++));
+				if (!substituition.containsKey(t) && !rule.getHead().getTerms().contains(t)) {
+					if (t instanceof Variable)
+						substituition.put(t, fac.getVariable("local" + nextVariableIndex++));
+					else
+						substituition.put(t, null);
+				}
+		}
+		
+		for (Atom sa : rule.getBody()) 
+			if (sa.getPredicate().equals(OBDAVocabulary.EQ)) {
+				Term t0 = sa.getTerm(0);
+				Term t1 = sa.getTerm(1);
+				if ((t0 instanceof Variable) && !rule.getHead().getTerms().contains(t0))
+					substituition.put(t0, t1);
+				else if ((t1 instanceof Variable) && !rule.getHead().getTerms().contains(t1))
+					substituition.put(t1, t0);
+			}
 		
 		List<Atom> unifiedBody = new ArrayList<Atom>(rule.getBody().size()); 
 		for  (Atom a : rule.getBody()) {
 			List<Term> terms = new ArrayList<Term>(a.getTerms().size());
 			for (Term t: a.getTerms()) {
-				terms.add(substituition.get(t));
+				Term sub = substituition.get(t);
+				terms.add((sub == null) ? t : sub);
 			}
-			unifiedBody.add(fac.getAtom(a.getPredicate(), terms));
+			if (a.getPredicate().equals(OBDAVocabulary.EQ) && a.getTerm(0).equals(a.getTerm(1)))
+				log.debug("IGNORE TRIVIAL EQUALITY: " + a);
+			else 
+				unifiedBody.add(fac.getAtom(a.getPredicate(), terms));
 		}		
 		return unifiedBody;
 	}
@@ -81,20 +102,67 @@ public class DatalogQueryServices {
 				List<Atom> bodyCopy = new ArrayList<Atom>(r.getBody().size());
 				Atom toBeReplaced = null;
 				for (Atom a : r.getBody()) {
-					log.debug("TO BE REPLACED? " + a);
+					// log.debug("TO BE REPLACED? " + a);
 					if ((toBeReplaced == null) && defined.containsKey(a.getPredicate())) 
 						toBeReplaced = a;
 					else
 						bodyCopy.add(a);
 				}
 				if (toBeReplaced != null) {
-					log.debug("TO BE REPLACED " + toBeReplaced + " IN " + bodyCopy);
+					log.debug("REPLACING " + toBeReplaced + " IN " + bodyCopy);
 					changed = true;
 					for (CQIE rule : defined.get(toBeReplaced.getPredicate())) {
 						List<Atom> b = new ArrayList<Atom>(bodyCopy);
-						b.addAll(unify(rule,toBeReplaced));
+						//b.addAll(unify(rule,toBeReplaced));
+						for (Atom ua : unify(rule,toBeReplaced)) {
+							if (!b.contains(ua))
+								b.add(ua);
+							else
+								log.debug("  IGNORE REPEATING ATOM " + ua);
+						}
+						boolean replacedEQ = false;
+						do { 
+							replacedEQ = false;
+							for (Atom eqa : b) {
+								if (eqa.getPredicate().equals(OBDAVocabulary.EQ)) {
+									Term t0 = eqa.getTerm(0);
+									Term t1 = eqa.getTerm(1);
+									if (t0 instanceof Variable && !r.getHead().getTerms().contains(t0)) {
+										log.debug("   ELIMINATING EQUALITY " + eqa);
+										b.remove(eqa);
+										for (Atom aa : b) 
+											for (int i = 0; i <  aa.getTerms().size(); i++)
+												if (aa.getTerm(i).equals(t0))
+													aa.getTerms().set(i, t1);
+										replacedEQ = true;
+										List<Atom> newb = new ArrayList<Atom>(bodyCopy);
+										for (Atom aa : b) 
+											if (!newb.contains(aa))
+												newb.add(aa);
+										b = newb;
+										break;
+									}	
+									if (t1 instanceof Variable && !r.getHead().getTerms().contains(t1)) {
+										log.debug("   ELIMINATING EQUALITY " + eqa);
+										b.remove(eqa);
+										for (Atom aa : b) 
+											for (int i = 0; i <  aa.getTerms().size(); i++)
+												if (aa.getTerm(i).equals(t1))
+													aa.getTerms().set(i, t0);
+										replacedEQ = true;
+										List<Atom> newb = new ArrayList<Atom>(bodyCopy);
+										for (Atom aa : b) 
+											if (!newb.contains(aa))
+												newb.add(aa);
+										b = newb;
+										break;
+									}	
+								}
+							}
+						} while (replacedEQ); 
+						
 						temp.add(fac.getCQIE(r.getHead(), b));
-						log.debug("REPLACED " + b);
+						//log.debug("REPLACED " + b);
 					}					
 				}
 				else
