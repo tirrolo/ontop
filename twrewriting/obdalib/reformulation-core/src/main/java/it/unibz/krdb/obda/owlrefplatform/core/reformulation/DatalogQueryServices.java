@@ -112,14 +112,15 @@ public class DatalogQueryServices {
 					log.debug("REPLACING " + toBeReplaced + " IN " + bodyCopy);
 					changed = true;
 					for (CQIE rule : defined.get(toBeReplaced.getPredicate())) {
-						List<Atom> b = new ArrayList<Atom>(bodyCopy);
-						//b.addAll(unify(rule,toBeReplaced));
-						for (Atom ua : unify(rule,toBeReplaced)) {
-							if (!b.contains(ua))
-								b.add(ua);
-							else
-								log.debug("  IGNORE REPEATING ATOM " + ua);
-						}
+						Set<Atom> b = new HashSet<Atom>(bodyCopy);
+						b.addAll(unify(rule,toBeReplaced));
+						//for (Atom ua : unify(rule,toBeReplaced)) {
+							//if (!b.contains(ua))
+						//		b.add(ua);
+							//else
+							//	log.debug("  IGNORE REPEATING ATOM " + ua);
+						//}
+						
 						boolean replacedEQ = false;
 						do { 
 							replacedEQ = false;
@@ -135,10 +136,11 @@ public class DatalogQueryServices {
 												if (aa.getTerm(i).equals(t0))
 													aa.getTerms().set(i, t1);
 										replacedEQ = true;
-										List<Atom> newb = new ArrayList<Atom>(bodyCopy);
-										for (Atom aa : b) 
-											if (!newb.contains(aa))
-												newb.add(aa);
+										Set<Atom> newb = new HashSet<Atom>(bodyCopy);
+										//for (Atom aa : b) 
+										//	if (!newb.contains(aa))
+										//		newb.add(aa);
+										newb.addAll(b);
 										b = newb;
 										break;
 									}	
@@ -150,10 +152,11 @@ public class DatalogQueryServices {
 												if (aa.getTerm(i).equals(t1))
 													aa.getTerms().set(i, t0);
 										replacedEQ = true;
-										List<Atom> newb = new ArrayList<Atom>(bodyCopy);
-										for (Atom aa : b) 
-											if (!newb.contains(aa))
-												newb.add(aa);
+										Set<Atom> newb = new HashSet<Atom>(bodyCopy);
+										newb.addAll(b);
+										//for (Atom aa : b) 
+										//	if (!newb.contains(aa))
+										//		newb.add(aa);
 										b = newb;
 										break;
 									}	
@@ -161,7 +164,7 @@ public class DatalogQueryServices {
 							}
 						} while (replacedEQ); 
 						
-						temp.add(fac.getCQIE(r.getHead(), b));
+						temp.add(fac.getCQIE(r.getHead(), new ArrayList<Atom>(b)));
 						//log.debug("REPLACED " + b);
 					}					
 				}
@@ -205,9 +208,9 @@ public class DatalogQueryServices {
 				continue;
 			
 			boolean changed = false;
-			List<Atom> body = cqie.getBody();
+			Set<Atom> body = new HashSet<Atom>(cqie.getBody());
 			do {
-				List<Atom> newBody = new ArrayList<Atom>(body.size());
+				Set<Atom> newBody = new HashSet<Atom>(body.size());
 				changed = false;
 				for (Atom a : body) {
 					CQIE rule  = replacement.get(a.getPredicate());
@@ -221,7 +224,7 @@ public class DatalogQueryServices {
 				}
 				body = newBody;
 			} while (changed);
-			result.add(fac.getCQIE(cqie.getHead(), body));
+			result.add(fac.getCQIE(cqie.getHead(), new ArrayList<Atom>(body)));
 		}
 		return fac.getDatalogProgram(result);
 	}

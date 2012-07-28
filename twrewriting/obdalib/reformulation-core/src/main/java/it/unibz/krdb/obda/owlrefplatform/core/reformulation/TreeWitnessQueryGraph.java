@@ -18,8 +18,10 @@ public class TreeWitnessQueryGraph {
 	private List<Term> variables; 	
 	private List<Variable> quantifiedVariables;
 	private List<Edge> edges;
+	private boolean noFreeTerms;
 	
 	public TreeWitnessQueryGraph(CQIE cqie) {
+		noFreeTerms = true;
 		Set<Term> variablesSet = new HashSet<Term>();	
 		Map<Term, Set<Atom> > loops = new HashMap<Term, Set<Atom> >();
 		Map<TermPair, Edge> pairs = new HashMap<TermPair, Edge>();
@@ -30,9 +32,13 @@ public class TreeWitnessQueryGraph {
 				Term t0 = a.getTerm(0);
 				if (t0 instanceof Variable)
 					variablesSet.add(t0);
+				else
+					noFreeTerms = false;
 				Term t1 = a.getTerm(1);
 				if (t1 instanceof Variable)
 					variablesSet.add(t1);
+				else
+					noFreeTerms = false;
 				
 				TermPair pair = new TermPair(t0, t1);
 				if (!pairs.containsKey(pair)) {
@@ -48,6 +54,8 @@ public class TreeWitnessQueryGraph {
 				Term key = a.getTerm(0);
 				if (key instanceof Variable)
 					variablesSet.add((Variable)key);
+				else
+					noFreeTerms = false;
 				
 				if (!loops.containsKey(key)) {
 					Set<Atom> atoms = new HashSet<Atom>();
@@ -69,6 +77,12 @@ public class TreeWitnessQueryGraph {
 		for (Term v : variables) 
 			if (!cqie.getHead().getTerms().contains(v))
 				quantifiedVariables.add((Variable)v);
+		
+		noFreeTerms = noFreeTerms && (cqie.getHead().getTerms().size() == 0);
+	}
+	
+	public boolean hasNoFreeTerms() {
+		return noFreeTerms;
 	}
 	
 	public List<Edge> getEdges() {
