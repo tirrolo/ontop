@@ -41,125 +41,19 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Ontology tbox;
-	private Set<PropertySomeClassRestriction> generators;
-	private Map<ClassDescription, HashSet<ClassDescription> > subconcepts; // reflexive closure of the relation!
-	private Map<Property, HashSet<Property> > subproperties; // reflexive closure
-	
 	private static OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
 	private static OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
-	private static final OClass owlThing = ontFactory.createClass("http://www.w3.org/TR/2004/REC-owl-semantics-20040210/#owl_Thing");
 	
 	private static final Logger log = LoggerFactory.getLogger(TreeWitnessRewriter.class);
 
-	private static ClassDescription getConceptFromClassDescription(ClassDescription c) {
-		//log.debug("CONCEPT TYPE: " + c.getClass());
-		if (c instanceof PropertySomeClassRestriction) {
-			PropertySomeClassRestriction some = (PropertySomeClassRestriction) c;
-			log.debug("  SOME CONCEPT " + some.getPredicate() + (some.isInverse() ? "^-" : "") + ", FILLER " + some.getFiller());
-			//return new TreeWitnessGenerator
-			//		(ontFactory.createProperty(some.getPredicate(), some.isInverse()), some.getFiller());
-			return some;
-		} 
-		else if (c instanceof PropertySomeRestriction) {
-			PropertySomeRestriction some = (PropertySomeRestriction) c;
-			log.debug("  SOME " + some.getPredicate() + (some.isInverse() ? "^-" : "") + ", FILLER TOP");
-			//return new TreeWitnessGenerator
-			//		(ontFactory.createProperty(some.getPredicate(), some.isInverse()));
-			return ontFactory.createPropertySomeClassRestriction(some.getPredicate(), some.isInverse(), owlThing);
-		} 
-		else if (c instanceof OClass) {
-			OClass oc = (OClass)c;
-			log.debug("  CONCEPT " + oc);
-			return oc;
-		}
-		log.debug("UNKNONW TYPE: " + c);
-		return null; 
-	}
+	private TreeWitnessReasonerLite reasoner = new TreeWitnessReasonerLite();
 	
-	private void addSubConcept(ClassDescription subConcept, ClassDescription superConcept) {
-		if (!subconcepts.containsKey(superConcept)) {
-			HashSet<ClassDescription> set = new HashSet<ClassDescription>();
-			set.add(subConcept);
-			set.add(superConcept);
-			subconcepts.put(superConcept, set);
-		}
-		else
-			subconcepts.get(superConcept).add(subConcept);		
-	}
 	
 	@Override
 	public void setTBox(Ontology ontology) {
-		this.tbox = ontology;
-		log.debug("SET ONTOLOGY " + ontology);
-		// collect generating axioms
-		generators = new HashSet<PropertySomeClassRestriction>();
-		subconcepts = new HashMap<ClassDescription, HashSet<ClassDescription> >();
-		subproperties = new HashMap<Property, HashSet<Property> >();
-		
-		log.debug("AXIOMS");
-		for (Axiom ax : tbox.getAssertions()) {
-			if (ax instanceof SubClassAxiomImpl) {
-				SubClassAxiomImpl sax = (SubClassAxiomImpl) ax;
-				log.debug("CI AXIOM: " + sax);
-				ClassDescription superConcept = getConceptFromClassDescription(sax.getSuper());
-				if (superConcept instanceof PropertySomeClassRestriction)
-					generators.add((PropertySomeClassRestriction)superConcept);
-				
-				addSubConcept(getConceptFromClassDescription(sax.getSub()), superConcept);
-			} 
-			else if (ax instanceof SubPropertyAxiomImpl) {
-				SubPropertyAxiomImpl sax = (SubPropertyAxiomImpl) ax;
-				log.debug("RI AXIOM: " + sax);
-				Property superProperty = sax.getSuper();
-				Property subProperty = sax.getSub();
-				Property superInverseProperty = ontFactory.createProperty(superProperty.getPredicate(), !superProperty.isInverse());
-				Property subInverseProperty = ontFactory.createProperty(subProperty.getPredicate(), !subProperty.isInverse());
-				if (!subproperties.containsKey(superProperty)) {
-					HashSet<Property> set = new HashSet<Property>();
-					set.add(superProperty);
-					set.add(subProperty);
-					subproperties.put(superProperty, set);
-					HashSet<Property> setInverse = new HashSet<Property>();
-					setInverse.add(superInverseProperty);
-					setInverse.add(subInverseProperty);
-					subproperties.put(superInverseProperty, setInverse);
-				}
-				else {
-					subproperties.get(superProperty).add(subProperty);
-					subproperties.get(superInverseProperty).add(subInverseProperty);
-				}
-			}
-			else
-				log.debug("UNKNOWN AXIOM TYPE:" + ax);
-		}
-		
-		for (Object k : subconcepts.keySet())
-			log.debug("SUBCONCEPTS OF " + k + " are " + subconcepts.get(k));
-		
-		for (Property prop : subproperties.keySet()) 
-			for (Property subproperty : subproperties.get(prop)) {
-				addSubConcept(ontFactory.createPropertySomeClassRestriction(subproperty.getPredicate(), subproperty.isInverse(), owlThing), 
-						ontFactory.createPropertySomeClassRestriction(prop.getPredicate(), prop.isInverse(), owlThing));
-			}
-		
-		boolean changed = false;
-		do {
-			changed = false;
-			for (ClassDescription o1 : subconcepts.keySet())
-				for (ClassDescription o2 : subconcepts.keySet())
-					if (subconcepts.get(o2).contains(o1)) {
-						if (subconcepts.get(o2).addAll(subconcepts.get(o1))) {
-							log.debug("ALL " + o2 + " ARE EXTENDED WITH ALL " + o1);
-							changed = true;
-						}
-					}
-		} while (changed);
-		
-		for (ClassDescription k : subconcepts.keySet())
-			log.debug("SATURATED SUBCONCEPTS OF " + k + " are " + subconcepts.get(k));
+		reasoner.setTBox(ontology);
 	}
-
+	
 	@Override
 	public void setCBox(Ontology sigma) {
 		// TODO Auto-generated method stub
@@ -175,93 +69,21 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	}
 
 
-	private static class AdjacentTermsPair {
-		private List<Term> terms;
-		private URI name;
-
-		public AdjacentTermsPair(List<Term> terms, URI name) {
-			this.terms = terms;
-			this.name = name;
-		}
-
-		public URI getName() {
-			return name;
-		}
-		
-		public List<Term> getTerms() {
-			return terms;
-		}
-		
-		public boolean equals(Object o) {
-			if (o instanceof AdjacentTermsPair) {
-				AdjacentTermsPair other = (AdjacentTermsPair) o;
-				if (this.terms.get(0).equals(other.terms.get(0)) 
-						&& this.terms.get(1).equals(other.terms.get(1)))
-					return true;
-				if (this.terms.get(0).equals(other.terms.get(1)) 
-						&& this.terms.get(1).equals(other.terms.get(0)))
-					return true;
-			}
-			return false;
-		}
-
-		public String toString() {
-			return "term pair: {" + terms.get(0) + ", " + terms.get(1) + "}";
-		}
-		
-		public int hashCode() {
-			return terms.get(0).hashCode() ^ terms.get(1).hashCode();
-		}
-	}
 
 	private void rewriteCQ(CQIE cqie, DatalogProgram output) throws URISyntaxException {
 
-		int pairIndex = 0;
-		Map<AdjacentTermsPair, Set<Atom> > edges = new HashMap<AdjacentTermsPair, Set<Atom> >();
-		Map<Term, Set<Atom> > loops = new HashMap<Term, Set<Atom> >();
-		Set<Term> variablesSet = new HashSet<Term>();
+		TreeWitnessQueryGraph query = new TreeWitnessQueryGraph(cqie);
 		
-		for (Atom a: cqie.getBody()) {
-			if (a.getArity() == 2 && !a.getTerm(0).equals(a.getTerm(1))) {
-				if (a.getTerm(0) instanceof Variable)
-					variablesSet.add(a.getTerm(0));
-				if (a.getTerm(1) instanceof Variable)
-					variablesSet.add(a.getTerm(1));
-				
-				AdjacentTermsPair pair = new AdjacentTermsPair(a.getTerms(), getQName(a.getPredicate().getName(), ++pairIndex));
-				if (!edges.containsKey(pair)) {
-					Set<Atom> atoms = new HashSet<Atom>();
-					atoms.add(a);
-					edges.put(pair, atoms);
-				}
-				else
-					edges.get(pair).add(a);			
-			}
-			else // if ((a.getArity() == 1) || terms are equal)
-			{
-				Term key = a.getTerm(0);
-				if (key instanceof Variable)
-					variablesSet.add(key);
-				
-				if (!loops.containsKey(key)) {
-					Set<Atom> atoms = new HashSet<Atom>();
-					atoms.add(a);
-					loops.put(key, atoms);
-				}
-				else
-					loops.get(key).add(a);			
-					
-			}
-		}
-		
-		List<Term> variables = new ArrayList<Term>(variablesSet);
-		
-		Set<TreeWitness> tws = getReducedSetOfTreeWitnesses(cqie);	
+		Set<TreeWitness> tws = getReducedSetOfTreeWitnesses(query);	
 		
 		{
-			List<Atom> mainbody = new ArrayList<Atom>(edges.size());
-			for (AdjacentTermsPair pair : edges.keySet())
-				mainbody.add(getAtom(pair.getName(), variables /*pair.getTerms()*/));
+			List<Atom> mainbody = new ArrayList<Atom>(query.getEdges().size());
+			int pairIndex = 0;
+			for (TreeWitnessQueryGraph.Edge edge : query.getEdges()) {
+				System.out.println(edge);
+				edge.setName(getQName(edge.getAtoms().toArray(new Atom[0])[0].getPredicate().getName(), ++pairIndex));				
+				mainbody.add(getAtom(edge.getName(), query.getVariables()));
+			}
 		
 			// if no binary predicates -- TO BE REWRITTEN
 			if (mainbody.size() == 0)
@@ -271,27 +93,19 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			output.appendRule(fac.getCQIE(cqie.getHead(), mainbody));
 		}
 
-		for (AdjacentTermsPair edge : edges.keySet()) {
-			List<Atom> atoms = new ArrayList<Atom>(edges.get(edge));
-			Set<Atom> arg0 = loops.get(edge.getTerms().get(0));
-			if (arg0 != null)
-				atoms.addAll(arg0);
-			Set<Atom> arg1 = loops.get(edge.getTerms().get(1));
-			if (arg1 != null)
-				atoms.addAll(arg1);
-			
-			List<Atom> extAtoms = new ArrayList<Atom>(atoms.size());
-			for (Atom aa : atoms) {
+		for (TreeWitnessQueryGraph.Edge edge : query.getEdges()) {
+			List<Atom> extAtoms = new ArrayList<Atom>(edge.getAtoms().size()); 
+			for (Atom aa : edge.getAtoms()) {
 				extAtoms.add(getAtom(getExtName(aa.getPredicate().getName()), aa.getTerms()));
 				//log.debug("PREDICATE: " + aa.getPredicate());
 				//for (Term t : aa.getTerms())
 				//	log.debug("   TERM " +  t + " OF TYPE " + t.getClass());
 			}
 
-			output.appendRule(fac.getCQIE(getAtom(edge.getName(),variables/*edge.getTerms()*/), extAtoms));
+			output.appendRule(fac.getCQIE(getAtom(edge.getName(), query.getVariables()), extAtoms));
 					
 			for (TreeWitness tw : tws)
-				if (tw.getDomain().containsAll(edge.getTerms())) {
+				if (tw.getDomain().contains(edge.getTerm0()) && tw.getDomain().contains(edge.getTerm1())) {
 					// TREE WITNESS FORMULAS
 					List<Atom> twf = new LinkedList<Atom>();
 					List<Term> roots = new LinkedList<Term>(tw.getRoots());
@@ -305,7 +119,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 						if (c.getArity() == 1)
 							twf.add(fac.getAtom(fac.getClassPredicate(getExtName(c.getPredicate().getName())), r0));
 					}
-					output.appendRule(fac.getCQIE(getAtom(edge.getName(), variables /*edge.getTerms()*/ ), twf));
+					output.appendRule(fac.getCQIE(getAtom(edge.getName(), query.getVariables()), twf));
 				}
 				
 		}
@@ -377,10 +191,10 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			//	list.add(fac.getCQIE(extAtom, ra));
 			//}
 
-			for (Property subprop : getSubProperties(ontFactory.createObjectProperty(some.getPredicate().getName(), some.isInverse()))) {
+			for (Property subprop : reasoner.getSubProperties(ontFactory.createObjectProperty(some.getPredicate().getName(), some.isInverse()))) {
 				log.debug("PROPERTY: " + subprop);
 				PropertySomeClassRestriction subgenconcept = ontFactory.createPropertySomeClassRestriction(subprop.getPredicate(), subprop.isInverse(), some.getFiller());
-				for (ClassDescription subc : getSubConcepts(subgenconcept)) {
+				for (ClassDescription subc : reasoner.getSubConcepts(subgenconcept)) {
 					log.debug("  SUBCONCEPT: " + subc);
 					 if (subc instanceof OClass) {
 						log.debug("RULE FOR " + some + " DEFINED BY " + subc);
@@ -396,12 +210,12 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				}
 			}
 			
-			for (Predicate role : tbox.getRoles()) { 
+			for (Predicate role : reasoner.getRoles()) { 
 			//	if (!p.isOWLBottomObjectProperty()) {
 			//		if(isSubsumed(f.getOWLObjectSomeValuesFrom(p, f.getOWLThing()), some)) {
 				{
-					PropertySomeClassRestriction twg = ontFactory.createPropertySomeClassRestriction(role, false, owlThing);
-					if (subconcepts.get(some).contains(twg)) {
+					PropertySomeClassRestriction twg = ontFactory.createPropertySomeClassRestriction(role, false, reasoner.owlThing);
+					if (reasoner.getSubConcepts(some).contains(twg)) {
 						log.debug("RULE FOR " + some + " DEFINED BY " + twg);
 						exts.add(role);
 						Predicate someExt = fac.getObjectPropertyPredicate(getExtName(role.getName()));
@@ -409,8 +223,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 					}
 				}
 				{
-					PropertySomeClassRestriction twg = ontFactory.createPropertySomeClassRestriction(role, true, owlThing);
-					if (subconcepts.get(some).contains(twg)) {
+					PropertySomeClassRestriction twg = ontFactory.createPropertySomeClassRestriction(role, true, reasoner.owlThing);
+					if (reasoner.getSubConcepts(some).contains(twg)) {
 						log.debug("RULE FOR " + some + " DEFINED BY " + twg);
 						exts.add(role);
 						Predicate someExt = fac.getObjectPropertyPredicate(getExtName(role.getName()));
@@ -435,7 +249,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				 Atom extAtom = fac.getAtom(fac.getClassPredicate(getExtName(pred.getName())), x); 		  
 				 list.add(fac.getCQIE(extAtom, fac.getAtom(pred, x)));
 				 
-				 for (ClassDescription subc : getSubConcepts(ontFactory.createClass(pred))) 
+				 for (ClassDescription subc : reasoner.getSubConcepts(ontFactory.createClass(pred))) 
 					 if (subc instanceof OClass) 
 						 list.add(fac.getCQIE(extAtom, fac.getAtom(((OClass)subc).getPredicate(), x)));
 					 else if (subc instanceof PropertySomeClassRestriction) {
@@ -455,7 +269,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				Term y = fac.getVariable("y"); 
 				Atom extAtom = fac.getAtom(fac.getObjectPropertyPredicate(getExtName(pred.getName())), x, y);
 				 
-				for (Property sub : getSubProperties(ontFactory.createProperty(pred)))
+				for (Property sub : reasoner.getSubProperties(ontFactory.createProperty(pred)))
 					list.add(fac.getCQIE(extAtom, (!sub.isInverse()) ? 
 								fac.getAtom(sub.getPredicate(), x, y) : fac.getAtom(sub.getPredicate(), y, x))); 
 			 } 
@@ -463,14 +277,6 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		 return list;
 	}
 
-	private Set<Property> getSubProperties(Property prop) {
-		return (!subproperties.containsKey(prop)) ? Collections.singleton(prop) : subproperties.get(prop);
-	}
-	
-	private Set<ClassDescription> getSubConcepts(ClassDescription con) {
-		return (!subconcepts.containsKey(con)) ? Collections.singleton(con) : subconcepts.get(con);
-	}
-	
 	
 	private static URI getExtName(URI name) throws URISyntaxException {
 		return new URI(name.getScheme(), name.getSchemeSpecificPart(), "EXT_" + name.getFragment());
@@ -487,15 +293,15 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return new URI(name.getScheme(), name.getSchemeSpecificPart(), "Q_" + pos + "_" + name.getFragment());
 	}
 
-	private Set<TreeWitness> getReducedSetOfTreeWitnesses(CQIE cqie) {
-		Set<TreeWitness> treewitnesses = getTreeWitnesses(cqie);
+	private Set<TreeWitness> getReducedSetOfTreeWitnesses(TreeWitnessQueryGraph query) {
+		Set<TreeWitness> treewitnesses = getTreeWitnesses(query);
 
 		Set<TreeWitness> subtws = new HashSet<TreeWitness>(treewitnesses.size());
 		for (TreeWitness tw : treewitnesses) {
 			boolean subsumed = false;
 			for (TreeWitness tw1 : treewitnesses)
 				if (!tw.equals(tw1) && tw.getDomain().equals(tw1.getDomain()) && tw.getRoots().equals(tw1.getRoots()))
-					if(getSubConcepts(tw.getGenerator()).contains(tw1.getGenerator())) {
+					if(reasoner.getSubConcepts(tw.getGenerator()).contains(tw1.getGenerator())) {
 						log.debug("SUBSUMED: " + tw + " BY " + tw1);
 						subsumed = true;
 						break;
@@ -506,185 +312,175 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return subtws;
 	}
 
-	private Set<TreeWitness> getTreeWitnesses(CQIE cqie) {
-		Set<Variable> quantifiedVariables = new HashSet<Variable>();
-
-		for (Atom a : cqie.getBody()) 
-			for (Term t : a.getTerms()) {
-				if ((t instanceof Variable) && !cqie.getHead().getTerms().contains(t))
-					quantifiedVariables.add((Variable)t);
-			}
-		log.debug("QUANTIFIED VARIABLES: " + quantifiedVariables);
+	private Set<TreeWitness> getTreeWitnesses(TreeWitnessQueryGraph query) {
+		log.debug("QUANTIFIED VARIABLES: " + query.getQuantifiedVariables());
 		
 		Set<TreeWitness> treewitnesses = new HashSet<TreeWitness>();
 		
-		for (Term v: quantifiedVariables) {
+		for (Term v : query.getQuantifiedVariables()) {
 			log.debug("VARIABLE " + v); 
-			List<Property> edges = new LinkedList<Property>(); 
-			Set<ClassDescription> endtype = new HashSet<ClassDescription>(); 
-			Set<Term> roots = new HashSet<Term>(); 
-			
-			for (Atom a : cqie.getBody()) { 
-				if ((a.getArity() == 1) && a.getTerm(0).equals(v))  {
-					endtype.add(ontFactory.createClass(a.getPredicate())); 
-				}						
-				else if	((a.getArity() == 2) && a.getTerm(0).equals(v) && a.getTerm(1).equals(v)) {
-					// TODO: binary predicates!
-					log.debug("LOOP: " + a);
-				}
-				else if ((a.getArity() == 2) && a.getTerm(1).equals(v)) {
-					edges.add(ontFactory.createProperty(a.getPredicate(), false));
-					roots.add(a.getTerm(0)); 
-				} 
-				else if ((a.getArity() == 2) && a.getTerm(0).equals(v)) {
-					edges.add(ontFactory.createProperty(a.getPredicate(), true)); 
-					roots.add(a.getTerm(1)); 
-				} 
-			} 
-			log.debug("  EDGES " + edges);
-			log.debug("  ENDTYPE " + endtype);
-		 
-			for (PropertySomeClassRestriction g: generators) 
-				if (isTreeWitness(g, roots, edges, endtype)) { 
-					TreeWitness tw = new TreeWitness(g, roots, getRootType(cqie, roots), Collections.singleton(v)); 
-					log.debug("TREE WITNESS: " + tw);
-					treewitnesses.add(tw); 
-				} 
+			 
+			treewitnesses.addAll(getTreeWitnessesForEdge(query, query.getIncidentEdges(v), Collections.singleton(v), 
+					Collections.singleton(v), new HashSet<Atom>()));
 		}
-		 
+		
 		 Set<TreeWitness> delta = new HashSet<TreeWitness>(); 
 		 do 
-			 for (TreeWitness tw : treewitnesses) { 
-				 Set<TreeWitness> twa = new HashSet<TreeWitness>(); 
-				 twa.add(tw);
-				 saturateTreeWitnesses(cqie, treewitnesses, delta, new HashSet<Term>(), new ArrayList<Property>(), twa); 
-			 } 
+			 for (TreeWitness tw : treewitnesses) 
+				 if (tw.allRootsBound()) {
+					 Set<TreeWitness> twa = new HashSet<TreeWitness>(); 
+					 twa.add(tw);
+					 saturateTreeWitnesses(query, treewitnesses, delta, new HashSet<TreeWitnessQueryGraph.Edge>(), twa); 
+				 }
+				 else
+					 log.debug("IGNORING " + tw + " DUE TO NON-BOUND ROOTS");
 		 while (treewitnesses.addAll(delta));
 	
 		return treewitnesses;
 	}
 
-	private void saturateTreeWitnesses(CQIE cqie, Set<TreeWitness> treewitnesses, Set<TreeWitness> delta, Set<Term> roots, List<Property> edges, Set<TreeWitness> tws) { 
+	private void saturateTreeWitnesses(TreeWitnessQueryGraph query, Set<TreeWitness> completeTWs, Set<TreeWitness> delta, Set<TreeWitnessQueryGraph.Edge> handle, Set<TreeWitness> merged) { 
 		boolean saturated = true; 
 		
-		for (Atom a: cqie.getBody()) { 
-			if (a.getArity() == 2) {
-				Term t0 = a.getTerm(0);
-				Term t1 = a.getTerm(1);
-				for (TreeWitness tw : tws) { 
-					Term r = null; 
-					Term nonr = null;
-					Property edge = null; 
-					if (tw.getRoots().contains(t0) && 
-							!tw.getDomain().contains(t1) && !roots.contains(t1)) { 
-						r = a.getTerm(0); 
-						nonr = a.getTerm(1); 
-						edge = ontFactory.createProperty(a.getPredicate(), true); 
-					} 
-					else if (tw.getRoots().contains(t1) &&
-							!tw.getDomain().contains(t0) && !roots.contains(t0)) { 
-						r = a.getTerm(1); 
-						nonr = a.getTerm(0); 
-						edge = ontFactory.createProperty(a.getPredicate(), false); 
-					} else 
-						continue;
-				
-					log.debug("ATOM " + a + " IS ADJACENT TO THE TREE WITNESS " + tw); 
-					saturated = false; 
-					for (TreeWitness twa : treewitnesses) { 
-						if (twa.getRoots().contains(r) && tw.getDomain().contains(nonr)) {
-							Set<TreeWitness> tws2 = new HashSet<TreeWitness>(tws); 
-							tws2.add(twa);
-							log.debug("    ATTACHING THE TREE WITNESS " + twa);
-							saturateTreeWitnesses(cqie, treewitnesses, delta, roots, edges, tws2); 
-						} 
-					}
-					Set<Term> roots2 = new HashSet<Term>(roots); 
-					roots2.add(nonr);
-					List<Property> edges2 = new ArrayList<Property>(edges); 
-					edges2.add(edge);
-					log.debug("    ATTACHING THE HANDLE " + edge);
-					saturateTreeWitnesses(cqie, treewitnesses, delta, roots2, edges2, tws); 
-				} 
-			} 
-		}
-		
-		if (saturated && (roots.size() != 0)) { 
-			log.debug("CHEKCING WHETHER THE ROOTS " + roots + " WITH EDGES " + edges + " CAN BE ATTACHED TO THE FOLLOWING: "); 
-			for (TreeWitness tw : tws) 
-				log.debug("  " + tw);
-			
-			// collect the type of the root 
-			Set<ClassDescription> endtype = new HashSet<ClassDescription>(); 
-			Set<Term> nonroots = new HashSet<Term>();
-			boolean nonrootsbound = true; 
-			for (TreeWitness tw : tws) {
-				endtype.add(tw.getGenerator()); 
-				nonroots.addAll(tw.getDomain()); 
-				// check whether the variables are bound 
-				for (Term  t : tw.getRoots()) 
-					if (cqie.getHead().getTerms().contains(t)) 
-						nonrootsbound = false; 
+		for (TreeWitnessQueryGraph.Edge edge : query.getEdges()) { 
+			if (handle.contains(edge)) {
+				log.debug("HANDLE " + handle + " ALREADY CONTAINS EDGE " + edge);
+				continue;
 			}
-	  
-			log.debug("      NON-ROOTS ARE " + (nonrootsbound ? "" : "NOT ") + "BOUND"); 
-			if (nonrootsbound) 
-				for (PropertySomeClassRestriction gen : generators) { 
-					if (isTreeWitness(gen, roots, edges, endtype)) { 
-						TreeWitness tw = new TreeWitness(gen, roots, getRootType(cqie, roots), nonroots); 
-						log.debug(" " + tw);
-						delta.add(tw); 
-					} 
+			for (TreeWitness tw : merged) { 
+				Term edgeRoot = null; 
+				Term edgeNonRoot = null;
+				if (tw.getRoots().contains(edge.getTerm0())) { 
+					edgeRoot = edge.getTerm0(); 
+					edgeNonRoot = edge.getTerm1(); 
 				} 
-		}
-	 
-	  }
-	 
-	
-	 private boolean isTreeWitness(PropertySomeClassRestriction g, Set<Term> roots, List<Property> edges, Set<ClassDescription> endtype) { 
-		 log.debug("      CHECKING " + g);
-		 boolean match = false; 
-		 if (g.getFiller().equals(owlThing)) {
-			 log.debug("         ENDTYPE TRIVIAL MATCH " + g.getFiller() + " <= " + endtype);
-			 match = true; 
-		} 
-		 if (getSubConcepts(g.getFiller()).containsAll(endtype)) {
-			 log.debug("         ENDTYPE MATCH " + g.getFiller() + " <= " + endtype);
-			 match = true; 
-		} 
-		if (getSubConcepts(ontFactory.createPropertySomeClassRestriction(g.getPredicate(), 
-									!g.isInverse(), owlThing)).containsAll(endtype)) {
-			log.debug("         ENDARROW MATCH inv(" + g + ") <= " + endtype); 
-			match = true; 
-		} 
-		if (!match)
-			return false;
-	  
-		for (Property p : edges) { 
-			Property pp = ontFactory.createProperty(g.getPredicate(), g.isInverse());
-			if(getSubProperties(p).contains(pp))
-				log.debug("         ROLE MATCH " + pp + " <= " + p); 
-			else { 
-				log.debug("         ROLE NOT MATCHED " + pp + " !<= " + p); 
-				return false; 
+				else if (tw.getRoots().contains(edge.getTerm1())) { 
+					edgeRoot = edge.getTerm1(); 
+					edgeNonRoot = edge.getTerm0(); 
+				} 
+				else 
+					continue;
+				
+				log.debug("EDGE " + edge + " IS ADJACENT TO THE TREE WITNESS " + tw); 
+
+				boolean found = false;
+				for (TreeWitness twa : merged)
+					if (twa.getDomain().contains(edgeNonRoot)) {
+						log.debug("  HOWEVER IS CONTAINED IN " + twa);
+						found = true;
+					}
+				if (found)
+					continue;
+				
+				saturated = false; 
+				for (TreeWitness twa : completeTWs)  
+					if (twa.allRootsBound() && 
+							twa.getRoots().contains(edgeRoot) && 
+							twa.getDomain().contains(edgeNonRoot)) {
+						Set<TreeWitness> newMerged = new HashSet<TreeWitness>(merged); 
+						newMerged.add(twa);
+						log.debug("    ATTACHING A TREE WITNESS " + twa);
+						saturateTreeWitnesses(query, completeTWs, delta, handle, newMerged); 
+					} 
+				
+				Set<TreeWitnessQueryGraph.Edge> newHandle = new HashSet<TreeWitnessQueryGraph.Edge>(handle); 
+				newHandle.add(edge);
+				log.debug("    ATTACHING A HANDLE " + edge);
+				saturateTreeWitnesses(query, completeTWs, delta, newHandle, merged);  
 			} 
+		}
+
+		// the roots of tree witnesses in merged are bound variables
+				
+		if (saturated && (handle.size() != 0)) { 
+			log.debug("CHEKCING WHETHER THE HANDLE " + handle + " CAN BE ATTACHED TO THE FOLLOWING: "); 
+			Set<Term> intdomain = new HashSet<Term>();
+			Set<Term> introots = new HashSet<Term>();
+			Set<Atom> endtype = new HashSet<Atom>(); 
+			for (TreeWitness tw : merged) {
+				log.debug("  " + tw);
+				intdomain.addAll(tw.getDomain());
+				introots.addAll(tw.getRoots());
+				endtype.addAll(tw.getRootType());
+			}
+			delta.addAll(getTreeWitnessesForEdge(query, handle, introots, intdomain, endtype));
+		}
+	}
+	 
+	private List<TreeWitness> getTreeWitnessesForEdge(TreeWitnessQueryGraph query, Set<TreeWitnessQueryGraph.Edge> handle, Set<Term> introots, Set<Term> intdomain, Set<Atom> endtype) {		
+		List<Property> props = new ArrayList<Property>(); 
+		List<Atom> roottype = new ArrayList<Atom>(); 
+		Set<Term> roots = new HashSet<Term>(); 
+
+		for (TreeWitnessQueryGraph.Edge edge : handle)
+			for (Atom a : edge.getAtoms()) {
+				if ((a.getArity() == 1) || ((a.getArity() == 2) && a.getTerm(0).equals(a.getTerm(1)))) {
+						// unary predicate or loop
+						if (introots.contains(a.getTerm(0)))
+							endtype.add(a);
+						else
+							roottype.add(a);
+				}						
+				else {
+					assert (a.getArity() == 2); 
+					if (introots.contains(a.getTerm(1))) {
+						props.add(ontFactory.createProperty(a.getPredicate(), false));
+						roots.add(a.getTerm(0)); 
+					} 
+					else {
+						assert (introots.contains(a.getTerm(0)));
+						props.add(ontFactory.createProperty(a.getPredicate(), true)); 
+						roots.add(a.getTerm(1)); 
+					}
+				}
+			} 
+		// TODO: edges with all terms among roots!
+		
+		log.debug("  PROPERTIES " + props);
+		log.debug("  ENDTYPE " + endtype);
+		log.debug("  ROOTTYPE " + roottype);
+	 
+		List<TreeWitness> treewitnesses = new LinkedList<TreeWitness>();
+		for (PropertySomeClassRestriction g : reasoner.getGenerators()) 
+			if (isTreeWitness(g, props, endtype)) { 
+				TreeWitness tw = new TreeWitness(g, roots, 
+						query.getQuantifiedVariables().containsAll(roots), roottype, 
+						intdomain); 
+				log.debug("TREE WITNESS: " + tw);
+				treewitnesses.add(tw); 
+			} 
+				
+		return treewitnesses;
+	}
+	
+	 private boolean isTreeWitness(PropertySomeClassRestriction g, List<Property> edges, Set<Atom> endtype) { 
+		log.debug("      CHECKING " + g);		 
+		for (Atom a : endtype) {
+			 if (a.getArity() == 2) {
+				 log.debug("        NO LOOPS AT ENDPOINTS: " + a);
+				 return false; 
+			 }
+			 assert (a.getArity() == 1);
+			 ClassDescription con = ontFactory.createClass(a.getPredicate());
+			 if (!reasoner.getSubConcepts(con).contains(g.getFiller())) {
+				 log.debug("        ENDTYPE TOO SPECIFIC: " + con + " FOR " + g.getFiller());
+				 return false;
+			 }
+			 else
+				 log.debug("        ENDTYPE IS FINE: " + con + " FOR " + g.getFiller());
+		}
+		Property genp = ontFactory.createProperty(g.getPredicate(), g.isInverse());
+		for (Property p : edges) {
+			if (!reasoner.getSubProperties(p).contains(genp)) {
+				log.debug("        PROPERTY TOO SPECIFIC: " + p + " FOR " + genp);
+				return false;
+			}
+			else
+				log.debug("        PROPERTY IS FINE: " + p + " FOR " + genp);
 		}
 		log.debug("         ALL MATCHED"); 
 		return true; 
 	}
 
 	 
-	 private Set<Atom> getRootType(CQIE cqie, Set<Term> roots) {
-		Set<Atom> roottype = new HashSet<Atom>();
-		// System.out.println("         ROOTS " + roots);
-		for (Atom a : cqie.getBody())
-			if ((a.getArity() == 1) && roots.contains(a.getTerm(0)))
-				roottype.add(a);
-
-		// TODO: reflexivity stuff
-
-		// System.out.println("         ROOT TYPE " + roottype);
-		return roottype;
-	}
-
 }
