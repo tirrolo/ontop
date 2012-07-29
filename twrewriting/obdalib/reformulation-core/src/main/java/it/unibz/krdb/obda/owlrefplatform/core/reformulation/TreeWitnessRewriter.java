@@ -186,7 +186,11 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		log.debug("REWRITTEN PROGRAM\n" + output);			
 		DatalogProgram simplified = DatalogQueryServices.simplify(output,dp.getRules().get(0).getHead().getPredicate());
 		log.debug("SIMPLIFIED PROGRAM\n" + simplified);
-		DatalogProgram flattenned = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate());
+		simplified = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), "GEN_");
+		log.debug("GEN-FLATTENED PROGRAM\n" + simplified);
+		simplified = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), "Q_");
+		log.debug("Q-FLATTENED PROGRAM\n" + simplified);
+		DatalogProgram flattenned = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), null);
 		log.debug("FLATTENED PROGRAM\n" + flattenned);
 		return flattenned;
 //		return simplified;
@@ -270,7 +274,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	private static URI getExtName(PropertySomeClassRestriction some) throws URISyntaxException {
 		URI property = some.getPredicate().getName();
 		String fillerName = (some.getFiller() != null) ? some.getFiller().getPredicate().getName().getFragment() : "T";
-		return new URI(property.getScheme(), property.getSchemeSpecificPart(), "EXT_" + property.getFragment()
+		return new URI(property.getScheme(), property.getSchemeSpecificPart(), "GEN_" + property.getFragment()
 				+ (some.isInverse() ? "_I_" : "_") + fillerName);
 	}
 

@@ -70,7 +70,7 @@ public class DatalogQueryServices {
 		return unifiedBody;
 	}
 	
-	public static DatalogProgram flatten(DatalogProgram dp, Predicate head) {
+	public static DatalogProgram flatten(DatalogProgram dp, Predicate head, String fragment) {
 		// contains all definitions of the main predicate
 		List<CQIE> result = new ArrayList<CQIE>(dp.getRules().size());
 		// collects all definitions
@@ -78,7 +78,8 @@ public class DatalogQueryServices {
 		for (CQIE cqie : dp.getRules()) {
 			// main predicate is not replaced
 			Predicate predicate = cqie.getHead().getPredicate();
-			if (predicate.equals(head)) {
+			if (predicate.equals(head) || 
+					((fragment != null) && !predicate.getName().getFragment().contains(fragment))) {
 				result.add(cqie);
 				log.debug("MAIN PREDICATE DEF " + cqie);
 			}
@@ -95,7 +96,7 @@ public class DatalogQueryServices {
 		
 		boolean changed = false;
 		do {
-			List<CQIE> temp = new ArrayList<CQIE>(dp.getRules().size());
+			Set<CQIE> temp = new HashSet<CQIE>(dp.getRules().size());
 			changed = false;
 			
 			for (CQIE r : result) {
@@ -112,23 +113,21 @@ public class DatalogQueryServices {
 					log.debug("REPLACING " + toBeReplaced + " IN " + bodyCopy);
 					changed = true;
 					for (CQIE rule : defined.get(toBeReplaced.getPredicate())) {
-						Set<Atom> b = new HashSet<Atom>(bodyCopy);
+						List<Atom> b = new ArrayList<Atom>(bodyCopy);
 						b.addAll(unify(rule,toBeReplaced));
-						//for (Atom ua : unify(rule,toBeReplaced)) {
-							//if (!b.contains(ua))
-						//		b.add(ua);
-							//else
-							//	log.debug("  IGNORE REPEATING ATOM " + ua);
-						//}
 						
+						// EQ elimination 
+						// (EQ argument, which is a quantified variable,
+						//                  is replaced by the other EQ argument) 
+						List<Term> freeVariables = r.getHead().getTerms();
 						boolean replacedEQ = false;
 						do { 
 							replacedEQ = false;
-							for (Atom eqa : b) {
+							for (Atom eqa : b) 
 								if (eqa.getPredicate().equals(OBDAVocabulary.EQ)) {
 									Term t0 = eqa.getTerm(0);
 									Term t1 = eqa.getTerm(1);
-									if (t0 instanceof Variable && !r.getHead().getTerms().contains(t0)) {
+									if (t0 instanceof Variable && !freeVariables.contains(t0)) {
 										log.debug("   ELIMINATING EQUALITY " + eqa);
 										b.remove(eqa);
 										for (Atom aa : b) 
@@ -136,15 +135,9 @@ public class DatalogQueryServices {
 												if (aa.getTerm(i).equals(t0))
 													aa.getTerms().set(i, t1);
 										replacedEQ = true;
-										Set<Atom> newb = new HashSet<Atom>(bodyCopy);
-										//for (Atom aa : b) 
-										//	if (!newb.contains(aa))
-										//		newb.add(aa);
-										newb.addAll(b);
-										b = newb;
 										break;
 									}	
-									if (t1 instanceof Variable && !r.getHead().getTerms().contains(t1)) {
+									if (t1 instanceof Variable && !freeVariables.contains(t1)) {
 										log.debug("   ELIMINATING EQUALITY " + eqa);
 										b.remove(eqa);
 										for (Atom aa : b) 
@@ -152,26 +145,46 @@ public class DatalogQueryServices {
 												if (aa.getTerm(i).equals(t1))
 													aa.getTerms().set(i, t0);
 										replacedEQ = true;
-										Set<Atom> newb = new HashSet<Atom>(bodyCopy);
-										newb.addAll(b);
-										//for (Atom aa : b) 
-										//	if (!newb.contains(aa))
-										//		newb.add(aa);
-										b = newb;
 										break;
 									}	
 								}
-							}
 						} while (replacedEQ); 
 						
-						temp.add(fac.getCQIE(r.getHead(), new ArrayList<Atom>(b)));
+						// set collection to avoid atom duplication
+						Set<Atom> newb = new HashSet<Atom>(b);
+						temp.add(fac.getCQIE(r.getHead(), new ArrayList<Atom>(newb)));
 						//log.debug("REPLACED " + b);
 					}					
 				}
 				else
 					temp.add(r);
-			}		
-			result = temp;
+			}	
+			
+			// SIMPLE CQ CONTAINMENT CHECK
+			
+			result = new ArrayList<CQIE>(temp.size());
+			for (CQIE r : temp) {
+				boolean found = false;
+				for (CQIE r2 : temp) {
+					if ((r != r2) && r.getHead().equals(r2.getHead())) {
+						boolean subset = true;
+						for (Atom a : r2.getBody())
+							if (!r.getBody().contains(a)) {
+								subset = false;
+								break;
+							}
+						if (subset) {
+							found = true;
+							break;
+						}		
+					}					
+				}
+				if (!found)
+					result.add(r);
+				else 
+					log.debug("RULE " + r + " IS SUBSUMED");
+			}
+			//result = temp;
 		} while (changed);
 		
 		
