@@ -98,7 +98,7 @@ public class DatalogQueryServices {
 			for (CQIE r2 : output) 
 				if (CQCUtilities.isContainedInSyntactic(r,r2)) {
 					found = true;
-					log.debug("SUBSUMED " + r + " BY " + r2);
+					//log.debug("SUBSUMED " + r + " BY " + r2);
 					break;
 				}
 			if (found)
@@ -113,7 +113,7 @@ public class DatalogQueryServices {
 				}
 			if (idxToBeReplaced != -1) {
 				Atom toBeReplaced = body.get(idxToBeReplaced);
-				log.debug("REPLACING " + toBeReplaced + " IN " + body);
+				//log.debug("REPLACING " + toBeReplaced + " IN " + body);
 				
 				for (CQIE rule : defined.get(toBeReplaced.getPredicate())) {
 					CQIE qcopy = r.clone();
@@ -192,9 +192,53 @@ public class DatalogQueryServices {
 						replacedEQ = true;
 						break;
 					}	
+					/*
+					if ((t0 instanceof Variable) && (t1 instanceof Variable)) {
+						int cp = ((Variable)t0).getName().compareTo(((Variable)t1).getName());
+						Term t = (cp <= 0) ? t0 : t1;
+						Term tp = (cp <= 0) ? t1 : t0;
+						log.debug("   REPLACING EQUALITY " + eqa + " IN " + body);
+						for (Atom aa : body) 
+							if (!aa.equals(eqa))
+								for (int i = 0; i <  aa.getTerms().size(); i++)
+									if (aa.getTerm(i).equals(tp)) {
+										log.debug("EQUALITY MESS: " + aa);
+										aa.getTerms().set(i, t);
+									}
+						log.debug("      RESULTS IN " + body);						
+					}*/
 				}
 		} while (replacedEQ); 
 		
+		Map<Term, Atom> occurrences = new HashMap<Term, Atom>();
+		for (Atom a : q.getBody())
+			for (Term t : a.getTerms())
+				if ((t instanceof Variable) && !freeVariables.contains(t))
+					if (occurrences.containsKey(t))
+						occurrences.put(t, null);
+					else
+						occurrences.put(t, a);
+		
+		for (Term t : occurrences.keySet()) {
+			Atom sa = occurrences.get(t);
+			if (sa != null) {
+				for (Atom a : q.getBody())
+					if ((a != sa) && a.getPredicate().equals(sa.getPredicate())) {
+						boolean match = true;
+						for (int i = 0; i < a.getArity(); i++)
+							if (!a.getTerm(i).equals(sa.getTerm(i)) && !sa.getTerm(i).equals(t)) {
+								match = false;
+								break;
+							}
+						if (match) {
+							log.debug("   UNDERSCORE " + t + " REMOVED " + sa + " FROM " + body);
+							body.remove(sa);
+							break;
+						}
+					}
+			}
+		}
+
 		return CQCUtilities.removeRundantAtoms(q);
 	}
 	
