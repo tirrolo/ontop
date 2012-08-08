@@ -75,14 +75,18 @@ public class TreeWitnessRewriter implements QueryRewriter {
 
 		TreeWitnessQueryGraph query = new TreeWitnessQueryGraph(cqie);
 		
-		Set<TreeWitness> tws = getReducedSetOfTreeWitnesses(query);	
+		Set<TreeWitness> tws = getReducedSetOfTreeWitnesses(query);
+		log.debug("TREE WITNESSES FOUND: " + tws.size());
+		for (TreeWitness tw : tws) 
+			log.debug(" " + tw);
+		
 		Set<PropertySomeClassRestriction> generators = new HashSet<PropertySomeClassRestriction>();
 		
 		{
 			List<Atom> mainbody = new ArrayList<Atom>(query.getEdges().size());
 			int pairIndex = 0;
 			for (TreeWitnessQueryGraph.Edge edge : query.getEdges()) {
-				System.out.println(edge);
+				log.debug("EDGE " + edge);
 				edge.setName(getQName(edge.getAtoms().toArray(new Atom[0])[0].getPredicate().getName(), ++pairIndex));				
 				mainbody.add(getAtom(edge.getName(), query.getVariables()));
 			}

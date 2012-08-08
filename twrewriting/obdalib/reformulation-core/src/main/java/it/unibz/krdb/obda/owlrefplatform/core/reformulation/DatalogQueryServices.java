@@ -9,13 +9,22 @@ import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,50 +38,36 @@ public class DatalogQueryServices {
 	private static int nextVariableIndex = 1000;
 	
 	private static List<Atom> unify(CQIE rule, Atom atom) {
-		// substituting arguments
-		Map<Term,Term> substituition = new HashMap<Term,Term>(2);
+		Set<Term> freeVars = new HashSet<Term>(rule.getHead().getTerms());
+		
+		// substitute arguments of the head
+		Map<Variable,Term> substituition = new HashMap<Variable,Term>(2);
 		for (int i = 0; i < atom.getArity(); i++)
-			substituition.put(rule.getHead().getTerm(i), atom.getTerm(i));
+			substituition.put((Variable)rule.getHead().getTerm(i), atom.getTerm(i));
 		
-		// invent names for other variables
-		for (Atom sa : rule.getBody()) {			
+		// invent names for existentially quantified variables
+		for (Atom sa : rule.getBody()) 			
 			for (Term t : sa.getTerms())
-				if (!substituition.containsKey(t) && !rule.getHead().getTerms().contains(t)) {
-					if (t instanceof Variable)
-						substituition.put(t, fac.getVariable("local" + nextVariableIndex++));
-					else
-						substituition.put(t, null);
-				}
-		}
+				if ((t instanceof Variable) && !freeVars.contains(t) && !substituition.containsKey(t)) 
+					substituition.put((Variable)t, fac.getVariable("local" + nextVariableIndex++));
 		
+		// substitute local variables that are EQ to something else
 		for (Atom sa : rule.getBody()) 
 			if (sa.getPredicate().equals(OBDAVocabulary.EQ)) {
 				Term t0 = sa.getTerm(0);
 				Term t1 = sa.getTerm(1);
-				if ((t0 instanceof Variable) && !rule.getHead().getTerms().contains(t0))
-					substituition.put(t0, t1);
-				else if ((t1 instanceof Variable) && !rule.getHead().getTerms().contains(t1))
-					substituition.put(t1, t0);
+				if ((t0 instanceof Variable) && !freeVars.contains(t0))
+					substituition.put((Variable)t0, substituition.containsKey(t1) ? substituition.get(t1) : t1);
+				else if ((t1 instanceof Variable) && !freeVars.contains(t1))
+					substituition.put((Variable)t1, substituition.containsKey(t0) ? substituition.get(t0) : t0);
 			}
 		
-		List<Atom> unifiedBody = new ArrayList<Atom>(rule.getBody().size()); 
-		for  (Atom a : rule.getBody()) {
-			List<Term> terms = new ArrayList<Term>(a.getTerms().size());
-			for (Term t: a.getTerms()) {
-				Term sub = substituition.get(t);
-				terms.add((sub == null) ? t : sub);
-			}
-			if (a.getPredicate().equals(OBDAVocabulary.EQ) && a.getTerm(0).equals(a.getTerm(1)))
-				log.debug("IGNORE TRIVIAL EQUALITY: " + a);
-			else 
-				unifiedBody.add(fac.getAtom(a.getPredicate(), terms));
-		}		
-		return unifiedBody;
+		return Unifier.applyUnifier(rule, substituition).getBody();
 	}
 	
 	public static DatalogProgram flatten(DatalogProgram dp, Predicate head, String fragment) {
 		// contains all definitions of the main predicate
-		List<CQIE> result = new ArrayList<CQIE>(dp.getRules().size());
+		List<CQIE> queue = new ArrayList<CQIE>();
 		// collects all definitions
 		Map<Predicate, List<CQIE> > defined = new HashMap<Predicate, List<CQIE> >();
 		for (CQIE cqie : dp.getRules()) {
@@ -80,7 +75,7 @@ public class DatalogQueryServices {
 			Predicate predicate = cqie.getHead().getPredicate();
 			if (predicate.equals(head) || 
 					((fragment != null) && !predicate.getName().getFragment().contains(fragment))) {
-				result.add(cqie);
+				queue.add(cqie);
 				log.debug("MAIN PREDICATE DEF " + cqie);
 			}
 			else {
@@ -94,101 +89,113 @@ public class DatalogQueryServices {
 		}
 		log.debug("DEFINITIONS: " + defined);
 		
-		boolean changed = false;
-		do {
-			Set<CQIE> temp = new HashSet<CQIE>(dp.getRules().size());
-			changed = false;
+		List<CQIE> output = new LinkedList<CQIE>();
+		
+		while (!queue.isEmpty()) {
+			CQIE r = queue.remove(queue.size() - 1);
 			
-			for (CQIE r : result) {
-				List<Atom> bodyCopy = new ArrayList<Atom>(r.getBody().size());
-				Atom toBeReplaced = null;
-				for (Atom a : r.getBody()) {
-					// log.debug("TO BE REPLACED? " + a);
-					if ((toBeReplaced == null) && defined.containsKey(a.getPredicate())) 
-						toBeReplaced = a;
-					else
-						bodyCopy.add(a);
+			boolean found = false;
+			for (CQIE r2 : output) 
+				if (CQCUtilities.isContainedInSyntactic(r,r2)) {
+					found = true;
+					log.debug("SUBSUMED " + r + " BY " + r2);
+					break;
 				}
-				if (toBeReplaced != null) {
-					log.debug("REPLACING " + toBeReplaced + " IN " + bodyCopy);
-					changed = true;
-					for (CQIE rule : defined.get(toBeReplaced.getPredicate())) {
-						List<Atom> b = new ArrayList<Atom>(bodyCopy);
-						b.addAll(unify(rule,toBeReplaced));
-						
-						// EQ elimination 
-						// (EQ argument, which is a quantified variable,
-						//                  is replaced by the other EQ argument) 
-						List<Term> freeVariables = r.getHead().getTerms();
-						boolean replacedEQ = false;
-						do { 
-							replacedEQ = false;
-							for (Atom eqa : b) 
-								if (eqa.getPredicate().equals(OBDAVocabulary.EQ)) {
-									Term t0 = eqa.getTerm(0);
-									Term t1 = eqa.getTerm(1);
-									if (t0 instanceof Variable && !freeVariables.contains(t0)) {
-										log.debug("   ELIMINATING EQUALITY " + eqa);
-										b.remove(eqa);
-										for (Atom aa : b) 
-											for (int i = 0; i <  aa.getTerms().size(); i++)
-												if (aa.getTerm(i).equals(t0))
-													aa.getTerms().set(i, t1);
-										replacedEQ = true;
-										break;
-									}	
-									if (t1 instanceof Variable && !freeVariables.contains(t1)) {
-										log.debug("   ELIMINATING EQUALITY " + eqa);
-										b.remove(eqa);
-										for (Atom aa : b) 
-											for (int i = 0; i <  aa.getTerms().size(); i++)
-												if (aa.getTerm(i).equals(t1))
-													aa.getTerms().set(i, t0);
-										replacedEQ = true;
-										break;
-									}	
-								}
-						} while (replacedEQ); 
-						
-						// set collection to avoid atom duplication
-						Set<Atom> newb = new HashSet<Atom>(b);
-						temp.add(fac.getCQIE(r.getHead(), new ArrayList<Atom>(newb)));
-						//log.debug("REPLACED " + b);
-					}					
-				}
-				else
-					temp.add(r);
-			}	
+			if (found)
+				continue;
 			
-			// SIMPLE CQ CONTAINMENT CHECK
-			
-			result = new ArrayList<CQIE>(temp.size());
-			for (CQIE r : temp) {
-				boolean found = false;
-				for (CQIE r2 : temp) {
-					if ((r != r2) && r.getHead().equals(r2.getHead())) {
-						boolean subset = true;
-						for (Atom a : r2.getBody())
-							if (!r.getBody().contains(a)) {
-								subset = false;
-								break;
-							}
-						if (subset) {
-							found = true;
-							break;
-						}		
-					}					
+			List<Atom> body = r.getBody();
+			int idxToBeReplaced = -1;
+			for (int i = 0; i < body.size(); i++) 
+				if (defined.containsKey(body.get(i).getPredicate())) {
+					idxToBeReplaced = i;
+					break;
 				}
-				if (!found)
-					result.add(r);
-				else 
-					log.debug("RULE " + r + " IS SUBSUMED");
+			if (idxToBeReplaced != -1) {
+				Atom toBeReplaced = body.get(idxToBeReplaced);
+				log.debug("REPLACING " + toBeReplaced + " IN " + body);
+				
+				for (CQIE rule : defined.get(toBeReplaced.getPredicate())) {
+					CQIE qcopy = r.clone();
+					qcopy.getBody().remove(idxToBeReplaced);
+					qcopy.getBody().addAll(unify(rule,toBeReplaced));
+
+					queue.add(reduce(qcopy));
+					Collections.sort(queue, new Comparator<CQIE> () {
+						@Override
+						public int compare(CQIE arg0, CQIE arg1) {
+							return arg1.getBody().size() - arg0.getBody().size();
+						} 
+						});
+				}					
 			}
-			//result = temp;
-		} while (changed);
+			else {
+				// prune the list
+				ListIterator<CQIE> i = output.listIterator();
+				while (i.hasNext()) {
+					CQIE q2 = i.next();
+					if (CQCUtilities.isContainedInSyntactic(r, q2)) {
+						i.remove();				
+						log.debug("   PRUNED " + q2 + " BY " + r);
+					}
+				}
+				output.add(r);			
+				Collections.sort(output, new Comparator<CQIE> () {
+					@Override
+					public int compare(CQIE arg0, CQIE arg1) {
+						return arg0.getBody().size() - arg1.getBody().size();
+					} 
+					});				
+			}
+		}
+		return fac.getDatalogProgram(output);
+	}
+	
+	
+	private static CQIE reduce(CQIE q) {
+		List<Atom> body = q.getBody();
+
+		// EQ elimination 
+		// (EQ argument, which is a quantified variable,
+		//                  is replaced by the other EQ argument) 
+		List<Term> freeVariables = q.getHead().getTerms();
+		boolean replacedEQ = false;
+		do { 
+			replacedEQ = false;
+			for (Atom eqa : body) 
+				if (eqa.getPredicate().equals(OBDAVocabulary.EQ)) {
+					Term t0 = eqa.getTerm(0);
+					Term t1 = eqa.getTerm(1);
+					if (t0.equals(t1)) {
+						log.debug("   ELIMINATING EQUALITY " + eqa);
+						body.remove(eqa);
+						replacedEQ = true;
+						break;						
+					}
+					if (t0 instanceof Variable && !freeVariables.contains(t0)) {
+						log.debug("   ELIMINATING EQUALITY " + eqa);
+						body.remove(eqa);
+						for (Atom aa : body) 
+							for (int i = 0; i <  aa.getTerms().size(); i++)
+								if (aa.getTerm(i).equals(t0))
+									aa.getTerms().set(i, t1);
+						replacedEQ = true;
+						break;
+					}	
+					if (t1 instanceof Variable && !freeVariables.contains(t1)) {
+						log.debug("   ELIMINATING EQUALITY " + eqa);
+						body.remove(eqa);
+						for (Atom aa : body) 
+							for (int i = 0; i <  aa.getTerms().size(); i++)
+								if (aa.getTerm(i).equals(t1))
+									aa.getTerms().set(i, t0);
+						replacedEQ = true;
+						break;
+					}	
+				}
+		} while (replacedEQ); 
 		
-		
-		return fac.getDatalogProgram(result);
+		return CQCUtilities.removeRundantAtoms(q);
 	}
 	
 	/** 
@@ -227,12 +234,12 @@ public class DatalogQueryServices {
 				changed = false;
 				for (Atom a : body) {
 					CQIE rule  = replacement.get(a.getPredicate());
-					log.debug("REPLACE " + a + " WITH " + rule + "?");
 					if (rule == null)
 						newBody.add(a); // NO REPLACEMENT
 					else {
 						changed = true;
 						newBody.addAll(unify(rule, a)); 
+						log.debug("REPLACE " + a + " WITH " + rule);
 					}
 				}
 				body = newBody;
