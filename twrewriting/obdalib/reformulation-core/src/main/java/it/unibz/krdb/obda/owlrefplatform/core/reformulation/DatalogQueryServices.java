@@ -12,20 +12,17 @@ import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +66,7 @@ public class DatalogQueryServices {
 		// contains all definitions of the main predicate
 		List<CQIE> queue = new ArrayList<CQIE>();
 		// collects all definitions
-		Map<Predicate, List<CQIE> > defined = new HashMap<Predicate, List<CQIE> >();
+		Set<Predicate> defined = new HashSet<Predicate>();
 		for (CQIE cqie : dp.getRules()) {
 			// main predicate is not replaced
 			Predicate predicate = cqie.getHead().getPredicate();
@@ -78,16 +75,10 @@ public class DatalogQueryServices {
 				queue.add(cqie);
 				log.debug("MAIN PREDICATE DEF " + cqie);
 			}
-			else {
-				List<CQIE> def = defined.containsKey(predicate) 
-						? defined.get(predicate) 
-								: new ArrayList<CQIE>();
-				def.add(cqie);	
-				defined.put(predicate, def);
-				log.debug("DEFINED " + predicate + " WITH " + cqie);
-			}
+			else 
+				defined.add(predicate);
 		}
-		log.debug("DEFINITIONS: " + defined);
+		log.debug("DEFINED PREDICATES: " + defined);
 		
 		List<CQIE> output = new LinkedList<CQIE>();
 		
@@ -107,7 +98,7 @@ public class DatalogQueryServices {
 			List<Atom> body = r.getBody();
 			int idxToBeReplaced = -1;
 			for (int i = 0; i < body.size(); i++) 
-				if (defined.containsKey(body.get(i).getPredicate())) {
+				if (defined.contains(body.get(i).getPredicate())) {
 					idxToBeReplaced = i;
 					break;
 				}
@@ -115,7 +106,7 @@ public class DatalogQueryServices {
 				Atom toBeReplaced = body.get(idxToBeReplaced);
 				//log.debug("REPLACING " + toBeReplaced + " IN " + body);
 				
-				for (CQIE rule : defined.get(toBeReplaced.getPredicate())) {
+				for (CQIE rule : dp.getRules(toBeReplaced.getPredicate())) {
 					CQIE qcopy = r.clone();
 					qcopy.getBody().remove(idxToBeReplaced);
 					qcopy.getBody().addAll(unify(rule,toBeReplaced));
@@ -251,43 +242,33 @@ public class DatalogQueryServices {
 	 * @return simplified datalog program
 	 */
 	
-	public static DatalogProgram simplify(DatalogProgram dp, Predicate head) {
-		// for each predicate key, it contains the body to be used instead of the key
-		//                                     or null if it is not to be removed
-		Map<Predicate, CQIE > replacement = new HashMap<Predicate, CQIE >(4);
-		replacement.put(head, null); // head is never replaced
-		
-		for (CQIE cqie : dp.getRules()) {
-			Predicate pred = cqie.getHead().getPredicate(); 
-			if (replacement.containsKey(pred))
-				replacement.put(pred, null); // not to be replaced
-			else
-				replacement.put(pred, cqie);
-		}
-		
+	public static DatalogProgram simplify(DatalogProgram dp, Predicate head) {	
 		List<CQIE> result = new ArrayList<CQIE>(dp.getRules().size());
+		
 		for (CQIE cqie : dp.getRules()) {
 			// if to be replaced then no rule is added to the result
-			if (replacement.get(cqie.getHead().getPredicate()) != null) 
+			Predicate h = cqie.getHead().getPredicate();
+			if (!h.equals(head) && (dp.getRules(h).size() == 1))
 				continue;
 			
-			boolean changed = false;
-			Set<Atom> body = new HashSet<Atom>(cqie.getBody());
-			do {
-				Set<Atom> newBody = new HashSet<Atom>(body.size());
+			boolean changed = true;
+			Set<Atom> body = new HashSet<Atom>(cqie.getBody()); // set (rather than list) is to remove duplicates
+			while (changed) {
 				changed = false;
-				for (Atom a : body) {
-					CQIE rule  = replacement.get(a.getPredicate());
-					if (rule == null)
-						newBody.add(a); // NO REPLACEMENT
-					else {
+				Iterator<Atom> i = body.iterator();
+				while (i.hasNext()) {
+					Atom a = i.next();
+					List<CQIE> defs  = dp.getRules(a.getPredicate());
+					if (defs.size() == 1) {
 						changed = true;
-						newBody.addAll(unify(rule, a)); 
+						i.remove();
+						CQIE rule = defs.iterator().next();
+						body.addAll(unify(rule, a)); 
 						log.debug("REPLACE " + a + " WITH " + rule);
+						break;
 					}
 				}
-				body = newBody;
-			} while (changed);
+			}
 			result.add(fac.getCQIE(cqie.getHead(), new ArrayList<Atom>(body)));
 		}
 		return fac.getDatalogProgram(result);

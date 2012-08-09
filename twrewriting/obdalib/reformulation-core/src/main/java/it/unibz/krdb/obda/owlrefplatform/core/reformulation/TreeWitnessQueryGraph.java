@@ -25,7 +25,7 @@ public class TreeWitnessQueryGraph {
 		Set<Term> variablesSet = new HashSet<Term>();	
 		Map<Term, Set<Atom> > loops = new HashMap<Term, Set<Atom> >();
 		Map<TermPair, Edge> pairs = new HashMap<TermPair, Edge>();
-		edges = new ArrayList<Edge>();
+		edges = new ArrayList<Edge>(cqie.getBody().size());
 		
 		for (Atom a: cqie.getBody()) {
 			if (a.getArity() == 2 && !a.getTerm(0).equals(a.getTerm(1))) {
@@ -109,7 +109,6 @@ public class TreeWitnessQueryGraph {
 	
 	static class Edge {
 		private Term t0, t1;
-		private URI name;
 		private Set<Atom> atoms;
 		
 		public Edge(Term t0, Term t1, Atom a) {
@@ -117,14 +116,6 @@ public class TreeWitnessQueryGraph {
 			this.t1 = t1;
 			this.atoms = new HashSet<Atom>();
 			atoms.add(a);
-		}
-
-		public void setName(URI name) {
-			this.name = name;
-		}
-		
-		public URI getName() {
-			return name;
 		}
 
 		public Term getTerm0() {
