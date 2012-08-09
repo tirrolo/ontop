@@ -201,7 +201,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		simplified = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), "Q_");
 		log.debug("Q-FLATTENED PROGRAM\n" + simplified);
 		if (simplified.getRules().size() > 1) {
-			CQCUtilities.removeContainedQueriesSorted(simplified, true, sigma);
+			simplified = CQCUtilities.removeContainedQueriesSorted(simplified, true, sigma);
 			log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + simplified);			
 		}
 		DatalogProgram flattenned = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), null);
