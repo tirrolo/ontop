@@ -207,6 +207,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		DatalogProgram flattenned = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), null);
 		log.debug("FLATTENED PROGRAM\n" + flattenned);
 		log.debug("\n\nRewritten UCQ size: " + flattenned.getRules().size());
+		flattenned.setQueryModifiers(dp.getQueryModifiers());
 		return flattenned;
 //		return simplified;
 	}
