@@ -22,6 +22,7 @@ import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.ontology.impl.SubClassAxiomImpl;
 import it.unibz.krdb.obda.ontology.impl.SubPropertyAxiomImpl;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -49,6 +50,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 
 	private TreeWitnessReasonerLite reasoner = new TreeWitnessReasonerLite();
 	
+	private Ontology sigma = null;
 	
 	@Override
 	public void setTBox(Ontology ontology) {
@@ -57,7 +59,11 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	
 	@Override
 	public void setCBox(Ontology sigma) {
-		// TODO Auto-generated method stub
+		log.debug("SET SIGMA");
+		this.sigma = sigma;
+		for (Axiom ax : sigma.getAssertions()) {
+			log.debug("SIGMA: " + ax);
+		}
 	}
 
 	@Override
@@ -194,6 +200,10 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		log.debug("GEN-FLATTENED PROGRAM\n" + simplified);
 		simplified = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), "Q_");
 		log.debug("Q-FLATTENED PROGRAM\n" + simplified);
+		if (simplified.getRules().size() > 1) {
+			CQCUtilities.removeContainedQueriesSorted(simplified, true, sigma);
+			log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + simplified);			
+		}
 		DatalogProgram flattenned = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), null);
 		log.debug("FLATTENED PROGRAM\n" + flattenned);
 		log.debug("\n\nRewritten UCQ size: " + flattenned.getRules().size());
