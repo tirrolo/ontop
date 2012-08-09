@@ -7,7 +7,6 @@ import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +16,6 @@ import org.slf4j.LoggerFactory;
  * the impedance mismatch problem, i.e. it manipulates the select statement such
  * that it creates object URIs out of the data values in the way the mappings
  * show it.
- * 
- * @author Manfred Gerstgrasser
  * 
  */
 
@@ -63,77 +60,13 @@ public class JDBCUtility implements Serializable {
 			driver = Driver.SQLSERVER;
 		} else {
 			log.warn("WARNING: the specified driver doesn't correspond to any of the drivers officially supported by Quest.");
-			log.warn("WARNING: If you database is not fully compliant with SQL 99 you might experience problems using Quest.");
 			log.warn("WARNING: Contact the authors for further support.");
-			throw new Exception("Unsupported database!");
+			throw new Exception("The specified JDBC driver '" + className + "' is not supported by Quest. Verify you are using a supported DB and the correct JDBC driver string. For more information see: https://babbage.inf.unibz.it/trac/obdapublic/wiki/ObdalibPluginJDBC");
 		}
 	}
 
-	/**
-	 * Given the URI base and the list of parameters, it contracts the necessary
-	 * SQL manipulations depending on the used data source to construct object
-	 * URIs.
-	 * 
-	 * @param uribase
-	 *            The base uri specified in the mapping
-	 * @param list
-	 *            The list of parametes
-	 * @return The SQL manipulations to construct a object URI.
-	 */
-	public String getConcatination(String uribase, List<String> list) {
-		String sql = "";
+	
 
-		switch (driver) {
-		case MYSQL:
-		case DB2:
-			sql = String.format("CONCAT(%s", uribase);
-			for (int i = 0; i < list.size(); i++) {
-				sql += String.format(", %s", list.get(i));
-			}
-			sql += ")";
-			break;
-		case PGSQL:
-		case ORACLE:
-		case H2:
-		case TEIID:
-			sql = String.format("(%s", uribase);
-			for (int i = 0; i < list.size(); i++) {
-				sql += String.format(" || %s", list.get(i));
-			}
-			sql += ")";
-			break;
-		case SQLSERVER:
-			sql = String.format("(%s", uribase);
-			for (int i = 0; i < list.size(); i++) {
-				sql += String.format(" + CAST(%s as varchar(8000))", list.get(i));
-			}
-			sql += ")";
-			break;
-		}
-		return sql;
-	}
-
-	public String getLimitFunction(int limit) {
-		String sql = "";
-
-		switch (driver) {
-		case MYSQL:
-		case PGSQL:
-		case H2:
-		case TEIID:
-			sql = String.format("LIMIT %s", limit);
-			break;
-		case DB2:
-			sql = String.format("FETCH FIRST %s ROWS ONLY", limit);
-			break;
-		case ORACLE:
-			sql = String.format("ROWNUM <= %s", limit);
-			break;
-		case SQLSERVER:
-			sql = String.format("OFFSET %s ROWS\nFETCH NEXT %s ROWS ONLY ", limit, limit);
-		}
-		return sql;
-	}
 
 	/***
 	 * Returns the valid SQL lexical form of rdf literals based on the current
@@ -280,56 +213,5 @@ public class JDBCUtility implements Serializable {
 			throw new RuntimeException("Invalid lexical form for xsd:boolean. Found: " + value);
 		}
 		return sql;
-	}
-
-	public String getQualifiedColumn(String tablename, String columnname) {
-		String sql = "";
-		switch (driver) {
-		case MYSQL:
-			sql = String.format("%s.`%s`", tablename, columnname);
-			break;
-		case H2:
-		case PGSQL:
-		case TEIID:
-		case DB2:
-		case ORACLE:
-		case SQLSERVER:
-			sql = String.format("%s.\"%s\"", tablename, columnname);
-		}
-		return sql;
-	}
-	
-	public String getTableName(String tablename, String viewname) {
-		String sql = "";
-		switch (driver) {
-		case MYSQL:
-			sql = String.format("`%s` %s", tablename, viewname);
-			break;
-		case H2:
-		case PGSQL:
-		case TEIID:
-		case DB2:
-		case ORACLE:
-		case SQLSERVER:
-			sql = String.format("\"%s\" %s", tablename, viewname);
-		}
-		return sql;
-	}
-	
-	public String quote(String name) {
-		String str = "";
-		switch (driver) {
-		case MYSQL:
-			str = String.format("`%s`", name);
-			break;
-		case H2:
-		case PGSQL:
-		case TEIID:
-		case DB2:
-		case ORACLE:
-		case SQLSERVER:
-			str = String.format("\"%s\"", name);
-		}
-		return str;
 	}
 }

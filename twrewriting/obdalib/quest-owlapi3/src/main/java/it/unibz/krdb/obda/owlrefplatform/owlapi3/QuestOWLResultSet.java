@@ -23,6 +23,8 @@ public class QuestOWLResultSet implements OWLResultSet {
 	private final OWLStatement owlst;
 
 	public QuestOWLResultSet(OBDAResultSet res, QuestOWLStatement owlst) {
+		if (res == null)
+			throw new IllegalArgumentException("The result set must not be null");
 		this.res = res;
 		this.owlst = owlst;
 	}
@@ -90,7 +92,7 @@ public class QuestOWLResultSet implements OWLResultSet {
 		try {
 			return translator.translate(res.getConstant(column));
 		} catch (OBDAException e) {
-			throw new OWLException(e) {
+			throw new OWLException(e + " Column: " + column) {
 			};
 		}
 	}
@@ -100,7 +102,7 @@ public class QuestOWLResultSet implements OWLResultSet {
 		try {
 			return translator.translate(res.getConstant(column));
 		} catch (OBDAException e) {
-			throw new OWLException(e) {
+			throw new OWLException(e + " Column: " + column) {
 			};
 		}
 	}

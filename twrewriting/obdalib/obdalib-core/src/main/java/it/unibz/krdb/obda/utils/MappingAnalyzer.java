@@ -38,6 +38,7 @@ import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -67,6 +68,8 @@ public class MappingAnalyzer {
 
 		DatalogProgram datalog = dfac.getDatalogProgram();
 
+		LinkedList<String> errorMessage = new LinkedList<String>();
+		
 		for (OBDAMappingAxiom axiom : mappingList) {
 			try {
 				// Obtain the target and source query from each mapping axiom in
@@ -206,11 +209,17 @@ public class MappingAnalyzer {
 					datalog.appendRule(rule);
 				}
 			} catch (Exception e) {
-				RuntimeException r = new RuntimeException("Error analyzing mapping with id: " + axiom.getId() + " \nDescription: "
+				errorMessage.add("Error in mapping with id: " + axiom.getId() + " \nDescription: "
 						+ e.getMessage() + " \nMapping: [" + axiom.toString() + "]");
-				r.setStackTrace(e.getStackTrace());
-				throw r;
+				
 			}
+		}
+		if (errorMessage.size() > 0) {
+			StringBuffer errors = new StringBuffer();
+			for (String error: errorMessage)
+				errors.append(error + "\n");
+			RuntimeException r = new RuntimeException("There was an error analyzing the following mappings. Please correct the issue(s) to continue.\n" + errors.toString());
+			throw r;
 		}
 		return datalog;
 	}
@@ -330,9 +339,7 @@ public class MappingAnalyzer {
 			String varName = var.getName();
 			String termName = lookupTable.lookup(varName);
 			if (termName == null) {
-				throw new RuntimeException(
-						String.format("Column %s not found. Hint: don't use wildecards in your SQL query, e.g., star *, " +
-								"and verify word-casing for case-sensitive database.", var));
+				throw new RuntimeException(String.format("Error in identifying column name \"%s\", please check the query source in the mappings.\nPossible reasons:\n1. The name is ambiguous, or\n2. The name is not defined in the database schema.", var));
 			}
 			result = dfac.getVariable(termName);
 		} else if (term instanceof Function) {
@@ -354,6 +361,12 @@ public class MappingAnalyzer {
 
 		// Collect all the possible column names from tables.
 		ArrayList<Relation> tableList = queryTree.getTableSet();
+
+		// Collect all known column aliases
+		HashMap<String, String> aliasMap = queryTree.getAliasMap();
+		
+		int offset = 0; // the index offset
+
 		for (Relation table : tableList) {
 			String tableName = table.getName();
 			DataDefinition def = dbMetaData.getDefinition(tableName);
@@ -362,31 +375,36 @@ public class MappingAnalyzer {
 			}
 			int size = def.countAttribute();
 
-			String[] columnList = new String[3];
 			for (int i = 1; i <= size; i++) {
+				// assigned index number
+				int index = i + offset;
+				
 				// simple attribute name
-				columnList[0] = dbMetaData.getAttributeName(tableName, i);
+				String columnName = dbMetaData.getAttributeName(tableName, i);
+				lookupTable.add(columnName, index);
+				if (aliasMap.containsKey(columnName)) { // register the alias name, if any
+					lookupTable.add(aliasMap.get(columnName), columnName);
+				}
 				
 				// full qualified attribute name
-				columnList[1] = dbMetaData.getFullQualifiedAttributeName(tableName, i);
-				
-				if (table.getAlias() != null) {
-					// full qualified attribute name using table alias
-					columnList[2] = dbMetaData.getFullQualifiedAttributeName(tableName, table.getAlias(), i);
+				String qualifiedColumnName = dbMetaData.getFullQualifiedAttributeName(tableName, i);
+				lookupTable.add(qualifiedColumnName, index);
+				if (aliasMap.containsKey(qualifiedColumnName)) { // register the alias name, if any
+					lookupTable.add(aliasMap.get(qualifiedColumnName), qualifiedColumnName);
 				}
-				lookupTable.add(columnList);
+				
+				// full qualified attribute name using table alias
+				String tableAlias = table.getAlias();
+				if (!tableAlias.isEmpty()) {
+					String qualifiedColumnAlias = dbMetaData.getFullQualifiedAttributeName(tableName, tableAlias, i);
+					lookupTable.add(qualifiedColumnAlias, index);
+					if (aliasMap.containsKey(columnName) || aliasMap.containsKey(qualifiedColumnName) || aliasMap.containsKey(qualifiedColumnAlias)) {
+						lookupTable.add(tableAlias + "." + aliasMap.get(columnName), columnName);
+					}
+				}
 			}
+			offset += size;
 		}
-
-		// Add the aliases
-		ArrayList<String> aliasMap = queryTree.getAliasMap();
-		for (String alias : aliasMap) {
-			String[] reference = alias.split("=");
-			String aliasName = reference[0];
-			String columnName = reference[1];
-			lookupTable.add(aliasName, columnName);
-		}
-
 		return lookupTable;
 	}
 }

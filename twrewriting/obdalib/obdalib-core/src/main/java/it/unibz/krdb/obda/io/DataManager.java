@@ -17,6 +17,7 @@ import it.unibz.krdb.obda.codec.MappingXMLCodec;
 import it.unibz.krdb.obda.codec.QueryGroupXMLReader;
 import it.unibz.krdb.obda.codec.QueryGroupXMLRenderer;
 import it.unibz.krdb.obda.exception.DuplicateMappingException;
+import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.OBDADataSource;
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDAModel;
@@ -24,10 +25,10 @@ import it.unibz.krdb.obda.model.impl.CQIEImpl;
 import it.unibz.krdb.obda.model.impl.RDBMSMappingAxiomImpl;
 import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
 import it.unibz.krdb.obda.model.impl.SQLQueryImpl;
+import it.unibz.krdb.obda.querymanager.QueryController;
 import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
 import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
 import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
-import it.unibz.krdb.obda.utils.XMLUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +57,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.hp.hpl.jena.query.QueryParseException;
 
@@ -79,14 +81,17 @@ public class DataManager {
 	/** The XML codec to load queries. */
 	private static final QueryGroupXMLReader xmlReader = new QueryGroupXMLReader();
 
-	protected OBDAModel apic = null;
+	private OBDAModel apic;
 
-	protected Element root;
+	private QueryController queryController;
+
+	private Element root;
 
 	private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-	public DataManager(OBDAModel apic) {
+	public DataManager(OBDAModel apic, QueryController queryController) {
 		this.apic = apic;
+		this.queryController = queryController;
 		mapCodec = new MappingXMLCodec(apic);
 	}
 
@@ -108,8 +113,7 @@ public class DataManager {
 	 * If useTempFile is false, the procedure will attempt to directly save all
 	 * the data to the file.
 	 */
-	public void saveOBDAData(URI obdaFileURI, boolean useTempFile,
-			PrefixManager prefixManager) throws IOException {
+	public void saveOBDAData(URI obdaFileURI, boolean useTempFile, PrefixManager prefixManager) throws IOException {
 
 		File tempFile = null;
 		URI tempFileURI = null;
@@ -153,7 +157,6 @@ public class DataManager {
 
 	public void saveOBDAData(URI fileuri, PrefixManager prefixManager) throws FileNotFoundException, IOException {
 
-		File file = new File(fileuri);
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db;
 		try {
@@ -183,7 +186,7 @@ public class DataManager {
 			root.setAttribute("xmlns:" + removeColon(prefix), prefixManager.getURIDefinition(prefix));
 		}
 		doc.appendChild(root);
-		
+
 		// Create the Mapping element
 		Hashtable<URI, ArrayList<OBDAMappingAxiom>> mappings = apic.getMappings();
 		dumpMappingsToXML(mappings);
@@ -193,10 +196,8 @@ public class DataManager {
 		dumpDatasourcesToXML(datasources);
 
 		// Create the Query element
-		List<QueryControllerEntity> queries = apic.getQueryController().getElements();
+		List<QueryControllerEntity> queries = queryController.getElements();
 		dumpQueriesToXML(queries);
-
-		XMLUtils.saveDocumentToXMLFile(doc, prefixMap, file.toString());
 	}
 
 	private String removeColon(String prefix) {
@@ -205,14 +206,18 @@ public class DataManager {
 
 	/***************************************************************************
 	 * loads ALL OBDA data from a file
+	 * @throws Exception 
+	 * 
+	 * @throws ParserConfigurationException
 	 */
-	public void loadOBDADataFromURI(URI obdaFileURI, URI currentOntologyURI, PrefixManager prefixManager) throws IOException {
-		
+	public void loadOBDADataFromURI(URI obdaFileURI, URI currentOntologyURI, PrefixManager prefixManager) throws Exception {
+
 		File obdaFile = new File(obdaFileURI);
 
 		if (!obdaFile.exists()) {
-			String msg = String.format("File not found: %s", obdaFile.toString());
-			throw new IOException(msg);
+			// NO-OP: Users may not have the OBDA file
+			log.warn("WARNING: Cannot locate OBDA file at: " + obdaFile.getPath());
+			return;
 		}
 		if (!obdaFile.canRead()) {
 			String msg = String.format("Error while reading the file %s", obdaFile.toString());
@@ -222,12 +227,12 @@ public class DataManager {
 		Document doc = null;
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
+			DocumentBuilder db;
+			db = dbf.newDocumentBuilder();
 			doc = db.parse(obdaFile);
 			doc.getDocumentElement().normalize();
-		} catch (Exception e) {
-			String msg = String.format("OBDA info file could not be read!\nREASON: %s", e.getLocalizedMessage());
-			throw new IOException(msg);
+		} catch (ParserConfigurationException e) {
+			// NO-OP
 		}
 
 		/*
@@ -235,15 +240,13 @@ public class DataManager {
 		 */
 		// TODO: Uncomment these lines after having this release out.
 		/*
-		DocumentType docType = doc.getDoctype();
-		NamedNodeMap entities = docType.getEntities();
-		for (int i = 0; i < entities.getLength(); i++) {
-			Entity node = (Entity) entities.item(i);
-			prefixManager.addPrefix(node.getNodeName(), node.getSystemId());
-		}		
-		addOBDADefaultPrefixes(prefixManager);
+		 * DocumentType docType = doc.getDoctype(); NamedNodeMap entities =
+		 * docType.getEntities(); for (int i = 0; i < entities.getLength(); i++)
+		 * { Entity node = (Entity) entities.item(i);
+		 * prefixManager.addPrefix(node.getNodeName(), node.getSystemId()); }
+		 * addOBDADefaultPrefixes(prefixManager);
 		 */
-		
+
 		/*
 		 * Processing the OBDA elements
 		 */
@@ -252,8 +255,9 @@ public class DataManager {
 			String msg = "The OBDA file must be enclosed with <OBDA> tag";
 			throw new IOException(msg);
 		}
-		
-		// TODO: Old way to get the prefixes. It has a severe misconception on using 'xmlns'
+
+		// TODO: Old way to get the prefixes. It has a severe misconception on
+		// using 'xmlns'
 		NamedNodeMap att = root.getAttributes();
 		for (int i = 0; i < att.getLength(); i++) {
 			Node n = att.item(i);
@@ -266,7 +270,7 @@ public class DataManager {
 				if (aux.length == 2) {
 					prefixManager.addPrefix(removeColon(aux[1]) + ":", value);
 				}
-			}			
+			}
 		}
 		addOBDADefaultPrefixes(prefixManager);
 
@@ -285,9 +289,7 @@ public class DataManager {
 					OBDADataSource source = dsCodec.decode(node);
 					URI uri = URI.create(prefixManager.getDefaultPrefix());
 					if (uri != null) {
-						source.setParameter(
-								RDBMSourceParameterConstants.ONTOLOGY_URI,
-								uri.toString());
+						source.setParameter(RDBMSourceParameterConstants.ONTOLOGY_URI, uri.toString());
 					}
 					apic.addSource(source);
 				}
@@ -328,8 +330,7 @@ public class DataManager {
 	 * @param mappings
 	 *            the hash table of the mapping data
 	 */
-	protected void dumpMappingsToXML(
-			Hashtable<URI, ArrayList<OBDAMappingAxiom>> mappings) {
+	protected void dumpMappingsToXML(Hashtable<URI, ArrayList<OBDAMappingAxiom>> mappings) {
 		Document doc = root.getOwnerDocument();
 		Enumeration<URI> datasourceUris = mappings.keys();
 		URI datasourceUri = null;
@@ -439,23 +440,18 @@ public class DataManager {
 					continue;
 				}
 				Element mapping = (Element) child;
-				RDBMSMappingAxiomImpl mappingAxiom = (RDBMSMappingAxiomImpl) mapCodec
-						.decode(mapping);
+				RDBMSMappingAxiomImpl mappingAxiom = (RDBMSMappingAxiomImpl) mapCodec.decode(mapping);
 				if (mappingAxiom == null) {
-					throw new Exception(
-							"Error while parsing the conjunctive query of "
-									+ "the mapping "
-									+ mapping.getAttribute("id"));
+					throw new Exception("Error while parsing the conjunctive query of " + "the mapping " + mapping.getAttribute("id"));
 				}
 				try {
+//					for (Atom atom : mappingAxiom.getTargetQuery().getBody()) {
+//						apic.declarePredicate(atom.getPredicate());
+//					}
 					apic.addMapping(datasource, mappingAxiom);
 				} catch (DuplicateMappingException e) {
-					log.warn("duplicate mapping detected while trying to load mappings "
-							+ "from file. Ignoring it. Datasource URI: "
-							+ datasource
-							+ " "
-							+ "Mapping ID: "
-							+ mappingAxiom.getId());
+					log.warn("duplicate mapping detected while trying to load mappings " + "from file. Ignoring it. Datasource URI: "
+							+ datasource + " " + "Mapping ID: " + mappingAxiom.getId());
 				}
 			} catch (Exception e) {
 				try {
@@ -477,10 +473,11 @@ public class DataManager {
 	 * 
 	 * @param queryRoot
 	 *            the query root in the XML file.
+	 * @throws Exception 
 	 * @see QueryControllerGroup
 	 * @see QueryControllerQuery
 	 */
-	protected void importQueriesFromXML(Element queryRoot) {
+	protected void importQueriesFromXML(Element queryRoot) throws Exception {
 		NodeList childs = queryRoot.getChildNodes();
 		for (int i = 0; i < childs.getLength(); i++) {
 			Node node = childs.item(i);
@@ -488,16 +485,13 @@ public class DataManager {
 				Element element = (Element) node;
 				if (element.getNodeName().equals("Query")) {
 					QueryControllerQuery query = xmlReader.readQuery(element);
-					apic.getQueryController().addQuery(query.getQuery(),
-							query.getID());
+					queryController.addQuery(query.getQuery(), query.getID());
 				} else if ((element.getNodeName().equals("QueryGroup"))) {
-					QueryControllerGroup group = xmlReader
-							.readQueryGroup(element);
-					apic.getQueryController().createGroup(group.getID());
+					QueryControllerGroup group = xmlReader.readQueryGroup(element);
+					queryController.createGroup(group.getID());
 					Vector<QueryControllerQuery> queries = group.getQueries();
 					for (QueryControllerQuery query : queries) {
-						apic.getQueryController().addQuery(query.getQuery(),
-								query.getID(), group.getID());
+						queryController.addQuery(query.getQuery(), query.getID(), group.getID());
 					}
 				}
 			}

@@ -89,6 +89,7 @@ public class StockExchangeTestH2 extends TestCase {
         5, 5,								    // FILTER: Boolean (EQ, NEQ)
         10,										// FILTER: LangMatches
 		1, 2, 1, 3, 2,							// Nested boolean expression
+		3, 3, 5, 5, 3, 7, 7, 7, 3, 10			// Query modifiers: LIMIT, OFFSET, and ORDER BY
 	};
 	
 	public class TestQuery {
@@ -137,7 +138,7 @@ public class StockExchangeTestH2 extends TestCase {
 
 		// Loading the OBDA data
 		obdaModel = fac.getOBDAModel();
-		DataManager ioManager = new DataManager(obdaModel);
+		DataManager ioManager = new DataManager(obdaModel, new QueryController());
 		ioManager.loadOBDADataFromURI(new File(obdafile).toURI(), ontology.getOntologyID().getOntologyIRI().toURI(), obdaModel.getPrefixManager());
 	}
 
@@ -169,7 +170,7 @@ public class StockExchangeTestH2 extends TestCase {
 		conn.commit();
 	}
 
-	private void prepareTestQueries(int[] answer) {
+	private void prepareTestQueries(int[] answer) throws Exception {
 		/*
 		 * Loading the queries (we have 61 queries)
 		 */

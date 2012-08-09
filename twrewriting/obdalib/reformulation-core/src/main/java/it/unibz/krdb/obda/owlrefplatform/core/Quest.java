@@ -9,10 +9,12 @@ import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
+import it.unibz.krdb.obda.ontology.Assertion;
 import it.unibz.krdb.obda.ontology.Axiom;
 import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
+import it.unibz.krdb.obda.owlrefplatform.core.abox.ABoxToFactConverter;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSDataRepositoryManager;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSDirectDataRepositoryManager;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSSIRepositoryManager;
@@ -24,12 +26,14 @@ import it.unibz.krdb.obda.owlrefplatform.core.mappingprocessing.MappingVocabular
 import it.unibz.krdb.obda.owlrefplatform.core.mappingprocessing.TMappingProcessor;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.EvaluationEngine;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.JDBCUtility;
+import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLAdapterFactory;
+import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.DLRPerfectReformulator;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeRedReformulator;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.sql.SQLGenerator;
-import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SourceQueryGenerator;
+import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
 import it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.EquivalenceTBoxOptimizer;
 import it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.SigmaTBoxOptimizer;
 import it.unibz.krdb.obda.owlrefplatform.core.translator.MappingVocabularyRepair;
@@ -46,6 +50,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -81,7 +87,7 @@ public class Quest implements Serializable {
 	protected UnfoldingMechanism unfolder = null;
 
 	/* The active SQL generator */
-	protected SourceQueryGenerator datasourceQueryGenerator = null;
+	protected SQLQueryGenerator datasourceQueryGenerator = null;
 
 	/* The active query evaluation engine */
 	protected EvaluationEngine evaluationEngine = null;
@@ -155,9 +161,46 @@ public class Quest implements Serializable {
 
 	private String aboxJdbcDriver;
 
+	private Iterator<Assertion> aboxIterator;
+	
+	Map<String, String> querycache = new HashMap<String, String>();
+	
+	Map<String, List<String>> signaturecache = new HashMap<String, List<String>>();
+	
+	Map<String, Boolean> isbooleancache = new HashMap<String, Boolean>();
+
+
+	protected Map<String,String> getSQLCache() {
+		return querycache;
+	}
+	
+	protected Map<String,List<String>> getSignatureCache() {
+		return signaturecache;
+	}
+	
+	protected Map<String,Boolean> getIsBooleanCache() {
+		return isbooleancache;
+	}
+	
 	public void loadOBDAModel(OBDAModel model) {
 		isClassified = false;
 		inputOBDAModel = (OBDAModel) model.clone();
+		aboxIterator = new Iterator<Assertion>() {
+
+			@Override
+			public boolean hasNext() {
+				return false;
+			}
+
+			@Override
+			public Assertion next() {
+				return null;
+			}
+
+			@Override
+			public void remove() {
+			}
+		};
 	}
 
 	public OBDAModel getOBDAModel() {
@@ -170,7 +213,7 @@ public class Quest implements Serializable {
 	}
 
 	public Ontology getOntology() {
-		return this.inputTBox;
+		return inputTBox;
 	}
 
 	/***
@@ -327,7 +370,7 @@ public class Quest implements Serializable {
 
 		if (inputOBDAModel != null) {
 			MappingVocabularyRepair repairmodel = new MappingVocabularyRepair();
-			repairmodel.fixOBDAModel(inputOBDAModel, this.inputTBox.getVocabulary());
+			repairmodel.fixOBDAModel(inputOBDAModel, inputTBox.getVocabulary());
 		}
 
 		unfoldingOBDAModel = fac.getOBDAModel();
@@ -477,6 +520,12 @@ public class Quest implements Serializable {
 			MappingAnalyzer analyzer = new MappingAnalyzer(unfoldingOBDAModel.getMappings(sourceId), metadata);
 			unfoldingProgram = analyzer.constructDatalogProgram();
 
+			/***
+			 * Adding ABox as facts in the unfolding program
+			 */
+			if (unfoldingMode.equals(QuestConstants.VIRTUAL)) {
+				ABoxToFactConverter.addFacts(this.aboxIterator, unfoldingProgram, this.equivalenceMaps);
+			}
 			/*
 			 * T-mappings implementation
 			 */
@@ -512,7 +561,9 @@ public class Quest implements Serializable {
 			 */
 			unfolder = new DatalogUnfolder(unfoldingProgram, metadata);
 			JDBCUtility jdbcutil = new JDBCUtility(datasource.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER));
-			datasourceQueryGenerator = new SQLGenerator(metadata, jdbcutil);
+			SQLDialectAdapter sqladapter = SQLAdapterFactory.getSQLDialectAdapter(datasource
+					.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER));
+			datasourceQueryGenerator = new SQLGenerator(metadata, jdbcutil, sqladapter);
 
 			/*
 			 * Setting up the TBox we will use for the reformulation
@@ -545,7 +596,7 @@ public class Quest implements Serializable {
 			// log.error(e.getMessage(), e);
 			OBDAException ex = new OBDAException(e.getMessage());
 			ex.setStackTrace(e.getStackTrace());
-			
+
 			if (e instanceof SQLException) {
 				SQLException sqle = (SQLException) e;
 				SQLException e1 = sqle.getNextException();
@@ -596,5 +647,10 @@ public class Quest implements Serializable {
 		}
 
 		return new QuestConnection(this, conn);
+	}
+
+	public void setABox(Iterator<Assertion> owlapi3aBoxIterator) {
+		this.aboxIterator = owlapi3aBoxIterator;
+
 	}
 }

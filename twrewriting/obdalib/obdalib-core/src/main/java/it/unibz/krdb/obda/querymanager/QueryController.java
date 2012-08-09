@@ -58,14 +58,14 @@ public class QueryController implements Serializable {
 	/**
 	 * Creates a new group and adds it to the vector QueryControllerEntity
 	 */
-	public void createGroup(String groupId) {
+	public void createGroup(String groupId) throws Exception {
 		if (getElementPosition(groupId) == -1) {
 			QueryControllerGroup group = new QueryControllerGroup(groupId);
 			entities.add(group);
 			fireElementAdded(group);
 		}
 		else {
-			log.info("Group already exists!");
+			throw new Exception("The name is already taken, either by a query group or a query item");
 		}
 	}
 
@@ -75,7 +75,7 @@ public class QueryController implements Serializable {
 	public QueryControllerGroup getGroup(String groupId) {
 		int index = getElementPosition(groupId);
 		if (index == -1) {
-			return null;
+		    return null;
 		}
 		QueryControllerGroup group = (QueryControllerGroup) entities.get(index);
 		return group;
@@ -150,7 +150,11 @@ public class QueryController implements Serializable {
 		QueryControllerQuery query = new QueryControllerQuery(queryId);
 		query.setQuery(queryStr);
 		QueryControllerGroup group = getGroup(groupId);
-
+		if (group == null) {
+		    group = new QueryControllerGroup(groupId);
+            entities.add(group);
+            fireElementAdded(group);
+		}
 		if (position == -1) {
 			group.addQuery(query);
 			fireElementAdded(query, group);
@@ -295,5 +299,9 @@ public class QueryController implements Serializable {
 
 	public boolean getEventsDisabled() {
 		return eventDisabled;
+	}
+	
+	public void reset() {
+        entities = new ArrayList<QueryControllerEntity>();
 	}
 }

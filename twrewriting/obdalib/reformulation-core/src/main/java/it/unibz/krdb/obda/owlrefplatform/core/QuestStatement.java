@@ -11,7 +11,9 @@ import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.obda.model.OBDAResultSet;
 import it.unibz.krdb.obda.model.OBDAStatement;
+import it.unibz.krdb.obda.model.OperationPredicate;
 import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.ontology.Assertion;
@@ -22,24 +24,28 @@ import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.QueryVocabularyVal
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.BooleanOWLOBDARefResultSet;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.EmptyQueryResultSet;
-import it.unibz.krdb.obda.owlrefplatform.core.resultset.OWLOBDARefResultSet;
-import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SourceQueryGenerator;
+import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestResultset;
+import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
 import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.UnfoldingMechanism;
-import it.unibz.krdb.obda.parser.DatalogProgramParser;
+import it.unibz.krdb.obda.utils.QueryValidator;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 import java.util.regex.Pattern;
 
-import org.antlr.runtime.RecognitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +64,7 @@ public class QuestStatement implements OBDAStatement {
 
 	private UnfoldingMechanism unfoldingmechanism = null;
 
-	private SourceQueryGenerator querygenerator = null;
+	private SQLQueryGenerator querygenerator = null;
 
 	private QueryVocabularyValidator validator = null;
 
@@ -78,9 +84,24 @@ public class QuestStatement implements OBDAStatement {
 
 	private static Logger log = LoggerFactory.getLogger(QuestStatement.class);
 
+	Thread runningThread = null;
+
+	private QueryExecutionThread executionthread;
+
+	final Map<String, String> querycache;
+
+	final Map<String, List<String>> signaturecache;
+
+	final Map<String, Boolean> isbooleancache;
+
 	public QuestStatement(Quest questinstance, QuestConnection conn, Statement st) {
 
 		this.questInstance = questinstance;
+
+		this.querycache = questinstance.getSQLCache();
+		this.signaturecache = questinstance.getSignatureCache();
+		this.isbooleancache = questinstance.getIsBooleanCache();
+
 		this.repository = questinstance.dataRepository;
 		this.conn = conn;
 		this.rewriter = questinstance.rewriter;
@@ -95,19 +116,168 @@ public class QuestStatement implements OBDAStatement {
 
 	}
 
+	private class QueryExecutionThread extends Thread {
+
+		private final CountDownLatch monitor;
+		private final String strquery;
+		private OBDAResultSet result;
+		private boolean error = false;
+		private Exception exception;
+
+		boolean cancelled = false;
+
+		boolean executingSQL = false;
+
+		public QueryExecutionThread(String strquery, CountDownLatch monitor) {
+			this.monitor = monitor;
+			this.strquery = strquery;
+		}
+
+		public boolean errorStatus() {
+			return error;
+		}
+
+		public Exception getException() {
+			return exception;
+		}
+
+		public OBDAResultSet getResult() {
+			return result;
+		}
+
+		public void cancel() throws SQLException {
+			synchronized (this) {
+				if (!executingSQL)
+					this.stop();
+				else
+					sqlstatement.cancel();
+			}
+
+		}
+
+		@Override
+		public void run() {
+			try {
+				String sql;
+				boolean isBoolean;
+				List<String> signature;
+
+				if (querycache.containsKey(strquery)) {
+
+					sql = querycache.get(strquery);
+					isBoolean = isbooleancache.get(strquery);
+					signature = signaturecache.get(strquery);
+
+				} else {
+
+					signature = getSignature(strquery);
+					signaturecache.put(strquery, signature);
+
+					DatalogProgram program;
+
+					try {
+						program = translateAndPreProcess(strquery);
+
+						/***
+						 * Empty unfolding, constructing an empty result set
+						 */
+						if (program.getRules().size() < 1) {
+							throw new OBDAException("Error, invalid query");
+						}
+					} catch (Exception e1) {
+						OBDAException obdaException = new OBDAException("Error in SPARQL query. \n" + e1.getLocalizedMessage());
+						obdaException.setStackTrace(e1.getStackTrace());
+						throw obdaException;
+					}
+
+					isBoolean = isDPBoolean(program);
+					isbooleancache.put(strquery, isBoolean);
+
+					log.debug("Start the rewriting process...");
+					DatalogProgram rewriting;
+					try {
+						rewriting = getRewriting(program);
+					} catch (Exception e1) {
+						OBDAException obdaException = new OBDAException("Error rewriting query. \n" + e1.getMessage());
+						obdaException.setStackTrace(e1.getStackTrace());
+						throw obdaException;
+					}
+
+					DatalogProgram unfolding;
+					try {
+						unfolding = getUnfolding(rewriting);
+					} catch (Exception e1) {
+						OBDAException obdaException = new OBDAException("Error unfolding query. \n" + e1.getMessage());
+						obdaException.setStackTrace(e1.getStackTrace());
+						throw obdaException;
+					}
+
+					try {
+						sql = getSQL(unfolding, signature);
+						querycache.put(strquery, sql);
+					} catch (Exception e1) {
+						OBDAException obdaException = new OBDAException("Error generating SQL. \n" + e1.getMessage());
+						obdaException.setStackTrace(e1.getStackTrace());
+						throw obdaException;
+					}
+
+				}
+
+				OBDAResultSet result;
+
+				log.debug("Executing the query and get the result...");
+				if (sql.equals("") && !isBoolean) {
+
+					result = new EmptyQueryResultSet(signature, QuestStatement.this);
+				} else if (sql.equals("")) {
+
+					result = new BooleanOWLOBDARefResultSet(false, QuestStatement.this);
+				} else {
+					ResultSet set;
+					try {
+
+						synchronized (this) {
+							executingSQL = true;
+						}
+
+						set = sqlstatement.executeQuery(sql);
+					} catch (SQLException e) {
+						throw new OBDAException("Error executing SQL query: \n" + e.getMessage() + "\nSQL query:\n " + sql);
+					}
+					if (isBoolean) {
+						result = new BooleanOWLOBDARefResultSet(set, QuestStatement.this);
+					} else {
+						result = new QuestResultset(set, signature, QuestStatement.this);
+					}
+				}
+
+				log.debug("Finish.\n");
+				this.result = result;
+			} catch (Exception e) {
+				this.exception = e;
+				this.error = true;
+			} finally {
+				monitor.countDown();
+			}
+		}
+	}
+
 	/**
 	 * Returns the result set for the given query
 	 */
 	@Override
 	public OBDAResultSet execute(String strquery) throws OBDAException {
+		if (strquery.isEmpty()) {
+			throw new OBDAException("Cannot execute an empty query");
+		}
 
 		if (strquery.split("[eE][tT][aA][bB][lL][eE]").length > 1) {
 			throw new OBDAException("ETable queries are currently disabled");
-//			return executeEpistemicQuery(strquery);
+			// return executeEpistemicQuery(strquery);
 		}
 		if (strquery.contains("/*direct*/")) {
 			throw new OBDAException("Direct sql queries are currently disabled");
-//			return executeDirectQuery(strquery);
+			// return executeDirectQuery(strquery);
 		} else {
 			return executeConjunctiveQuery(strquery);
 		}
@@ -134,8 +304,8 @@ public class QuestStatement implements OBDAStatement {
 			for (int i = 1; i <= columnCount; i++) {
 				signature.add(set.getMetaData().getColumnLabel(i));
 			}
-			List<Term> typing = getDefaultTypingSignature(columnCount);
-			result = new OWLOBDARefResultSet(set, signature, typing, this);
+
+			result = new QuestResultset(set, signature, this);
 
 			return result;
 		} catch (Exception e) {
@@ -153,8 +323,7 @@ public class QuestStatement implements OBDAStatement {
 			for (int i = 1; i <= columnCount; i++) {
 				signature.add(set.getMetaData().getColumnLabel(i));
 			}
-			List<Term> typing = getDefaultTypingSignature(columnCount);
-			result = new OWLOBDARefResultSet(set, signature, typing, this);
+			result = new QuestResultset(set, signature, this);
 			return result;
 		} catch (Exception e) {
 			throw new OBDAException(e);
@@ -196,23 +365,23 @@ public class QuestStatement implements OBDAStatement {
 			throw e;
 		}
 
-		if (program == null) { // if the SPARQL translator doesn't work,
-			// use the Datalog parser.
-			DatalogProgramParser datalogParser = new DatalogProgramParser();
-			try {
-				program = datalogParser.parse(strquery);
-			} catch (RecognitionException e) {
-				log.warn(e.getMessage());
-				program = null;
-			} catch (IllegalArgumentException e2) {
-				log.warn(e2.getMessage());
-			}
-		}
+		// if (program == null) { // if the SPARQL translator doesn't work,
+		// // use the Datalog parser.
+		// DatalogProgramParser datalogParser = new DatalogProgramParser();
+		// try {
+		// program = datalogParser.parse(strquery);
+		// } catch (RecognitionException e) {
+		// log.warn(e.getMessage());
+		// program = null;
+		// } catch (IllegalArgumentException e2) {
+		// log.warn(e2.getMessage());
+		// }
+		// }
 
 		// Check the datalog object
 		if (validator != null) {
 			log.debug("Validating the user query...");
-			boolean isValid = validator.validate(program);
+			boolean isValid = validator.validatePredicates(program);
 
 			if (!isValid) {
 				Vector<String> invalidList = validator.getInvalidPredicates();
@@ -221,8 +390,70 @@ public class QuestStatement implements OBDAStatement {
 				for (String predicate : invalidList) {
 					msg += "- " + predicate + "\n";
 				}
-				throw new OBDAException("Unknown Classes/Properties in the query: \n" + msg);
+				throw new OBDAException(
+						"Found an unknown classes/properties in the query. \nMake sure all classes/properties in your query have been defined in the ontology. \nOffending entities: \n"
+								+ msg);
 			}
+
+			/*
+			 * Validating variables in the head
+			 */
+			Set<Variable> missingVariables = QueryValidator.getUnboundHeadVariables(program);
+			if (missingVariables.size() != 0) {
+				StringBuffer bf = new StringBuffer();
+				boolean comma = false;
+				for (Variable v : missingVariables) {
+					if (comma)
+						bf.append(", ");
+					bf.append(v.getName());
+					comma = true;
+				}
+				throw new OBDAException(
+						"Found variable(s) in SELECT clause that is not metioned in the WHERE clause. \nOffending variables: "
+								+ bf.toString());
+			}
+
+			/*
+			 * Validating variables in the body (variables in condition
+			 * predicates must appear in a data predicate)
+			 */
+
+			Set<Variable> invalidVariables = new HashSet<Variable>();
+			
+			
+			// Collecting all variables in data predicates
+			Set<Variable> dataVariables = new HashSet<Variable>();
+			for (CQIE rule : program.getRules()) {
+				for (Atom atom : rule.getBody()) {
+					if (atom.getPredicate() instanceof OperationPredicate)
+						continue;
+					Set<Variable> vars = atom.getVariables();
+					dataVariables.addAll(vars);
+				}
+			}
+			
+			// Collecting all variables in operation predicates
+			Set<Variable> conditionedVariables = new HashSet<Variable>();
+			for (CQIE rule : program.getRules()) {
+				for (Atom atom : rule.getBody()) {
+					if (!(atom.getPredicate() instanceof OperationPredicate))
+						continue;
+					Set<Variable> vars = atom.getVariables();
+					conditionedVariables.addAll(vars);
+				}
+			}
+			conditionedVariables.removeAll(dataVariables);
+			
+			if (!conditionedVariables.isEmpty()) {
+				StringBuffer errorMsg = new StringBuffer();
+				errorMsg.append("The following conditioned variables are not bound to a triple pattern: ");
+				for (Variable v: conditionedVariables) {
+					errorMsg.append(v.toString() + " ");
+				}
+				throw new OBDAException(errorMsg.toString());
+			}
+			
+
 		}
 		log.debug("Replacing equivalences...");
 		program = validator.replaceEquivalences(program);
@@ -248,75 +479,27 @@ public class QuestStatement implements OBDAStatement {
 	}
 
 	private OBDAResultSet executeConjunctiveQuery(String strquery) throws OBDAException {
-		List<String> signature = getSignature(strquery);
-		DatalogProgram program;
+		CountDownLatch monitor = new CountDownLatch(1);
+		executionthread = new QueryExecutionThread(strquery, monitor);
+		executionthread.start();
 		try {
-			program = translateAndPreProcess(strquery);
-		} catch (Exception e1) {
-			OBDAException obdaException = new OBDAException("Error parsing SPARQL query: " + e1.getMessage());
-			obdaException.setStackTrace(e1.getStackTrace());
-			throw obdaException;
+			monitor.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		if (executionthread.getException() != null) {
+			OBDAException ex = new OBDAException(executionthread.getException().getMessage());
+			ex.setStackTrace(executionthread.getStackTrace());
+			throw ex;
 		}
 
-		log.debug("Start the rewriting process...");
-		DatalogProgram rewriting;
-		try {
-			rewriting = getRewriting(program);
-		} catch (Exception e1) {
-			OBDAException obdaException = new OBDAException("Error rewriting query: " + e1.getMessage());
-			obdaException.setStackTrace(e1.getStackTrace());
-			throw obdaException;
-		}
-
-		DatalogProgram unfolding;
-		try {
-			unfolding = getUnfolding(rewriting);
-		} catch (Exception e1) {
-			OBDAException obdaException = new OBDAException("Error unfolding query: " + e1.getMessage());
-			obdaException.setStackTrace(e1.getStackTrace());
-			throw obdaException;
-		}
-		
-		
-		String sql;
-		try {
-			sql = getSQL(unfolding, signature);
-		} catch (Exception e1) {
-			OBDAException obdaException = new OBDAException("Error generating SQL query: " + e1.getMessage());
-			obdaException.setStackTrace(e1.getStackTrace());
-			throw obdaException;
-		}
-
-		OBDAResultSet result;
-
-		log.debug("Executing the query and get the result...");
-		if (sql.equals("")) {
-			/***
-			 * Empty unfolding, constructing an empty result set
-			 */
-			if (program.getRules().size() < 1) {
-				throw new OBDAException("Error, invalid query");
+		if (canceled == true) {
+			synchronized (this) {
+				canceled = false;
 			}
-			result = new EmptyQueryResultSet(signature, this);
-		} else {
-			ResultSet set;
-			try {
-				set = sqlstatement.executeQuery(sql);
-			} catch (SQLException e) {
-				throw new OBDAException("Error executing SQL query: " + e.getMessage() + "\nSQL query:\n " + sql);
-			}
-			if (isDPBoolean(program)) {
-				result = new BooleanOWLOBDARefResultSet(set, this);
-			} else {
-				List<Term> typingSignature = unfolding.getRules().get(0).getHead().getTerms();
-
-				result = new OWLOBDARefResultSet(set, signature, typingSignature, this);
-
-			}
+			throw new OBDAException("Query execution was cancelled");
 		}
-
-		log.debug("Finish.\n");
-		return result;
+		return executionthread.getResult();
 	}
 
 	/**
@@ -417,10 +600,28 @@ public class QuestStatement implements OBDAStatement {
 		} else if (strquery.contains("/*direct*/")) {
 			sql = strquery;
 		} else {
-			DatalogProgram p = translateAndPreProcess(strquery);
-			DatalogProgram rewriting = getRewriting(p);
-			DatalogProgram unfolding = getUnfolding(rewriting);
-			sql = getSQL(unfolding, getSignature(strquery));
+
+			List<String> signature;
+
+			if (querycache.containsKey(strquery)) {
+				sql = querycache.get(strquery);
+
+			} else {
+
+				signature = getSignature(strquery);
+				signaturecache.put(strquery, signature);
+
+				DatalogProgram p = translateAndPreProcess(strquery);
+
+				Boolean isBoolean = isDPBoolean(p);
+				isbooleancache.put(strquery, isBoolean);
+
+				DatalogProgram rewriting = getRewriting(p);
+				DatalogProgram unfolding = getUnfolding(rewriting);
+				sql = getSQL(unfolding, signature);
+				querycache.put(strquery, sql);
+			}
+
 		}
 		return sql;
 	}
@@ -512,8 +713,13 @@ public class QuestStatement implements OBDAStatement {
 
 	@Override
 	public void cancel() throws OBDAException {
-		// TODO Auto-generated method stub
-
+		try {
+			QuestStatement.this.executionthread.cancel();
+		} catch (SQLException e) {
+			OBDAException o = new OBDAException(e);
+			o.setStackTrace(e.getStackTrace());
+			throw o;
+		}
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package it.unibz.krdb.obda.owlrefplatform.owlapi3;
 
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAModel;
+import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.owlapi3.OBDAOWLReasoner;
 import it.unibz.krdb.obda.owlapi3.OWLAPI3ABoxIterator;
@@ -14,6 +15,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.QuestConnection;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestStatement;
+import it.unibz.krdb.obda.owlrefplatform.core.abox.ABoxToFactConverter;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.VirtualABoxMaterializer;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.VirtualABoxMaterializer.VirtualTriplePredicateIterator;
 
@@ -229,6 +231,12 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 
 		// Load the preferences
 		questInstance.setPreferences(preferences);
+		
+		if (unfoldingMode.equals(QuestConstants.VIRTUAL)) {
+			questInstance.setABox(new OWLAPI3ABoxIterator(man.getImportsClosure(getRootOntology()),
+							questInstance.getEquivalenceMap()));
+			
+		}
 
 		try {
 			// pm.reasonerTaskProgressChanged(1, 4);
@@ -256,7 +264,11 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 					// Retrieves the ABox from the target database via mapping.
 					log.debug("Loading data from Mappings into the database");
 
-					VirtualABoxMaterializer materializer = new VirtualABoxMaterializer(questInstance.getOBDAModel());
+					OBDAModel obdaModelForMaterialization = questInstance.getOBDAModel();
+					for (Predicate p: translatedOntologyMerge.getVocabulary()) {
+						obdaModelForMaterialization.declarePredicate(p);
+					}
+					VirtualABoxMaterializer materializer = new VirtualABoxMaterializer(obdaModelForMaterialization);
 					VirtualTriplePredicateIterator assertionIter = (VirtualTriplePredicateIterator) materializer.getAssertionIterator();
 					st.insertData(assertionIter, 5000, 500);
 					assertionIter.disconnect();
@@ -411,7 +423,7 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 			}
 
 		} catch (Exception e) {
-			throw new ReasonerInternalException(e.getMessage());
+			throw new ReasonerInternalException(e);
 		} finally {
 			prepared = true;
 			pm.reasonerTaskStopped();
@@ -867,7 +879,7 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 		}
 		printIndent(level);
 		OWLClass representative = cls.getRepresentativeElement();
-		System.out.println(getEquivalentClasses(representative));
+//		System.out.println(getEquivalentClasses(representative));
 		for (Node<OWLClass> subCls : getSubClasses(representative, true)) {
 			dumpClassHierarchy(subCls, level + 1, showBottomNode);
 		}
@@ -883,7 +895,7 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 		}
 		printIndent(level);
 		OWLObjectPropertyExpression representative = cls.getRepresentativeElement();
-		System.out.println(getEquivalentObjectProperties(representative));
+//		System.out.println(getEquivalentObjectProperties(representative));
 		for (Node<OWLObjectPropertyExpression> subProp : getSubObjectProperties(representative, true)) {
 			dumpObjectPropertyHierarchy(subProp, level + 1, showBottomNode);
 		}
@@ -899,7 +911,7 @@ public class QuestOWL extends OWLReasonerBase implements OBDAOWLReasoner, OWLQue
 		}
 		printIndent(level);
 		OWLDataProperty representative = cls.getRepresentativeElement();
-		System.out.println(getEquivalentDataProperties(representative));
+//		System.out.println(getEquivalentDataProperties(representative));
 		for (Node<OWLDataProperty> subProp : getSubDataProperties(representative, true)) {
 			dumpDataPropertyHierarchy(subProp, level + 1, showBottomNode);
 		}
