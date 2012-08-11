@@ -16,7 +16,6 @@ import it.unibz.krdb.obda.ontology.OClass;
 import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertySomeClassRestriction;
 import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
@@ -50,6 +49,9 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	private Map<Predicate, Predicate> extPredicateMap = new HashMap<Predicate, Predicate>();
 	private Map<Predicate, List<CQIE>> extPredicateDP = new HashMap<Predicate, List<CQIE>>();
 	
+	private Map<TreeWitnessGenerator, Predicate> genconPredicateMap = new HashMap<TreeWitnessGenerator, Predicate>();
+	private Map<TreeWitnessGenerator, List<CQIE>> genconPredicateDP = new HashMap<TreeWitnessGenerator, List<CQIE>>();
+	
 	private Ontology sigma = null;
 	
 	@Override
@@ -58,6 +60,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		
 		extPredicateMap.clear();
 		extPredicateDP.clear();
+		genconPredicateMap.clear();
+		genconPredicateDP.clear();
 	}
 	
 	@Override
@@ -69,43 +73,80 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		}
 		extPredicateMap.clear();
 		extPredicateDP.clear();
+		genconPredicateMap.clear();
+		genconPredicateDP.clear();
 	}
 
 	@Override
 	public void initialize() {
 		// TODO Auto-generated method stub
 	}
+	
+	/*
+	 *  EXT atoms cache
+	 */
 
-	private  Atom getExtAtom(Atom a, Set<Predicate> exts) throws URISyntaxException {
+	private  Atom getExtAtom(Atom a, Set<Predicate> usedExts) throws URISyntaxException {
 		if (a.getTerms().size() == 1)
-			return getExtAtom(a.getPredicate(), a.getTerm(0), exts);
+			return getExtAtom(a.getPredicate(), a.getTerm(0), usedExts);
 		else
-			return getExtAtom(a.getPredicate(), a.getTerm(0), a.getTerm(1), exts);
+			return getExtAtom(a.getPredicate(), a.getTerm(0), a.getTerm(1), usedExts);
 	}
 
-	private Atom getExtAtom(Predicate p, Term t, Set<Predicate> exts) throws URISyntaxException {
+	private Atom getExtAtom(Predicate p, Term t, Set<Predicate> usedExts) throws URISyntaxException {
 		Predicate ext = extPredicateMap.get(p);
 		if (ext == null) {
-			if (reasoner.getSubConcepts(p).size() > 1) 
-				ext = fac.getClassPredicate(getEXTname(p.getName()));
-			else 
-				ext = p;
-			extPredicateMap.put(p, ext);
+			 List<CQIE> dp = new ArrayList<CQIE>(10);
+			 ext = fac.getClassPredicate(getEXTname(p.getName()));
+			 Term x = fac.getVariable("x");
+			 Term y = fac.getVariable("y");
+			 Atom extAtom = fac.getAtom(ext, x); 		  					 
+			 for (ClassDescription subc : reasoner.getSubConcepts(p)) 
+				 if (subc instanceof OClass) 
+					 dp.add(fac.getCQIE(extAtom, fac.getAtom(((OClass)subc).getPredicate(), x)));
+				 else if (subc instanceof PropertySomeRestriction) {
+					 PropertySomeRestriction twg = (PropertySomeRestriction)subc;
+					 dp.add(fac.getCQIE(extAtom, (!twg.isInverse()) ? 
+								fac.getAtom(twg.getPredicate(), x, y) : fac.getAtom(twg.getPredicate(), y, x))); 
+				 }					 
+			 log.debug("DP FOR " + p + " IS " + dp);
+			 if (dp.size() > 1) {			 
+				 dp = CQCUtilities.removeContainedQueries(dp, true, sigma, false);
+				 log.debug("SIMPLIFIED DP FOR " + p + " IS " + dp);
+			 }
+			 if (dp.size() == 1) 
+				 ext = p;
+			 else
+				 extPredicateDP.put(p, dp);
+			 extPredicateMap.put(p, ext);
 		}
-		exts.add(p);
+		usedExts.add(p);
 		return fac.getAtom(ext, t);
 	}
 
-	private  Atom getExtAtom(Predicate p, Term t1, Term t2, Set<Predicate> exts) throws URISyntaxException {
+	private  Atom getExtAtom(Predicate p, Term t1, Term t2, Set<Predicate> usedExts) throws URISyntaxException {
 		Predicate ext = extPredicateMap.get(p);
 		if (ext == null) {
-			if (reasoner.getSubProperties(p).size() > 1)
-				ext = fac.getObjectPropertyPredicate(getEXTname(p.getName()));
-			else 
-				ext = p;
-			extPredicateMap.put(p, ext);
+			 List<CQIE> dp = new ArrayList<CQIE>(10);
+			 ext = fac.getObjectPropertyPredicate(getEXTname(p.getName()));
+			 Term x = fac.getVariable("x");
+			 Term y = fac.getVariable("y");
+			 Atom extAtom = fac.getAtom(ext, x, y);					 
+			 for (Property sub : reasoner.getSubProperties(p))
+				dp.add(fac.getCQIE(extAtom, (!sub.isInverse()) ? 
+							fac.getAtom(sub.getPredicate(), x, y) : fac.getAtom(sub.getPredicate(), y, x))); 
+			 log.debug("DP FOR " + p + " IS " + dp);
+			 if (dp.size() > 1) {
+				 dp = CQCUtilities.removeContainedQueries(dp, true, sigma, false);
+				 log.debug("SIMPLIFIED DP FOR " + p + " IS " + dp);
+			 }
+			 if (dp.size() == 1) 
+				 ext = p;
+			 else
+				 extPredicateDP.put(p, dp);
+			 extPredicateMap.put(p, ext);
 		}
-		exts.add(p);
+		usedExts.add(p);
 		return fac.getAtom(ext, t1, t2);
 	}
 
@@ -114,6 +155,61 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	}
 
 	
+	/*
+	 * Generating Concept atoms cache
+	 */
+			
+	private Atom getGenConAtom(TreeWitnessGenerator some, Term t, Set<Predicate> usedExts, Set<TreeWitnessGenerator> usedGencons) throws URISyntaxException  {
+		Predicate gencon = genconPredicateMap.get(some);
+		if (gencon == null) {
+			 List<CQIE> dp = new ArrayList<CQIE>(10);
+			 
+			 URI propURI = some.getProperty().getPredicate().getName();
+			 URI genconURI = new URI(propURI.getScheme(), propURI.getSchemeSpecificPart(), "GEN_" + propURI.getFragment()
+						+ (some.getProperty().isInverse() ? "_I_" : "_") 
+						+ ((some.getFiller() != null) ?  some.getFiller().getPredicate().getName().getFragment() : "T"));
+					 
+			 gencon = fac.getClassPredicate(genconURI);
+			 Term x = fac.getVariable("x");
+			 Term y = fac.getVariable("y");
+			 Atom genAtom = fac.getAtom(gencon, x);
+			 log.debug("RULES FOR GENERATING CONCEPT " + some);
+			 for (BasicClassDescription subc : some.getConcepts()) {
+				log.debug("  SUBCONCEPT: " + subc);
+				if (subc instanceof OClass) {
+					log.debug("RULE FOR " + some + " DEFINED BY " + subc);
+					dp.add(fac.getCQIE(genAtom, getExtAtom(((OClass)subc).getPredicate(), x, usedExts)));
+				}
+				else if (subc instanceof PropertySomeRestriction) {
+					 PropertySomeRestriction twg = (PropertySomeRestriction)subc;
+					 dp.add(fac.getCQIE(genAtom, (!twg.isInverse()) ? 
+								getExtAtom(twg.getPredicate(), x, y, usedExts) : 
+									getExtAtom(twg.getPredicate(), y, x, usedExts)));  						 
+				}					
+			 }
+			 log.debug("DP FOR " + some + " IS " + dp);
+			 if (dp.size() > 1) {
+				 dp = CQCUtilities.removeContainedQueries(dp, true, sigma, false);
+				 log.debug("SIMPLIFIED DP FOR " + some + " IS " + dp);
+			 }
+			 if (dp.size() == 1) {
+				 Atom qdp = dp.get(0).getBody().get(0);
+				 if (qdp.getArity() == 1) {
+					 dp = null;
+					 gencon = qdp.getPredicate();
+				 }
+			 }
+			 genconPredicateDP.put(some, dp);
+			 genconPredicateMap.put(some, gencon);				 
+		}
+		usedGencons.add(some);
+		return fac.getAtom(gencon, t);		
+	}
+	
+
+	/*
+	 * rewrites a given CQ with the rules put into output
+	 */
 	
 	private void rewriteCQ(CQIE cqie, DatalogProgram output) throws URISyntaxException {
 
@@ -126,48 +222,44 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		for (TreeWitness tw : tws) 
 			log.debug(" " + tw);
 				
-		Set<PropertySomeClassRestriction> generators = new HashSet<PropertySomeClassRestriction>();
+		Set<TreeWitnessGenerator> gencons = new HashSet<TreeWitnessGenerator>();
 		
 		{
 			// DETACHED TREE WITNESS
-			if (query.hasNoFreeTerms())
-				for (TreeWitness tw : tws) {
+			if (query.hasNoFreeTerms()) {
+				Set<TreeWitnessGenerator> generators = new HashSet<TreeWitnessGenerator>();
+				for (TreeWitness tw : tws) 
 					if (tw.getDomain().containsAll(query.getVariables())) {
 						log.debug("TREE WITNESS " + tw + " COVERS THE QUERY");
-						for (PropertySomeClassRestriction some : reasoner.getGenerators())
+						for (TreeWitnessGenerator some : reasoner.getGenerators())
 							if (isGenerated(some, tw.getRootType())) 
 								generators.add(some);
-						
-						boolean saturated = true;
-						do {
-							Set<PropertySomeClassRestriction> delta = new HashSet<PropertySomeClassRestriction>();
-							for (PropertySomeClassRestriction gen : generators)
-								for (BasicClassDescription g : reasoner.getConceptsForGenerator(gen)) {
-									for (PropertySomeClassRestriction some : reasoner.getGenerators()) {
- 									 PropertySomeRestriction existsRinv = ontFactory.createPropertySomeRestriction(some.getPredicate(), !some.isInverse());
-									 if (reasoner.getSubConcepts(g).contains(some.getFiller()) || 
-											 reasoner.getSubConcepts(g).contains(existsRinv)) {
-										 saturated = false;
-										 delta.add(some);
-									 }
-										 
-								}
- 							}
-							saturated = !generators.addAll(delta);
-						} while (!saturated);
-										
-						for (PropertySomeClassRestriction gen : generators) {
-							log.debug("DETACHED GENERATED BY: " + gen);
-							List<Atom> twbody = new ArrayList<Atom>(1);
-							Term w = fac.getVariable("x");
-							twbody.add(fac.getAtom(fac.getClassPredicate(getExtName(gen)), w));							
-							output.appendRule(fac.getCQIE(cqie.getHead(), twbody));
-						}
 					}
-				}
+				boolean saturated = true;
+				do {
+					Set<TreeWitnessGenerator> delta = new HashSet<TreeWitnessGenerator>();
+					for (TreeWitnessGenerator gen : generators)
+						for (BasicClassDescription g : gen.getConcepts()) {
+							for (TreeWitnessGenerator some : reasoner.getGenerators()) {
+								if (reasoner.getSubConcepts(g).contains(some.getFiller()) || 
+										reasoner.getSubConcepts(g).contains(some.getRoleEndType())) {
+									saturated = false;
+									delta.add(some);
+								}		 		
+ 							}
+						}
+					saturated = !generators.addAll(delta);
+				} while (!saturated);						
+				
+				Term x = fac.getVariable("x");
+				for (TreeWitnessGenerator gen : generators) {
+					log.debug("DETACHED GENERATED BY: " + gen);
+					output.appendRule(fac.getCQIE(cqie.getHead(), getGenConAtom(gen, x, exts, gencons)));
+				}				
+			}
 		}
 
-		List<Atom> mainbody = new ArrayList<Atom>(query.getEdges().size());
+		Set<Atom> mainbody = new HashSet<Atom>(query.getEdges().size()); // SET TO REMOVE DUPLICATE ATOMS
 		int pairIndex = 0;
 				
 		for (TreeWitnessQueryGraph.Edge edge : query.getEdges()) {
@@ -180,16 +272,18 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			for (TreeWitness tw : tws)
 				if (tw.getDomain().contains(edge.getTerm0()) && tw.getDomain().contains(edge.getTerm1())) {
 					if (edgeAtom == null) {
-						URI edgeName = getQName(edge.getAtoms().iterator().next().getPredicate().getName(), ++pairIndex);
-						edgeAtom = fac.getAtom(fac.getPredicate(edgeName, query.getVariables().size()), query.getVariables());
-						mainbody.add(edgeAtom);
-						
+						URI atomURI = edge.getAtoms().iterator().next().getPredicate().getName();
+						URI edgeURI = new URI(atomURI.getScheme(), atomURI.getSchemeSpecificPart(), 
+												"Q_" + (++pairIndex) + "_" + atomURI.getFragment());
+
+						edgeAtom = fac.getAtom(fac.getPredicate(edgeURI, query.getVariables().size()), query.getVariables());
+						mainbody.add(edgeAtom);				
 						output.appendRule(fac.getCQIE(edgeAtom, extAtoms));						
 					}
 					// CREATE TREE WITNESS FORMULAS
 					List<Atom> twf = new LinkedList<Atom>();
 					Term r0 = tw.getRoots().iterator().next();
-					twf.add(fac.getAtom(fac.getClassPredicate(getExtName(tw.getGenerator())), r0));
+					twf.add(getGenConAtom(tw.getGenerator(), r0, exts, gencons));
 					for (Term rt : tw.getRoots())
 						if (!rt.equals(r0))
 							twf.add(fac.getEQAtom(rt, r0));
@@ -209,13 +303,23 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			for (Atom a : cqie.getBody())
 				mainbody.add(getExtAtom(a, exts));
 
-		output.appendRule(fac.getCQIE(cqie.getHead(), mainbody));
-
-		for (TreeWitness tw : tws)
-			generators.add(tw.getGenerator());
+		output.appendRule(fac.getCQIE(cqie.getHead(), new ArrayList<Atom>(mainbody))); 
 		
-		for (CQIE ext : getExtPredicates(cqie, generators, exts))
-			output.appendRule(ext);
+		// GENERATING CONCEPTS
+		for (TreeWitnessGenerator some : gencons) {
+			 List<CQIE> dp = genconPredicateDP.get(some);			 
+			 log.debug("GENCON RULES FOR " + some + ": " + dp);
+			 if (dp != null) 
+				 output.appendRule(dp); // NEED TO CLONE?				 
+		}
+		
+		// EXTENSIONS		
+		for (Predicate pred : exts) { 
+			 List<CQIE> dp = extPredicateDP.get(pred);			 
+			 log.debug("EXT RULES FOR " + pred + ": " + dp);
+			 if (dp != null) 
+				 output.appendRule(dp); // NEED TO CLONE?				 
+		 }
 	}
 	
 	@Override
@@ -243,10 +347,12 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				log.debug("GEN-FLATTENED PROGRAM\n" + simplified);
 				simplified = DatalogQueryServices.flatten(simplified, queryPredicate, "Q_");
 				log.debug("Q-FLATTENED PROGRAM\n" + simplified);
-				simplified = CQCUtilities.removeContainedQueriesSorted(simplified, true, sigma);
-				log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + simplified);			
-				simplified = DatalogQueryServices.flatten(simplified, queryPredicate, null);
-				log.debug("FLATTENED PROGRAM\n" + simplified);
+				if (simplified.getRules().size() > 1) {
+					simplified = CQCUtilities.removeContainedQueriesSorted(simplified, true, sigma);
+					log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + simplified);			
+					simplified = DatalogQueryServices.flatten(simplified, queryPredicate, null);
+					log.debug("FLATTENED PROGRAM\n" + simplified);
+				}
 			}
 		}
 		log.debug("\n\nRewritten UCQ size: " + simplified.getRules().size());
@@ -254,85 +360,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return simplified;
 	}
 
-	private List<CQIE> getExtPredicates(CQIE cqie, Set<PropertySomeClassRestriction> gencon, Set<Predicate> exts) throws URISyntaxException {																															
-
-		Term x = fac.getVariable("x");
-		Term y = fac.getVariable("y"); 
-
-		List<CQIE> list = new LinkedList<CQIE>();
-		
-		// GENERATING CONCEPTS
-		for (PropertySomeClassRestriction some : gencon) {
-			log.debug("GEN CON EXT: " + gencon);
-			Atom genAtom = fac.getAtom(fac.getClassPredicate(getExtName(some)), x);
-
-			for (BasicClassDescription subc : reasoner.getConceptsForGenerator(some)) {
-				log.debug("  SUBCONCEPT: " + subc);
-				if (subc instanceof OClass) {
-					log.debug("RULE FOR " + some + " DEFINED BY " + subc);
-					list.add(fac.getCQIE(genAtom, getExtAtom(((OClass)subc).getPredicate(), x, exts)));
-				}
-				else if (subc instanceof PropertySomeRestriction) {
-					 PropertySomeRestriction twg = (PropertySomeRestriction)subc;
-					 list.add(fac.getCQIE(genAtom, (!twg.isInverse()) ? 
-								getExtAtom(twg.getPredicate(), x, y, exts) : 
-									getExtAtom(twg.getPredicate(), y, x, exts)));  						 
-				}					
-			}
-		}
-		
-		// EXTENSIONS		
-		for (Predicate pred : exts) { // extPredicateMap.keySet() 
-			 Predicate extPredicate = extPredicateMap.get(pred);
-			 if (extPredicate.equals(pred))
-				 continue;
-
-			 log.debug("EXT PREDICATE: " + pred);
-			 List<CQIE> dp = extPredicateDP.get(pred);
-			 if (dp == null) {
-				 dp = new ArrayList<CQIE>(10);
-				 if (pred.getArity() == 1) { 
-					 Atom extAtom = fac.getAtom(extPredicate, x); 		  					 
-					 for (ClassDescription subc : reasoner.getSubConcepts(pred)) 
-						 if (subc instanceof OClass) 
-							 dp.add(fac.getCQIE(extAtom, fac.getAtom(((OClass)subc).getPredicate(), x)));
-						 else if (subc instanceof PropertySomeRestriction) {
-							 PropertySomeRestriction twg = (PropertySomeRestriction)subc;
-							 dp.add(fac.getCQIE(extAtom, (!twg.isInverse()) ? 
-										fac.getAtom(twg.getPredicate(), x, y) : fac.getAtom(twg.getPredicate(), y, x))); 
-						 }					 
-				 }
-				 else  {
-					 assert (pred.getArity() == 2);
-					 Atom extAtom = fac.getAtom(extPredicate, x, y);					 
-					 for (Property sub : reasoner.getSubProperties(pred))
-						dp.add(fac.getCQIE(extAtom, (!sub.isInverse()) ? 
-									fac.getAtom(sub.getPredicate(), x, y) : fac.getAtom(sub.getPredicate(), y, x))); 
-				 }
-				 dp = CQCUtilities.removeContainedQueries(dp, true, sigma, false);
-				 extPredicateDP.put(pred, dp);
-			 }
-			 else
-				 log.debug("REUSING CACHED PROGRAM FOR " + pred + " " + dp);
-			 //for (CQIE rule : dp)
-			 //	 list.add(rule.clone());
-			 list.addAll(dp);
-		 }
-		 return list;
-	}
-
 	
-	private static URI getExtName(PropertySomeClassRestriction some) throws URISyntaxException {
-		URI property = some.getPredicate().getName();
-		String fillerName = (some.getFiller() != null) ? some.getFiller().getPredicate().getName().getFragment() : "T";
-		return new URI(property.getScheme(), property.getSchemeSpecificPart(), "GEN_" + property.getFragment()
-				+ (some.isInverse() ? "_I_" : "_") + fillerName);
-	}
-
-	private static URI getQName(URI name, int pos) throws URISyntaxException {
-		return new URI(name.getScheme(), name.getSchemeSpecificPart(), "Q_" + pos + "_" + name.getFragment());
-	}
-
 	private Set<TreeWitness> getReducedSetOfTreeWitnesses(TreeWitnessQueryGraph query) {
 		Set<TreeWitness> treewitnesses = getTreeWitnesses(query);
 
@@ -341,12 +369,10 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			boolean subsumed = false;
 			for (TreeWitness tw1 : treewitnesses)
 				if (!tw.equals(tw1) && tw.getDomain().equals(tw1.getDomain()) && tw.getRoots().equals(tw1.getRoots())) {
-					PropertySomeClassRestriction twg = tw.getGenerator();
-					PropertySomeClassRestriction twg1 = tw1.getGenerator();
+					TreeWitnessGenerator twg = tw.getGenerator();
+					TreeWitnessGenerator twg1 = tw1.getGenerator();
 					if(reasoner.getSubConcepts(twg.getFiller()).contains(twg1.getFiller())) {
-						Property twp = ontFactory.createObjectProperty(twg.getPredicate().getName(), twg.isInverse());
-						Property twp1 = ontFactory.createObjectProperty(twg1.getPredicate().getName(), twg1.isInverse());
-						if (reasoner.getSubProperties(twp).contains(twp1)) {
+						if (reasoner.getSubProperties(twg.getProperty()).contains(twg1.getProperty())) {
 							log.debug("SUBSUMED: " + tw + " BY " + tw1);
 							subsumed = true;
 							break;
@@ -492,7 +518,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		log.debug("  ENDTYPE " + endtype);
 		log.debug("  ROOTTYPE " + roottype);
 	 
-		for (PropertySomeClassRestriction g : reasoner.getGenerators()) 
+		for (TreeWitnessGenerator g : reasoner.getGenerators()) 
 			if (isTreeWitness(g, props, endtype)) { 
 				TreeWitness tw = new TreeWitness(g, roots, 
 						query.getQuantifiedVariables().containsAll(roots), roottype, 
@@ -504,8 +530,24 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return treewitnesses;
 	}
 	
-	private boolean isGenerated(PropertySomeClassRestriction g, Set<Atom> endtype) {
-		PropertySomeRestriction existsRinv = ontFactory.createPropertySomeRestriction(g.getPredicate(), !g.isInverse());
+	 private boolean isTreeWitness(TreeWitnessGenerator g, List<Property> edges, Set<Atom> endtype) { 
+		log.debug("      CHECKING " + g);		
+		if (!isGenerated(g, endtype))
+			return false;
+		
+		for (Property p : edges) {
+			if (!reasoner.getSubProperties(p).contains(g.getProperty())) {
+				log.debug("        PROPERTY TOO SPECIFIC: " + p + " FOR " + g.getProperty());
+				return false;
+			}
+			else
+				log.debug("        PROPERTY IS FINE: " + p + " FOR " + g.getProperty());
+		}
+		log.debug("         ALL MATCHED"); 
+		return true; 
+	}
+
+	private boolean isGenerated(TreeWitnessGenerator g, Set<Atom> endtype) {
 		for (Atom a : endtype) {
 			 if (a.getArity() == 2) {
 				 log.debug("        NO LOOPS AT ENDPOINTS: " + a);
@@ -514,8 +556,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			 assert (a.getArity() == 1);
 			 BasicClassDescription con = ontFactory.createClass(a.getPredicate());
 			 if (!reasoner.getSubConcepts(con).contains(g.getFiller()) && 
-					 !reasoner.getSubConcepts(con).contains(existsRinv)) {
-				 log.debug("        ENDTYPE TOO SPECIFIC: " + con + " FOR " + g.getFiller() + " AND " + existsRinv);
+					 !reasoner.getSubConcepts(con).contains(g.getRoleEndType())) {
+				 log.debug("        ENDTYPE TOO SPECIFIC: " + con + " FOR " + g.getFiller() + " AND " + g.getRoleEndType());
 				 return false;
 			 }
 			 else
@@ -523,24 +565,5 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		}
 		return true;
 	}
-	
-	 private boolean isTreeWitness(PropertySomeClassRestriction g, List<Property> edges, Set<Atom> endtype) { 
-		log.debug("      CHECKING " + g);		
-		if (!isGenerated(g, endtype))
-			return false;
-		
-		Property genp = ontFactory.createProperty(g.getPredicate(), g.isInverse());
-		for (Property p : edges) {
-			if (!reasoner.getSubProperties(p).contains(genp)) {
-				log.debug("        PROPERTY TOO SPECIFIC: " + p + " FOR " + genp);
-				return false;
-			}
-			else
-				log.debug("        PROPERTY IS FINE: " + p + " FOR " + genp);
-		}
-		log.debug("         ALL MATCHED"); 
-		return true; 
-	}
-
 	 
 }

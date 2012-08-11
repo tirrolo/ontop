@@ -15,6 +15,7 @@ import it.unibz.krdb.obda.ontology.impl.SubClassAxiomImpl;
 import it.unibz.krdb.obda.ontology.impl.SubPropertyAxiomImpl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +37,7 @@ public class TreeWitnessReasonerLite {
 	private Map<Predicate, Set<BasicClassDescription>> predicateSubconcepts;
 	private Map<Predicate, Set<Property>> predicateSubproperties;
 	
-	private Map<PropertySomeClassRestriction, List<BasicClassDescription>> generatingAxioms;
+	private Map<PropertySomeClassRestriction, TreeWitnessGenerator> generators;
 
 	private static OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
 	private static final Logger log = LoggerFactory.getLogger(TreeWitnessReasonerLite.class);	
@@ -48,7 +49,7 @@ public class TreeWitnessReasonerLite {
 		this.tbox = ontology;
 		log.debug("SET ONTOLOGY " + ontology);
 		// collect generating axioms
-		generatingAxioms = new HashMap<PropertySomeClassRestriction, List<BasicClassDescription>>();
+		generators = new HashMap<PropertySomeClassRestriction, TreeWitnessGenerator>();
 		subconcepts = new HashMap<BasicClassDescription, Set<BasicClassDescription>>();
 		subproperties = new HashMap<Property, Set<Property>>();
 		
@@ -82,11 +83,11 @@ public class TreeWitnessReasonerLite {
 				Property superInverseProperty = ontFactory.createProperty(superProperty.getPredicate(), !superProperty.isInverse());
 				Property subInverseProperty = ontFactory.createProperty(subProperty.getPredicate(), !subProperty.isInverse());
 				if (!subproperties.containsKey(superProperty)) {
-					HashSet<Property> set = new HashSet<Property>(2);
+					Set<Property> set = new HashSet<Property>(2);
 					set.add(superProperty);
 					set.add(subProperty);
 					subproperties.put(superProperty, set);
-					HashSet<Property> setInverse = new HashSet<Property>(2);
+					Set<Property> setInverse = new HashSet<Property>(2);
 					setInverse.add(superInverseProperty);
 					setInverse.add(subInverseProperty);
 					subproperties.put(superInverseProperty, setInverse);
@@ -102,50 +103,68 @@ public class TreeWitnessReasonerLite {
 
 		// SATURATE PROPERTIES HIERARCHY
 		{
-			for (Property p : subproperties.keySet())
-				log.debug("SUBPROPERTIES OF " + p + " ARE " + subproperties.get(p));
+			Set<Property> sp = subproperties.keySet();
+			for (Property p : sp)
+				log.debug("DECLARED SUBPROPERTIES OF " + p + " ARE " + subproperties.get(p));
 
 			boolean changed = false;
 			do {
 				changed = false;
-				for (Property o1 : subproperties.keySet())
-					for (Property o2 : subproperties.keySet())
-						if (subproperties.get(o2).contains(o1)) {
-							if (subproperties.get(o2).addAll(subproperties.get(o1))) {
+				for (Property o1 : sp) {
+					Set<Property> so1 = null;
+					for (Property o2 : sp) {
+						if (o2 == o1)
+							continue;
+						Set<Property> so2 = subproperties.get(o2);
+						if (so2.contains(o1)) {
+							if (so1 == null)
+								so1 = subproperties.get(o1);
+							if (so2.addAll(so1)) {
 								log.debug("ALL " + o2 + " ARE EXTENDED WITH ALL " + o1);
 								changed = true;
 							}
 						}
+					}
+				}
 			} while (changed);
 			
-			for (Property p : subproperties.keySet())
+			for (Property p : sp)
 				log.debug("SATURATED SUBPROPERTY OF " + p + " ARE " + subproperties.get(p));
 		}
 	
 		// SATURATE CONCEPTS HIERARCHY
 		{
 			for (BasicClassDescription k : subconcepts.keySet())
-				log.debug("SUBCONCEPTS OF " + k + " ARE " + subconcepts.get(k));
+				log.debug("DECLARED SUBCONCEPTS OF " + k + " ARE " + subconcepts.get(k));
 	
 			for (Property prop : subproperties.keySet()) 
 				for (Property subproperty : subproperties.get(prop)) 
 					addSubConcept(ontFactory.createPropertySomeRestriction(subproperty.getPredicate(), subproperty.isInverse()), 
 							ontFactory.createPropertySomeRestriction(prop.getPredicate(), prop.isInverse()));
 			
+			Set<BasicClassDescription> sc = subconcepts.keySet();
 			boolean changed = false;
 			do {
 				changed = false;
-				for (BasicClassDescription o1 : subconcepts.keySet())
-					for (BasicClassDescription o2 : subconcepts.keySet())
-						if (subconcepts.get(o2).contains(o1)) {
-							if (subconcepts.get(o2).addAll(subconcepts.get(o1))) {
+				for (BasicClassDescription o1 : sc) {
+					Set<BasicClassDescription> so1 = null;
+					for (BasicClassDescription o2 : sc) {
+						if (o2 == o1)
+							continue;
+						Set<BasicClassDescription> so2 = subconcepts.get(o2);
+						if (so2.contains(o1)) {
+							if (so1 == null)
+								so1 = subconcepts.get(o1);
+							if (so2.addAll(so1)) {
 								log.debug("ALL " + o2 + " ARE EXTENDED WITH ALL " + o1);
 								changed = true;
 							}
 						}
+					}
+				}
 			} while (changed);
 			
-			for (BasicClassDescription k : subconcepts.keySet())
+			for (BasicClassDescription k : sc)
 				log.debug("SATURATED SUBCONCEPTS OF " + k + " are " + subconcepts.get(k));
 		}
 		
@@ -153,24 +172,23 @@ public class TreeWitnessReasonerLite {
 	}
 	
 	private void addSubConcept(BasicClassDescription subConcept, BasicClassDescription superConcept) {
-		if (!subconcepts.containsKey(superConcept)) {
-			HashSet<BasicClassDescription> set = new HashSet<BasicClassDescription>();
-			set.add(subConcept);
+		Set<BasicClassDescription> set = subconcepts.get(superConcept);
+		if (set == null) {
+			set = new HashSet<BasicClassDescription>();
 			set.add(superConcept);
 			subconcepts.put(superConcept, set);
 		}
-		else
-			subconcepts.get(superConcept).add(subConcept);		
+		set.add(subConcept);		
 	}
 
 	private void addGeneratingConceptAxiom(BasicClassDescription subConcept, PropertySomeClassRestriction superConcept) {
-		if (!generatingAxioms.containsKey(superConcept)) {
-			ArrayList<BasicClassDescription> e = new ArrayList<BasicClassDescription>();
-			e.add(subConcept);
-			generatingAxioms.put(superConcept, e);
+		TreeWitnessGenerator twg = generators.get(superConcept);
+		if (twg == null) {
+			twg = new TreeWitnessGenerator(superConcept);			
+			generators.put(superConcept, twg);
 		}
-		else
-			generatingAxioms.get(superConcept).add(subConcept); 		
+		twg.addConcept(subConcept);
+		log.debug("GENERATING CI: " + subConcept + " <= " + superConcept);
 	}
 	
 	public Set<Property> getSubProperties(Predicate pred) {
@@ -209,11 +227,7 @@ public class TreeWitnessReasonerLite {
 		return s;
 	}
 
-	public Set<PropertySomeClassRestriction> getGenerators() {
-		return generatingAxioms.keySet();
-	}
-	
-	public List<BasicClassDescription> getConceptsForGenerator(PropertySomeClassRestriction gencon) {
-		return generatingAxioms.get(gencon);
+	public Collection<TreeWitnessGenerator> getGenerators() {
+		return generators.values();
 	}
 }

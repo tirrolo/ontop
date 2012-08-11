@@ -27,12 +27,12 @@ public class TreeWitness {
 	private Set<Term> roots;   // terms that are mapped onto the root of the tree witness
 	private Set<Atom> roottype; // atoms of the query that contain only the roots of the tree witness
 	                            // these atoms must hold true for this tree witness to be realised
-	private PropertySomeClassRestriction gen; // the \exists R.B concept that realises the tree witness 
+	private TreeWitnessGenerator gen; // the \exists R.B concept that realises the tree witness 
 	                                          // in the canonical model of the TBox
 
 	private boolean allRootsBound;
 
-	public TreeWitness(PropertySomeClassRestriction gen, Set<Term> roots, boolean allRootsBound, Set<Atom> roottype, Set<Term> nonroots) {
+	public TreeWitness(TreeWitnessGenerator gen, Set<Term> roots, boolean allRootsBound, Set<Atom> roottype, Set<Term> nonroots) {
 		this.gen = gen;
 		this.roots = roots;
 		this.allRootsBound = allRootsBound;
@@ -53,7 +53,7 @@ public class TreeWitness {
 		return domain;
 	}
 	
-	public PropertySomeClassRestriction getGenerator() {
+	public TreeWitnessGenerator getGenerator() {
 		return gen;
 	}
 	

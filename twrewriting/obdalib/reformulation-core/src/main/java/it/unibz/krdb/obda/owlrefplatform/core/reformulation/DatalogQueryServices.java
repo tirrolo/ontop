@@ -264,7 +264,7 @@ public class DatalogQueryServices {
 						i.remove();
 						CQIE rule = defs.iterator().next();
 						body.addAll(unify(rule, a)); 
-						log.debug("REPLACE " + a + " WITH " + rule);
+						log.debug("SIMPLIFY: REPLACE " + a + " WITH " + rule);
 						break;
 					}
 				}
