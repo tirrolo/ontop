@@ -47,11 +47,17 @@ public class TreeWitnessRewriter implements QueryRewriter {
 
 	private TreeWitnessReasonerLite reasoner = new TreeWitnessReasonerLite();
 	
+	private Map<Predicate, Predicate> extPredicateMap = new HashMap<Predicate, Predicate>();
+	private Map<Predicate, List<CQIE>> extPredicateDP = new HashMap<Predicate, List<CQIE>>();
+	
 	private Ontology sigma = null;
 	
 	@Override
 	public void setTBox(Ontology ontology) {
 		reasoner.setTBox(ontology);
+		
+		extPredicateMap.clear();
+		extPredicateDP.clear();
 	}
 	
 	@Override
@@ -61,6 +67,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		for (Axiom ax : sigma.getAssertions()) {
 			log.debug("SIGMA: " + ax);
 		}
+		extPredicateMap.clear();
+		extPredicateDP.clear();
 	}
 
 	@Override
@@ -68,32 +76,36 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		// TODO Auto-generated method stub
 	}
 
-	private static Atom getExtAtom(Atom a, Map<Predicate,Predicate> extPredicateMap) throws URISyntaxException {
+	private  Atom getExtAtom(Atom a, Set<Predicate> exts) throws URISyntaxException {
 		if (a.getTerms().size() == 1)
-			return getExtAtom(a.getPredicate(), a.getTerm(0), extPredicateMap);
+			return getExtAtom(a.getPredicate(), a.getTerm(0), exts);
 		else
-			return getExtAtom(a.getPredicate(), a.getTerm(0), a.getTerm(1), extPredicateMap);
+			return getExtAtom(a.getPredicate(), a.getTerm(0), a.getTerm(1), exts);
 	}
 
-	private static Atom getExtAtom(Predicate p, Term t, Map<Predicate,Predicate> extPredicateMap) throws URISyntaxException {
-		Predicate ext = null;
-		if (!extPredicateMap.containsKey(p)) {
-			ext = fac.getClassPredicate(getEXTname(p.getName()));
+	private Atom getExtAtom(Predicate p, Term t, Set<Predicate> exts) throws URISyntaxException {
+		Predicate ext = extPredicateMap.get(p);
+		if (ext == null) {
+			if (reasoner.getSubConcepts(p).size() > 1) 
+				ext = fac.getClassPredicate(getEXTname(p.getName()));
+			else 
+				ext = p;
 			extPredicateMap.put(p, ext);
 		}
-		else
-			ext = extPredicateMap.get(p);
+		exts.add(p);
 		return fac.getAtom(ext, t);
 	}
 
-	private static Atom getExtAtom(Predicate p, Term t1, Term t2, Map<Predicate,Predicate> extPredicateMap) throws URISyntaxException {
-		Predicate ext = null;
-		if (!extPredicateMap.containsKey(p)) {
-			ext = fac.getObjectPropertyPredicate(getEXTname(p.getName()));
+	private  Atom getExtAtom(Predicate p, Term t1, Term t2, Set<Predicate> exts) throws URISyntaxException {
+		Predicate ext = extPredicateMap.get(p);
+		if (ext == null) {
+			if (reasoner.getSubProperties(p).size() > 1)
+				ext = fac.getObjectPropertyPredicate(getEXTname(p.getName()));
+			else 
+				ext = p;
 			extPredicateMap.put(p, ext);
 		}
-		else
-			ext = extPredicateMap.get(p);
+		exts.add(p);
 		return fac.getAtom(ext, t1, t2);
 	}
 
@@ -107,13 +119,13 @@ public class TreeWitnessRewriter implements QueryRewriter {
 
 		TreeWitnessQueryGraph query = new TreeWitnessQueryGraph(cqie);
 		
+		Set<Predicate> exts = new HashSet<Predicate>();
+		
 		Set<TreeWitness> tws = getReducedSetOfTreeWitnesses(query);
 		log.debug("TREE WITNESSES FOUND: " + tws.size());
 		for (TreeWitness tw : tws) 
 			log.debug(" " + tw);
-		
-		Map<Predicate,Predicate> extPredicateMap = new HashMap<Predicate,Predicate>();
-		
+				
 		Set<PropertySomeClassRestriction> generators = new HashSet<PropertySomeClassRestriction>();
 		
 		{
@@ -162,7 +174,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			log.debug("EDGE " + edge);
 			List<Atom> extAtoms = new ArrayList<Atom>(edge.getAtoms().size()); 
 			for (Atom aa : edge.getAtoms()) 
-				extAtoms.add(getExtAtom(aa, extPredicateMap));
+				extAtoms.add(getExtAtom(aa, exts));
 			
 			Atom edgeAtom = null;	 // null means the edge has no tree witnesses associated to it			
 			for (TreeWitness tw : tws)
@@ -183,9 +195,9 @@ public class TreeWitnessRewriter implements QueryRewriter {
 							twf.add(fac.getEQAtom(rt, r0));
 					for (Atom c : tw.getRootType()) {
 						if (c.getArity() == 1)
-							twf.add(getExtAtom(c.getPredicate(), r0, extPredicateMap));
+							twf.add(getExtAtom(c.getPredicate(), r0, exts));
 						else //(c.getArity() == 2)
-							twf.add(getExtAtom(c.getPredicate(), r0, r0, extPredicateMap));
+							twf.add(getExtAtom(c.getPredicate(), r0, r0, exts));
 					}
 					output.appendRule(fac.getCQIE(edgeAtom, twf));
 				}
@@ -195,14 +207,14 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		// if no binary predicates 
 		if (query.getEdges().size() == 0)
 			for (Atom a : cqie.getBody())
-				mainbody.add(getExtAtom(a, extPredicateMap));
+				mainbody.add(getExtAtom(a, exts));
 
 		output.appendRule(fac.getCQIE(cqie.getHead(), mainbody));
 
 		for (TreeWitness tw : tws)
 			generators.add(tw.getGenerator());
 		
-		for (CQIE ext : getExtPredicates(cqie, generators, extPredicateMap))
+		for (CQIE ext : getExtPredicates(cqie, generators, exts))
 			output.appendRule(ext);
 	}
 	
@@ -219,20 +231,21 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				e.printStackTrace();
 			}		
 		}
+		Predicate queryPredicate = dp.getRules().get(0).getHead().getPredicate();
 		log.debug("REWRITTEN PROGRAM\n" + output);			
-		DatalogProgram simplified = DatalogQueryServices.simplify(output,dp.getRules().get(0).getHead().getPredicate());
-		log.debug("SIMPLIFIED PROGRAM\n" + simplified);
+		DatalogProgram simplified = output; //DatalogQueryServices.simplify(output,dp.getRules().get(0).getHead().getPredicate());
+		//log.debug("SIMPLIFIED PROGRAM\n" + simplified);
 		if (simplified.getRules().size() > 1) {
-			simplified = CQCUtilities.removeContainedQueriesSorted(simplified, true, sigma);
-			log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + simplified);			
-			simplified = DatalogQueryServices.simplify(simplified, dp.getRules().get(0).getHead().getPredicate());
-			log.debug("2ND SIMPLIFIED PROGRAM\n" + simplified);
+			simplified = DatalogQueryServices.simplify(simplified, queryPredicate);
+			log.debug("SIMPLIFIED PROGRAM\n" + simplified);
 			if (simplified.getRules().size() > 1) {
-				simplified = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), "GEN_");
+				simplified = DatalogQueryServices.flatten(simplified, queryPredicate, "GEN_");
 				log.debug("GEN-FLATTENED PROGRAM\n" + simplified);
-				simplified = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), "Q_");
+				simplified = DatalogQueryServices.flatten(simplified, queryPredicate, "Q_");
 				log.debug("Q-FLATTENED PROGRAM\n" + simplified);
-				simplified = DatalogQueryServices.flatten(simplified,dp.getRules().get(0).getHead().getPredicate(), null);
+				simplified = CQCUtilities.removeContainedQueriesSorted(simplified, true, sigma);
+				log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + simplified);			
+				simplified = DatalogQueryServices.flatten(simplified, queryPredicate, null);
 				log.debug("FLATTENED PROGRAM\n" + simplified);
 			}
 		}
@@ -241,7 +254,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return simplified;
 	}
 
-	private List<CQIE> getExtPredicates(CQIE cqie, Set<PropertySomeClassRestriction> gencon, Map<Predicate, Predicate> extPredicateMap) throws URISyntaxException {																															
+	private List<CQIE> getExtPredicates(CQIE cqie, Set<PropertySomeClassRestriction> gencon, Set<Predicate> exts) throws URISyntaxException {																															
 
 		Term x = fac.getVariable("x");
 		Term y = fac.getVariable("y"); 
@@ -257,40 +270,53 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				log.debug("  SUBCONCEPT: " + subc);
 				if (subc instanceof OClass) {
 					log.debug("RULE FOR " + some + " DEFINED BY " + subc);
-					list.add(fac.getCQIE(genAtom, getExtAtom(((OClass)subc).getPredicate(), x, extPredicateMap)));
+					list.add(fac.getCQIE(genAtom, getExtAtom(((OClass)subc).getPredicate(), x, exts)));
 				}
 				else if (subc instanceof PropertySomeRestriction) {
 					 PropertySomeRestriction twg = (PropertySomeRestriction)subc;
 					 list.add(fac.getCQIE(genAtom, (!twg.isInverse()) ? 
-								getExtAtom(twg.getPredicate(), x, y, extPredicateMap) : 
-									getExtAtom(twg.getPredicate(), y, x, extPredicateMap)));  						 
+								getExtAtom(twg.getPredicate(), x, y, exts) : 
+									getExtAtom(twg.getPredicate(), y, x, exts)));  						 
 				}					
 			}
 		}
 		
 		// EXTENSIONS		
-		for (Predicate pred : extPredicateMap.keySet()) { 
+		for (Predicate pred : exts) { // extPredicateMap.keySet() 
+			 Predicate extPredicate = extPredicateMap.get(pred);
+			 if (extPredicate.equals(pred))
+				 continue;
+
 			 log.debug("EXT PREDICATE: " + pred);
-			 if (pred.getArity() == 1) { 
-				 Atom extAtom = fac.getAtom(extPredicateMap.get(pred), x); 		  
-				 
-				 for (ClassDescription subc : reasoner.getSubConcepts(ontFactory.createClass(pred))) 
-					 if (subc instanceof OClass) 
-						 list.add(fac.getCQIE(extAtom, fac.getAtom(((OClass)subc).getPredicate(), x)));
-					 else if (subc instanceof PropertySomeRestriction) {
-						 PropertySomeRestriction twg = (PropertySomeRestriction)subc;
-						 list.add(fac.getCQIE(extAtom, (!twg.isInverse()) ? 
-									fac.getAtom(twg.getPredicate(), x, y) : fac.getAtom(twg.getPredicate(), y, x))); 
-					 }
-			 } 
-			 else  {
-				assert (pred.getArity() == 2);
-				Atom extAtom = fac.getAtom(extPredicateMap.get(pred), x, y);
-				 
-				for (Property sub : reasoner.getSubProperties(ontFactory.createProperty(pred)))
-					list.add(fac.getCQIE(extAtom, (!sub.isInverse()) ? 
-								fac.getAtom(sub.getPredicate(), x, y) : fac.getAtom(sub.getPredicate(), y, x))); 
-			 } 
+			 List<CQIE> dp = extPredicateDP.get(pred);
+			 if (dp == null) {
+				 dp = new ArrayList<CQIE>(10);
+				 if (pred.getArity() == 1) { 
+					 Atom extAtom = fac.getAtom(extPredicate, x); 		  					 
+					 for (ClassDescription subc : reasoner.getSubConcepts(pred)) 
+						 if (subc instanceof OClass) 
+							 dp.add(fac.getCQIE(extAtom, fac.getAtom(((OClass)subc).getPredicate(), x)));
+						 else if (subc instanceof PropertySomeRestriction) {
+							 PropertySomeRestriction twg = (PropertySomeRestriction)subc;
+							 dp.add(fac.getCQIE(extAtom, (!twg.isInverse()) ? 
+										fac.getAtom(twg.getPredicate(), x, y) : fac.getAtom(twg.getPredicate(), y, x))); 
+						 }					 
+				 }
+				 else  {
+					 assert (pred.getArity() == 2);
+					 Atom extAtom = fac.getAtom(extPredicate, x, y);					 
+					 for (Property sub : reasoner.getSubProperties(pred))
+						dp.add(fac.getCQIE(extAtom, (!sub.isInverse()) ? 
+									fac.getAtom(sub.getPredicate(), x, y) : fac.getAtom(sub.getPredicate(), y, x))); 
+				 }
+				 dp = CQCUtilities.removeContainedQueries(dp, true, sigma, false);
+				 extPredicateDP.put(pred, dp);
+			 }
+			 else
+				 log.debug("REUSING CACHED PROGRAM FOR " + pred + " " + dp);
+			 //for (CQIE rule : dp)
+			 //	 list.add(rule.clone());
+			 list.addAll(dp);
 		 }
 		 return list;
 	}

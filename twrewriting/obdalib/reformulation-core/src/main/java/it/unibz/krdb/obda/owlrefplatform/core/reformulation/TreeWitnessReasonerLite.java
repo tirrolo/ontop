@@ -29,10 +29,14 @@ public class TreeWitnessReasonerLite {
 	private Ontology tbox;
 
 	// reflexive and transitive closure of the relations
-	private Map<BasicClassDescription, HashSet<BasicClassDescription>> subconcepts; 
-	private Map<Property, HashSet<Property>> subproperties; 
+	private Map<BasicClassDescription, Set<BasicClassDescription>> subconcepts; 
+	private Map<Property, Set<Property>> subproperties; 
 
-	private Map<PropertySomeClassRestriction, ArrayList<BasicClassDescription>> generatingAxioms;
+	// caching OClasses and Properties 
+	private Map<Predicate, Set<BasicClassDescription>> predicateSubconcepts;
+	private Map<Predicate, Set<Property>> predicateSubproperties;
+	
+	private Map<PropertySomeClassRestriction, List<BasicClassDescription>> generatingAxioms;
 
 	private static OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
 	private static final Logger log = LoggerFactory.getLogger(TreeWitnessReasonerLite.class);	
@@ -44,9 +48,12 @@ public class TreeWitnessReasonerLite {
 		this.tbox = ontology;
 		log.debug("SET ONTOLOGY " + ontology);
 		// collect generating axioms
-		generatingAxioms = new HashMap<PropertySomeClassRestriction, ArrayList<BasicClassDescription>>();
-		subconcepts = new HashMap<BasicClassDescription, HashSet<BasicClassDescription>>();
-		subproperties = new HashMap<Property, HashSet<Property>>();
+		generatingAxioms = new HashMap<PropertySomeClassRestriction, List<BasicClassDescription>>();
+		subconcepts = new HashMap<BasicClassDescription, Set<BasicClassDescription>>();
+		subproperties = new HashMap<Property, Set<Property>>();
+		
+		predicateSubconcepts = new HashMap<Predicate, Set<BasicClassDescription>>();
+		predicateSubproperties = new HashMap<Predicate, Set<Property>>();
 		
 		log.debug("AXIOMS");
 		for (Axiom ax : tbox.getAssertions()) {
@@ -75,11 +82,11 @@ public class TreeWitnessReasonerLite {
 				Property superInverseProperty = ontFactory.createProperty(superProperty.getPredicate(), !superProperty.isInverse());
 				Property subInverseProperty = ontFactory.createProperty(subProperty.getPredicate(), !subProperty.isInverse());
 				if (!subproperties.containsKey(superProperty)) {
-					HashSet<Property> set = new HashSet<Property>();
+					HashSet<Property> set = new HashSet<Property>(2);
 					set.add(superProperty);
 					set.add(subProperty);
 					subproperties.put(superProperty, set);
-					HashSet<Property> setInverse = new HashSet<Property>();
+					HashSet<Property> setInverse = new HashSet<Property>(2);
 					setInverse.add(superInverseProperty);
 					setInverse.add(subInverseProperty);
 					subproperties.put(superInverseProperty, setInverse);
@@ -166,12 +173,40 @@ public class TreeWitnessReasonerLite {
 			generatingAxioms.get(superConcept).add(subConcept); 		
 	}
 	
+	public Set<Property> getSubProperties(Predicate pred) {
+		Set<Property> s = predicateSubproperties.get(pred);
+		if (s == null) {
+			s = getSubProperties(ontFactory.createProperty(pred));
+			predicateSubproperties.put(pred, s);
+		}
+		return s;
+	}
+	
 	public Set<Property> getSubProperties(Property prop) {
-		return (!subproperties.containsKey(prop)) ? Collections.singleton(prop) : subproperties.get(prop);
+		Set<Property> s = subproperties.get(prop);
+		if (s == null) {
+			s = Collections.singleton(prop);
+			subproperties.put(prop, s);
+		}
+		return s;
+	}
+	
+	public Set<BasicClassDescription> getSubConcepts(Predicate pred) {
+		Set<BasicClassDescription> s = predicateSubconcepts.get(pred);
+		if (s == null) {
+			s = getSubConcepts(ontFactory.createClass(pred));
+			predicateSubconcepts.put(pred, s);
+		}
+		return s;
 	}
 	
 	public Set<BasicClassDescription> getSubConcepts(BasicClassDescription con) {
-		return (!subconcepts.containsKey(con)) ? Collections.singleton(con) : subconcepts.get(con);
+		Set<BasicClassDescription> s = subconcepts.get(con);
+		if (s == null) {
+			s = Collections.singleton(con);
+			subconcepts.put(con, s);
+		}
+		return s;
 	}
 
 	public Set<PropertySomeClassRestriction> getGenerators() {
