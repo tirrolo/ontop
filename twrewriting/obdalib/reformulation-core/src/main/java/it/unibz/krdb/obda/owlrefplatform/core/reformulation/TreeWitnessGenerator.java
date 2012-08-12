@@ -21,8 +21,6 @@ public class TreeWitnessGenerator {
 	
 	public TreeWitnessGenerator(PropertySomeClassRestriction some) {
 		this.some = some;
-		this.existsRinv = ontFactory.createPropertySomeRestriction(some.getPredicate(), !some.isInverse());	
-		this.property = ontFactory.createProperty(some.getPredicate(), some.isInverse());
 	}
 
 	public void addConcept(BasicClassDescription con) {
@@ -38,10 +36,14 @@ public class TreeWitnessGenerator {
 	}
 	
 	public PropertySomeRestriction getRoleEndType() {
+		if (existsRinv == null)
+			existsRinv = ontFactory.createPropertySomeRestriction(some.getPredicate(), !some.isInverse());	
 		return existsRinv; 	
 	}
 	
 	public Property getProperty() {
+		if (property == null)
+			property = ontFactory.createProperty(some.getPredicate(), some.isInverse());
 		return property;
 	}
 	

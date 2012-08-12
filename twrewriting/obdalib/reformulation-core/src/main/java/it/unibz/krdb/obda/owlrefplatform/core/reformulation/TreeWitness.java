@@ -1,15 +1,10 @@
 package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.ontology.PropertySomeClassRestriction;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * TreeWitness class defines tree witnesses as in the KR 2012 paper
@@ -70,7 +65,7 @@ public class TreeWitness {
 	public boolean equals(Object obj) {
 		if (obj instanceof TreeWitness) {
 			TreeWitness other = (TreeWitness)obj;
-			return (this.hashCode() == other.hashCode()) && 
+			return //(this.hashCode() == other.hashCode()) && 
 					this.gen.equals(other.gen) &&
 					this.roots.equals(other.roots) && 
 					this.roottype.equals(other.roottype) && 

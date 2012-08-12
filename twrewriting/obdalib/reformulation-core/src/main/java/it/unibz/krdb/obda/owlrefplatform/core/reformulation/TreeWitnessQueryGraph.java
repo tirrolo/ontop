@@ -41,13 +41,14 @@ public class TreeWitnessQueryGraph {
 					noFreeTerms = false;
 				
 				TermPair pair = new TermPair(t0, t1);
-				if (!pairs.containsKey(pair)) {
-					Edge e = new Edge(t0, t1, a);
-					edges.add(e);
-					pairs.put(pair, e);
+				Edge edge =  pairs.get(pair); 
+				if (edge == null) {
+					edge = new Edge(pair, a);
+					edges.add(edge);
+					pairs.put(pair, edge);
 				}
 				else
-					pairs.get(pair).addAtom(a);			
+					edge.addAtom(a);			
 			}
 			else // if ((a.getArity() == 1) || terms are equal)
 			{
@@ -57,13 +58,12 @@ public class TreeWitnessQueryGraph {
 				else
 					noFreeTerms = false;
 				
-				if (!loops.containsKey(key)) {
-					Set<Atom> atoms = new HashSet<Atom>();
-					atoms.add(a);
-					loops.put(key, atoms);
+				Set<Atom> loop = loops.get(key);
+				if (loop == null) {
+					loop = new HashSet<Atom>();
+					loops.put(key, loop);
 				}
-				else
-					loops.get(key).add(a);			
+				loop.add(a);
 					
 			}
 		}	
@@ -74,11 +74,12 @@ public class TreeWitnessQueryGraph {
 		variables = new ArrayList<Term>(variablesSet);
 		quantifiedVariables = new ArrayList<Variable>(variables.size());
 		
+		List<Term> headTerms = cqie.getHead().getTerms();
 		for (Term v : variables) 
-			if (!cqie.getHead().getTerms().contains(v))
+			if (!headTerms.contains(v))
 				quantifiedVariables.add((Variable)v);
 		
-		noFreeTerms = noFreeTerms && (cqie.getHead().getTerms().size() == 0);
+		noFreeTerms = noFreeTerms && (headTerms.size() == 0);
 	}
 	
 	public boolean hasNoFreeTerms() {
@@ -108,22 +109,21 @@ public class TreeWitnessQueryGraph {
 	}
 	
 	static class Edge {
-		private Term t0, t1;
+		private TermPair terms;
 		private Set<Atom> atoms;
 		
-		public Edge(Term t0, Term t1, Atom a) {
-			this.t0 = t0;
-			this.t1 = t1;
+		public Edge(TermPair terms, Atom a) {
+			this.terms = terms;
 			this.atoms = new HashSet<Atom>();
 			atoms.add(a);
 		}
 
 		public Term getTerm0() {
-			return t0;
+			return terms.t0;
 		}
 		
 		public Term getTerm1() {
-			return t1;
+			return terms.t1;
 		}
 	
 		void addAtom(Atom a) {
@@ -141,7 +141,19 @@ public class TreeWitnessQueryGraph {
 
 		@Override
 		public String toString() {
-			return "edge: {" + t0 + ", " + t1 + "}" + atoms;
+			return "edge: {" + terms.t0 + ", " + terms.t1 + "}" + atoms;
+		}
+		
+		@Override 
+		public boolean equals(Object o) {
+			if (o instanceof Edge) 
+				return terms.equals(((Edge)o).terms);
+			return false;
+		}
+		
+		@Override
+		public int hashCode() {
+			return terms.hashCode();
 		}
 	}
 	
@@ -155,6 +167,9 @@ public class TreeWitnessQueryGraph {
 
 		@Override
 		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			
 			if (o instanceof TermPair) {
 				TermPair other = (TermPair) o;
 				if (this.t0.equals(other.t0) 

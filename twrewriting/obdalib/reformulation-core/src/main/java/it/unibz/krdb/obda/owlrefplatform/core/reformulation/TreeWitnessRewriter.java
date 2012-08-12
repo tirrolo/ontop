@@ -8,6 +8,8 @@ import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.impl.AnonymousVariable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.ontology.Axiom;
 import it.unibz.krdb.obda.ontology.BasicClassDescription;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +52,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	private Map<Predicate, Predicate> extPredicateMap = new HashMap<Predicate, Predicate>();
 	private Map<Predicate, List<CQIE>> extPredicateDP = new HashMap<Predicate, List<CQIE>>();
 	
-	private Map<TreeWitnessGenerator, Predicate> genconPredicateMap = new HashMap<TreeWitnessGenerator, Predicate>();
-	private Map<TreeWitnessGenerator, List<CQIE>> genconPredicateDP = new HashMap<TreeWitnessGenerator, List<CQIE>>();
+	private Map<TreeWitnessGenerator, List<Atom>> genconPredicateDP = new HashMap<TreeWitnessGenerator, List<Atom>>();
 	
 	private Ontology sigma = null;
 	
@@ -60,7 +62,6 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		
 		extPredicateMap.clear();
 		extPredicateDP.clear();
-		genconPredicateMap.clear();
 		genconPredicateDP.clear();
 	}
 	
@@ -73,7 +74,6 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		}
 		extPredicateMap.clear();
 		extPredicateDP.clear();
-		genconPredicateMap.clear();
 		genconPredicateDP.clear();
 	}
 
@@ -87,10 +87,21 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	 */
 
 	private  Atom getExtAtom(Atom a, Set<Predicate> usedExts) throws URISyntaxException {
-		if (a.getTerms().size() == 1)
+		if (a.getArity() == 1)
 			return getExtAtom(a.getPredicate(), a.getTerm(0), usedExts);
 		else
 			return getExtAtom(a.getPredicate(), a.getTerm(0), a.getTerm(1), usedExts);
+	}
+
+	private  Atom getExtAtom(Atom a, Term r0, Set<Predicate> usedExts) throws URISyntaxException {
+		if (a.getArity() == 1)
+			return getExtAtom(a.getPredicate(), r0, usedExts);
+		else {
+			// assert(a.getArity() == 2);
+			Term t0 = ((a.getTerm(0) instanceof AnonymousVariable) ? getFreshVariable() : r0);
+			Term t1 = ((a.getTerm(1) instanceof AnonymousVariable) ? getFreshVariable() : r0);
+			return getExtAtom(a.getPredicate(), t0, t1, usedExts);
+		}
 	}
 
 	private Atom getExtAtom(Predicate p, Term t, Set<Predicate> usedExts) throws URISyntaxException {
@@ -159,32 +170,30 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	 * Generating Concept atoms cache
 	 */
 			
-	private Atom getGenConAtom(TreeWitnessGenerator some, Term t, Set<Predicate> usedExts, Set<TreeWitnessGenerator> usedGencons) throws URISyntaxException  {
-		Predicate gencon = genconPredicateMap.get(some);
-		if (gencon == null) {
-			 List<CQIE> dp = new ArrayList<CQIE>(10);
+	private List<Atom> getGenConAtoms(TreeWitnessGenerator some) throws URISyntaxException  {
+		List<Atom> atoms = genconPredicateDP.get(some);
+		if (atoms == null) {
+			 List<CQIE> dp = new LinkedList<CQIE>();
 			 
 			 URI propURI = some.getProperty().getPredicate().getName();
-			 URI genconURI = new URI(propURI.getScheme(), propURI.getSchemeSpecificPart(), "GEN_" + propURI.getFragment()
-						+ (some.getProperty().isInverse() ? "_I_" : "_") 
-						+ ((some.getFiller() != null) ?  some.getFiller().getPredicate().getName().getFragment() : "T"));
+			 URI genconURI = new URI(propURI.getScheme(), propURI.getSchemeSpecificPart(), "GEN"); 
+			 			//+ propURI.getFragment()
+						//+ (some.getProperty().isInverse() ? "_I_" : "_") 
+						//+ ((some.getFiller() != null) ?  some.getFiller().getPredicate().getName().getFragment() : "T"));
 					 
-			 gencon = fac.getClassPredicate(genconURI);
 			 Term x = fac.getVariable("x");
-			 Term y = fac.getVariable("y");
-			 Atom genAtom = fac.getAtom(gencon, x);
+			 Atom genAtom = fac.getAtom(fac.getClassPredicate(genconURI), x);
 			 log.debug("RULES FOR GENERATING CONCEPT " + some);
 			 for (BasicClassDescription subc : some.getConcepts()) {
 				log.debug("  SUBCONCEPT: " + subc);
 				if (subc instanceof OClass) {
-					log.debug("RULE FOR " + some + " DEFINED BY " + subc);
-					dp.add(fac.getCQIE(genAtom, getExtAtom(((OClass)subc).getPredicate(), x, usedExts)));
+					 dp.add(fac.getCQIE(genAtom, fac.getAtom(((OClass)subc).getPredicate(), x)));
 				}
 				else if (subc instanceof PropertySomeRestriction) {
 					 PropertySomeRestriction twg = (PropertySomeRestriction)subc;
 					 dp.add(fac.getCQIE(genAtom, (!twg.isInverse()) ? 
-								getExtAtom(twg.getPredicate(), x, y, usedExts) : 
-									getExtAtom(twg.getPredicate(), y, x, usedExts)));  						 
+								fac.getAtom(twg.getPredicate(), x, fac.getNondistinguishedVariable()) : 
+									fac.getAtom(twg.getPredicate(), fac.getNondistinguishedVariable(), x)));  						 
 				}					
 			 }
 			 log.debug("DP FOR " + some + " IS " + dp);
@@ -192,20 +201,19 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				 dp = CQCUtilities.removeContainedQueries(dp, true, sigma, false);
 				 log.debug("SIMPLIFIED DP FOR " + some + " IS " + dp);
 			 }
-			 if (dp.size() == 1) {
-				 Atom qdp = dp.get(0).getBody().get(0);
-				 if (qdp.getArity() == 1) {
-					 dp = null;
-					 gencon = qdp.getPredicate();
-				 }
-			 }
-			 genconPredicateDP.put(some, dp);
-			 genconPredicateMap.put(some, gencon);				 
+			 atoms = new ArrayList<Atom>(dp.size());
+			 for (CQIE rule : dp) 
+				atoms.add(rule.getBody().get(0));
+			 genconPredicateDP.put(some, atoms);
 		}
-		usedGencons.add(some);
-		return fac.getAtom(gencon, t);		
+		return atoms;		
 	}
 	
+	private static int nextVariableIndex = 1000;
+	
+	private static Variable getFreshVariable() {
+		return fac.getVariable("w" + nextVariableIndex++);		
+	}
 
 	/*
 	 * rewrites a given CQ with the rules put into output
@@ -222,8 +230,6 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		for (TreeWitness tw : tws) 
 			log.debug(" " + tw);
 				
-		Set<TreeWitnessGenerator> gencons = new HashSet<TreeWitnessGenerator>();
-		
 		{
 			// DETACHED TREE WITNESS
 			if (query.hasNoFreeTerms()) {
@@ -254,7 +260,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				Term x = fac.getVariable("x");
 				for (TreeWitnessGenerator gen : generators) {
 					log.debug("DETACHED GENERATED BY: " + gen);
-					output.appendRule(fac.getCQIE(cqie.getHead(), getGenConAtom(gen, x, exts, gencons)));
+					for (Atom a : getGenConAtoms(gen))
+						output.appendRule(fac.getCQIE(cqie.getHead(), getExtAtom(a, x, exts))); 
 				}				
 			}
 		}
@@ -281,19 +288,26 @@ public class TreeWitnessRewriter implements QueryRewriter {
 						output.appendRule(fac.getCQIE(edgeAtom, extAtoms));						
 					}
 					// CREATE TREE WITNESS FORMULAS
-					List<Atom> twf = new LinkedList<Atom>();
-					Term r0 = tw.getRoots().iterator().next();
-					twf.add(getGenConAtom(tw.getGenerator(), r0, exts, gencons));
-					for (Term rt : tw.getRoots())
-						if (!rt.equals(r0))
-							twf.add(fac.getEQAtom(rt, r0));
+					Set<Atom> twf = new HashSet<Atom>(); // set to remove duplicates
+					Iterator<Term> i = tw.getRoots().iterator();
+					Term r0 = i.next();
+					while (i.hasNext()) 
+						twf.add(fac.getEQAtom(i.next(), r0));
+					
 					for (Atom c : tw.getRootType()) {
 						if (c.getArity() == 1)
 							twf.add(getExtAtom(c.getPredicate(), r0, exts));
 						else //(c.getArity() == 2)
 							twf.add(getExtAtom(c.getPredicate(), r0, r0, exts));
 					}
-					output.appendRule(fac.getCQIE(edgeAtom, twf));
+					for (Atom a : getGenConAtoms(tw.getGenerator())) {
+						List<Atom> twfa = new ArrayList<Atom>(twf.size() + 1); 
+						Atom gen = getExtAtom(a, r0, exts);
+						if (!twf.contains(gen))
+							twfa.add(gen);
+						twfa.addAll(twf);
+						output.appendRule(fac.getCQIE(edgeAtom, twfa));
+					}
 				}
 			if (edgeAtom == null)	// no tree witnesses -- direct insertion into the main body
 				mainbody.addAll(extAtoms);
@@ -304,15 +318,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				mainbody.add(getExtAtom(a, exts));
 
 		output.appendRule(fac.getCQIE(cqie.getHead(), new ArrayList<Atom>(mainbody))); 
-		
-		// GENERATING CONCEPTS
-		for (TreeWitnessGenerator some : gencons) {
-			 List<CQIE> dp = genconPredicateDP.get(some);			 
-			 log.debug("GENCON RULES FOR " + some + ": " + dp);
-			 if (dp != null) 
-				 output.appendRule(dp); // NEED TO CLONE?				 
-		}
-		
+				
 		// EXTENSIONS		
 		for (Predicate pred : exts) { 
 			 List<CQIE> dp = extPredicateDP.get(pred);			 
@@ -340,19 +346,13 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		DatalogProgram simplified = output; //DatalogQueryServices.simplify(output,dp.getRules().get(0).getHead().getPredicate());
 		//log.debug("SIMPLIFIED PROGRAM\n" + simplified);
 		if (simplified.getRules().size() > 1) {
-			simplified = DatalogQueryServices.simplify(simplified, queryPredicate);
-			log.debug("SIMPLIFIED PROGRAM\n" + simplified);
+			simplified = DatalogQueryServices.flatten(simplified, queryPredicate, "Q_");
+			log.debug("Q-FLATTENED PROGRAM\n" + simplified);
 			if (simplified.getRules().size() > 1) {
-				simplified = DatalogQueryServices.flatten(simplified, queryPredicate, "GEN_");
-				log.debug("GEN-FLATTENED PROGRAM\n" + simplified);
-				simplified = DatalogQueryServices.flatten(simplified, queryPredicate, "Q_");
-				log.debug("Q-FLATTENED PROGRAM\n" + simplified);
-				if (simplified.getRules().size() > 1) {
-					simplified = CQCUtilities.removeContainedQueriesSorted(simplified, true, sigma);
-					log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + simplified);			
-					simplified = DatalogQueryServices.flatten(simplified, queryPredicate, null);
-					log.debug("FLATTENED PROGRAM\n" + simplified);
-				}
+				simplified = CQCUtilities.removeContainedQueriesSorted(simplified, true, sigma);
+				log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + simplified);			
+				simplified = DatalogQueryServices.flatten(simplified, queryPredicate, null);
+				log.debug("FLATTENED PROGRAM\n" + simplified);
 			}
 		}
 		log.debug("\n\nRewritten UCQ size: " + simplified.getRules().size());
