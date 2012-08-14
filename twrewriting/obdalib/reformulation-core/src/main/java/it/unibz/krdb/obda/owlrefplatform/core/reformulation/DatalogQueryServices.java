@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,27 +65,28 @@ public class DatalogQueryServices {
 	
 	public static DatalogProgram flatten(DatalogProgram dp, Predicate head, String fragment) {
 		// contains all definitions of the main predicate
-		List<CQIE> queue = new ArrayList<CQIE>();
-		// collects all definitions
-		Set<Predicate> defined = new HashSet<Predicate>();
+		PriorityQueue<CQIE> queue = new PriorityQueue<CQIE>(10, new Comparator<CQIE> () {
+			@Override
+			public int compare(CQIE arg0, CQIE arg1) {
+				return arg0.getBody().size() - arg1.getBody().size();
+			} 
+			});
+
 		for (CQIE cqie : dp.getRules()) {
 			// main predicate is not replaced
 			Predicate predicate = cqie.getHead().getPredicate();
 			if (predicate.equals(head) || 
 					((fragment != null) && !predicate.getName().getFragment().contains(fragment))) {
 				queue.add(cqie);
-				log.debug("MAIN PREDICATE DEF " + cqie);
+				log.debug("MAIN PREDICATE RULE " + cqie);
 			}
-			else 
-				defined.add(predicate);
 		}
-		log.debug("DEFINED PREDICATES: " + defined);
 		
 		List<CQIE> output = new LinkedList<CQIE>();
 		
 		while (!queue.isEmpty()) {
-			CQIE r = queue.remove(queue.size() - 1);
-			
+			CQIE r = queue.poll();
+				
 			boolean found = false;
 			for (CQIE r2 : output) 
 				if (CQCUtilities.isContainedInSyntactic(r,r2)) {
@@ -94,34 +96,25 @@ public class DatalogQueryServices {
 				}
 			if (found)
 				continue;
-			
+						
 			List<Atom> body = r.getBody();
-			int idxToBeReplaced = -1;
-			for (int i = 0; i < body.size(); i++) 
-				if (defined.contains(body.get(i).getPredicate())) {
-					idxToBeReplaced = i;
+			boolean replaced = false;
+			for (int i = 0; i < body.size(); i++) {
+				Atom toBeReplaced = body.get(i);				
+				List<CQIE> definitions = dp.getRules(toBeReplaced.getPredicate());
+				if ((definitions != null) && (definitions.size() != 0)) {
+					for (CQIE rule : definitions) {
+						CQIE qcopy = r.clone();
+						qcopy.getBody().remove(i);
+						qcopy.getBody().addAll(unify(rule,toBeReplaced));
+						queue.add(reduce(qcopy));
+					}
+					replaced = true;
 					break;
 				}
-			if (idxToBeReplaced != -1) {
-				Atom toBeReplaced = body.get(idxToBeReplaced);
-				//log.debug("REPLACING " + toBeReplaced + " IN " + body);
-				
-				for (CQIE rule : dp.getRules(toBeReplaced.getPredicate())) {
-					CQIE qcopy = r.clone();
-					qcopy.getBody().remove(idxToBeReplaced);
-					qcopy.getBody().addAll(unify(rule,toBeReplaced));
-
-					queue.add(reduce(qcopy));
-					Collections.sort(queue, new Comparator<CQIE> () {
-						@Override
-						public int compare(CQIE arg0, CQIE arg1) {
-							return arg1.getBody().size() - arg0.getBody().size();
-						} 
-						});
-				}					
 			}
-			else {
-				// prune the list
+			if (!replaced) {
+				// prune the list				
 				ListIterator<CQIE> i = output.listIterator();
 				while (i.hasNext()) {
 					CQIE q2 = i.next();
@@ -130,6 +123,7 @@ public class DatalogQueryServices {
 						log.debug("   PRUNED " + q2 + " BY " + r);
 					}
 				}
+				
 				output.add(r);			
 				Collections.sort(output, new Comparator<CQIE> () {
 					@Override
@@ -200,7 +194,7 @@ public class DatalogQueryServices {
 					}*/
 				}
 		} while (replacedEQ); 
-		
+/*		
 		Map<Term, Atom> occurrences = new HashMap<Term, Atom>();
 		for (Atom a : q.getBody())
 			for (Term t : a.getTerms())
@@ -229,7 +223,7 @@ public class DatalogQueryServices {
 					}
 			}
 		}
-
+*/
 		return CQCUtilities.removeRundantAtoms(q);
 	}
 	
@@ -241,7 +235,7 @@ public class DatalogQueryServices {
 	 * @param head: main predicated defined the by the query
 	 * @return simplified datalog program
 	 */
-	
+	/*
 	public static DatalogProgram simplify(DatalogProgram dp, Predicate head) {	
 		List<CQIE> result = new ArrayList<CQIE>(dp.getRules().size());
 		
@@ -273,5 +267,6 @@ public class DatalogQueryServices {
 		}
 		return fac.getDatalogProgram(result);
 	}
+	*/
 
 }

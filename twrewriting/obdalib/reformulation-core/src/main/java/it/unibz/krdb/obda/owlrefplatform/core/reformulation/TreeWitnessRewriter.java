@@ -21,6 +21,7 @@ import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
+import it.unibz.krdb.obda.utils.QueryUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -58,11 +59,18 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	
 	@Override
 	public void setTBox(Ontology ontology) {
+		double startime = System.currentTimeMillis();
+
 		reasoner.setTBox(ontology);
 		
 		extPredicateMap.clear();
 		extPredicateDP.clear();
 		genconPredicateDP.clear();
+		
+		double endtime = System.currentTimeMillis();
+		double tm = (endtime - startime) / 1000;
+		time += tm;
+		log.debug(String.format("setTBox time: %.3f s (total %.3f s)", tm, time));
 	}
 	
 	@Override
@@ -98,8 +106,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			return getExtAtom(a.getPredicate(), r0, usedExts);
 		else {
 			// assert(a.getArity() == 2);
-			Term t0 = ((a.getTerm(0) instanceof AnonymousVariable) ? getFreshVariable() : r0);
-			Term t1 = ((a.getTerm(1) instanceof AnonymousVariable) ? getFreshVariable() : r0);
+			Term t0 = ((a.getTerm(0) instanceof AnonymousVariable) ? fac.getNondistinguishedVariable() : r0);
+			Term t1 = ((a.getTerm(1) instanceof AnonymousVariable) ? fac.getNondistinguishedVariable() : r0);
 			return getExtAtom(a.getPredicate(), t0, t1, usedExts);
 		}
 	}
@@ -110,7 +118,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			 List<CQIE> dp = new ArrayList<CQIE>(10);
 			 ext = fac.getClassPredicate(getEXTname(p.getName()));
 			 Term x = fac.getVariable("x");
-			 Term y = fac.getVariable("y");
+			 Term y = fac.getNondistinguishedVariable(); // fac.getVariable("y");
 			 Atom extAtom = fac.getAtom(ext, x); 		  					 
 			 for (ClassDescription subc : reasoner.getSubConcepts(p)) 
 				 if (subc instanceof OClass) 
@@ -209,12 +217,6 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return atoms;		
 	}
 	
-	private static int nextVariableIndex = 1000;
-	
-	private static Variable getFreshVariable() {
-		return fac.getVariable("w" + nextVariableIndex++);		
-	}
-
 	/*
 	 * rewrites a given CQ with the rules put into output
 	 */
@@ -266,7 +268,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			}
 		}
 
-		Set<Atom> mainbody = new HashSet<Atom>(query.getEdges().size()); // SET TO REMOVE DUPLICATE ATOMS
+		MinimalCQProducer mainbody = new MinimalCQProducer(reasoner, new ArrayList<Term>(cqie.getHead().getVariables())); 
 		int pairIndex = 0;
 				
 		for (TreeWitnessQueryGraph.Edge edge : query.getEdges()) {
@@ -288,7 +290,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 						output.appendRule(fac.getCQIE(edgeAtom, extAtoms));						
 					}
 					// CREATE TREE WITNESS FORMULAS
-					Set<Atom> twf = new HashSet<Atom>(); // set to remove duplicates
+					MinimalCQProducer twf = new MinimalCQProducer(reasoner, query.getVariables()); 
 					Iterator<Term> i = tw.getRoots().iterator();
 					Term r0 = i.next();
 					while (i.hasNext()) 
@@ -301,11 +303,9 @@ public class TreeWitnessRewriter implements QueryRewriter {
 							twf.add(getExtAtom(c.getPredicate(), r0, r0, exts));
 					}
 					for (Atom a : getGenConAtoms(tw.getGenerator())) {
-						List<Atom> twfa = new ArrayList<Atom>(twf.size() + 1); 
-						Atom gen = getExtAtom(a, r0, exts);
-						if (!twf.contains(gen))
-							twfa.add(gen);
-						twfa.addAll(twf);
+						List<Atom> twfa = new ArrayList<Atom>(twf.getBody().size() + 1); 
+						twfa.add(getExtAtom(a, r0, exts));
+						twfa.addAll(twf.getBody());
 						output.appendRule(fac.getCQIE(edgeAtom, twfa));
 					}
 				}
@@ -317,19 +317,23 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			for (Atom a : cqie.getBody())
 				mainbody.add(getExtAtom(a, exts));
 
-		output.appendRule(fac.getCQIE(cqie.getHead(), new ArrayList<Atom>(mainbody))); 
+		output.appendRule(fac.getCQIE(cqie.getHead(), mainbody.getBody())); 
 				
 		// EXTENSIONS		
 		for (Predicate pred : exts) { 
 			 List<CQIE> dp = extPredicateDP.get(pred);			 
-			 log.debug("EXT RULES FOR " + pred + ": " + dp);
 			 if (dp != null) 
 				 output.appendRule(dp); // NEED TO CLONE?				 
 		 }
 	}
 	
+	private double time = 0;
+	
 	@Override
 	public OBDAQuery rewrite(OBDAQuery input) throws OBDAException {
+		
+		double startime = System.currentTimeMillis();
+		
 		DatalogProgram dp = (DatalogProgram) input;
 		DatalogProgram output = fac.getDatalogProgram(); // (cqie.getHead().getPredicate());
 
@@ -343,21 +347,24 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		}
 		Predicate queryPredicate = dp.getRules().get(0).getHead().getPredicate();
 		log.debug("REWRITTEN PROGRAM\n" + output);			
-		DatalogProgram simplified = output; //DatalogQueryServices.simplify(output,dp.getRules().get(0).getHead().getPredicate());
-		//log.debug("SIMPLIFIED PROGRAM\n" + simplified);
-		if (simplified.getRules().size() > 1) {
-			simplified = DatalogQueryServices.flatten(simplified, queryPredicate, "Q_");
-			log.debug("Q-FLATTENED PROGRAM\n" + simplified);
-			if (simplified.getRules().size() > 1) {
-				simplified = CQCUtilities.removeContainedQueriesSorted(simplified, true, sigma);
-				log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + simplified);			
-				simplified = DatalogQueryServices.flatten(simplified, queryPredicate, null);
-				log.debug("FLATTENED PROGRAM\n" + simplified);
+		if (output.getRules().size() > 1) {
+			output = DatalogQueryServices.flatten(output, queryPredicate, "Q_");
+			log.debug("Q-FLATTENED PROGRAM\n" + output);
+			output = CQCUtilities.removeContainedQueriesSorted(output, true, sigma);
+			log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + output);			
+			if (output.getRules().size() > 1) {
+				output = DatalogQueryServices.flatten(output, queryPredicate, null);
+				log.debug("FLATTENED PROGRAM\n" + output);
 			}
 		}
-		log.debug("\n\nRewritten UCQ size: " + simplified.getRules().size());
-		simplified.setQueryModifiers(dp.getQueryModifiers());
-		return simplified;
+		QueryUtils.copyQueryModifiers(input, output);
+
+		double endtime = System.currentTimeMillis();
+		double tm = (endtime - startime) / 1000;
+		time += tm;
+		log.debug(String.format("Rewriting time: %.3f s (total %.3f s)", tm, time));
+		
+		return output;
 	}
 
 	
