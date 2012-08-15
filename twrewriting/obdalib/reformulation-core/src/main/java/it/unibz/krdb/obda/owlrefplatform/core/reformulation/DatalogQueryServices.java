@@ -7,6 +7,7 @@ import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.impl.AnonymousVariable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
@@ -194,7 +195,12 @@ public class DatalogQueryServices {
 					}*/
 				}
 		} while (replacedEQ); 
-/*		
+		
+		//
+		// OPTIMISATION
+		// replace all existentially quantified variables that occur once with _
+		//
+		
 		Map<Term, Atom> occurrences = new HashMap<Term, Atom>();
 		for (Atom a : q.getBody())
 			for (Term t : a.getTerms())
@@ -204,26 +210,37 @@ public class DatalogQueryServices {
 					else
 						occurrences.put(t, a);
 		
-		for (Term t : occurrences.keySet()) {
-			Atom sa = occurrences.get(t);
-			if (sa != null) {
-				for (Atom a : q.getBody())
-					if ((a != sa) && a.getPredicate().equals(sa.getPredicate())) {
-						boolean match = true;
-						for (int i = 0; i < a.getArity(); i++)
-							if (!a.getTerm(i).equals(sa.getTerm(i)) && !sa.getTerm(i).equals(t)) {
-								match = false;
-								break;
-							}
-						if (match) {
-							log.debug("   UNDERSCORE " + t + " REMOVED " + sa + " FROM " + body);
-							body.remove(sa);
-							break;
-						}
+		for (Map.Entry<Term, Atom> e : occurrences.entrySet()) 
+			if (e.getValue() != null) {
+				ListIterator<Term> i = e.getValue().getTerms().listIterator();
+				while (i.hasNext()) {
+					Term t = i.next();
+					if (t.equals(e.getKey()))
+						i.set(fac.getNondistinguishedVariable());
+				}
+		}
+		
+		Iterator<Atom> i = q.getBody().iterator();
+		while (i.hasNext()) {
+			Atom a = i.next();
+			boolean found = false;
+			for (Atom aa : q.getBody())
+				if ((a != aa) && (a.getPredicate().equals(aa.getPredicate()))) {
+					// ************
+					// a.equals(aa) would be good but does not work, why?
+					// ************
+					if (a.getTerms().equals(aa.getTerms())) {
+						log.debug("ATOMS " + a + " AND " + aa + " COINCIDE - REMOVE ONE");
+						found = true;
+						break;
 					}
+				}	
+			if (found) {
+				i.remove();
+ 				break;
 			}
 		}
-*/
+
 		return CQCUtilities.removeRundantAtoms(q);
 	}
 	
