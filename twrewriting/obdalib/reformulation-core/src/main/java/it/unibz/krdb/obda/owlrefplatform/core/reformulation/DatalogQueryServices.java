@@ -10,7 +10,9 @@ import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.AnonymousVariable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
+import it.unibz.krdb.obda.model.impl.PredicateAtomImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.ResolutionEngine;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 
 import java.util.ArrayList;
@@ -33,36 +35,8 @@ public class DatalogQueryServices {
 	private static OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
 	
 	private static final Logger log = LoggerFactory.getLogger(DatalogQueryServices.class);
-
-	private static int nextVariableIndex = 1000;
 	
-	private static List<Atom> unify(CQIE rule, Atom atom) {
-		Set<Term> freeVars = new HashSet<Term>(rule.getHead().getTerms());
-		
-		// substitute arguments of the head
-		Map<Variable,Term> substituition = new HashMap<Variable,Term>(2);
-		for (int i = 0; i < atom.getArity(); i++)
-			substituition.put((Variable)rule.getHead().getTerm(i), atom.getTerm(i));
-		/*
-		// invent names for existentially quantified variables
-		for (Atom sa : rule.getBody()) 			
-			for (Term t : sa.getTerms())
-				if ((t instanceof Variable) && !freeVars.contains(t) && !substituition.containsKey(t)) 
-					substituition.put((Variable)t, fac.getVariable("local" + nextVariableIndex++));
-		
-		// substitute local variables that are EQ to something else
-		for (Atom sa : rule.getBody()) 
-			if (sa.getPredicate().equals(OBDAVocabulary.EQ)) {
-				Term t0 = sa.getTerm(0);
-				Term t1 = sa.getTerm(1);
-				if ((t0 instanceof Variable) && !freeVars.contains(t0))
-					substituition.put((Variable)t0, substituition.containsKey(t1) ? substituition.get(t1) : t1);
-				else if ((t1 instanceof Variable) && !freeVars.contains(t1))
-					substituition.put((Variable)t1, substituition.containsKey(t0) ? substituition.get(t0) : t0);
-			}
-		*/
-		return Unifier.applyUnifier(rule, substituition).getBody();
-	}
+	private static ResolutionEngine resolutionEngine = new ResolutionEngine();
 	
 	public static DatalogProgram flatten(DatalogProgram dp, Predicate head, String fragment) {
 		// contains all definitions of the main predicate
@@ -86,11 +60,11 @@ public class DatalogQueryServices {
 		List<CQIE> output = new LinkedList<CQIE>();
 		
 		while (!queue.isEmpty()) {
-			CQIE r = queue.poll();
+			CQIE query = queue.poll();
 				
 			boolean found = false;
 			for (CQIE r2 : output) 
-				if (CQCUtilities.isContainedInSyntactic(r,r2)) {
+				if (CQCUtilities.isContainedInSyntactic(query,r2)) {
 					found = true;
 					//log.debug("SUBSUMED " + r + " BY " + r2);
 					break;
@@ -98,39 +72,37 @@ public class DatalogQueryServices {
 			if (found)
 				continue;
 						
-			List<Atom> body = r.getBody();
+			List<Atom> body = query.getBody();
 			boolean replaced = false;
 			for (int i = 0; i < body.size(); i++) {
 				Atom toBeReplaced = body.get(i);				
 				List<CQIE> definitions = dp.getRules(toBeReplaced.getPredicate());
 				if ((definitions != null) && (definitions.size() != 0)) {
 					for (CQIE rule : definitions) {
-						CQIE qcopy = r.clone();
-						qcopy.getBody().remove(i);
-						qcopy.getBody().addAll(unify(rule.clone(),toBeReplaced));
-						queue.add(reduce(qcopy));
+						CQIE newquery = resolutionEngine.resolve(rule, query, i);
+						if (newquery == null)
+							continue;
+						queue.add(reduce(newquery));
+						replaced = true;
 					}
-					replaced = true;
-					break;
+					if (replaced)
+						break;
 				}
 			}
 			if (!replaced) {
 				//log.debug("ADDING TO THE RESULT " + r);
-				//r = removeEQ(r.clone());
-				//makeSingleOccurrencesAnonymous(r.getBody(), r.getHead().getTerms());
-				//r = CQCUtilities.removeRundantAtoms(r);
 				
 				// prune the list				
 				ListIterator<CQIE> i = output.listIterator();
 				while (i.hasNext()) {
 					CQIE q2 = i.next();
-					if (CQCUtilities.isContainedInSyntactic(q2, r)) {
+					if (CQCUtilities.isContainedInSyntactic(q2, query)) {
 						i.remove();				
 						//log.debug("   PRUNED " + q2 + " BY " + r);
 					}
 				}
 				
-				output.add(r.clone());			
+				output.add(query.clone());			
 				Collections.sort(output, new Comparator<CQIE> () {
 					@Override
 					public int compare(CQIE arg0, CQIE arg1) {
@@ -206,6 +178,7 @@ public class DatalogQueryServices {
 					if (t.equals(e.getKey()))
 						i.set(fac.getNondistinguishedVariable());
 				}
+				((PredicateAtomImpl)e.getValue()).listChanged();
 		}
 		
 		Iterator<Atom> i = body.iterator();
