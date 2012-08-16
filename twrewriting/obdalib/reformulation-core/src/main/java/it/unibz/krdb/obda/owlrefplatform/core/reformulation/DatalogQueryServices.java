@@ -116,7 +116,9 @@ public class DatalogQueryServices {
 			}
 			if (!replaced) {
 				//log.debug("ADDING TO THE RESULT " + r);
-				r = removeEQ(r.clone());
+				//r = removeEQ(r.clone());
+				//makeSingleOccurrencesAnonymous(r.getBody(), r.getHead().getTerms());
+				//r = CQCUtilities.removeRundantAtoms(r);
 				
 				// prune the list				
 				ListIterator<CQIE> i = output.listIterator();
@@ -163,7 +165,7 @@ public class DatalogQueryServices {
 					if (substituition != null) {
 						//log.debug("REMOVE " + a + " IN " + q);
 						i.remove();
-						q = CQCUtilities.removeRundantAtoms(Unifier.applyUnifier(q, substituition));
+						q = Unifier.applyUnifier(q, substituition);
 						//log.debug(" RESULT: " + q);
 						replacedEQ = true;
 						break;
@@ -176,72 +178,19 @@ public class DatalogQueryServices {
 	}
 	
 	private static CQIE reduce(CQIE q) {
-		List<Atom> body = q.getBody();
+		q = removeEQ(q);	
+		makeSingleOccurrencesAnonymous(q.getBody(), q.getHead().getTerms());
+		return CQCUtilities.removeRundantAtoms(q);
+	}
 
-		// EQ elimination 
-		// (EQ argument, which is a quantified variable,
-		//                  is replaced by the other EQ argument)
-		
-		List<Term> freeVariables = q.getHead().getTerms();
-		/*
-		boolean replacedEQ = false;
-		do { 
-			replacedEQ = false;
-			for (Atom eqa : body) 
-				if (eqa.getPredicate().equals(OBDAVocabulary.EQ)) {
-					Term t0 = eqa.getTerm(0);
-					Term t1 = eqa.getTerm(1);
-					if (t0.equals(t1)) {
-						log.debug("   ELIMINATING EQUALITY " + eqa);
-						body.remove(eqa);
-						replacedEQ = true;
-						break;						
-					}
-					if (t0 instanceof Variable && !freeVariables.contains(t0)) {
-						log.debug("   ELIMINATING EQUALITY " + eqa);
-						body.remove(eqa);
-						for (Atom aa : body) 
-							for (int i = 0; i <  aa.getTerms().size(); i++)
-								if (aa.getTerm(i).equals(t0))
-									aa.getTerms().set(i, t1);
-						replacedEQ = true;
-						break;
-					}	
-					if (t1 instanceof Variable && !freeVariables.contains(t1)) {
-						log.debug("   ELIMINATING EQUALITY " + eqa);
-						body.remove(eqa);
-						for (Atom aa : body) 
-							for (int i = 0; i <  aa.getTerms().size(); i++)
-								if (aa.getTerm(i).equals(t1))
-									aa.getTerms().set(i, t0);
-						replacedEQ = true;
-						break;
-					}*/	
-					/*
-					if ((t0 instanceof Variable) && (t1 instanceof Variable)) {
-						int cp = ((Variable)t0).getName().compareTo(((Variable)t1).getName());
-						Term t = (cp <= 0) ? t0 : t1;
-						Term tp = (cp <= 0) ? t1 : t0;
-						log.debug("   REPLACING EQUALITY " + eqa + " IN " + body);
-						for (Atom aa : body) 
-							if (!aa.equals(eqa))
-								for (int i = 0; i <  aa.getTerms().size(); i++)
-									if (aa.getTerm(i).equals(tp)) {
-										log.debug("EQUALITY MESS: " + aa);
-										aa.getTerms().set(i, t);
-									}
-						log.debug("      RESULTS IN " + body);						
-					}*/ /*
-				}
-		} while (replacedEQ); 
-		*/
-		//
-		// OPTIMISATION
-		// replace all existentially quantified variables that occur once with _
-		//
-		
+	//
+	// OPTIMISATION
+	// replace all existentially quantified variables that occur once with _
+	//
+	
+	private static void makeSingleOccurrencesAnonymous(List<Atom> body, List<Term> freeVariables) {
 		Map<Term, Atom> occurrences = new HashMap<Term, Atom>();
-		for (Atom a : q.getBody())
+		for (Atom a : body)
 			for (Term t : a.getTerms())
 				if ((t instanceof Variable) && !freeVariables.contains(t))
 					if (occurrences.containsKey(t))
@@ -269,7 +218,7 @@ public class DatalogQueryServices {
 					// a.equals(aa) would be good but does not work, why?
 					// ************
 					if (a.getTerms().equals(aa.getTerms())) {
-						log.debug("ATOMS " + a + " AND " + aa + " COINCIDE - REMOVE ONE");
+						//log.debug("ATOMS " + a + " AND " + aa + " COINCIDE - REMOVE ONE");
 						found = true;
 						break;
 					}
@@ -278,50 +227,8 @@ public class DatalogQueryServices {
 				i.remove();
  				break;
 			}
-		}
-		return CQCUtilities.removeRundantAtoms(q);
+		}		
 	}
 	
-	/** 
-	 * simplifies a given datalog query by eliminating predicates 
-	 * that have a single rule defining them
-	 * 
-	 * @param dp: given datalog program
-	 * @param head: main predicated defined the by the query
-	 * @return simplified datalog program
-	 */
-	/*
-	public static DatalogProgram simplify(DatalogProgram dp, Predicate head) {	
-		List<CQIE> result = new ArrayList<CQIE>(dp.getRules().size());
-		
-		for (CQIE cqie : dp.getRules()) {
-			// if to be replaced then no rule is added to the result
-			Predicate h = cqie.getHead().getPredicate();
-			if (!h.equals(head) && (dp.getRules(h).size() == 1))
-				continue;
-			
-			boolean changed = true;
-			Set<Atom> body = new HashSet<Atom>(cqie.getBody()); // set (rather than list) is to remove duplicates
-			while (changed) {
-				changed = false;
-				Iterator<Atom> i = body.iterator();
-				while (i.hasNext()) {
-					Atom a = i.next();
-					List<CQIE> defs  = dp.getRules(a.getPredicate());
-					if (defs.size() == 1) {
-						changed = true;
-						i.remove();
-						CQIE rule = defs.iterator().next();
-						body.addAll(unify(rule, a)); 
-						log.debug("SIMPLIFY: REPLACE " + a + " WITH " + rule);
-						break;
-					}
-				}
-			}
-			result.add(fac.getCQIE(cqie.getHead(), new ArrayList<Atom>(body)));
-		}
-		return fac.getDatalogProgram(result);
-	}
-	*/
 
 }

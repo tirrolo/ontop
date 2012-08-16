@@ -181,8 +181,9 @@ public class Unifier {
 	 */
 	public static Map<Variable, Term> getMGU(Atom first, Atom second) {
 
-		Atom firstAtom = (Atom) first;
-		Atom secondAtom = (Atom) second;
+		// MUST CLONE, OTHERWISE IT MODIFIES THE "DEEP" CONTENTS OF THE TERMS
+		Atom firstAtom = (Atom) first.clone();
+		Atom secondAtom = (Atom) second.clone();
 
 		/*
 		 * Basic case, predicates are different or their arity is different,
@@ -196,8 +197,8 @@ public class Unifier {
 		/* Computing the disagreement set */
 
 		int arity = firstAtom.getPredicate().getArity();
-		List<Term> terms1 = new ArrayList<Term>(firstAtom.getTerms());
-		List<Term> terms2 = new ArrayList<Term>(secondAtom.getTerms());
+		List<Term> terms1 = firstAtom.getTerms();
+		List<Term> terms2 = secondAtom.getTerms();
 
 		Map<Variable, Term> mgu = new HashMap<Variable, Term>();
 
