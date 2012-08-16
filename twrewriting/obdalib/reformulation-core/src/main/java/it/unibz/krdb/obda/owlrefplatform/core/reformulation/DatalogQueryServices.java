@@ -43,7 +43,7 @@ public class DatalogQueryServices {
 		Map<Variable,Term> substituition = new HashMap<Variable,Term>(2);
 		for (int i = 0; i < atom.getArity(); i++)
 			substituition.put((Variable)rule.getHead().getTerm(i), atom.getTerm(i));
-		
+		/*
 		// invent names for existentially quantified variables
 		for (Atom sa : rule.getBody()) 			
 			for (Term t : sa.getTerms())
@@ -60,7 +60,7 @@ public class DatalogQueryServices {
 				else if ((t1 instanceof Variable) && !freeVars.contains(t1))
 					substituition.put((Variable)t1, substituition.containsKey(t0) ? substituition.get(t0) : t0);
 			}
-		
+		*/
 		return Unifier.applyUnifier(rule, substituition).getBody();
 	}
 	
@@ -107,7 +107,7 @@ public class DatalogQueryServices {
 					for (CQIE rule : definitions) {
 						CQIE qcopy = r.clone();
 						qcopy.getBody().remove(i);
-						qcopy.getBody().addAll(unify(rule,toBeReplaced));
+						qcopy.getBody().addAll(unify(rule.clone(),toBeReplaced));
 						queue.add(reduce(qcopy));
 					}
 					replaced = true;
@@ -115,17 +115,20 @@ public class DatalogQueryServices {
 				}
 			}
 			if (!replaced) {
+				//log.debug("ADDING TO THE RESULT " + r);
+				r = removeEQ(r.clone());
+				
 				// prune the list				
 				ListIterator<CQIE> i = output.listIterator();
 				while (i.hasNext()) {
 					CQIE q2 = i.next();
-					if (CQCUtilities.isContainedInSyntactic(r, q2)) {
+					if (CQCUtilities.isContainedInSyntactic(q2, r)) {
 						i.remove();				
-						log.debug("   PRUNED " + q2 + " BY " + r);
+						//log.debug("   PRUNED " + q2 + " BY " + r);
 					}
 				}
 				
-				output.add(r);			
+				output.add(r.clone());			
 				Collections.sort(output, new Comparator<CQIE> () {
 					@Override
 					public int compare(CQIE arg0, CQIE arg1) {
@@ -134,17 +137,53 @@ public class DatalogQueryServices {
 					});				
 			}
 		}
+		
 		return fac.getDatalogProgram(output);
 	}
 	
+	private static CQIE removeEQ(CQIE q) {
+		boolean replacedEQ = false;
+		
+		do {
+			replacedEQ = false;
+		
+			Iterator<Atom> i = q.getBody().iterator(); 
+			while (i.hasNext()) { 
+				Atom a = i.next();
+				if (a.getPredicate().equals(OBDAVocabulary.EQ)) {
+					Map<Variable, Term> substituition = new HashMap<Variable, Term>(1);
+					Term t0 = a.getTerm(0); 
+					Term t1 = a.getTerm(1); 					
+					if (t0 instanceof Variable)
+						substituition.put((Variable)t0, t1);
+					else if (t1 instanceof Variable)
+						substituition.put((Variable)t1, t0);
+					else
+						substituition = null;
+					if (substituition != null) {
+						//log.debug("REMOVE " + a + " IN " + q);
+						i.remove();
+						q = CQCUtilities.removeRundantAtoms(Unifier.applyUnifier(q, substituition));
+						//log.debug(" RESULT: " + q);
+						replacedEQ = true;
+						break;
+					}
+				}
+			}
+		} while (replacedEQ);
+		
+		return q;
+	}
 	
 	private static CQIE reduce(CQIE q) {
 		List<Atom> body = q.getBody();
 
 		// EQ elimination 
 		// (EQ argument, which is a quantified variable,
-		//                  is replaced by the other EQ argument) 
+		//                  is replaced by the other EQ argument)
+		
 		List<Term> freeVariables = q.getHead().getTerms();
+		/*
 		boolean replacedEQ = false;
 		do { 
 			replacedEQ = false;
@@ -177,7 +216,7 @@ public class DatalogQueryServices {
 									aa.getTerms().set(i, t0);
 						replacedEQ = true;
 						break;
-					}	
+					}*/	
 					/*
 					if ((t0 instanceof Variable) && (t1 instanceof Variable)) {
 						int cp = ((Variable)t0).getName().compareTo(((Variable)t1).getName());
@@ -192,10 +231,10 @@ public class DatalogQueryServices {
 										aa.getTerms().set(i, t);
 									}
 						log.debug("      RESULTS IN " + body);						
-					}*/
+					}*/ /*
 				}
 		} while (replacedEQ); 
-		
+		*/
 		//
 		// OPTIMISATION
 		// replace all existentially quantified variables that occur once with _
@@ -220,11 +259,11 @@ public class DatalogQueryServices {
 				}
 		}
 		
-		Iterator<Atom> i = q.getBody().iterator();
+		Iterator<Atom> i = body.iterator();
 		while (i.hasNext()) {
 			Atom a = i.next();
 			boolean found = false;
-			for (Atom aa : q.getBody())
+			for (Atom aa : body)
 				if ((a != aa) && (a.getPredicate().equals(aa.getPredicate()))) {
 					// ************
 					// a.equals(aa) would be good but does not work, why?
@@ -240,7 +279,6 @@ public class DatalogQueryServices {
  				break;
 			}
 		}
-
 		return CQCUtilities.removeRundantAtoms(q);
 	}
 	
