@@ -17,7 +17,9 @@ import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.AnonymousVariable;
+import it.unibz.krdb.obda.model.impl.CQIEImpl;
 import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
+import it.unibz.krdb.obda.model.impl.PredicateAtomImpl;
 import it.unibz.krdb.obda.model.impl.URIConstantImpl;
 import it.unibz.krdb.obda.model.impl.ValueConstantImpl;
 import it.unibz.krdb.obda.model.impl.VariableImpl;
@@ -121,6 +123,8 @@ public class Unifier {
 		for (Atom bodyatom : newq.getBody()) {
 			applyUnifier(bodyatom, unifier);
 		}
+		((CQIEImpl)newq).listChanged();
+		
 		return newq;
 	}
 
@@ -138,11 +142,13 @@ public class Unifier {
 	 */
 	public static void applyUnifier(Atom atom, Map<Variable, Term> unifier) {
 		applyUnifier(atom.getTerms(), unifier);
+		((PredicateAtomImpl)atom).listChanged();
 	}
 
 	public static void applyUnifier(Function term, Map<Variable, Term> unifier) {
 		List<Term> terms = term.getTerms();
 		applyUnifier(terms, unifier);
+		
 	}
 
 	public static void applyUnifier(List<Term> terms, Map<Variable, Term> unifier) {
@@ -158,6 +164,7 @@ public class Unifier {
 					terms.set(i, replacement);
 			} else if (t instanceof Function) {
 				applyUnifier((Function) t, unifier);
+				((FunctionalTermImpl)t).listChanged();
 			}
 		}
 	}
