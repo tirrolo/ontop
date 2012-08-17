@@ -10,6 +10,7 @@ import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.AnonymousVariable;
+import it.unibz.krdb.obda.model.impl.BooleanOperationPredicateImpl;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.ontology.Axiom;
 import it.unibz.krdb.obda.ontology.BasicClassDescription;
@@ -144,6 +145,10 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	}
 
 	private  Atom getExtAtom(Predicate p, Term t1, Term t2, Set<Predicate> usedExts) throws URISyntaxException {
+		if (p instanceof BooleanOperationPredicateImpl) {
+			return fac.getAtom(p, t1, t2);			
+		}
+			
 		Predicate ext = extPredicateMap.get(p);
 		if (ext == null) {
 			 List<CQIE> dp = new ArrayList<CQIE>(10);
@@ -354,8 +359,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				output = CQCUtilities.removeContainedQueriesSorted(output, true, sigma);
 				log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + output);			
 				if (output.getRules().size() != output.getRules(queryPredicate).size()) {
-					output = DatalogQueryServices.flatten(output, queryPredicate, null);
-					log.debug("COMPLETELY FLATTENED PROGRAM\n" + output);
+					output = DatalogQueryServices.flatten(output, queryPredicate, "EXT_");
+					log.debug("EXT-FLATTENED PROGRAM\n" + output);
 				}
 			}
 		}
@@ -401,23 +406,26 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		
 		for (Term v : query.getQuantifiedVariables()) {
 			log.debug("VARIABLE " + v); 
-			 
-			treewitnesses.addAll(getTreeWitnessesForEdge(query, query.getIncidentEdges(v), Collections.singleton(v), 
-					Collections.singleton(v), new HashSet<Atom>()));
+			
+			List<TreeWitness> tws = getTreeWitnessesForEdge(query, query.getIncidentEdges(v), Collections.singleton(v), 
+					Collections.singleton(v), new HashSet<Atom>());
+			if (tws != null)
+				treewitnesses.addAll(tws);
 		}
 		
-		 Set<TreeWitness> delta = new HashSet<TreeWitness>(); 
-		 do 
-			 for (TreeWitness tw : treewitnesses) 
-				 if (tw.allRootsBound()) {
-					 Set<TreeWitness> twa = new HashSet<TreeWitness>(); 
-					 twa.add(tw);
-					 saturateTreeWitnesses(query, treewitnesses, delta, new HashSet<TreeWitnessQueryGraph.Edge>(), twa); 
-				 }
-				 else
-					 log.debug("IGNORING " + tw + " DUE TO NON-BOUND ROOTS");
-		 while (treewitnesses.addAll(delta));
-	
+		if (treewitnesses.size() > 0) {
+			Set<TreeWitness> delta = new HashSet<TreeWitness>(); 
+			do 
+				for (TreeWitness tw : treewitnesses) 
+					if (tw.allRootsBound()) {
+						Set<TreeWitness> twa = new HashSet<TreeWitness>(); 
+						twa.add(tw);
+						saturateTreeWitnesses(query, treewitnesses, delta, new HashSet<TreeWitnessQueryGraph.Edge>(), twa); 
+					}
+					else
+						log.debug("IGNORING " + tw + " DUE TO NON-BOUND ROOTS");
+			while (treewitnesses.addAll(delta));
+		}
 		return treewitnesses;
 	}
 
@@ -486,10 +494,14 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				introots.addAll(tw.getRoots());
 				endtype.addAll(tw.getRootType());
 			}
-			delta.addAll(getTreeWitnessesForEdge(query, handle, introots, intdomain, endtype));
+			List<TreeWitness> tws = getTreeWitnessesForEdge(query, handle, introots, intdomain, endtype);
+			if (tws != null)
+				delta.addAll(tws);
 		}
 	}
 	 
+	// returns a list of tree witnesses or null
+	
 	private List<TreeWitness> getTreeWitnessesForEdge(TreeWitnessQueryGraph query, Set<TreeWitnessQueryGraph.Edge> handle, Set<Term> introots, Set<Term> intdomain, Set<Atom> endtype) {		
 		List<Property> props = new ArrayList<Property>(); 
 		Set<Atom> roottype = new HashSet<Atom>(); 
@@ -499,13 +511,23 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			for (Atom a : edge.getAtoms()) {
 				if ((a.getArity() == 1) || ((a.getArity() == 2) && a.getTerm(0).equals(a.getTerm(1)))) {
 						// unary predicate or loop
-						if (introots.contains(a.getTerm(0)))
+						if (introots.contains(a.getTerm(0))) {
 							endtype.add(a);
+							if (a.getArity() == 2) {
+								log.debug("        NO LOOPS ALLOWED AT ENDPOINTS: " + a);
+								return null; 
+							}
+						}
 						else
 							roottype.add(a);
 				}						
 				else {
 					assert (a.getArity() == 2); 
+					if (a.getPredicate() instanceof BooleanOperationPredicateImpl) {
+						log.debug("        NO BOOLEAN OPERATION PREDICATES ALLOWED IN PROPERTIES: " + a);
+						return null; 
+					}
+ 						
 					if (introots.contains(a.getTerm(1))) {
 						props.add(ontFactory.createProperty(a.getPredicate(), false));
 						roots.add(a.getTerm(0)); 
@@ -519,14 +541,15 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			} 
 		// TODO: edges with all terms among roots!
 
-		List<TreeWitness> treewitnesses = new LinkedList<TreeWitness>();
 		if (handle.size() == 0)
-			return treewitnesses;			
+			return null;			
 
 		log.debug("  PROPERTIES " + props);
 		log.debug("  ENDTYPE " + endtype);
 		log.debug("  ROOTTYPE " + roottype);
-	 
+		
+		List<TreeWitness> treewitnesses = new LinkedList<TreeWitness>();
+ 
 		for (TreeWitnessGenerator g : reasoner.getGenerators()) 
 			if (isTreeWitness(g, props, endtype)) { 
 				TreeWitness tw = new TreeWitness(g, roots, 
@@ -539,29 +562,28 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return treewitnesses;
 	}
 	
-	 private boolean isTreeWitness(TreeWitnessGenerator g, List<Property> edges, Set<Atom> endtype) { 
+	 private boolean isTreeWitness(TreeWitnessGenerator g, List<Property> properties, Set<Atom> endtype) { 
 		log.debug("      CHECKING " + g);		
-		if (!isGenerated(g, endtype))
-			return false;
+
+		// BIG TODO: CACHE PROPERTIES AND CONCEPTS FOR TREE WITNESSES
 		
-		for (Property p : edges) {
+		for (Property p : properties) {
 			if (!reasoner.getSubProperties(p).contains(g.getProperty())) {
-				log.debug("        PROPERTY TOO SPECIFIC: " + p + " FOR " + g.getProperty());
+				log.debug("        PROPERTY TOO SPECIFIC: " + p + " OF CLASS " + p.getPredicate().getClass() + " FOR " + g.getProperty());
 				return false;
 			}
 			else
 				log.debug("        PROPERTY IS FINE: " + p + " FOR " + g.getProperty());
 		}
+		if (!isGenerated(g, endtype))
+			return false;
+		
 		log.debug("         ALL MATCHED"); 
 		return true; 
 	}
 
 	private boolean isGenerated(TreeWitnessGenerator g, Set<Atom> endtype) {
 		for (Atom a : endtype) {
-			 if (a.getArity() == 2) {
-				 log.debug("        NO LOOPS AT ENDPOINTS: " + a);
-				 return false; 
-			 }
 			 assert (a.getArity() == 1);
 			 BasicClassDescription con = ontFactory.createClass(a.getPredicate());
 			 if (!reasoner.getSubConcepts(con).contains(g.getFiller()) && 

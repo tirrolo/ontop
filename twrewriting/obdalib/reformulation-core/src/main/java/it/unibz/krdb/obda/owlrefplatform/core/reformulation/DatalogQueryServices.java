@@ -7,7 +7,6 @@ import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.AnonymousVariable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.model.impl.PredicateAtomImpl;
@@ -15,18 +14,15 @@ import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.ResolutionEngine;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +31,6 @@ public class DatalogQueryServices {
 	private static OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
 	
 	private static final Logger log = LoggerFactory.getLogger(DatalogQueryServices.class);
-	
-	private static ResolutionEngine resolutionEngine = new ResolutionEngine();
 	
 	public static DatalogProgram flatten(DatalogProgram dp, Predicate head, String fragment) {
 		// contains all definitions of the main predicate
@@ -74,12 +68,13 @@ public class DatalogQueryServices {
 						
 			List<Atom> body = query.getBody();
 			boolean replaced = false;
-			for (int i = 0; i < body.size(); i++) {
-				Atom toBeReplaced = body.get(i);				
+			ListIterator<Atom> bodyIterator = body.listIterator();
+			while (bodyIterator.hasNext()) {
+				Atom toBeReplaced = bodyIterator.next(); // body.get(i);				
 				List<CQIE> definitions = dp.getRules(toBeReplaced.getPredicate());
 				if ((definitions != null) && (definitions.size() != 0)) {
 					for (CQIE rule : definitions) {
-						CQIE newquery = resolutionEngine.resolve(rule, query, i);
+						CQIE newquery = ResolutionEngine.resolve(rule, query, bodyIterator.previousIndex());
 						if (newquery == null)
 							continue;
 						queue.add(reduce(newquery));
@@ -137,7 +132,7 @@ public class DatalogQueryServices {
 					if (substituition != null) {
 						//log.debug("REMOVE " + a + " IN " + q);
 						i.remove();
-						q = Unifier.applyUnifier(q, substituition);
+						Unifier.applyUnifierInPlace(q, substituition);
 						//log.debug(" RESULT: " + q);
 						replacedEQ = true;
 						break;

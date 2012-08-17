@@ -19,8 +19,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -38,6 +40,7 @@ public class TreeWitnessReasonerLite {
 	private Map<Predicate, Set<Property>> predicateSubproperties;
 	
 	private Map<PropertySomeClassRestriction, TreeWitnessGenerator> generators;
+	private Collection<TreeWitnessGenerator> generatorsSet;
 
 	private static OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
 	private static final Logger log = LoggerFactory.getLogger(TreeWitnessReasonerLite.class);	
@@ -48,7 +51,7 @@ public class TreeWitnessReasonerLite {
 
 		this.tbox = ontology;
 		log.debug("SET ONTOLOGY " + ontology);
-		// collect generating axioms
+
 		generators = new HashMap<PropertySomeClassRestriction, TreeWitnessGenerator>();
 		subconcepts = new HashMap<BasicClassDescription, Set<BasicClassDescription>>();
 		subproperties = new HashMap<Property, Set<Property>>();
@@ -103,72 +106,76 @@ public class TreeWitnessReasonerLite {
 
 		// SATURATE PROPERTIES HIERARCHY
 		{
-			Set<Property> sp = subproperties.keySet();
-			for (Property p : sp)
-				log.debug("DECLARED SUBPROPERTIES OF " + p + " ARE " + subproperties.get(p));
+			for (Map.Entry<Property, Set<Property>> p : subproperties.entrySet())
+				log.debug("DECLARED SUBPROPERTIES OF " + p.getKey() + " ARE " + p.getValue());
 
-			boolean changed = false;
-			do {
-				changed = false;
-				for (Property o1 : sp) {
-					Set<Property> so1 = null;
-					for (Property o2 : sp) {
-						if (o2 == o1)
-							continue;
-						Set<Property> so2 = subproperties.get(o2);
-						if (so2.contains(o1)) {
-							if (so1 == null)
-								so1 = subproperties.get(o1);
-							if (so2.addAll(so1)) {
-								log.debug("ALL " + o2 + " ARE EXTENDED WITH ALL " + o1);
-								changed = true;
-							}
-						}
-					}
-				}
-			} while (changed);
+			graphTransitiveClosure(subproperties);
 			
-			for (Property p : sp)
-				log.debug("SATURATED SUBPROPERTY OF " + p + " ARE " + subproperties.get(p));
+			for (Map.Entry<Property, Set<Property>> p : subproperties.entrySet())
+				log.debug("SATURATED SUBPROPERTY OF " + p.getKey() + " ARE " + p.getValue());
 		}
 	
 		// SATURATE CONCEPTS HIERARCHY
 		{
-			for (BasicClassDescription k : subconcepts.keySet())
-				log.debug("DECLARED SUBCONCEPTS OF " + k + " ARE " + subconcepts.get(k));
+			for (Map.Entry<BasicClassDescription, Set<BasicClassDescription>> k : subconcepts.entrySet())
+				log.debug("DECLARED SUBCONCEPTS OF " + k.getKey() + " ARE " + k.getValue());
 	
-			for (Property prop : subproperties.keySet()) 
-				for (Property subproperty : subproperties.get(prop)) 
+			for (Map.Entry<Property, Set<Property>> prop : subproperties.entrySet()) 
+				for (Property subproperty : prop.getValue()) 
 					addSubConcept(ontFactory.createPropertySomeRestriction(subproperty.getPredicate(), subproperty.isInverse()), 
-							ontFactory.createPropertySomeRestriction(prop.getPredicate(), prop.isInverse()));
+							ontFactory.createPropertySomeRestriction(prop.getKey().getPredicate(), prop.getKey().isInverse()));
+
+			graphTransitiveClosure(subconcepts);
 			
-			Set<BasicClassDescription> sc = subconcepts.keySet();
-			boolean changed = false;
-			do {
-				changed = false;
-				for (BasicClassDescription o1 : sc) {
-					Set<BasicClassDescription> so1 = null;
-					for (BasicClassDescription o2 : sc) {
-						if (o2 == o1)
-							continue;
-						Set<BasicClassDescription> so2 = subconcepts.get(o2);
-						if (so2.contains(o1)) {
-							if (so1 == null)
-								so1 = subconcepts.get(o1);
-							if (so2.addAll(so1)) {
-								log.debug("ALL " + o2 + " ARE EXTENDED WITH ALL " + o1);
-								changed = true;
-							}
-						}
-					}
-				}
-			} while (changed);
-			
-			for (BasicClassDescription k : sc)
-				log.debug("SATURATED SUBCONCEPTS OF " + k + " are " + subconcepts.get(k));
+			for (Map.Entry<BasicClassDescription, Set<BasicClassDescription>> k : subconcepts.entrySet())
+				log.debug("SATURATED SUBCONCEPTS OF " +  k.getKey() + " ARE " + k.getValue());
 		}
 		
 		// TODO: SATURATE GENERATING AXIOMS
+		
+		generatorsSet = generators.values();
+	}
+
+	private static <T> void graphTransitiveClosure(Map<T, Set<T>> graph) {
+		log.debug("COMPUTING TRANSITIVE CLOSURE");
+		Queue<T> useForExtension = new LinkedList<T>(graph.keySet());
+		while (!useForExtension.isEmpty()) {
+			T o1key = useForExtension.poll();
+			log.debug("   USE FOR EXTENSION: " + o1key);
+			Set<T> o1value = null;
+			for (Map.Entry<T, Set<T>> o2 : graph.entrySet()) {
+				if (o2.getKey() == o1key)
+					continue;
+				if (o2.getValue().contains(o1key)) {
+					if (o1value == null)
+						o1value = graph.get(o1key);
+					if (o2.getValue().addAll(o1value)) {
+						useForExtension.add(o2.getKey());
+						log.debug("ALL " + o2.getKey() + " ARE EXTENDED WITH ALL " + o1key);
+					}
+				}
+			}
+		}		
+	}
+
+	private static <T> void graphTransitiveClosure0(Map<T, Set<T>> graph) {
+		//Set<T> sc = graph.keySet();
+		boolean changed = false;
+		do {
+			changed = false;
+			for (Map.Entry<T, Set<T>> o1 : graph.entrySet()) {
+				for (Map.Entry<T, Set<T>> o2 : graph.entrySet()) {
+					if (o2.getKey() == o1.getKey())
+						continue;
+					if (o2.getValue().contains(o1.getKey())) {
+						if (o2.getValue().addAll(o1.getValue())) {
+							log.debug("ALL " + o2.getKey() + " ARE EXTENDED WITH ALL " + o1.getKey());
+							changed = true;
+						}
+					}
+				}
+			}
+		} while (changed);		
 	}
 	
 	private void addSubConcept(BasicClassDescription subConcept, BasicClassDescription superConcept) {
@@ -228,6 +235,6 @@ public class TreeWitnessReasonerLite {
 	}
 
 	public Collection<TreeWitnessGenerator> getGenerators() {
-		return generators.values();
+		return generatorsSet;
 	}
 }
