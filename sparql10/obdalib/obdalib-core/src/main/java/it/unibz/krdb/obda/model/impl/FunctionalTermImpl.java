@@ -1,15 +1,15 @@
 package it.unibz.krdb.obda.model.impl;
 
 import it.unibz.krdb.obda.model.Function;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.utils.EventGeneratingLinkedList;
 import it.unibz.krdb.obda.utils.ListListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,16 +21,16 @@ public class FunctionalTermImpl implements Function, ListListener {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2832481815465364535L;
-	private Predicate functor = null;
-	private List<Term> terms = null;
-	private int identifier = -1;
+	protected static final long serialVersionUID = 2832481815465364535L;
+	protected Predicate functor = null;
+	protected List<NewLiteral> terms = null;
+	protected int identifier = -1;
 
 	// true when the list of terms has been modified
-	boolean rehash = true;
+	protected boolean rehash = true;
 
 	// null when the list of terms has been modified
-	String string = null;
+	protected String string = null;
 
 	/**
 	 * The default constructor.
@@ -41,10 +41,10 @@ public class FunctionalTermImpl implements Function, ListListener {
 	 * @param terms
 	 *            the list of arguments.
 	 */
-	protected FunctionalTermImpl(Predicate functor, List<Term> terms) {
+	protected FunctionalTermImpl(Predicate functor, List<NewLiteral> terms) {
 		this.functor = functor;
 
-		EventGeneratingLinkedList<Term> eventlist = new EventGeneratingLinkedList<Term>();
+		EventGeneratingLinkedList<NewLiteral> eventlist = new EventGeneratingLinkedList<NewLiteral>();
 		eventlist.addAll(terms);
 
 		this.terms = eventlist;
@@ -70,13 +70,36 @@ public class FunctionalTermImpl implements Function, ListListener {
 		return identifier;
 	}
 
+	
+	
+	@Override
+	public void setPredicate(Predicate predicate) {
+		this.functor = predicate;
+		listChanged();
+	}
+
+	@Override
+	public Set<Variable> getVariables() {
+		HashSet<Variable> variables = new LinkedHashSet<Variable>();
+		for (NewLiteral t : terms) {
+			for (Variable v : t.getReferencedVariables())
+				variables.add(v);
+		}
+		return variables;
+	}
+	
+	@Override
+	public Predicate getPredicate() {
+		return getFunctionSymbol();
+	}
+	
 	@Override
 	public Predicate getFunctionSymbol() {
 		return functor;
 	}
 
 	@Override
-	public List<Term> getTerms() {
+	public List<NewLiteral> getTerms() {
 		return terms;
 	}
 
@@ -87,8 +110,8 @@ public class FunctionalTermImpl implements Function, ListListener {
 
 	@Override
 	public FunctionalTermImpl clone() {
-		List<Term> copyTerms = new ArrayList<Term>(terms.size() + 10);
-		Iterator<Term> it = terms.iterator();
+		List<NewLiteral> copyTerms = new ArrayList<NewLiteral>(terms.size() + 10);
+		Iterator<NewLiteral> it = terms.iterator();
 		while (it.hasNext()) {
 			copyTerms.add(it.next().clone());
 		}
@@ -110,7 +133,7 @@ public class FunctionalTermImpl implements Function, ListListener {
 			if (sb_t.length() > 0) {
 				sb_t.append(",");
 			}
-			Term t = terms.get(i);
+			NewLiteral t = terms.get(i);
 			if (t == null)
 				System.out.println("Null");
 			sb_t.append(t.toString());
@@ -154,9 +177,9 @@ public class FunctionalTermImpl implements Function, ListListener {
 	 *            the term in question.
 	 * @return true if the function contains the term, or false otherwise.
 	 */
-	public boolean containsTerm(Term t) {
+	public boolean containsTerm(NewLiteral t) {
 		for (int i = 0; i < terms.size(); i++) {
-			Term t2 = terms.get(i);
+			NewLiteral t2 = terms.get(i);
 			if (t2.equals(t))
 				return true;
 		}
@@ -164,10 +187,10 @@ public class FunctionalTermImpl implements Function, ListListener {
 	}
 
 	@Override
-	public int getFirstOcurrance(Term t, int i) {
+	public int getFirstOcurrance(NewLiteral t, int i) {
 		int size = terms.size();
 		for (int j = 0; j < size; j++) {
-			Term t2 = terms.get(j);
+			NewLiteral t2 = terms.get(j);
 			if (t2 instanceof FunctionalTermImpl) {
 				FunctionalTermImpl f = (FunctionalTermImpl) t2;
 				int newindex = f.getFirstOcurrance(t, 0);
@@ -190,7 +213,7 @@ public class FunctionalTermImpl implements Function, ListListener {
 	@Override
 	public Set<Variable> getReferencedVariables() {
 		Set<Variable> vars = new LinkedHashSet<Variable>();
-		for (Term t : terms) {
+		for (NewLiteral t : terms) {
 			for (Variable v : t.getReferencedVariables())
 				vars.add(v);
 		}
@@ -200,7 +223,7 @@ public class FunctionalTermImpl implements Function, ListListener {
 	@Override
 	public Map<Variable, Integer> getVariableCount() {
 		Map<Variable, Integer> currentcount = new HashMap<Variable, Integer>();
-		for (Term t : terms) {
+		for (NewLiteral t : terms) {
 			Map<Variable, Integer> atomCount = t.getVariableCount();
 			for (Variable var: atomCount.keySet()) {
 				Integer count = currentcount.get(var);
@@ -212,6 +235,44 @@ public class FunctionalTermImpl implements Function, ListListener {
 			}
 		}
 		return currentcount;		
+	}
+	
+
+
+	@Override
+	public NewLiteral getTerm(int index) {
+		return terms.get(index);
+	}
+
+	
+	@Override
+	public void setTerm(int index, NewLiteral newTerm) {
+		listChanged();
+		terms.set(index, newTerm);
+	}
+
+	
+	public void updateTerms(List<NewLiteral> newterms) {
+
+		for (NewLiteral term : terms) {
+			if (term instanceof FunctionalTermImpl) {
+				FunctionalTermImpl function = (FunctionalTermImpl) term;
+				EventGeneratingLinkedList<NewLiteral> innertermlist = (EventGeneratingLinkedList<NewLiteral>) function.getTerms();
+				innertermlist.removeListener(this);
+			}
+		}
+
+		terms.clear();
+		terms.addAll(newterms);
+
+		for (NewLiteral term : terms) {
+			if (term instanceof FunctionalTermImpl) {
+				FunctionalTermImpl function = (FunctionalTermImpl) term;
+				EventGeneratingLinkedList<NewLiteral> innertermlist = (EventGeneratingLinkedList<NewLiteral>) function.getTerms();
+				innertermlist.addListener(this);
+			}
+		}
+		listChanged();
 	}
 	
 	

@@ -5,7 +5,7 @@ import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
@@ -77,7 +77,7 @@ public class DatalogNormalizer {
 	private static CQIE normalizeEQ(CQIE query) {
 		CQIE result = query.clone();
 		List<Atom> body = result.getBody();
-		Map<Variable, Term> mgu = new HashMap<Variable, Term>();
+		Map<Variable, NewLiteral> mgu = new HashMap<Variable, NewLiteral>();
 
 		for (int i = 0; i < body.size(); i++) {
 			Atom atom = body.get(i);
@@ -111,12 +111,12 @@ public class DatalogNormalizer {
 		if (atom.getPredicate() != OBDAVocabulary.AND) {
 			throw new InvalidParameterException();
 		}
-		List<Term> innerFunctionalTerms = new LinkedList<Term>();
-		for (Term term : atom.getTerms()) {
+		List<NewLiteral> innerFunctionalTerms = new LinkedList<NewLiteral>();
+		for (NewLiteral term : atom.getTerms()) {
 			innerFunctionalTerms.addAll(getUnfolderTermList((Function) term));
 		}
 		List<Atom> newatoms = new LinkedList<Atom>();
-		for (Term innerterm : innerFunctionalTerms) {
+		for (NewLiteral innerterm : innerFunctionalTerms) {
 			Function f = (Function) innerterm;
 			Atom newatom = fac.getAtom(f.getFunctionSymbol(), f.getTerms());
 			newatoms.add(newatom);
@@ -131,16 +131,16 @@ public class DatalogNormalizer {
 	 * @param atom
 	 * @return
 	 */
-	public static List<Term> getUnfolderTermList(Function term) {
+	public static List<NewLiteral> getUnfolderTermList(Function term) {
 
-		List<Term> result = new LinkedList<Term>();
+		List<NewLiteral> result = new LinkedList<NewLiteral>();
 
 		if (term.getFunctionSymbol() != OBDAVocabulary.AND) {
 			result.add(term);
 		}
 		else {
-			List<Term> terms = term.getTerms();
-			for (Term currentterm : terms) {
+			List<NewLiteral> terms = term.getTerms();
+			for (NewLiteral currentterm : terms) {
 				if (currentterm instanceof Function) {
 					result.addAll(getUnfolderTermList((Function) currentterm));
 				} else {

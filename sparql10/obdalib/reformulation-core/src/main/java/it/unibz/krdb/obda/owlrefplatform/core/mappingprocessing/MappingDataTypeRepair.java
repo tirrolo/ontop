@@ -9,7 +9,7 @@ import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
@@ -65,7 +65,7 @@ public class MappingDataTypeRepair {
             Predicate predicate = atom.getPredicate();
             if (isDataProperty(predicate)) {
             	// If the predicate is a data property
-            	Term term = atom.getTerm(1);
+            	NewLiteral term = atom.getTerm(1);
                 if (term instanceof Function) {
                 	Predicate functionSymbol = ((Function) term).getFunctionSymbol();
                 	if (functionSymbol instanceof DataTypePredicate) {
@@ -81,7 +81,7 @@ public class MappingDataTypeRepair {
                 	// column type.
                 	Variable variable = (Variable) term;
 	                Predicate functor = getDataTypeFunctor(variable);
-	                Term newTerm = dfac.getFunctionalTerm(functor, variable);
+	                NewLiteral newTerm = dfac.getFunctionalTerm(functor, variable);
 	                atom.setTerm(1, newTerm);
                 }
             } else {
@@ -135,9 +135,9 @@ public class MappingDataTypeRepair {
         Iterator<Atom> it = body.iterator();
         while (it.hasNext()) {
             Atom a = (Atom) it.next();
-            List<Term> terms = a.getTerms();
+            List<NewLiteral> terms = a.getTerms();
             int i = 1; // position index
-            for (Term t : terms) {
+            for (NewLiteral t : terms) {
                 if (t instanceof AnonymousVariable) {
                     i++; // increase the position index to evaluate the next variable
                 } else if (t instanceof VariableImpl) {

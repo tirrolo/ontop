@@ -13,7 +13,7 @@ package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.AnonymousVariable;
@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class Unifier {
 
-	public static Map<Variable, Term> getMGU(CQIE q, int position1, int position2) throws Exception {
+	public static Map<Variable, NewLiteral> getMGU(CQIE q, int position1, int position2) throws Exception {
 		return getMGU(q.getBody().get(position1), q.getBody().get(position2));
 	}
 
@@ -56,7 +56,7 @@ public class Unifier {
 	 */
 	public static CQIE unify(CQIE q, int i, int j) {
 
-		Map<Variable, Term> mgu = getMGU(q.getBody().get(i), q.getBody().get(j));
+		Map<Variable, NewLiteral> mgu = getMGU(q.getBody().get(i), q.getBody().get(j));
 		if (mgu == null)
 			return null;
 
@@ -89,11 +89,11 @@ public class Unifier {
 	 * @param unifier
 	 * @return
 	 */
-	private static Atom unify(Atom atom1, Atom atom2, Map<Variable, Term> unifier) {
+	private static Atom unify(Atom atom1, Atom atom2, Map<Variable, NewLiteral> unifier) {
 		Atom newatom = (Atom) atom1.clone();
 		for (int i = 0; i < atom1.getTerms().size(); i++) {
-			Term t1 = atom1.getTerms().get(i);
-			Term t2 = atom2.getTerms().get(i);
+			NewLiteral t1 = atom1.getTerms().get(i);
+			NewLiteral t2 = atom2.getTerms().get(i);
 			if (t1 instanceof AnonymousVariable) {
 				newatom.getTerms().set(i, t2);
 			}
@@ -112,7 +112,7 @@ public class Unifier {
 	 * @param unifier
 	 * @return
 	 */
-	public static CQIE applyUnifier(CQIE q, Map<Variable, Term> unifier) {
+	public static CQIE applyUnifier(CQIE q, Map<Variable, NewLiteral> unifier) {
 		CQIE newq = q.clone();
 
 		/* applying the unifier to every term in the head */
@@ -136,24 +136,24 @@ public class Unifier {
 	 * @param atom
 	 * @param unifier
 	 */
-	public static void applyUnifier(Atom atom, Map<Variable, Term> unifier) {
+	public static void applyUnifier(Atom atom, Map<Variable, NewLiteral> unifier) {
 		applyUnifier(atom.getTerms(), unifier);
 	}
 
-	public static void applyUnifier(Function term, Map<Variable, Term> unifier) {
-		List<Term> terms = term.getTerms();
+	public static void applyUnifier(Function term, Map<Variable, NewLiteral> unifier) {
+		List<NewLiteral> terms = term.getTerms();
 		applyUnifier(terms, unifier);
 	}
 
-	public static void applyUnifier(List<Term> terms, Map<Variable, Term> unifier) {
+	public static void applyUnifier(List<NewLiteral> terms, Map<Variable, NewLiteral> unifier) {
 		for (int i = 0; i < terms.size(); i++) {
-			Term t = terms.get(i);
+			NewLiteral t = terms.get(i);
 			/*
 			 * unifiers only apply to variables, simple or inside functional
 			 * terms
 			 */
 			if (t instanceof VariableImpl) {
-				Term replacement = unifier.get(t);
+				NewLiteral replacement = unifier.get(t);
 				if (replacement != null)
 					terms.set(i, replacement);
 			} else if (t instanceof Function) {
@@ -172,7 +172,7 @@ public class Unifier {
 	 * @param secondAtom
 	 * @return
 	 */
-	public static Map<Variable, Term> getMGU(Atom first, Atom second) {
+	public static Map<Variable, NewLiteral> getMGU(Atom first, Atom second) {
 
 		Atom firstAtom = (Atom) first;
 		Atom secondAtom = (Atom) second;
@@ -189,23 +189,23 @@ public class Unifier {
 		/* Computing the disagreement set */
 
 		int arity = firstAtom.getPredicate().getArity();
-		List<Term> terms1 = new ArrayList<Term>(firstAtom.getTerms());
-		List<Term> terms2 = new ArrayList<Term>(secondAtom.getTerms());
+		List<NewLiteral> terms1 = new ArrayList<NewLiteral>(firstAtom.getTerms());
+		List<NewLiteral> terms2 = new ArrayList<NewLiteral>(secondAtom.getTerms());
 
-		Map<Variable, Term> mgu = new HashMap<Variable, Term>();
+		Map<Variable, NewLiteral> mgu = new HashMap<Variable, NewLiteral>();
 
 		for (int termidx = 0; termidx < arity; termidx++) {
 
-			Term term1 = terms1.get(termidx);
-			Term term2 = terms2.get(termidx);
+			NewLiteral term1 = terms1.get(termidx);
+			NewLiteral term2 = terms2.get(termidx);
 
 			/*
 			 * Checking if there are already substitutions calculated for the
 			 * current terms. If there are any, then we have to take the
 			 * substitutted terms instead of the original ones.
 			 */
-			Term currentTerm1 = mgu.get(term1);
-			Term currentTerm2 = mgu.get(term2);
+			NewLiteral currentTerm1 = mgu.get(term1);
+			NewLiteral currentTerm2 = mgu.get(term2);
 
 			if (currentTerm1 != null)
 				term1 = currentTerm1;
@@ -233,15 +233,15 @@ public class Unifier {
 					return null;
 				}
 				int innerarity = fterm1.getTerms().size();
-				List<Term> innerterms1 = fterm1.getTerms();
-				List<Term> innerterms2 = fterm2.getTerms();
+				List<NewLiteral> innerterms1 = fterm1.getTerms();
+				List<NewLiteral> innerterms2 = fterm2.getTerms();
 				for (int innertermidx = 0; innertermidx < innerarity; innertermidx++) {
 
-					Term innerterm1 = innerterms1.get(innertermidx);
-					Term innerterm2 = innerterms2.get(innertermidx);
+					NewLiteral innerterm1 = innerterms1.get(innertermidx);
+					NewLiteral innerterm2 = innerterms2.get(innertermidx);
 
-					Term currentInnerTerm1 = mgu.get(innerterm1);
-					Term currentInnerTerm2 = mgu.get(innerterm2);
+					NewLiteral currentInnerTerm1 = mgu.get(innerterm1);
+					NewLiteral currentInnerTerm2 = mgu.get(innerterm2);
 
 					if (currentInnerTerm1 != null)
 						innerterm1 = currentInnerTerm1;
@@ -298,10 +298,10 @@ public class Unifier {
 	 * @param The
 	 *            substitution to compose
 	 */
-	public static void composeUnifiers(Map<Variable, Term> unifier, Substitution s) {
+	public static void composeUnifiers(Map<Variable, NewLiteral> unifier, Substitution s) {
 		List<Variable> forRemoval = new LinkedList<Variable>();
 		for (Variable v : unifier.keySet()) {
-			Term t = unifier.get(v);
+			NewLiteral t = unifier.get(v);
 			if (isEqual(t, s.getVariable())) {
 				if (isEqual(v, s.getTerm())) {
 					/*
@@ -315,14 +315,14 @@ public class Unifier {
 				}
 			} else if (t instanceof FunctionalTermImpl) {
 				FunctionalTermImpl function = (FunctionalTermImpl) t;
-				List<Term> innerTerms = function.getTerms();
+				List<NewLiteral> innerTerms = function.getTerms();
 				FunctionalTermImpl fclone = function.clone();
 				boolean innerchanges = false;
 				// TODO this ways of changing inner terms in functions is not
 				// optimal, modify
 
 				for (int i = 0; i < innerTerms.size(); i++) {
-					Term innerTerm = innerTerms.get(i);
+					NewLiteral innerTerm = innerTerms.get(i);
 
 					if (isEqual(innerTerm, s.getVariable())) {
 						fclone.getTerms().set(i, s.getTerm());
@@ -347,7 +347,7 @@ public class Unifier {
 	 * @param term2
 	 * @return
 	 */
-	public static Substitution getSubstitution(Term term1, Term term2) {
+	public static Substitution getSubstitution(NewLiteral term1, NewLiteral term2) {
 
 		if (!(term1 instanceof VariableImpl) && !(term2 instanceof VariableImpl)) {
 			/*
@@ -361,8 +361,8 @@ public class Unifier {
 		}
 
 		/* Arranging the terms so that the first is always a variable */
-		Term t1 = null;
-		Term t2 = null;
+		NewLiteral t1 = null;
+		NewLiteral t2 = null;
 
 		if (term1 instanceof VariableImpl) {
 			t1 = term1;
@@ -414,7 +414,7 @@ public class Unifier {
 	 * @param t2
 	 * @return
 	 */
-	private static boolean isEqual(Term t1, Term t2) {
+	private static boolean isEqual(NewLiteral t1, NewLiteral t2) {
 		if (t1 == null || t2 == null)
 			return false;
 		if ((t1 instanceof AnonymousVariable) || (t2 instanceof AnonymousVariable))

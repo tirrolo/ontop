@@ -12,7 +12,7 @@ import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.obda.model.OBDAResultSet;
 import it.unibz.krdb.obda.model.OBDAStatement;
 import it.unibz.krdb.obda.model.OperationPredicate;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
@@ -330,10 +330,10 @@ public class QuestStatement implements OBDAStatement {
 		}
 	}
 
-	private List<Term> getDefaultTypingSignature(int columnCount) {
+	private List<NewLiteral> getDefaultTypingSignature(int columnCount) {
 		OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
 
-		List<Term> signatureTyping = new ArrayList<Term>();
+		List<NewLiteral> signatureTyping = new ArrayList<NewLiteral>();
 		for (int i = 0; i < columnCount; i++) {
 			signatureTyping.add(fac.getFunctionalTerm(OBDAVocabulary.RDFS_LITERAL, fac.getVariable("x")));
 		}

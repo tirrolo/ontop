@@ -3,7 +3,7 @@ package it.unibz.krdb.obda.model.impl;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.OBDAQueryModifiers;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.utils.EventGeneratingLinkedList;
 import it.unibz.krdb.obda.utils.ListListener;
@@ -63,7 +63,7 @@ public class CQIEImpl implements CQIE, ListListener {
 		if (head != null) {
 			this.head = head;
 
-			EventGeneratingLinkedList<Term> headterms = (EventGeneratingLinkedList<Term>) head.getTerms();
+			EventGeneratingLinkedList<NewLiteral> headterms = (EventGeneratingLinkedList<NewLiteral>) head.getTerms();
 			headterms.addListener(this);
 		}
 	}
@@ -78,7 +78,7 @@ public class CQIEImpl implements CQIE, ListListener {
 
 	public void updateHead(Atom head) {
 
-		EventGeneratingLinkedList<Term> headterms = (EventGeneratingLinkedList<Term>) head.getTerms();
+		EventGeneratingLinkedList<NewLiteral> headterms = (EventGeneratingLinkedList<NewLiteral>) head.getTerms();
 		headterms.removeListener(this);
 
 		this.head = head;
@@ -173,7 +173,7 @@ public class CQIEImpl implements CQIE, ListListener {
 
 		Set<Variable> vars = new LinkedHashSet<Variable>();
 		for (Atom atom : body)
-			for (Term t : atom.getTerms()) {
+			for (NewLiteral t : atom.getTerms()) {
 				for (Variable v : t.getReferencedVariables())
 					vars.add(v);
 			}

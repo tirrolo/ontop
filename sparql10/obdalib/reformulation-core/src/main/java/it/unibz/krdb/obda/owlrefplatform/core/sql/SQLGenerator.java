@@ -11,7 +11,7 @@ import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDALibConstants;
 import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
@@ -95,7 +95,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 				continue;
 			}
 			int termindex = -1;
-			for (Term term : atom.getTerms()) {
+			for (NewLiteral term : atom.getTerms()) {
 				termindex += 1;
 				if (term instanceof Variable) {
 					Variable var = (Variable) term;
@@ -314,7 +314,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 				Atom atom = body.get(i1);
 				Predicate predicate = atom.getPredicate();
-				List<Term> terms = atom.getTerms();
+				List<NewLiteral> terms = atom.getTerms();
 
 				if (predicate instanceof BooleanOperationPredicate) {
 					/*
@@ -329,7 +329,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 					 * (besides joins) by having constants in some terms.
 					 */
 					for (int termj = 0; termj < terms.size(); termj++) {
-						Term term = terms.get(termj);
+						NewLiteral term = terms.get(termj);
 						if (term instanceof ValueConstant) {
 							ValueConstant ct = (ValueConstant) term;
 							String value = jdbcutil.getSQLLexicalForm(ct);
@@ -426,7 +426,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 	private String getSelectClause(Atom head, List<Atom> body, List<String> signature, String[] tableName, String[] viewName,
 			Map<Variable, List<Integer>> varAtomIndex, Map<Variable, Map<Atom, List<Integer>>> varAtomTermIndex, String indent)
 			throws OBDAException {
-		List<Term> headterms = head.getTerms();
+		List<NewLiteral> headterms = head.getTerms();
 
 		String typeStr = "%s AS \"%sQuestType\", ";
 
@@ -436,11 +436,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 			return sb.toString();
 		}
 
-		Iterator<Term> hit = headterms.iterator();
+		Iterator<NewLiteral> hit = headterms.iterator();
 		int hpos = 0;
 		while (hit.hasNext()) {
 			sb.append("\n" + indent + "   ");
-			Term ht = hit.next();
+			NewLiteral ht = hit.next();
 			if (!((ht instanceof Function) || (ht instanceof Constant))) {
 				throw new IllegalArgumentException(
 						"Unexpected error. Contact the authors. Message: Imposible to generate SELECT clause. Found non-functional term \""
@@ -511,7 +511,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 						 */
 						String lang = "''";
 						if (ov.getTerms().size() > 1) {
-							Term langTerm = ov.getTerms().get(1);
+							NewLiteral langTerm = ov.getTerms().get(1);
 							if (langTerm instanceof ValueConstant) {
 								lang = jdbcutil.getSQLLexicalForm((ValueConstant) langTerm);
 							} else {
@@ -520,7 +520,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 						}
 						sb.append(String.format(langStr, lang, signature.get(hpos)));
 
-						Term term = ov.getTerms().get(0);
+						NewLiteral term = ov.getTerms().get(0);
 						String termStr = null;
 						if (term instanceof ValueConstant) {
 							termStr = jdbcutil.getSQLLexicalForm((ValueConstant) term);
@@ -534,7 +534,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 						sb.append(String.format(langStr, "''", signature.get(hpos)));
 
 						// The column name
-						Term term = ov.getTerms().get(0);
+						NewLiteral term = ov.getTerms().get(0);
 						if (term instanceof Variable) {
 							Variable v = (Variable) term;
 							String column = getSQLString(v, body, tableName, viewName, varAtomIndex, varAtomTermIndex, false);
@@ -573,7 +573,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 	
 	public String getSQLStringForURIFunction(Function ov, List<Atom> body, String[] tableName, String[] viewName, Map<Variable, List<Integer>> varAtomIndex, Map<Variable, Map<Atom, List<Integer>>> varAtomTermIndex, boolean b) {
 		String result = "";
-		Term t = ov.getTerms().get(0);
+		NewLiteral t = ov.getTerms().get(0);
 		if (t instanceof ValueConstant) {
 			ValueConstant c = (ValueConstant) t;
 			StringTokenizer tokenizer = new StringTokenizer(c.toString(), "{}");
@@ -581,7 +581,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 			List<String> vex = new LinkedList<String>();
 			int termIndex = 1;
 			do {
-				Term currentTerm = ov.getTerms().get(termIndex);
+				NewLiteral currentTerm = ov.getTerms().get(termIndex);
 				vex.add(getSQLString(currentTerm, body, tableName, viewName, varAtomIndex, varAtomTermIndex, false));
 				if (tokenizer.hasMoreTokens()) {
 					vex.add(jdbcutil.getSQLLexicalForm(tokenizer.nextToken()));
@@ -615,15 +615,15 @@ public class SQLGenerator implements SQLQueryGenerator {
 		final Predicate functionSymbol = atom.getPredicate();
 		if (isUnary(atom)) {
 			// For unary boolean operators, e.g., NOT, IS NULL, IS NOT NULL.
-			Term term = atom.getTerms().get(0);
+			NewLiteral term = atom.getTerms().get(0);
 			String expressionFormat = getBooleanOperatorString(functionSymbol);
 			String column = getSQLString(term, body, tableName, viewName, varAtomIndex, varAtomTermIndex, false);
 			return String.format(expressionFormat, column);
 
 		} else if (isBinary(atom)) {
 			// For binary boolean operators, e.g., AND, OR, EQ, GT, LT, etc.
-			Term left = atom.getTerms().get(0);
-			Term right = atom.getTerms().get(1);
+			NewLiteral left = atom.getTerms().get(0);
+			NewLiteral right = atom.getTerms().get(1);
 			String expressionFormat = getBooleanOperatorString(functionSymbol);
 			String leftOp = getSQLString(left, body, tableName, viewName, varAtomIndex, varAtomTermIndex, true);
 			String rightOp = getSQLString(right, body, tableName, viewName, varAtomIndex, varAtomTermIndex, true);
@@ -663,7 +663,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 		return (fun.getArity() == 2) ? true : false;
 	}
 
-	public String getSQLString(Term term, List<Atom> body, String[] tableName, String[] viewName,
+	public String getSQLString(NewLiteral term, List<Atom> body, String[] tableName, String[] viewName,
 			Map<Variable, List<Integer>> varAtomIndex, Map<Variable, Map<Atom, List<Integer>>> varAtomTermIndex, boolean useBrackets) {
 		StringBuffer result = new StringBuffer();
 		if (term instanceof ValueConstant) {

@@ -9,7 +9,7 @@ import it.unibz.krdb.obda.model.OBDALibConstants;
 import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
@@ -78,7 +78,7 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	private static int randvarcount = 0;
 
-	public static List<List<Atom>> translate(Op op, Map<Variable, Term> mgu) {
+	public static List<List<Atom>> translate(Op op, Map<Variable, NewLiteral> mgu) {
 		List<List<Atom>> result = new LinkedList<List<Atom>>();
 		if (op instanceof OpFilter) {
 			OpFilter filter = (OpFilter) op;
@@ -130,7 +130,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		return SparqlAlgebraToDatalogTranslator.translate(op, isBoolean, arqQuery.getResultVars());
 	}
 
-	public static List<List<Atom>> translate(OpFilter op, Map<Variable, Term> mgu) {
+	public static List<List<Atom>> translate(OpFilter op, Map<Variable, NewLiteral> mgu) {
 		Op sub = op.getSubOp();
 		ExprList list = op.getExprs();
 		List<Expr> exprlist = list.getList();
@@ -148,7 +148,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		return filteredData;
 	}
 
-	public static Atom translate(Expr expr, Map<Variable, Term> mgu) {
+	public static Atom translate(Expr expr, Map<Variable, NewLiteral> mgu) {
 		if (!(expr instanceof ExprFunction2)) {
 			throw new QueryException("Operation not supported: " + expr.toString());
 		}
@@ -163,8 +163,8 @@ public class SparqlAlgebraToDatalogTranslator {
 			mgu.put(variable, langMatches);
 			return null;
 		} else {
-			Term term1 = getBooleanTerm(arg1, mgu);
-			Term term2 = getBooleanTerm(arg2, mgu);
+			NewLiteral term1 = getBooleanTerm(arg1, mgu);
+			NewLiteral term2 = getBooleanTerm(arg2, mgu);
 			// Construct the boolean atom
 			return getBooleanAtom(function, term1, term2);
 		}
@@ -174,7 +174,7 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		DatalogProgram datalog = ofac.getDatalogProgram();
 
-		Map<Variable, Term> mgu = new HashMap<Variable, Term>();
+		Map<Variable, NewLiteral> mgu = new HashMap<Variable, NewLiteral>();
 
 		// Add LIMIT and OFFSET modifiers, if any
 		if (query instanceof OpSlice) {
@@ -216,7 +216,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 
 		Atom head = null;
-		List<Term> headVars = new LinkedList<Term>();
+		List<NewLiteral> headVars = new LinkedList<NewLiteral>();
 		if (isBoolean) {
 			@SuppressWarnings("deprecation")
 			Predicate predicate = ofac.getPredicate(OBDALibConstants.QUERY_HEAD_URI, 0);
@@ -279,7 +279,7 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		// / Instantiate the atom components: predicate and terms.
 		Predicate predicate = null;
-		Vector<Term> terms = new Vector<Term>();
+		Vector<NewLiteral> terms = new Vector<NewLiteral>();
 
 		if (p.getURI().equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
 			// Subject node
@@ -527,8 +527,8 @@ public class SparqlAlgebraToDatalogTranslator {
 		return dataType;
 	}
 
-	private static Term getBooleanTerm(Expr expr, Map<Variable, Term> mgu) {
-		Term term = null;
+	private static NewLiteral getBooleanTerm(Expr expr, Map<Variable, NewLiteral> mgu) {
+		NewLiteral term = null;
 		if (expr instanceof ExprVar) {
 			return getVariableTerm((ExprVar) expr);
 		} else if (expr instanceof NodeValue) {
@@ -548,8 +548,8 @@ public class SparqlAlgebraToDatalogTranslator {
 				Function langMatches = ofac.getFunctionalTerm(ofac.getDataTypePredicateLiteral(), variable, languageTag);
 				mgu.put(variable, langMatches);
 			} else {
-				Term term1 = getBooleanTerm(arg1, mgu);
-				Term term2 = getBooleanTerm(arg2, mgu);
+				NewLiteral term1 = getBooleanTerm(arg1, mgu);
+				NewLiteral term2 = getBooleanTerm(arg2, mgu);
 				// Construct the boolean function
 				term = getBooleanFunction(function, term1, term2);
 			}
@@ -592,7 +592,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		return constantFunction;
 	}
 
-	private static Atom getBooleanAtom(ExprFunction2 expr, Term term1, Term term2) {
+	private static Atom getBooleanAtom(ExprFunction2 expr, NewLiteral term1, NewLiteral term2) {
 		Atom atom = null;
 		// The AND and OR expression
 		if (expr instanceof E_LogicalAnd) {
@@ -617,7 +617,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		return atom;
 	}
 
-	private static Function getBooleanFunction(ExprFunction2 expr, Term term1, Term term2) {
+	private static Function getBooleanFunction(ExprFunction2 expr, NewLiteral term1, NewLiteral term2) {
 		Function function = null;
 		// The AND and OR expression
 		if (expr instanceof E_LogicalAnd) {

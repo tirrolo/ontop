@@ -7,7 +7,7 @@ import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDASQLQuery;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.ontology.Assertion;
 import it.unibz.krdb.obda.ontology.ClassAssertion;
@@ -1591,8 +1591,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 	private CQIE constructTargetQuery(Predicate predicate) {
 		// Initialize the predicate and term objects.
 		Predicate headPredicate, bodyPredicate = null;
-		List<Term> headTerms = new ArrayList<Term>();
-		List<Term> bodyTerms = new ArrayList<Term>();
+		List<NewLiteral> headTerms = new ArrayList<NewLiteral>();
+		List<NewLiteral> bodyTerms = new ArrayList<NewLiteral>();
 		if (isObjectProperty(predicate)) {
 			// If the predicate is a Object Property
 			headPredicate = dfac.getPredicate(URI.create("m"), 2, new COL_TYPE[] { COL_TYPE.STRING, COL_TYPE.OBJECT });

@@ -4,7 +4,7 @@ import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.sql.DBMetadata;
@@ -46,7 +46,7 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 		unfoldingProgram = fac.getDatalogProgram();
 
 		Atom head = fac.getAtom(fac.getDataPropertyPredicate("name"), fac.getVariable("x"), fac.getVariable("y"));
-		List<Term> bodyTerms = new LinkedList<Term>();
+		List<NewLiteral> bodyTerms = new LinkedList<NewLiteral>();
 		bodyTerms.add(fac.getVariable("x"));
 		bodyTerms.add(fac.getVariable("y"));
 		bodyTerms.add(fac.getVariable("z"));
@@ -56,7 +56,7 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 		unfoldingProgram.appendRule(rule);
 
 		head = fac.getAtom(fac.getDataPropertyPredicate("lastname"), fac.getVariable("x"), fac.getVariable("z"));
-		bodyTerms = new LinkedList<Term>();
+		bodyTerms = new LinkedList<NewLiteral>();
 		bodyTerms.add(fac.getVariable("x"));
 		bodyTerms.add(fac.getVariable("y"));
 		bodyTerms.add(fac.getVariable("z"));
@@ -66,7 +66,7 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 		unfoldingProgram.appendRule(rule);
 
 		head = fac.getAtom(fac.getDataPropertyPredicate("id"), fac.getVariable("x"), fac.getVariable("m"));
-		bodyTerms = new LinkedList<Term>();
+		bodyTerms = new LinkedList<NewLiteral>();
 		bodyTerms.add(fac.getVariable("x"));
 		bodyTerms.add(fac.getVariable("y"));
 		bodyTerms.add(fac.getVariable("z"));
@@ -76,7 +76,7 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 		unfoldingProgram.appendRule(rule);
 		
 		head = fac.getAtom(fac.getDataPropertyPredicate("name"), fac.getVariable("x"), fac.getVariable("y"));
-		bodyTerms = new LinkedList<Term>();
+		bodyTerms = new LinkedList<NewLiteral>();
 		bodyTerms.add(fac.getVariable("x"));
 		bodyTerms.add(fac.getVariable("y"));
 		bodyTerms.add(fac.getVariable("z"));
@@ -86,7 +86,7 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 		unfoldingProgram.appendRule(rule);
 
 		head = fac.getAtom(fac.getDataPropertyPredicate("lastname"), fac.getVariable("x"), fac.getVariable("z"));
-		bodyTerms = new LinkedList<Term>();
+		bodyTerms = new LinkedList<NewLiteral>();
 		bodyTerms.add(fac.getVariable("x"));
 		bodyTerms.add(fac.getVariable("y"));
 		bodyTerms.add(fac.getVariable("z"));
@@ -96,7 +96,7 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 		unfoldingProgram.appendRule(rule);
 
 		head = fac.getAtom(fac.getDataPropertyPredicate("id"), fac.getVariable("x"), fac.getVariable("m"));
-		bodyTerms = new LinkedList<Term>();
+		bodyTerms = new LinkedList<NewLiteral>();
 		bodyTerms.add(fac.getVariable("x"));
 		bodyTerms.add(fac.getVariable("y"));
 		bodyTerms.add(fac.getVariable("z"));
@@ -109,7 +109,7 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 	public void testRedundancyElimination() throws Exception {
 		DatalogUnfolder unfolder = new DatalogUnfolder(unfoldingProgram, metadata);
 
-		LinkedList<Term> headterms = new LinkedList<Term>();
+		LinkedList<NewLiteral> headterms = new LinkedList<NewLiteral>();
 		headterms.add(fac.getVariable("m"));
 		headterms.add(fac.getVariable("n"));
 		headterms.add(fac.getVariable("o"));
@@ -137,7 +137,7 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 		assertTrue(output.toString(), atomcount == 14);
 		
 		
-		headterms = new LinkedList<Term>();
+		headterms = new LinkedList<NewLiteral>();
 		headterms.add(fac.getVariable("x"));
 		headterms.add(fac.getVariable("y"));
 		headterms.add(fac.getVariable("m"));

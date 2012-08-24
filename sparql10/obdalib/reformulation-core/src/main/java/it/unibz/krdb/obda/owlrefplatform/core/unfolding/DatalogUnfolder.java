@@ -10,7 +10,7 @@ import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OperationPredicate;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
@@ -73,8 +73,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		functTermMap = new HashMap<String, Function>();
 		for (CQIE mappingrule : unfoldingProgram.getRules()) {
 			/* Collecting functional terms */
-			List<Term> headTerms = mappingrule.getHead().getTerms();
-			for (Term term : headTerms) {
+			List<NewLiteral> headTerms = mappingrule.getHead().getTerms();
+			for (NewLiteral term : headTerms) {
 				if (term instanceof FunctionalTermImpl) {
 					FunctionalTermImpl function = (FunctionalTermImpl) term;
 					String predicateName = function.getFunctionSymbol().getName().toString();
@@ -434,7 +434,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 						 */
 						Atom replacement = null;
 
-						Map<Variable, Term> mgu = null;
+						Map<Variable, NewLiteral> mgu = null;
 						for (int idx2 = 0; idx2 <= oldatoms; idx2++) {
 							Atom tempatom = newbody.get(idx2);
 
@@ -613,10 +613,10 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		// This method doesn't support nested functional terms
 		CQIE freshRule = rule.clone();
 		Atom head = freshRule.getHead();
-		List<Term> headTerms = head.getTerms();
+		List<NewLiteral> headTerms = head.getTerms();
 		for (int i = 0; i < headTerms.size(); i++) {
-			Term term = headTerms.get(i);
-			Term newTerm = getFreshTerm(term, suffix);
+			NewLiteral term = headTerms.get(i);
+			NewLiteral newTerm = getFreshTerm(term, suffix);
 			if (newTerm != null)
 				headTerms.set(i, newTerm);
 		}
@@ -624,10 +624,10 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		List<Atom> body = freshRule.getBody();
 		for (Atom atom : body) {
 
-			List<Term> atomTerms = ((Atom) atom).getTerms();
+			List<NewLiteral> atomTerms = ((Atom) atom).getTerms();
 			for (int i = 0; i < atomTerms.size(); i++) {
-				Term term = atomTerms.get(i);
-				Term newTerm = getFreshTerm(term, suffix);
+				NewLiteral term = atomTerms.get(i);
+				NewLiteral newTerm = getFreshTerm(term, suffix);
 				if (newTerm != null)
 					atomTerms.set(i, newTerm);
 			}
@@ -636,17 +636,17 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 
 	}
 
-	public Term getFreshTerm(Term term, int suffix) {
-		Term newTerm = null;
+	public NewLiteral getFreshTerm(NewLiteral term, int suffix) {
+		NewLiteral newTerm = null;
 		if (term instanceof VariableImpl) {
 			VariableImpl variable = (VariableImpl) term;
 			newTerm = termFactory.getVariable(variable.getName() + "_" + suffix);
 		} else if (term instanceof Function) {
 			Function functionalTerm = (Function) term;
-			List<Term> innerTerms = functionalTerm.getTerms();
-			List<Term> newInnerTerms = new LinkedList<Term>();
+			List<NewLiteral> innerTerms = functionalTerm.getTerms();
+			List<NewLiteral> newInnerTerms = new LinkedList<NewLiteral>();
 			for (int j = 0; j < innerTerms.size(); j++) {
-				Term innerTerm = innerTerms.get(j);
+				NewLiteral innerTerm = innerTerms.get(j);
 				newInnerTerms.add(getFreshTerm(innerTerm, suffix));
 			}
 			Predicate newFunctionSymbol = functionalTerm.getFunctionSymbol();
@@ -677,9 +677,9 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			List<Atom> newbody = new LinkedList<Atom>();
 			for (int i = 0; i < body.size(); i++) {
 				Atom atom = (Atom) body.get(i);
-				List<Term> terms = atom.getTerms();
-				List<Term> newTerms = new LinkedList<Term>();
-				for (Term t : terms) {
+				List<NewLiteral> terms = atom.getTerms();
+				List<NewLiteral> newTerms = new LinkedList<NewLiteral>();
+				for (NewLiteral t : terms) {
 					if (t instanceof URIConstant) {
 						URIConstant uri = (URIConstant) t;
 						Function matchedFunction = this.uriFunctorMatcher.getPossibleFunctionalTermMatch(uri);

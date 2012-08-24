@@ -6,7 +6,7 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
@@ -149,8 +149,8 @@ public class CQCUtilities {
 				Atom patom = (Atom) atom;
 				Predicate predicate = atom.getPredicate();
 
-				Term oldTerm1 = null;
-				Term oldTerm2 = null;
+				NewLiteral oldTerm1 = null;
+				NewLiteral oldTerm2 = null;
 
 				Set<SubDescriptionAxiom> pis = sigma.getByIncluded(predicate);
 				if (pis == null) {
@@ -197,8 +197,8 @@ public class CQCUtilities {
 
 					Description right = pi.getSuper();
 
-					Term newTerm1 = null;
-					Term newTerm2 = null;
+					NewLiteral newTerm1 = null;
+					NewLiteral newTerm2 = null;
 					Predicate newPredicate = null;
 					Atom newAtom = null;
 
@@ -296,7 +296,7 @@ public class CQCUtilities {
 
 		int constantcounter = 1;
 
-		Map<Variable, Term> substitution = new HashMap<Variable, Term>(50);
+		Map<Variable, NewLiteral> substitution = new HashMap<Variable, NewLiteral>(50);
 		Atom head = canonicalquery.getHead();
 		constantcounter = getCanonicalAtom(head, constantcounter, substitution);
 
@@ -317,12 +317,12 @@ public class CQCUtilities {
 	 *            is needed to provide a numbering to each of the new constants
 	 * @return
 	 */
-	public static int getCanonicalAtom(Atom atom, int constantcounter, Map<Variable, Term> currentMap) {
-		List<Term> headterms = ((Atom) atom).getTerms();
+	public static int getCanonicalAtom(Atom atom, int constantcounter, Map<Variable, NewLiteral> currentMap) {
+		List<NewLiteral> headterms = ((Atom) atom).getTerms();
 		for (int i = 0; i < headterms.size(); i++) {
-			Term term = headterms.get(i);
+			NewLiteral term = headterms.get(i);
 			if (term instanceof Variable) {
-				Term substitution = null;
+				NewLiteral substitution = null;
 				if (term instanceof Variable) {
 					substitution = currentMap.get(term);
 					if (substitution == null) {
@@ -343,11 +343,11 @@ public class CQCUtilities {
 				headterms.set(i, substitution);
 			} else if (term instanceof Function) {
 				FunctionalTermImpl function = (FunctionalTermImpl) term;
-				List<Term> functionterms = function.getTerms();
+				List<NewLiteral> functionterms = function.getTerms();
 				for (int j = 0; j < functionterms.size(); j++) {
-					Term fterm = functionterms.get(j);
+					NewLiteral fterm = functionterms.get(j);
 					if (fterm instanceof Variable) {
-						Term substitution = null;
+						NewLiteral substitution = null;
 						if (fterm instanceof VariableImpl) {
 							substitution = currentMap.get(fterm);
 							if (substitution == null) {
@@ -414,7 +414,7 @@ public class CQCUtilities {
 
 			for (Atom currentGroundAtom : relevantFacts) {
 
-				Map<Variable, Term> mgu = unifier.getMGU(currentAtomTry, currentGroundAtom);
+				Map<Variable, NewLiteral> mgu = unifier.getMGU(currentAtomTry, currentGroundAtom);
 				if (mgu == null)
 					continue;
 
@@ -464,7 +464,7 @@ public class CQCUtilities {
 			for (int groundatomidx = 0; groundatomidx < canonicalbody.size(); groundatomidx++) {
 				Atom currentGroundAtom = (Atom) canonicalbody.get(groundatomidx);
 
-				Map<Variable, Term> mgu = unifier.getMGU(currentAtomTry, currentGroundAtom);
+				Map<Variable, NewLiteral> mgu = unifier.getMGU(currentAtomTry, currentGroundAtom);
 				if (mgu != null) {
 					CQIE satisfiedquery = unifier.applyUnifier(currentquery.clone(), mgu);
 					satisfiedquery.getBody().remove(atomidx);
@@ -523,7 +523,7 @@ public class CQCUtilities {
 			boolean choiceMade = false;
 			CQIE newquery = null;
 			while (!factChoices.isEmpty()) {
-				Map<Variable, Term> mgu = unifier.getMGU(currentAtom, factChoices.pop());
+				Map<Variable, NewLiteral> mgu = unifier.getMGU(currentAtom, factChoices.pop());
 				if (mgu == null) {
 					/* No way to use the current fact */
 					continue;
@@ -624,7 +624,7 @@ public class CQCUtilities {
 			Atom currentAtom = result.getBody().get(i);
 			for (int j = i + 1; j < result.getBody().size(); j++) {
 				Atom nextAtom = result.getBody().get(j);
-				Map<Variable, Term> map = unifier.getMGU(currentAtom, nextAtom);
+				Map<Variable, NewLiteral> map = unifier.getMGU(currentAtom, nextAtom);
 				if (map != null && map.isEmpty()) {
 					result = unifier.unify(result, i, j);
 				}

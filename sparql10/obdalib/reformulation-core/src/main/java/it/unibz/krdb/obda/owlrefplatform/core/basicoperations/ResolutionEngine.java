@@ -1,7 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
 
 import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.Variable;
 
 import java.util.Map;
@@ -32,7 +32,7 @@ public class ResolutionEngine {
 	 */
 	public CQIE resolve(CQIE rule, CQIE query, int atomidx) {
 		CQIE newquery = query.clone();
-		Map<Variable, Term> mgu = unifier.getMGU(rule.getHead(), newquery.getBody().get(atomidx));
+		Map<Variable, NewLiteral> mgu = unifier.getMGU(rule.getHead(), newquery.getBody().get(atomidx));
 		if (mgu == null)
 			return null;
 

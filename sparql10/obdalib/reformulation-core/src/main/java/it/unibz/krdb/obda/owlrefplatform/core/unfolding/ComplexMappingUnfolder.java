@@ -9,7 +9,7 @@ import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDARDBMappingAxiom;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.AnonymousVariable;
@@ -131,8 +131,8 @@ public class ComplexMappingUnfolder implements UnfoldingMechanism {
 			log.debug("Aux: {}   SQL: {}", mappingrule.getHead().toString(), mapping.getSourceQuery().toString());
 
 			/* Collecting functional terms */
-			List<Term> headTerms = mappingrule.getHead().getTerms();
-			for (Term term : headTerms) {
+			List<NewLiteral> headTerms = mappingrule.getHead().getTerms();
+			for (NewLiteral term : headTerms) {
 				if (term instanceof FunctionalTermImpl) {
 					FunctionalTermImpl function = (FunctionalTermImpl) term;
 					String predicateName = function.getFunctionSymbol().getName().toString();
@@ -186,7 +186,7 @@ public class ComplexMappingUnfolder implements UnfoldingMechanism {
 		AuxSQLMapping auxmap = viewManager.getAuxSQLMapping(viewPredicate.getName());
 
 		/* Creating the atom for the body */
-		LinkedList<Term> bodyTerms = new LinkedList<Term>();
+		LinkedList<NewLiteral> bodyTerms = new LinkedList<NewLiteral>();
 		String name = viewPredicate.getName().getFragment().toLowerCase() + "_";
 		for (int i = 0; i < auxmap.getNrOfVariables(); i++) {
 			bodyTerms.add(termFactory.getVariable(name + i));
@@ -204,26 +204,26 @@ public class ComplexMappingUnfolder implements UnfoldingMechanism {
 		 * Example: Person (c(x))
 		 */
 
-		LinkedList<Term> headTerms = new LinkedList<Term>();
+		LinkedList<NewLiteral> headTerms = new LinkedList<NewLiteral>();
 		for (int i = 0; i < ((Atom) mappingsBodyAtom).getTerms().size(); i++) {
-			Term currentTerm = ((Atom) mappingsBodyAtom).getTerms().get(i);
+			NewLiteral currentTerm = ((Atom) mappingsBodyAtom).getTerms().get(i);
 			if (currentTerm instanceof FunctionalTermImpl) {
 				FunctionalTermImpl ft = (FunctionalTermImpl) currentTerm;
-				List<Term> innerTerms = ft.getTerms();
-				Iterator<Term> innerTermsIterator = innerTerms.iterator();
-				LinkedList<Term> funvec = new LinkedList<Term>();
+				List<NewLiteral> innerTerms = ft.getTerms();
+				Iterator<NewLiteral> innerTermsIterator = innerTerms.iterator();
+				LinkedList<NewLiteral> funvec = new LinkedList<NewLiteral>();
 				while (innerTermsIterator.hasNext()) {
-					Term v = innerTermsIterator.next();
+					NewLiteral v = innerTermsIterator.next();
 					int pos = auxmap.getPosOf(((Variable) v).getName());
-					Term t = termFactory.getVariable(((Variable) ruleBodyAtom.getTerms().get(pos)).getName());
+					NewLiteral t = termFactory.getVariable(((Variable) ruleBodyAtom.getTerms().get(pos)).getName());
 					funvec.add(t);
 				}
-				Term t = termFactory.getFunctionalTerm(ft.getFunctionSymbol(), funvec);
+				NewLiteral t = termFactory.getFunctionalTerm(ft.getFunctionSymbol(), funvec);
 				headTerms.add(t);
 			} else {
 				String n = ((Variable) currentTerm).getName();
 				int pos = auxmap.getPosOf(n);
-				Term t = termFactory.getVariable(((Variable) ruleBodyAtom.getTerms().get(pos)).getName());
+				NewLiteral t = termFactory.getVariable(((Variable) ruleBodyAtom.getTerms().get(pos)).getName());
 				headTerms.add(t);
 			}
 		}
@@ -254,7 +254,7 @@ public class ComplexMappingUnfolder implements UnfoldingMechanism {
 		AuxSQLMapping auxmap = viewManager.getAuxSQLMapping(viewPredicate.getName());
 
 		/* Creating the atom for the body */
-		LinkedList<Term> bodyTerms = new LinkedList<Term>();
+		LinkedList<NewLiteral> bodyTerms = new LinkedList<NewLiteral>();
 		String name = viewPredicate.getName().getFragment().toLowerCase() + "_";
 		for (int i = 0; i < auxmap.getNrOfVariables(); i++) {
 			bodyTerms.add(termFactory.getVariable(name + i));
@@ -393,19 +393,19 @@ public class ComplexMappingUnfolder implements UnfoldingMechanism {
 		// This method doesn't support nested functional terms
 		CQIE freshRule = rule.clone();
 		Atom head = freshRule.getHead();
-		List<Term> headTerms = head.getTerms();
+		List<NewLiteral> headTerms = head.getTerms();
 		for (int i = 0; i < headTerms.size(); i++) {
-			Term term = headTerms.get(i);
-			Term newTerm = null;
+			NewLiteral term = headTerms.get(i);
+			NewLiteral newTerm = null;
 			if (term instanceof VariableImpl) {
 				VariableImpl variable = (VariableImpl) term;
 				newTerm = termFactory.getVariable(variable.getName() + "_" + count);
 			} else if (term instanceof FunctionalTermImpl) {
 				FunctionalTermImpl functionalTerm = (FunctionalTermImpl) term;
-				List<Term> innerTerms = functionalTerm.getTerms();
-				List<Term> newInnerTerms = new LinkedList<Term>();
+				List<NewLiteral> innerTerms = functionalTerm.getTerms();
+				List<NewLiteral> newInnerTerms = new LinkedList<NewLiteral>();
 				for (int j = 0; j < innerTerms.size(); j++) {
-					Term innerTerm = innerTerms.get(j);
+					NewLiteral innerTerm = innerTerms.get(j);
 					if (innerTerm instanceof VariableImpl) {
 						newInnerTerms.add(termFactory.getVariable(((Variable) innerTerm).getName() + "_" + count));
 					} else {
@@ -423,19 +423,19 @@ public class ComplexMappingUnfolder implements UnfoldingMechanism {
 		List<Atom> body = freshRule.getBody();
 		for (Atom atom : body) {
 
-			List<Term> atomTerms = ((Atom) atom).getTerms();
+			List<NewLiteral> atomTerms = ((Atom) atom).getTerms();
 			for (int i = 0; i < atomTerms.size(); i++) {
-				Term term = atomTerms.get(i);
-				Term newTerm = null;
+				NewLiteral term = atomTerms.get(i);
+				NewLiteral newTerm = null;
 				if (term instanceof VariableImpl) {
 					VariableImpl variable = (VariableImpl) term;
 					newTerm = termFactory.getVariable(variable.getName() + "_" + count);
 				} else if (term instanceof Function) {
 					Function functionalTerm = (Function) term;
-					List<Term> innerTerms = functionalTerm.getTerms();
-					List<Term> newInnerTerms = new LinkedList<Term>();
+					List<NewLiteral> innerTerms = functionalTerm.getTerms();
+					List<NewLiteral> newInnerTerms = new LinkedList<NewLiteral>();
 					for (int j = 0; j < innerTerms.size(); j++) {
-						Term innerTerm = innerTerms.get(j);
+						NewLiteral innerTerm = innerTerms.get(j);
 						if (innerTerm instanceof Variable) {
 							newInnerTerms.add(termFactory.getVariable(((Variable) innerTerm).getName() + "_" + count));
 						} else {
@@ -470,9 +470,9 @@ public class ComplexMappingUnfolder implements UnfoldingMechanism {
 			List<Atom> newbody = new LinkedList<Atom>();
 			for (int i = 0; i < body.size(); i++) {
 				Atom atom = (Atom) body.get(i);
-				List<Term> terms = atom.getTerms();
-				List<Term> newTerms = new LinkedList<Term>();
-				for (Term t : terms) {
+				List<NewLiteral> terms = atom.getTerms();
+				List<NewLiteral> newTerms = new LinkedList<NewLiteral>();
+				for (NewLiteral t : terms) {
 					if (t instanceof URIConstant) {
 						URIConstant uri = (URIConstant) t;
 						Function matchedFunction = this.uriFunctorMatcher.getPossibleFunctionalTermMatch(uri);
@@ -511,17 +511,17 @@ public class ComplexMappingUnfolder implements UnfoldingMechanism {
 		while (it.hasNext()) {
 			CQIE query = it.next();
 			Atom head = query.getHead();
-			Iterator<Term> hit = head.getTerms().iterator();
+			Iterator<NewLiteral> hit = head.getTerms().iterator();
 			OBDADataFactory factory = OBDADataFactoryImpl.getInstance();
 			int coutner = 1;
 			int i = 0;
-			LinkedList<Term> newTerms = new LinkedList<Term>();
+			LinkedList<NewLiteral> newTerms = new LinkedList<NewLiteral>();
 			while (hit.hasNext()) {
-				Term t = hit.next();
+				NewLiteral t = hit.next();
 				if (t instanceof AnonymousVariable) {
 					String newName = "_uv-" + coutner;
 					coutner++;
-					Term newT = factory.getVariable(newName);
+					NewLiteral newT = factory.getVariable(newName);
 					newTerms.add(newT);
 				} else {
 					newTerms.add(t.clone());
@@ -533,15 +533,15 @@ public class ComplexMappingUnfolder implements UnfoldingMechanism {
 			Iterator<Atom> bit = query.getBody().iterator();
 			while (bit.hasNext()) {
 				Atom a = (Atom) bit.next();
-				Iterator<Term> hit2 = a.getTerms().iterator();
+				Iterator<NewLiteral> hit2 = a.getTerms().iterator();
 				i = 0;
-				LinkedList<Term> vec = new LinkedList<Term>();
+				LinkedList<NewLiteral> vec = new LinkedList<NewLiteral>();
 				while (hit2.hasNext()) {
-					Term t = hit2.next();
+					NewLiteral t = hit2.next();
 					if (t instanceof AnonymousVariable) {
 						String newName = "_uv-" + coutner;
 						coutner++;
-						Term newT = factory.getVariable(newName);
+						NewLiteral newT = factory.getVariable(newName);
 						vec.add(newT);
 					} else {
 						vec.add(t.clone());
