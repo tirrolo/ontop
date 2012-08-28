@@ -1,11 +1,12 @@
 package it.unibz.krdb.obda.protege4.views;
 
 import it.unibz.krdb.obda.gui.swing.panel.DatasourceSelector;
-import it.unibz.krdb.obda.gui.swing.panel.SQLQueryPanel;
+
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
 import it.unibz.krdb.obda.protege4.core.OBDAModelManager;
 import it.unibz.krdb.obda.protege4.core.OBDAModelManagerListener;
+import it.unibz.krdb.obda.protege4.panels.SQLQueryPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -44,7 +45,7 @@ public class SQLQueryInterfaceView extends AbstractOWLViewComponent implements O
 
 		OBDAModel dsController = apic.getActiveOBDAModel();
 
-		SQLQueryPanel queryPanel = new SQLQueryPanel();
+		SQLQueryPanel queryPanel = new SQLQueryPanel(dsController);
 		datasourceSelector = new DatasourceSelector(dsController);
 		datasourceSelector.addDatasourceListListener(queryPanel);
 
@@ -72,7 +73,7 @@ public class SQLQueryInterfaceView extends AbstractOWLViewComponent implements O
 		selectorPanel.add(datasourceSelector, gridBagConstraints);
 
 		selectorPanel.setBorder(new TitledBorder("Datasource selection"));
-		queryPanel.setBorder(new TitledBorder("SQL Query"));
+		queryPanel.setBorder(new TitledBorder("SQL Query Editor"));
 
 		setLayout(new BorderLayout());
 		add(queryPanel, BorderLayout.CENTER);

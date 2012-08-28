@@ -1,14 +1,34 @@
 package it.unibz.krdb.obda.protege4.panels;
 
+import it.unibz.krdb.obda.exception.DuplicateMappingException;
 import it.unibz.krdb.obda.gui.swing.treemodel.IncrementalResultSetTableModel;
 import it.unibz.krdb.obda.gui.swing.utils.DatasourceSelectorListener;
+import it.unibz.krdb.obda.gui.swing.utils.DialogUtils;
 import it.unibz.krdb.obda.gui.swing.utils.OBDAProgessMonitor;
 import it.unibz.krdb.obda.gui.swing.utils.OBDAProgressListener;
+import it.unibz.krdb.obda.io.PrefixManager;
+import it.unibz.krdb.obda.model.Atom;
+import it.unibz.krdb.obda.model.CQIE;
+import it.unibz.krdb.obda.model.Function;
+import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDADataSource;
+import it.unibz.krdb.obda.model.OBDALibConstants;
+import it.unibz.krdb.obda.model.OBDAMappingAxiom;
+import it.unibz.krdb.obda.model.OBDAModel;
+import it.unibz.krdb.obda.model.OBDAQuery;
+import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.ValueConstant;
+import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLAdapterFactory;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
 import it.unibz.krdb.obda.protege4.gui.IconLoader;
+import it.unibz.krdb.obda.protege4.gui.component.AutoSuggestComboBox;
+import it.unibz.krdb.obda.protege4.gui.component.MapItem;
+import it.unibz.krdb.obda.protege4.gui.component.PredicateItem;
+import it.unibz.krdb.obda.protege4.gui.component.PropertyEditorList;
 import it.unibz.krdb.obda.protege4.gui.component.SQLResultTable;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.DataDefinition;
@@ -16,11 +36,18 @@ import it.unibz.krdb.sql.JDBCConnectionManager;
 import it.unibz.krdb.sql.TableDefinition;
 import it.unibz.krdb.sql.ViewDefinition;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.DefaultComboBoxModel;
@@ -30,27 +57,28 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelectorListener {
 
 	private static final long serialVersionUID = 1L;
 
+	private OBDAModel obdaModel;
+	
+	private PrefixManager prefixManager;
+	
 	private OBDADataSource selectedSource;
+	
+	private MapItem predicateSubjectMap = new MapItem();
 
-	private Logger log = LoggerFactory.getLogger(SQLQueryPanel.class);
+	private static OBDADataFactory dfac = OBDADataFactoryImpl.getInstance();
 
-	public SQLQueryPanel() {
+	public SQLQueryPanel(OBDAModel model) {
+		obdaModel = model;
+		prefixManager = obdaModel.getPrefixManager();
 		initComponents();
-	}
-
-	public SQLQueryPanel(OBDADataSource ds, String query) {
-		initComponents();
-		selectedSource = ds;
-		cmdExecuteActionPerformed(null);
 	}
 
 	/**
@@ -62,6 +90,8 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        splMainSplitter = new javax.swing.JSplitPane();
+        pnlDataBrowser = new javax.swing.JPanel();
         splSqlQuery = new javax.swing.JSplitPane();
         pnlEditor = new javax.swing.JPanel();
         pnlDataSet = new javax.swing.JPanel();
@@ -77,15 +107,42 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
         lblRows = new javax.swing.JLabel();
         pnlResult = new javax.swing.JPanel();
         scrQueryResult = new javax.swing.JScrollPane();
+        pnlOntologyBrowser = new javax.swing.JPanel();
+        pnlConcept = new javax.swing.JPanel();
+        lblClass = new javax.swing.JLabel();
+        pnlClassMap = new javax.swing.JPanel();
+        pnlClassSearch = new javax.swing.JPanel();
+        pnlClassSeachComboBox = new javax.swing.JPanel();
+        lblClassIcon = new javax.swing.JLabel();
+        pnlClassUriTemplate = new javax.swing.JPanel();
+        txtClassUriTemplate = new javax.swing.JTextField();
+        lblMapIcon = new javax.swing.JLabel();
+        pnlProperties = new javax.swing.JPanel();
+        pnlPropertiesLabel = new javax.swing.JPanel();
+        lblProperties = new javax.swing.JLabel();
+        pnlPropertyList = new javax.swing.JPanel();
+        pnlCommandButtons = new javax.swing.JPanel();
+        cmdClearAll = new javax.swing.JButton();
+        cmdCreateMapping = new javax.swing.JButton();
 
         setAlignmentX(5.0F);
         setAlignmentY(5.0F);
         setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        setName("panel_master");
         setPreferredSize(new java.awt.Dimension(640, 480));
-        setLayout(new java.awt.BorderLayout(5, 5));
+        setLayout(new java.awt.BorderLayout());
 
+        splMainSplitter.setDividerLocation(0.75);
+        splMainSplitter.setResizeWeight(0.75);
+
+        pnlDataBrowser.setName("panel_databrowser");
+        pnlDataBrowser.setLayout(new java.awt.BorderLayout());
+
+        splSqlQuery.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         splSqlQuery.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        splSqlQuery.setResizeWeight(0.3);
+        splSqlQuery.setResizeWeight(0.25);
+        splSqlQuery.setMinimumSize(new java.awt.Dimension(550, 400));
+        splSqlQuery.setPreferredSize(new java.awt.Dimension(550, 400));
 
         pnlEditor.setMinimumSize(new java.awt.Dimension(156, 100));
         pnlEditor.setPreferredSize(new java.awt.Dimension(156, 100));
@@ -93,6 +150,7 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 
         pnlDataSet.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
+        lblDataSet.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         lblDataSet.setText("Data Set:");
         pnlDataSet.add(lblDataSet);
 
@@ -122,7 +180,10 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 
         pnlQueryEditor.setLayout(new java.awt.BorderLayout());
 
+        txtQueryEditor.setBorder(null);
         txtQueryEditor.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        txtQueryEditor.setMinimumSize(new java.awt.Dimension(100, 20));
+        txtQueryEditor.setPreferredSize(new java.awt.Dimension(100, 20));
         scrQueryEditor.setViewportView(txtQueryEditor);
 
         pnlQueryEditor.add(scrQueryEditor, java.awt.BorderLayout.CENTER);
@@ -150,30 +211,297 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
         pnlResult.setLayout(new java.awt.BorderLayout());
 
         tblQueryResult = new SQLResultTable();
-        tblQueryResult.setModel(new javax.swing.table.DefaultTableModel(
-            new Object[][] { /* Empty */ },
-            new String[] { "Results" }));
-    tblQueryResult.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-    scrQueryResult.setViewportView(tblQueryResult);
-    pnlResult.add(scrQueryResult, java.awt.BorderLayout.CENTER);
+        tblQueryResult.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        scrQueryResult.setViewportView(tblQueryResult);
+        scrQueryResult.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        pnlResult.add(scrQueryResult, java.awt.BorderLayout.CENTER);
 
-    splSqlQuery.setRightComponent(pnlResult);
+        splSqlQuery.setRightComponent(pnlResult);
 
-    add(splSqlQuery, java.awt.BorderLayout.CENTER);
+        pnlDataBrowser.add(splSqlQuery, java.awt.BorderLayout.CENTER);
+
+        splMainSplitter.setLeftComponent(pnlDataBrowser);
+
+        pnlOntologyBrowser.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 3, 0, 3));
+        pnlOntologyBrowser.setName("panel_ontologybrowser");
+        pnlOntologyBrowser.setLayout(new java.awt.BorderLayout());
+
+        pnlConcept.setLayout(new java.awt.BorderLayout(0, 2));
+
+        lblClass.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        lblClass.setText("Class (the focused subject of the mapping)");
+        pnlConcept.add(lblClass, java.awt.BorderLayout.NORTH);
+
+        pnlClassMap.setBackground(new Color(240, 245, 240));
+        pnlClassMap.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(192, 192, 192)), javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+        pnlClassMap.setLayout(new java.awt.BorderLayout());
+
+        pnlClassSearch.setOpaque(false);
+        pnlClassSearch.setRequestFocusEnabled(false);
+        pnlClassSearch.setLayout(new java.awt.BorderLayout(7, 0));
+
+        pnlClassSeachComboBox.setLayout(new java.awt.BorderLayout());
+        Vector<PredicateItem> v = new Vector<PredicateItem>();
+        for (Predicate pred : obdaModel.getDeclaredClasses()) {
+            v.addElement(new PredicateItem(pred, prefixManager));
+        }
+        cboClassAutoSuggest = new AutoSuggestComboBox(v);
+        cboClassAutoSuggest.setMinimumSize(new java.awt.Dimension(195, 23));
+        cboClassAutoSuggest.setPreferredSize(new java.awt.Dimension(195, 23));
+        cboClassAutoSuggest.addItemListener(new java.awt.event.ItemListener () {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cboClassAutoSuggestItemStateChanged(evt);
+            }
+        });
+        pnlClassSeachComboBox.add(cboClassAutoSuggest, java.awt.BorderLayout.CENTER);
+        pnlClassSearch.add(pnlClassSeachComboBox, java.awt.BorderLayout.CENTER);
+
+        lblClassIcon.setIcon(IconLoader.getImageIcon("images/class_primitive.png"));
+        pnlClassSearch.add(lblClassIcon, java.awt.BorderLayout.WEST);
+
+        pnlClassMap.add(pnlClassSearch, java.awt.BorderLayout.NORTH);
+
+        pnlClassUriTemplate.setOpaque(false);
+        pnlClassUriTemplate.setLayout(new java.awt.BorderLayout(6, 0));
+
+        txtClassUriTemplate.setText(prefixManager.getDefaultPrefix());
+        txtClassUriTemplate.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        txtClassUriTemplate.setMinimumSize(new java.awt.Dimension(240, 23));
+        txtClassUriTemplate.setPreferredSize(new java.awt.Dimension(240, 23));
+        txtClassUriTemplate.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtClassUriTemplateFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtClassUriTemplateFocusLost(evt);
+            }
+        });
+        txtClassUriTemplate.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtClassUriTemplateKeyPressed(evt);
+            }
+        });
+        pnlClassUriTemplate.add(txtClassUriTemplate, java.awt.BorderLayout.CENTER);
+
+        lblMapIcon.setIcon(IconLoader.getImageIcon("images/link.png"));
+        pnlClassUriTemplate.add(lblMapIcon, java.awt.BorderLayout.LINE_START);
+
+        pnlClassMap.add(pnlClassUriTemplate, java.awt.BorderLayout.SOUTH);
+
+        pnlConcept.add(pnlClassMap, java.awt.BorderLayout.CENTER);
+
+        pnlOntologyBrowser.add(pnlConcept, java.awt.BorderLayout.NORTH);
+
+        pnlProperties.setLayout(new java.awt.BorderLayout());
+
+        pnlPropertiesLabel.setMinimumSize(new java.awt.Dimension(63, 30));
+        pnlPropertiesLabel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 5));
+
+        lblProperties.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        lblProperties.setText("Properties:");
+        lblProperties.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        pnlPropertiesLabel.add(lblProperties);
+
+        pnlProperties.add(pnlPropertiesLabel, java.awt.BorderLayout.PAGE_START);
+
+        pnlPropertyList.setLayout(new java.awt.BorderLayout());
+
+        pnlPropertyEditorList = new PropertyEditorList(obdaModel);
+        pnlPropertyList.add(pnlPropertyEditorList);
+
+        pnlProperties.add(pnlPropertyList, java.awt.BorderLayout.CENTER);
+
+        pnlOntologyBrowser.add(pnlProperties, java.awt.BorderLayout.CENTER);
+
+        pnlCommandButtons.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        pnlCommandButtons.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+
+        cmdClearAll.setText("Clear All");
+        cmdClearAll.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        cmdClearAll.setContentAreaFilled(false);
+        cmdClearAll.setPreferredSize(new java.awt.Dimension(70, 25));
+        cmdClearAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdClearAllActionPerformed(evt);
+            }
+        });
+        pnlCommandButtons.add(cmdClearAll);
+
+        cmdCreateMapping.setText("Create Mapping");
+        cmdCreateMapping.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        cmdCreateMapping.setContentAreaFilled(false);
+        cmdCreateMapping.setPreferredSize(new java.awt.Dimension(100, 25));
+        cmdCreateMapping.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdCreateMappingActionPerformed(evt);
+            }
+        });
+        pnlCommandButtons.add(cmdCreateMapping);
+
+        pnlOntologyBrowser.add(pnlCommandButtons, java.awt.BorderLayout.SOUTH);
+
+        splMainSplitter.setRightComponent(pnlOntologyBrowser);
+
+        add(splMainSplitter, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void cmdClearAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdClearAllActionPerformed
+        clearForm();
+    }//GEN-LAST:event_cmdClearAllActionPerformed
+
+	private void txtClassUriTemplateFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtClassUriTemplateFocusGained
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				txtClassUriTemplate.setCaretPosition(txtClassUriTemplate.getText().length());
+			}
+		});
+	}// GEN-LAST:event_txtClassUriTemplateFocusGained
+
+	private void cmdCreateMappingActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmdCreateMappingActionPerformed
+		if (pnlPropertyEditorList.isEditing()) {
+			pnlPropertyEditorList.stopCellEditing();
+		}
+
+		// Prepare the mapping source
+		String source = txtQueryEditor.getText();
+		
+		// Prepare the mapping target
+		List<MapItem> predicateObjectMapsList = pnlPropertyEditorList.getPredicateObjectMapsList();
+		OBDAQuery target = prepareTargetQuery(predicateSubjectMap, predicateObjectMapsList);
+		
+		// Create the mapping axiom
+		OBDAMappingAxiom mappingAxiom = dfac.getRDBMSMappingAxiom(source, target);
+		try {
+			obdaModel.addMapping(selectedSource.getSourceID(), mappingAxiom);
+			clearForm();
+		} catch (DuplicateMappingException e) {
+			DialogUtils.showQuickErrorDialog(null, e, "Duplicate mapping identification: " + mappingAxiom.getId());
+			return;
+		}
+	}// GEN-LAST:event_cmdCreateMappingActionPerformed
+
+	private CQIE prepareTargetQuery(MapItem predicateSubjectMap, List<MapItem> predicateObjectMapsList) {
+		// Create the body of the CQ
+		List<Atom> body = new ArrayList<Atom>();
+		
+		// Store concept in the body, if any
+		String subjectUriTemplate = predicateSubjectMap.getTargetMapping();
+		Function subjectTerm = getUriFunctionTerm(subjectUriTemplate);
+		if (!predicateSubjectMap.getName().isEmpty()) {
+			Atom concept = dfac.getAtom(predicateSubjectMap.getSourcePredicate(), subjectTerm);
+			body.add(concept);
+		}
+		
+		// Store attributes and roles in the body
+		Set<Variable> variableSet = new HashSet<Variable>();
+		for (MapItem predicateObjectMap : predicateObjectMapsList) {
+			if (predicateObjectMap.isObjectMap()) { // if an attribute
+				String columnName = predicateObjectMap.getTargetMapping();
+				if (columnName.startsWith("$") || columnName.startsWith("?")) {
+					columnName = columnName.substring(1, columnName.length());
+				}
+				Variable objectTerm = dfac.getVariable(columnName);
+				variableSet.add(objectTerm);
+				Atom attribute = dfac.getAtom(predicateObjectMap.getSourcePredicate(), subjectTerm, objectTerm);
+				body.add(attribute);
+			} else if (predicateObjectMap.isRefObjectMap()) { // if a role
+				String objectUriTemplate = predicateObjectMap.getTargetMapping();
+				Function objectTerm = getUriFunctionTerm(objectUriTemplate);
+				Atom role = dfac.getAtom(predicateObjectMap.getSourcePredicate(), subjectTerm, objectTerm);
+				body.add(role);
+			}
+		}
+		
+		// Create the head
+		List<Term> distinguishVariables = new ArrayList<Term>(variableSet);
+		int arity = distinguishVariables.size();
+		Atom head = dfac.getAtom(dfac.getPredicate(OBDALibConstants.QUERY_HEAD_URI, arity, null), distinguishVariables);
+		
+		// Create and return the conjunctive query
+		return dfac.getCQIE(head, body);
+	}
+
+	private Function getUriFunctionTerm(String template) {
+		List<Term> terms = new ArrayList<Term>();
+		
+		// Input = http://www.example.org/person/{$var1}/{$var2}
+		while (template.contains("{") && template.contains("}")) {
+			// register the position for symbol "{" and "}"
+			int start = template.indexOf("{");
+			int end = template.indexOf("}");
+
+			// extract the whole placeholder, i.e., "{$var1}"
+			String placeHolder = template.substring(start, end + 1);
+			
+			// change the placeholder string temporarly, i.e., http://www.example.org/person/[]/{$var2}
+			template = template.replace(placeHolder, "[]");
+
+			// extract the variable name only, e.g., "{$var1}" --> "var1"
+			try {
+				String variableName = placeHolder.substring(2, placeHolder.length() - 1);
+				if (variableName.equals("")) {
+					throw new RuntimeException("Variable name must have at least 1 character");
+				}
+				terms.add(dfac.getVariable(variableName));
+			} catch (IndexOutOfBoundsException e) {
+				throw new RuntimeException("Variable name must have at least 1 character");
+			}
+			// and repeat!
+		}
+		// replace the temporal placeholder to the original, i.e., http://www.example.org/person/{}/{}
+		template = template.replaceAll("\\[\\]", "{}");
+		ValueConstant uriTemplate = dfac.getValueConstant(template);
+
+		// the URI template is always on the first position in the term list
+		terms.add(0, uriTemplate);
+
+		return dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(terms.size()), terms);
+	}
+
+	private void clearForm() {
+		cboDataSet.setSelectedIndex(-1);
+		txtQueryEditor.setText("");
+		tblQueryResult.setModel(new DefaultTableModel());
+		cboClassAutoSuggest.setSelectedIndex(-1);
+		txtClassUriTemplate.setText(prefixManager.getDefaultPrefix());
+		pnlPropertyEditorList.clear();
+	}
+	
+	private void txtClassUriTemplateFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtClassUriTemplateFocusLost
+		String uriTemplate = txtClassUriTemplate.getText();
+		predicateSubjectMap.setTargetMapping(uriTemplate);
+	}// GEN-LAST:event_txtClassUriTemplateFocusLost
+
+	private void cboClassAutoSuggestItemStateChanged(java.awt.event.ItemEvent evt) {
+		// Get the affected item
+		PredicateItem selectedItem = (PredicateItem) evt.getItem();
+		if (selectedItem == null) {
+			pnlPropertyEditorList.setEnabled(false);
+		} else {
+			predicateSubjectMap = new MapItem(selectedItem);
+		}
+	}
+	
+	private void txtClassUriTemplateKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txtClassUriKeyPressed
+		int code = evt.getKeyCode();
+		if (code == KeyEvent.VK_ESCAPE) {
+			txtClassUriTemplate.setText("");
+		} else if (code == KeyEvent.VK_ENTER) {
+			pnlProperties.getComponent(0).requestFocusInWindow();
+		}
+	}// GEN-LAST:event_txtClassUriKeyPressed
+	
 	private void cboDataSetActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cboDataSetActionPerformed
 		write(""); // clear the text editor
 		JComboBox cb = (JComboBox) evt.getSource();
 		DataDefinition dd = (DataDefinition) cb.getSelectedItem();
-		String simpleQuery = String.format("select * from %s", dd.getName());
-		write(simpleQuery);
+		if (dd != null) {
+			String simpleQuery = String.format("select * from %s", dd.getName());
+			write(simpleQuery);
+		}
 	}// GEN-LAST:event_cboDataSetActionPerformed
 	
-	private void write(String text) {
-		txtQueryEditor.setText(text);
-	}
-
 	private void cmdExecuteActionPerformed(java.awt.event.ActionEvent evt) {
 		releaseResultset();
 		try {
@@ -197,7 +525,6 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			log.error("Error while executing query.", e);
 		}
 	}
 
@@ -234,21 +561,46 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 		cboDataSet.setModel(relationList);
 	}
 
+	private void write(String text) {
+		txtQueryEditor.setText(text);
+	}
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cboDataSet;
+    private javax.swing.JButton cmdClearAll;
+    private javax.swing.JButton cmdCreateMapping;
     private javax.swing.JButton cmdExecute;
+    private javax.swing.JLabel lblClass;
+    private javax.swing.JLabel lblClassIcon;
     private javax.swing.JLabel lblDataSet;
+    private javax.swing.JLabel lblMapIcon;
+    private javax.swing.JLabel lblProperties;
     private javax.swing.JLabel lblRows;
     private javax.swing.JLabel lblShow;
+    private javax.swing.JPanel pnlClassMap;
+    private javax.swing.JPanel pnlClassSeachComboBox;
+    private AutoSuggestComboBox cboClassAutoSuggest;
+    private javax.swing.JPanel pnlClassSearch;
+    private javax.swing.JPanel pnlClassUriTemplate;
+    private javax.swing.JPanel pnlCommandButtons;
+    private javax.swing.JPanel pnlConcept;
+    private javax.swing.JPanel pnlDataBrowser;
     private javax.swing.JPanel pnlDataSet;
     private javax.swing.JPanel pnlEditor;
+    private javax.swing.JPanel pnlOntologyBrowser;
+    private javax.swing.JPanel pnlProperties;
+    private javax.swing.JPanel pnlPropertiesLabel;
+    private javax.swing.JPanel pnlPropertyList;
+    private PropertyEditorList pnlPropertyEditorList;
     private javax.swing.JPanel pnlQueryEditor;
     private javax.swing.JPanel pnlResult;
     private javax.swing.JPanel pnlResultFilter;
     private javax.swing.JScrollPane scrQueryEditor;
     private javax.swing.JScrollPane scrQueryResult;
     private SQLResultTable tblQueryResult;
+    private javax.swing.JSplitPane splMainSplitter;
     private javax.swing.JSplitPane splSqlQuery;
+    private javax.swing.JTextField txtClassUriTemplate;
     private javax.swing.JEditorPane txtQueryEditor;
     private javax.swing.JTextField txtRowCount;
     // End of variables declaration//GEN-END:variables
@@ -277,7 +629,6 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 	}
 
 	private class ExecuteSQLQueryAction implements OBDAProgressListener {
-
 		CountDownLatch latch = null;
 		Thread thread = null;
 		ResultSet result = null;
@@ -329,7 +680,6 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 					} catch (Exception e) {
 						latch.countDown();
 						JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-						log.error("Error while executing query.", e);
 					}
 				}
 			};

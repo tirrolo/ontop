@@ -1,19 +1,25 @@
 package it.unibz.krdb.obda.protege4.gui.component;
 
+import it.unibz.krdb.obda.gui.swing.treemodel.IncrementalResultSetTableModel;
+
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 
 public class SQLResultTable extends JTable {
 
 	private static final long serialVersionUID = 1L;
-
+		
 	public SQLResultTable() {
 		super();
 		setAutoscrolls(false);
@@ -28,15 +34,20 @@ public class SQLResultTable extends JTable {
 		tableHeader.setReorderingAllowed(false);
 		tableHeader.addMouseListener(new ColumnHeaderAdapter(this));
 	}
-
+	
+	public void clear() {
+		IncrementalResultSetTableModel model = (IncrementalResultSetTableModel) getModel();
+		model.clearTable();
+	}
+	
 	/**
 	 * An adapter class to capture the column index when user selects the table header
 	 */
 	class ColumnHeaderAdapter extends MouseAdapter {
 		
-		private JTable table;
-
-		public ColumnHeaderAdapter(JTable table) {
+		private SQLResultTable table;
+		
+		public ColumnHeaderAdapter(SQLResultTable table) {
 			this.table = table;
 		}
 
@@ -47,6 +58,59 @@ public class SQLResultTable extends JTable {
 			ColumnHighlightRenderer renderer = (ColumnHighlightRenderer) table.getDefaultRenderer(String.class);
 			renderer.setColumn(index);
 			table.repaint();
+			
+			Container parent = findParentContainer(table);
+			Component compOnFocus = findFocus(parent);
+			if (compOnFocus != null) {
+				if (!(compOnFocus instanceof JComboBox) && compOnFocus instanceof JTextField) {
+					JTextField tf = (JTextField) compOnFocus;
+					String template = tf.getText();
+					if (template.isEmpty()) {
+						String text = String.format("$%s", table.getColumnName(index));
+						tf.setText(text);
+					} else {
+						String text = String.format("%s{$%s}", template, table.getColumnName(index));
+						tf.setText(text);
+					}
+				}
+			}
+		}
+		
+		private Container findParentContainer(Component c) {
+			boolean loop = true;
+			Component comp = c;
+			while (loop) {
+				comp = comp.getParent();
+				if (comp != null) {
+					if (comp instanceof JPanel) {
+						String compName = comp.getName();
+						if (compName != null) {
+							if (compName.equals("panel_master")) {
+								return (Container) comp;
+							}
+						}
+					}
+				} else {
+					loop = false;
+				}
+			}
+			return null;
+		}
+		
+		private Component findFocus(Container c) {
+			Component comps[] = c.getComponents();
+			for (int i = 0; i < comps.length; i++) {
+				if (comps[i].isFocusOwner()) {
+					return comps[i];
+				}
+				if (comps[i] instanceof Container) {
+					Component comp = findFocus((Container) comps[i]);
+					if (comp != null) {
+						return comp;
+					}
+				}
+			}
+			return null;
 		}
 	}
 
@@ -74,11 +138,7 @@ public class SQLResultTable extends JTable {
 		}
 
 		public void setColumn(int index) {
-			if (selectColumn == index) {
-				selectColumn = -1;
-			} else {
-				selectColumn = index;
-			}
+			selectColumn = index;
 		}
 	}
 }
