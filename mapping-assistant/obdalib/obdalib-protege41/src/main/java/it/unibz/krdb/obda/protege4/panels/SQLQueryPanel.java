@@ -35,6 +35,7 @@ import it.unibz.krdb.sql.DataDefinition;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 import it.unibz.krdb.sql.TableDefinition;
 import it.unibz.krdb.sql.ViewDefinition;
+import it.unibz.krdb.sql.api.Attribute;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -224,12 +225,15 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 
         pnlOntologyBrowser.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 3, 0, 3));
         pnlOntologyBrowser.setName("panel_ontologybrowser");
-        pnlOntologyBrowser.setLayout(new java.awt.BorderLayout());
+        pnlOntologyBrowser.setLayout(new java.awt.BorderLayout(0, 2));
 
         pnlConcept.setLayout(new java.awt.BorderLayout(0, 2));
 
-        lblClass.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        lblClass.setText("Class (the focused subject of the mapping)");
+        lblClass.setBackground(new java.awt.Color(153, 0, 0));
+        lblClass.setForeground(new java.awt.Color(255, 255, 255));
+        lblClass.setText("Class mapping:");
+        lblClass.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        lblClass.setOpaque(true);
         pnlConcept.add(lblClass, java.awt.BorderLayout.NORTH);
 
         pnlClassMap.setBackground(new Color(240, 245, 240));
@@ -241,7 +245,7 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
         pnlClassSearch.setLayout(new java.awt.BorderLayout(7, 0));
 
         pnlClassSeachComboBox.setLayout(new java.awt.BorderLayout());
-        Vector<PredicateItem> v = new Vector<PredicateItem>();
+        Vector<Object> v = new Vector<Object>();
         for (Predicate pred : obdaModel.getDeclaredClasses()) {
             v.addElement(new PredicateItem(pred, prefixManager));
         }
@@ -292,17 +296,20 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 
         pnlOntologyBrowser.add(pnlConcept, java.awt.BorderLayout.NORTH);
 
-        pnlProperties.setLayout(new java.awt.BorderLayout());
+        pnlProperties.setLayout(new java.awt.BorderLayout(0, 3));
 
         pnlPropertiesLabel.setMinimumSize(new java.awt.Dimension(63, 30));
-        pnlPropertiesLabel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 5));
+        pnlPropertiesLabel.setLayout(new java.awt.BorderLayout());
 
-        lblProperties.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        lblProperties.setText("Properties:");
+        lblProperties.setBackground(new java.awt.Color(153, 0, 0));
+        lblProperties.setForeground(new java.awt.Color(255, 255, 255));
+        lblProperties.setText("Property mappings:");
+        lblProperties.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        lblProperties.setOpaque(true);
         lblProperties.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        pnlPropertiesLabel.add(lblProperties);
+        pnlPropertiesLabel.add(lblProperties, java.awt.BorderLayout.CENTER);
 
-        pnlProperties.add(pnlPropertiesLabel, java.awt.BorderLayout.PAGE_START);
+        pnlProperties.add(pnlPropertiesLabel, java.awt.BorderLayout.NORTH);
 
         pnlPropertyList.setLayout(new java.awt.BorderLayout());
 
@@ -378,6 +385,9 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 		} catch (DuplicateMappingException e) {
 			DialogUtils.showQuickErrorDialog(null, e, "Duplicate mapping identification: " + mappingAxiom.getId());
 			return;
+		} catch (NullPointerException e) {
+			DialogUtils.showQuickErrorDialog(null, new Exception("Data source has not been defined."));
+			return;
 		}
 	}// GEN-LAST:event_cmdCreateMappingActionPerformed
 
@@ -401,8 +411,14 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 				if (columnName.startsWith("$") || columnName.startsWith("?")) {
 					columnName = columnName.substring(1, columnName.length());
 				}
-				Variable objectTerm = dfac.getVariable(columnName);
-				variableSet.add(objectTerm);
+				Variable var = dfac.getVariable(columnName);
+				variableSet.add(var);
+				
+				// Check if the variable has a data type definition
+				Term objectTerm = var;
+				if (predicateObjectMap.getDataType() != null) {
+					objectTerm = dfac.getFunctionalTerm(predicateObjectMap.getDataType(), var);
+				}
 				Atom attribute = dfac.getAtom(predicateObjectMap.getSourcePredicate(), subjectTerm, objectTerm);
 				body.add(attribute);
 			} else if (predicateObjectMap.isRefObjectMap()) { // if a role
@@ -475,10 +491,9 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 
 	private void cboClassAutoSuggestItemStateChanged(java.awt.event.ItemEvent evt) {
 		// Get the affected item
-		PredicateItem selectedItem = (PredicateItem) evt.getItem();
-		if (selectedItem == null) {
-			pnlPropertyEditorList.setEnabled(false);
-		} else {
+		Object obj = evt.getItem();
+		if (obj instanceof PredicateItem) {
+			PredicateItem selectedItem = (PredicateItem) obj;
 			predicateSubjectMap = new MapItem(selectedItem);
 		}
 	}
@@ -497,8 +512,21 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 		JComboBox cb = (JComboBox) evt.getSource();
 		DataDefinition dd = (DataDefinition) cb.getSelectedItem();
 		if (dd != null) {
-			String simpleQuery = String.format("select * from %s", dd.getName());
-			write(simpleQuery);
+			StringBuffer sb = new StringBuffer("select");
+			boolean needComma = false;
+			for (Attribute attr : dd.getAttributes()) {
+				if (needComma) {
+					sb.append(",");
+				}
+				sb.append(" ");
+				sb.append(attr.name);
+				needComma = true;
+			}
+			sb.append(" ");
+			sb.append("from");
+			sb.append(" ");
+			sb.append(dd.getName());
+			write(sb.toString());
 		}
 	}// GEN-LAST:event_cboDataSetActionPerformed
 	

@@ -277,7 +277,9 @@
             </Constraint>
           </Constraints>
 
-          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
+            <Property name="verticalGap" type="int" value="2"/>
+          </Layout>
           <SubComponents>
             <Container class="javax.swing.JPanel" name="pnlConcept">
               <Constraints>
@@ -292,10 +294,19 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="lblClass">
                   <Properties>
-                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="11" style="1"/>
+                    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="0" green="0" red="99" type="rgb"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Class (the focused subject of the mapping)"/>
+                    <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Class mapping:"/>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                        <EmptyBorder bottom="2" left="2" right="2" top="2"/>
+                      </Border>
+                    </Property>
+                    <Property name="opaque" type="boolean" value="true"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -349,7 +360,7 @@
                         <Container class="javax.swing.JPanel" name="pnlClassSeachComboBox">
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private AutoSuggestComboBox cboClassAutoSuggest;"/>
-                            <AuxValue name="JavaCodeGenerator_LayoutCodePre" type="java.lang.String" value="Vector&lt;PredicateItem&gt; v = new Vector&lt;PredicateItem&gt;();&#xa;for (Predicate pred : obdaModel.getDeclaredClasses()) {&#xa;    v.addElement(new PredicateItem(pred, prefixManager));&#xa;}&#xa;cboClassAutoSuggest = new AutoSuggestComboBox(v);&#xa;cboClassAutoSuggest.setMinimumSize(new java.awt.Dimension(195, 23));&#xa;cboClassAutoSuggest.setPreferredSize(new java.awt.Dimension(195, 23));&#xa;cboClassAutoSuggest.addItemListener(new java.awt.event.ItemListener () {&#xa;    public void itemStateChanged(java.awt.event.ItemEvent evt) {&#xa;        cboClassAutoSuggestItemStateChanged(evt);&#xa;    }&#xa;});&#xa;pnlClassSeachComboBox.add(cboClassAutoSuggest, java.awt.BorderLayout.CENTER);"/>
+                            <AuxValue name="JavaCodeGenerator_LayoutCodePre" type="java.lang.String" value="Vector&lt;Object&gt; v = new Vector&lt;Object&gt;();&#xa;for (Predicate pred : obdaModel.getDeclaredClasses()) {&#xa;    v.addElement(new PredicateItem(pred, prefixManager));&#xa;}&#xa;cboClassAutoSuggest = new AutoSuggestComboBox(v);&#xa;cboClassAutoSuggest.setMinimumSize(new java.awt.Dimension(195, 23));&#xa;cboClassAutoSuggest.setPreferredSize(new java.awt.Dimension(195, 23));&#xa;cboClassAutoSuggest.addItemListener(new java.awt.event.ItemListener () {&#xa;    public void itemStateChanged(java.awt.event.ItemEvent evt) {&#xa;        cboClassAutoSuggestItemStateChanged(evt);&#xa;    }&#xa;});&#xa;pnlClassSeachComboBox.add(cboClassAutoSuggest, java.awt.BorderLayout.CENTER);"/>
                           </AuxValues>
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -434,7 +445,9 @@
                 </Constraint>
               </Constraints>
 
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout">
+                <Property name="verticalGap" type="int" value="3"/>
+              </Layout>
               <SubComponents>
                 <Container class="javax.swing.JPanel" name="pnlPropertiesLabel">
                   <Properties>
@@ -444,23 +457,34 @@
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                      <BorderConstraints direction="First"/>
+                      <BorderConstraints direction="North"/>
                     </Constraint>
                   </Constraints>
 
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
-                    <Property name="alignment" type="int" value="0"/>
-                    <Property name="horizontalGap" type="int" value="0"/>
-                  </Layout>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
                   <SubComponents>
                     <Component class="javax.swing.JLabel" name="lblProperties">
                       <Properties>
-                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Tahoma" size="11" style="1"/>
+                        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                          <Color blue="0" green="0" red="99" type="rgb"/>
                         </Property>
-                        <Property name="text" type="java.lang.String" value="Properties:"/>
+                        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                        </Property>
+                        <Property name="text" type="java.lang.String" value="Property mappings:"/>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                            <EmptyBorder bottom="2" left="2" right="2" top="2"/>
+                          </Border>
+                        </Property>
+                        <Property name="opaque" type="boolean" value="true"/>
                         <Property name="verticalTextPosition" type="int" value="3"/>
                       </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
                     </Component>
                   </SubComponents>
                 </Container>
