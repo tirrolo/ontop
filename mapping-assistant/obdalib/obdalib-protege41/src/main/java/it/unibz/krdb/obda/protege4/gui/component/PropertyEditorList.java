@@ -91,7 +91,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 
         pnlAddProperty.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 3, 0));
         pnlAddProperty.setLayout(new java.awt.BorderLayout(3, 0));
-        Vector<PredicateItem> v = new Vector<PredicateItem>();
+        Vector<Object> v = new Vector<Object>();
         for (Predicate dp : obdaModel.getDeclaredDataProperties()) {
             v.addElement(new PredicateItem(dp, prefixManager));
         }
@@ -101,7 +101,8 @@ public class PropertyEditorList extends javax.swing.JPanel {
         cboPropertyAutoSuggest = new AutoSuggestComboBox(v);
         cboPropertyAutoSuggest.setMinimumSize(new java.awt.Dimension(195, 23));
         cboPropertyAutoSuggest.setPreferredSize(new java.awt.Dimension(195, 23));
-        cboPropertyAutoSuggest.addKeyListener(new java.awt.event.KeyAdapter() {
+        JTextField txtComboBoxEditor = (JTextField) cboPropertyAutoSuggest.getEditor().getEditorComponent();
+        txtComboBoxEditor.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 cboPropertyAutoSuggestKeyPressed(evt);
             }
@@ -125,7 +126,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 
         propertyListModel = new DefaultTableModel(0, 1);
         lstProperties.setModel(propertyListModel);
-        lstProperties.setRowHeight(50);
+        lstProperties.setRowHeight(58);
         lstProperties.setTableHeader(null);
         scrPropertyList.setViewportView(lstProperties);
 
@@ -189,9 +190,11 @@ public class PropertyEditorList extends javax.swing.JPanel {
 	class PropertyItemRenderer extends JPanel implements TableCellRenderer {
 
 		private static final long serialVersionUID = 1L;
-
+		
+		private JPanel pnlPropertyName;
 		private JPanel pnlPropertyUriTemplate;
 		private JLabel lblPropertyName;
+		private DataTypeComboBox cboDataTypes;
 		private JLabel lblMapIcon;
 		private JTextField txtPropertyTargetMap;
 
@@ -207,23 +210,31 @@ public class PropertyEditorList extends javax.swing.JPanel {
 					BorderFactory.createEmptyBorder(4, 4, 4, 4))
 			);
 			
+			pnlPropertyName = new JPanel();
 			pnlPropertyUriTemplate = new JPanel();
 			lblPropertyName = new JLabel();
+			cboDataTypes = new DataTypeComboBox();
 			lblMapIcon = new JLabel();
 			txtPropertyTargetMap = new JTextField();
-
-			lblPropertyName.setFont(new java.awt.Font("Tahoma", Font.PLAIN, 12));
-
-			lblMapIcon.setIcon(IconLoader.getImageIcon("images/link.png"));
 			
-			txtPropertyTargetMap.setEditable(true);
+			lblPropertyName.setFont(new java.awt.Font("Tahoma", Font.PLAIN, 12));
+			
+			cboDataTypes.setBackground(Color.WHITE);
+			cboDataTypes.setSelectedIndex(-1);
+			
+			pnlPropertyName.setLayout(new BorderLayout(5, 0));
+			pnlPropertyName.setOpaque(false);
+			pnlPropertyName.add(lblPropertyName, BorderLayout.WEST);
+			pnlPropertyName.add(cboDataTypes, BorderLayout.EAST);
+			
+			lblMapIcon.setIcon(IconLoader.getImageIcon("images/link.png"));
 			
 			pnlPropertyUriTemplate.setLayout(new BorderLayout(5, 0));
 			pnlPropertyUriTemplate.setOpaque(false);
 			pnlPropertyUriTemplate.add(lblMapIcon, BorderLayout.WEST);
 			pnlPropertyUriTemplate.add(txtPropertyTargetMap, BorderLayout.CENTER);
 
-			add(lblPropertyName, BorderLayout.NORTH);
+			add(pnlPropertyName, BorderLayout.NORTH);
 			add(pnlPropertyUriTemplate, BorderLayout.SOUTH);
 		}
 		
@@ -238,8 +249,10 @@ public class PropertyEditorList extends javax.swing.JPanel {
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/data_property.png"));
 				} else if (entry.isRefObjectMap()) {
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
+					cboDataTypes.setVisible(false);
 				}
 				lblPropertyName.setText(entry.toString());
+				cboDataTypes.setSelectedItem(entry.getDataType());
 				txtPropertyTargetMap.setText(entry.getTargetMapping());
 			}
 			return this;
@@ -249,9 +262,11 @@ public class PropertyEditorList extends javax.swing.JPanel {
 	class PropertyItemEditor extends JPanel implements TableCellEditor {
 
 		private static final long serialVersionUID = 1L;
-
+		
+		private JPanel pnlPropertyName;
 		private JPanel pnlPropertyUriTemplate;
 		private JLabel lblPropertyName;
+		private DataTypeComboBox cboDataTypes;
 		private JLabel lblMapIcon;
 		private JTextField txtPropertyTargetMap;
 		
@@ -270,23 +285,31 @@ public class PropertyEditorList extends javax.swing.JPanel {
 					BorderFactory.createEmptyBorder(4, 4, 4, 4))
 			);
 			
+			pnlPropertyName = new JPanel();
 			pnlPropertyUriTemplate = new JPanel();
 			lblPropertyName = new JLabel();
+			cboDataTypes = new DataTypeComboBox();
 			lblMapIcon = new JLabel();
 			txtPropertyTargetMap = new JTextField();
-
+			
 			lblPropertyName.setFont(new java.awt.Font("Tahoma", Font.ITALIC, 12));
 			
-			lblMapIcon.setIcon(IconLoader.getImageIcon("images/link.png"));
+			cboDataTypes.setBackground(Color.WHITE);
+			cboDataTypes.setSelectedIndex(-1);
 			
-			txtPropertyTargetMap.setEditable(true);
+			pnlPropertyName.setLayout(new BorderLayout(5, 0));
+			pnlPropertyName.setOpaque(false);
+			pnlPropertyName.add(lblPropertyName, BorderLayout.WEST);
+			pnlPropertyName.add(cboDataTypes, BorderLayout.EAST);
+			
+			lblMapIcon.setIcon(IconLoader.getImageIcon("images/link.png"));
 			
 			pnlPropertyUriTemplate.setLayout(new BorderLayout(5, 0));
 			pnlPropertyUriTemplate.setOpaque(false);
 			pnlPropertyUriTemplate.add(lblMapIcon, BorderLayout.WEST);
 			pnlPropertyUriTemplate.add(txtPropertyTargetMap, BorderLayout.CENTER);
 
-			add(lblPropertyName, BorderLayout.NORTH);
+			add(pnlPropertyName, BorderLayout.NORTH);
 			add(pnlPropertyUriTemplate, BorderLayout.SOUTH);
 		}
 
@@ -303,8 +326,10 @@ public class PropertyEditorList extends javax.swing.JPanel {
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/data_property.png"));
 				} else if (entry.isRefObjectMap()) {
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
+					cboDataTypes.setVisible(false);
 				}
 				lblPropertyName.setText(entry.toString());
+				cboDataTypes.setSelectedItem(entry.getDataType());
 				txtPropertyTargetMap.setText(entry.getTargetMapping());
 				
 				if (!isSelected) {
@@ -321,6 +346,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 		@Override
 		public Object getCellEditorValue() {
 			if (editedItem != null) {
+				editedItem.setDataType((Predicate) cboDataTypes.getSelectedItem());
 				editedItem.setTargetMapping(txtPropertyTargetMap.getText());
 			}
 			return editedItem;

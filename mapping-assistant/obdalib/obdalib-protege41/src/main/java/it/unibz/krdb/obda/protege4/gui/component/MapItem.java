@@ -6,6 +6,7 @@ public class MapItem {
 
 	private PredicateItem predicateItem;
 	private String targetMapping = "";
+	private Predicate dataType;
 
 	/**
 	 * Constructs a map item without specifying the predicate type. By default,
@@ -38,7 +39,15 @@ public class MapItem {
 	public String getTargetMapping() {
 		return targetMapping;
 	}
+	
+	public void setDataType(Predicate type) {
+		dataType = type;
+	}
 
+	public Predicate getDataType() {
+		return dataType;
+	}
+	
 	public boolean isSubjectMap() {
 		// A null predicate is assumed to be a class predicate
 		return (predicateItem == null || predicateItem.isClassPredicate());
