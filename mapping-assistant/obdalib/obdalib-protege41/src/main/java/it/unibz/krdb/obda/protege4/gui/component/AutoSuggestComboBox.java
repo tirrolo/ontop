@@ -14,11 +14,11 @@ public class AutoSuggestComboBox extends JComboBox {
 
 	private static final long serialVersionUID = 1L;
 
-	private Vector<PredicateItem> items;
+	private Vector<Object> items;
 
-	private boolean hide_flag = false;
+	private boolean hideFlag = false;
 
-	public AutoSuggestComboBox(Vector<PredicateItem> items) {
+	public AutoSuggestComboBox(Vector<Object> items) {
 		super(items);
 		this.items = items;
 		setEditable(true);
@@ -40,9 +40,9 @@ public class AutoSuggestComboBox extends JComboBox {
 								setModel(new DefaultComboBoxModel(items), "");
 							} else {
 								DefaultComboBoxModel m = getSuggestedModel(items, text);
-								if (m.getSize() == 0 || hide_flag) {
+								if (m.getSize() == 0 || hideFlag) {
 									hidePopup();
-									hide_flag = false;
+									hideFlag = false;
 								} else {
 									setModel(m, text);
 									showPopup();
@@ -57,13 +57,14 @@ public class AutoSuggestComboBox extends JComboBox {
 					String text = tf.getText();
 					int code = e.getKeyCode();
 					if (code == KeyEvent.VK_ESCAPE) {
-						hide_flag = true;
+						hideFlag = true;
 					} else if (code == KeyEvent.VK_RIGHT) {
 						for (int i = 0; i < items.size(); i++) {
-							PredicateItem pred = items.elementAt(i);
-							if (pred.getQualifiedName().startsWith(text)) {
+							Object element = items.elementAt(i);
+							String value = element.toString();
+							if (value.startsWith(text)) {
 								setSelectedIndex(-1);
-								tf.setText(pred.getQualifiedName());
+								tf.setText(value);
 								return;
 							}
 						}
@@ -78,11 +79,12 @@ public class AutoSuggestComboBox extends JComboBox {
 		setSelectedIndex(-1);
 	}
 
-	private static DefaultComboBoxModel getSuggestedModel(List<PredicateItem> list, String searchedText) {
+	private static DefaultComboBoxModel getSuggestedModel(List<Object> items, String searchedText) {
 		DefaultComboBoxModel m = new DefaultComboBoxModel();
-		for (PredicateItem pred : list) {
-			if (pred.getQualifiedName().startsWith(searchedText)) {
-				m.addElement(pred);
+		for (Object element : items) {
+			String value = element.toString();
+			if (value.startsWith(searchedText)) {
+				m.addElement(element);
 			}
 		}
 		return m;
