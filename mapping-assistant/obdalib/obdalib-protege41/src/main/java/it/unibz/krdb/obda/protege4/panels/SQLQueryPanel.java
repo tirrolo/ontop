@@ -510,49 +510,61 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 	private void cboDataSetActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cboDataSetActionPerformed
 		write(""); // clear the text editor
 		JComboBox cb = (JComboBox) evt.getSource();
-		DataDefinition dd = (DataDefinition) cb.getSelectedItem();
-		if (dd != null) {
-			StringBuffer sb = new StringBuffer("select");
-			boolean needComma = false;
-			for (Attribute attr : dd.getAttributes()) {
-				if (needComma) {
-					sb.append(",");
-				}
-				sb.append(" ");
-				sb.append(attr.name);
-				needComma = true;
+		if (cb.getSelectedIndex() != -1) {
+			DataDefinition dd = (DataDefinition) cb.getSelectedItem();
+			if (dd != null) {
+				String sql = generateSQLString(dd);
+				write(sql);
 			}
-			sb.append(" ");
-			sb.append("from");
-			sb.append(" ");
-			sb.append(dd.getName());
-			write(sb.toString());
+			executeQuery();
 		}
 	}// GEN-LAST:event_cboDataSetActionPerformed
 	
+	private String generateSQLString(DataDefinition table) {
+		StringBuffer sb = new StringBuffer("select");
+		boolean needComma = false;
+		for (Attribute attr : table.getAttributes()) {
+			if (needComma) {
+				sb.append(",");
+			}
+			sb.append(" ");
+			sb.append(attr.name);
+			needComma = true;
+		}
+		sb.append(" ");
+		sb.append("from");
+		sb.append(" ");
+		sb.append(table.getName());
+		return sb.toString();
+	}
+
 	private void cmdExecuteActionPerformed(java.awt.event.ActionEvent evt) {
-		releaseResultset();
+		if (selectedSource == null) {
+			DialogUtils.showQuickErrorDialog(null, new Exception("Data source has not been defined."));
+		} else {
+			executeQuery();
+		}
+	}
+	
+	private void executeQuery() {
 		try {
-			if (selectedSource == null) {
-				JOptionPane.showMessageDialog(this, "Please select data source first", "Error", JOptionPane.ERROR_MESSAGE);
-			} else {
-				OBDAProgessMonitor progMonitor = new OBDAProgessMonitor("Executing query...");
-				CountDownLatch latch = new CountDownLatch(1);
-				ExecuteSQLQueryAction action = new ExecuteSQLQueryAction(latch);
-				progMonitor.addProgressListener(action);
-				progMonitor.start();
-				action.run();
-				latch.await();
-				progMonitor.stop();
-				ResultSet set = action.getResult();
-				if (set != null) {
-					IncrementalResultSetTableModel model = new IncrementalResultSetTableModel(set);
-					tblQueryResult.setModel(model);
-					set.close();
-				}
+			releaseResultset();
+			OBDAProgessMonitor progMonitor = new OBDAProgessMonitor("Executing query...");
+			CountDownLatch latch = new CountDownLatch(1);
+			ExecuteSQLQueryAction action = new ExecuteSQLQueryAction(latch);
+			progMonitor.addProgressListener(action);
+			progMonitor.start();
+			action.run();
+			latch.await();
+			progMonitor.stop();
+			ResultSet set = action.getResult();
+			if (set != null) {
+				IncrementalResultSetTableModel model = new IncrementalResultSetTableModel(set);
+				tblQueryResult.setModel(model);
+				set.close();
 			}
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			DialogUtils.showQuickErrorDialog(null, e);
 		}
 	}
 
@@ -587,6 +599,7 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 			// NO-OP
 		}
 		cboDataSet.setModel(relationList);
+		cboDataSet.setSelectedIndex(-1);
 	}
 
 	private void write(String text) {
@@ -637,19 +650,24 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 		private static final long serialVersionUID = 1L;
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-			if (value == null) {
+			if (list.getModel().getSize() == 0) {
 				setText("<No table found>");
-			} 
-			else {
-				DataDefinition relation = (DataDefinition) value;
-				if (relation instanceof TableDefinition) {
-					ImageIcon icon = IconLoader.getImageIcon("images/db_table.png");
-					setIcon(icon);
-					setText(relation.getName());
-				} else if (relation instanceof ViewDefinition) {
-					ImageIcon icon = IconLoader.getImageIcon("images/db_view.png");
-					setIcon(icon);
-					setText(relation.getName());
+			} else {
+				if (index == -1) {
+					setText("<Select database table>");
+				}
+				
+				if (value != null) {
+					DataDefinition relation = (DataDefinition) value;
+					if (relation instanceof TableDefinition) {
+						ImageIcon icon = IconLoader.getImageIcon("images/db_table.png");
+						setIcon(icon);
+						setText(relation.getName());
+					} else if (relation instanceof ViewDefinition) {
+						ImageIcon icon = IconLoader.getImageIcon("images/db_view.png");
+						setIcon(icon);
+						setText(relation.getName());
+					}
 				}
 			}
 			return this;
