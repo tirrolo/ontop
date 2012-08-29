@@ -62,7 +62,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelectorListener {
+public class MappingAssistantPanel extends javax.swing.JPanel implements DatasourceSelectorListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -76,7 +76,7 @@ public class SQLQueryPanel extends javax.swing.JPanel implements DatasourceSelec
 
 	private static OBDADataFactory dfac = OBDADataFactoryImpl.getInstance();
 
-	public SQLQueryPanel(OBDAModel model) {
+	public MappingAssistantPanel(OBDAModel model) {
 		obdaModel = model;
 		prefixManager = obdaModel.getPrefixManager();
 		initComponents();
