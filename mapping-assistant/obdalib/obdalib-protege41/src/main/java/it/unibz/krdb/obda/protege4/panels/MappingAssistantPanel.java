@@ -482,6 +482,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		cboClassAutoSuggest.setSelectedIndex(-1);
 		txtClassUriTemplate.setText(prefixManager.getDefaultPrefix());
 		pnlPropertyEditorList.clear();
+		predicateSubjectMap = new MapItem();
 	}
 	
 	private void txtClassUriTemplateFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtClassUriTemplateFocusLost
