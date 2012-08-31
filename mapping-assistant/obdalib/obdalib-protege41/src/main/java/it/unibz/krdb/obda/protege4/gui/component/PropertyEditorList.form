@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+<Form version="1.6" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <Properties>
     <Property name="alignmentX" type="float" value="5.0"/>
     <Property name="alignmentY" type="float" value="5.0"/>
@@ -39,7 +39,7 @@
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private AutoSuggestComboBox cboPropertyAutoSuggest;"/>
-        <AuxValue name="JavaCodeGenerator_LayoutCodePre" type="java.lang.String" value="Vector&lt;PredicateItem&gt; v = new Vector&lt;PredicateItem&gt;();&#xa;for (Predicate dp : obdaModel.getDeclaredDataProperties()) {&#xa;    v.addElement(new PredicateItem(dp, prefixManager));&#xa;}&#xa;for (Predicate op : obdaModel.getDeclaredObjectProperties()) {&#xa;    v.addElement(new PredicateItem(op, prefixManager));&#xa;}&#xa;cboPropertyAutoSuggest = new AutoSuggestComboBox(v);&#xa;cboPropertyAutoSuggest.setMinimumSize(new java.awt.Dimension(195, 23));&#xa;cboPropertyAutoSuggest.setPreferredSize(new java.awt.Dimension(195, 23));&#xa;JTextField txtComboBoxEditor = (JTextField) cboPropertyAutoSuggest.getEditor().getEditorComponent();&#xa;txtComboBoxEditor.addKeyListener(new java.awt.event.KeyAdapter() {&#xa;    public void keyPressed(java.awt.event.KeyEvent evt) {&#xa;        cboPropertyAutoSuggestKeyPressed(evt);&#xa;    }&#xa;});&#xa;pnlAddProperty.add(cboPropertyAutoSuggest);"/>
+        <AuxValue name="JavaCodeGenerator_LayoutCodePre" type="java.lang.String" value="Vector&lt;Object&gt; v = new Vector&lt;Object&gt;();&#xa;for (Predicate dp : obdaModel.getDeclaredDataProperties()) {&#xa;    v.addElement(new PredicateItem(dp, prefixManager));&#xa;}&#xa;for (Predicate op : obdaModel.getDeclaredObjectProperties()) {&#xa;    v.addElement(new PredicateItem(op, prefixManager));&#xa;}&#xa;cboPropertyAutoSuggest = new AutoSuggestComboBox(v);&#xa;cboPropertyAutoSuggest.setMinimumSize(new java.awt.Dimension(195, 23));&#xa;cboPropertyAutoSuggest.setPreferredSize(new java.awt.Dimension(195, 23));&#xa;JTextField txtComboBoxEditor = (JTextField) cboPropertyAutoSuggest.getEditor().getEditorComponent();&#xa;txtComboBoxEditor.addKeyListener(new java.awt.event.KeyAdapter() {&#xa;    public void keyPressed(java.awt.event.KeyEvent evt) {&#xa;        cboPropertyAutoSuggestKeyPressed(evt);&#xa;    }&#xa;});&#xa;pnlAddProperty.add(cboPropertyAutoSuggest);"/>
       </AuxValues>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -98,17 +98,20 @@
         <Component class="javax.swing.JTable" name="lstProperties">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="propertyListModel" type="code"/>
+              <Connection code="new DefaultTableModel(0, 1)" type="code"/>
             </Property>
-            <Property name="rowHeight" type="int" value="50"/>
+            <Property name="cellSelectionEnabled" type="boolean" value="true"/>
+            <Property name="rowHeight" type="int" value="57"/>
+            <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
+              <JTableSelectionModel selectionMode="0"/>
+            </Property>
             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection code="null" type="code"/>
             </Property>
           </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private DefaultTableModel propertyListModel;"/>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="propertyListModel = new DefaultTableModel(0, 1);"/>
-          </AuxValues>
+          <Events>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="lstPropertiesKeyPressed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

@@ -11,6 +11,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Vector;
@@ -45,6 +46,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 	}
 
 	public List<MapItem> getPredicateObjectMapsList() {
+		DefaultTableModel propertyListModel = (DefaultTableModel) lstProperties.getModel();
 		int column = 0; // it's a single column table
 		int totalRow = propertyListModel.getRowCount();
 		
@@ -65,7 +67,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 	
 	public void clear() {
 		cboPropertyAutoSuggest.setSelectedIndex(-1);
-		propertyListModel.setRowCount(0);
+		((DefaultTableModel) lstProperties.getModel()).setRowCount(0);
 	}
 	
 	/**
@@ -124,14 +126,31 @@ public class PropertyEditorList extends javax.swing.JPanel {
 
         add(pnlAddProperty, java.awt.BorderLayout.PAGE_START);
 
-        propertyListModel = new DefaultTableModel(0, 1);
-        lstProperties.setModel(propertyListModel);
-        lstProperties.setRowHeight(58);
+        lstProperties.setModel(new DefaultTableModel(0, 1));
+        lstProperties.setCellSelectionEnabled(true);
+        lstProperties.setRowHeight(57);
+        lstProperties.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstProperties.setTableHeader(null);
+        lstProperties.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                lstPropertiesKeyPressed(evt);
+            }
+        });
         scrPropertyList.setViewportView(lstProperties);
 
         add(scrPropertyList, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
+	private void lstPropertiesKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_lstPropertiesKeyPressed
+		int code = evt.getKeyCode();
+		if (code == KeyEvent.VK_DELETE) {
+			TableCellEditor editor = lstProperties.getCellEditor();
+			if (editor != null) {
+				editor.stopCellEditing();
+			}
+			((DefaultTableModel) lstProperties.getModel()).removeRow(lstProperties.getSelectedRow());
+		}
+	}// GEN-LAST:event_lstPropertiesKeyPressed
 
 	private void cboPropertyAutoSuggestKeyPressed(KeyEvent evt) {
 		int code = evt.getKeyCode();
@@ -163,11 +182,10 @@ public class PropertyEditorList extends javax.swing.JPanel {
 		// Insert the selected item from the combo box to the table as a new table cell
 		MapItem[] row = new MapItem[1];
 		row[0] = predicateObjectMap;
-		propertyListModel.addRow(row);
+		((DefaultTableModel) lstProperties.getModel()).addRow(row);
 		
 		// Define for each added table cell a custom renderer and editor
-		int lastRow = lstProperties.getColumnCount()-1;
-		TableColumn col = lstProperties.getColumnModel().getColumn(lastRow);
+		TableColumn col = lstProperties.getColumnModel().getColumn(0);
 		
 		// Add custom cell renderer
 		col.setCellRenderer(new PropertyItemRenderer());
@@ -181,7 +199,6 @@ public class PropertyEditorList extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cmdAdd;
     private javax.swing.JTable lstProperties;
-    private DefaultTableModel propertyListModel;
     private javax.swing.JPanel pnlAddProperty;
     private AutoSuggestComboBox cboPropertyAutoSuggest;
     private javax.swing.JScrollPane scrPropertyList;
@@ -209,6 +226,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 					BorderFactory.createLineBorder(new Color(192, 192, 192), 1), 
 					BorderFactory.createEmptyBorder(4, 4, 4, 4))
 			);
+			setFocusable(false);
 			
 			pnlPropertyName = new JPanel();
 			pnlPropertyUriTemplate = new JPanel();
@@ -224,6 +242,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 			
 			pnlPropertyName.setLayout(new BorderLayout(5, 0));
 			pnlPropertyName.setOpaque(false);
+			pnlPropertyName.setFocusable(false);
 			pnlPropertyName.add(lblPropertyName, BorderLayout.WEST);
 			pnlPropertyName.add(cboDataTypes, BorderLayout.EAST);
 			
@@ -231,6 +250,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 			
 			pnlPropertyUriTemplate.setLayout(new BorderLayout(5, 0));
 			pnlPropertyUriTemplate.setOpaque(false);
+			pnlPropertyUriTemplate.setFocusable(false);
 			pnlPropertyUriTemplate.add(lblMapIcon, BorderLayout.WEST);
 			pnlPropertyUriTemplate.add(txtPropertyTargetMap, BorderLayout.CENTER);
 
@@ -240,20 +260,28 @@ public class PropertyEditorList extends javax.swing.JPanel {
 		
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			if (value == null) {
-				return null;
-			}
+
 			if (value instanceof MapItem) {
 				MapItem entry = (MapItem) value;
 				if (entry.isObjectMap()) {
+					cboDataTypes.setVisible(true);
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/data_property.png"));
 				} else if (entry.isRefObjectMap()) {
-					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
 					cboDataTypes.setVisible(false);
+					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
 				}
 				lblPropertyName.setText(entry.toString());
 				cboDataTypes.setSelectedItem(entry.getDataType());
 				txtPropertyTargetMap.setText(entry.getTargetMapping());
+				
+//				if (hasFocus) {
+					txtPropertyTargetMap.requestFocusInWindow();
+					txtPropertyTargetMap.setCaretPosition(0);
+//				}
+				if (hasFocus) {
+					Date date = new Date();
+					System.out.println(date.getTime() + ": " + row + ", " + column);
+				}
 			}
 			return this;
 		}
@@ -292,7 +320,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 			lblMapIcon = new JLabel();
 			txtPropertyTargetMap = new JTextField();
 			
-			lblPropertyName.setFont(new java.awt.Font("Tahoma", Font.ITALIC, 12));
+			lblPropertyName.setFont(new java.awt.Font("Tahoma", Font.PLAIN, 12));
 			
 			cboDataTypes.setBackground(Color.WHITE);
 			cboDataTypes.setSelectedIndex(-1);
@@ -315,30 +343,22 @@ public class PropertyEditorList extends javax.swing.JPanel {
 
 		@Override
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-			if (value == null) {
-				return null;
-			}
 			
+			setBackground(SELECTION_BACKGROUND);
+
 			if (value instanceof MapItem) {
 				MapItem entry = (MapItem) value;
 				editedItem = entry;
 				if (entry.isObjectMap()) {
+					cboDataTypes.setVisible(true);
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/data_property.png"));
 				} else if (entry.isRefObjectMap()) {
-					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
 					cboDataTypes.setVisible(false);
+					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
 				}
 				lblPropertyName.setText(entry.toString());
 				cboDataTypes.setSelectedItem(entry.getDataType());
 				txtPropertyTargetMap.setText(entry.getTargetMapping());
-				
-				if (!isSelected) {
-					/* Since it is unnecessary to have the cell selected first before editing thus
-					 * we can immediately highlight the "focused" cell. */
-					setBackground(SELECTION_BACKGROUND);
-					txtPropertyTargetMap.requestFocusInWindow();
-					txtPropertyTargetMap.setCaretPosition(entry.getTargetMapping().length());
-				}
 			}
 			return this;
 		}
@@ -359,8 +379,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 
 		@Override
 		public boolean shouldSelectCell(EventObject anEvent) {
-			// A single click edit
-			return false;
+			return true;
 		}
 
 		@Override
