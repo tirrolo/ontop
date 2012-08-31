@@ -15,12 +15,23 @@ public class DataTypeComboBox extends JComboBox {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final Predicate[] SUPPORTED_DATATYPES = getQuestDataTypePredicates();
+	
 	public DataTypeComboBox() {
-		super(OBDAVocabulary.QUEST_DATATYPE_PREDICATES);
+		super(SUPPORTED_DATATYPES);
 		setRenderer(new DataTypeRenderer());
-		setPreferredSize(new Dimension(120, 23));
+		setPreferredSize(new Dimension(130, 23));
+		setSelectedIndex(-1);
 	}
 	
+	private static Predicate[] getQuestDataTypePredicates() {
+		int length = OBDAVocabulary.QUEST_DATATYPE_PREDICATES.length + 1;
+		Predicate[] dataTypes = new Predicate[length];
+		dataTypes[0] = null;
+		System.arraycopy(OBDAVocabulary.QUEST_DATATYPE_PREDICATES, 0, dataTypes, 1, OBDAVocabulary.QUEST_DATATYPE_PREDICATES.length);
+		return dataTypes;
+	}
+
 	class DataTypeRenderer extends BasicComboBoxRenderer {
 		
 		private static final long serialVersionUID = 1L;
@@ -28,11 +39,10 @@ public class DataTypeComboBox extends JComboBox {
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-			if (index == -1) {
-				setText("<Define data type>");
-			}
-			
-			if (value != null) {
+			if (value == null) {
+				setText("<Undefined data type>");
+				setIcon(null);
+			} else {
 				if (value instanceof Predicate) {
 					Predicate item = (Predicate) value;
 					String name = item.toString();
