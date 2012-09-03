@@ -268,7 +268,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         pnlClassUriTemplate.setOpaque(false);
         pnlClassUriTemplate.setLayout(new java.awt.BorderLayout(6, 0));
 
-        txtClassUriTemplate.setText(prefixManager.getDefaultPrefix());
+        txtClassUriTemplate.setText(getDefaultNamespace(true));
         txtClassUriTemplate.setMargin(new java.awt.Insets(0, 0, 0, 0));
         txtClassUriTemplate.setMinimumSize(new java.awt.Dimension(240, 23));
         txtClassUriTemplate.setPreferredSize(new java.awt.Dimension(240, 23));
@@ -366,6 +366,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 	}// GEN-LAST:event_txtClassUriTemplateFocusGained
 
 	private void cmdCreateMappingActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmdCreateMappingActionPerformed
+		// Stop any editing action and save whatever in the text field
 		if (pnlPropertyEditorList.isEditing()) {
 			pnlPropertyEditorList.stopCellEditing();
 		}
@@ -439,6 +440,8 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 	}
 
 	private Function getUriFunctionTerm(String template) {
+
+		// To store the variables contained in the template string
 		List<Term> terms = new ArrayList<Term>();
 		
 		// Input = http://www.example.org/person/{$var1}/{$var2}
@@ -475,18 +478,26 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		return dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(terms.size()), terms);
 	}
 
+	private String getDefaultNamespace(boolean usePrefix) {
+		String defaultNamespace = prefixManager.getDefaultPrefix();
+		if (usePrefix) {
+			defaultNamespace = prefixManager.getShortForm(defaultNamespace, true);
+		}
+		return defaultNamespace;
+	}
+	
 	private void clearForm() {
 		cboDataSet.setSelectedIndex(-1);
 		txtQueryEditor.setText("");
 		tblQueryResult.setModel(new DefaultTableModel());
 		cboClassAutoSuggest.setSelectedIndex(-1);
-		txtClassUriTemplate.setText(prefixManager.getDefaultPrefix());
+		txtClassUriTemplate.setText(getDefaultNamespace(true));
 		pnlPropertyEditorList.clear();
 		predicateSubjectMap = new MapItem();
 	}
 	
 	private void txtClassUriTemplateFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtClassUriTemplateFocusLost
-		String uriTemplate = txtClassUriTemplate.getText();
+		String uriTemplate = prefixManager.getExpandForm(txtClassUriTemplate.getText(), true);
 		predicateSubjectMap.setTargetMapping(uriTemplate);
 	}// GEN-LAST:event_txtClassUriTemplateFocusLost
 

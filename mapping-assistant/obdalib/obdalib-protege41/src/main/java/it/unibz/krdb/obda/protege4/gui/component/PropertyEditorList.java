@@ -4,26 +4,28 @@ import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.protege4.gui.IconLoader;
+import it.unibz.krdb.obda.protege4.gui.action.EditableCellFocusAction;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -136,6 +138,8 @@ public class PropertyEditorList extends javax.swing.JPanel {
                 lstPropertiesKeyPressed(evt);
             }
         });
+        new EditableCellFocusAction(lstProperties, KeyStroke.getKeyStroke("ENTER"));
+        new EditableCellFocusAction(lstProperties, KeyStroke.getKeyStroke("F2"));
         scrPropertyList.setViewportView(lstProperties);
 
         add(scrPropertyList, java.awt.BorderLayout.CENTER);
@@ -176,7 +180,8 @@ public class PropertyEditorList extends javax.swing.JPanel {
 	private void addRow(PredicateItem selectedItem) {
 		MapItem predicateObjectMap = new MapItem(selectedItem);
 		if (selectedItem.isObjectPropertyPredicate()) {
-			predicateObjectMap.setTargetMapping(prefixManager.getDefaultPrefix());
+			String defaultNamespace = prefixManager.getDefaultPrefix();
+			predicateObjectMap.setTargetMapping(prefixManager.getShortForm(defaultNamespace, true));
 		}
 		
 		// Insert the selected item from the combo box to the table as a new table cell
@@ -261,36 +266,34 @@ public class PropertyEditorList extends javax.swing.JPanel {
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
+			if (isSelected) {
+				setBackground(SELECTION_BACKGROUND);
+			} else {
+				setBackground(NORMAL_BACKGROUND);
+			}
 			if (value instanceof MapItem) {
 				MapItem entry = (MapItem) value;
+				lblPropertyName.setText(entry.toString());
 				if (entry.isObjectMap()) {
 					cboDataTypes.setVisible(true);
+					cboDataTypes.setSelectedItem(entry.getDataType());
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/data_property.png"));
+					txtPropertyTargetMap.setText(entry.getTargetMapping());
 				} else if (entry.isRefObjectMap()) {
 					cboDataTypes.setVisible(false);
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
-				}
-				lblPropertyName.setText(entry.toString());
-				cboDataTypes.setSelectedItem(entry.getDataType());
-				txtPropertyTargetMap.setText(entry.getTargetMapping());
-				
-//				if (hasFocus) {
-					txtPropertyTargetMap.requestFocusInWindow();
-					txtPropertyTargetMap.setCaretPosition(0);
-//				}
-				if (hasFocus) {
-					Date date = new Date();
-					System.out.println(date.getTime() + ": " + row + ", " + column);
+					txtPropertyTargetMap.setText(prefixManager.getShortForm(entry.getTargetMapping(), true));
 				}
 			}
 			return this;
 		}
 	}
 	
-	class PropertyItemEditor extends JPanel implements TableCellEditor {
+	public class PropertyItemEditor extends AbstractCellEditor implements TableCellEditor {
 
 		private static final long serialVersionUID = 1L;
 		
+		private JPanel pnlPropertyMapCell;
 		private JPanel pnlPropertyName;
 		private JPanel pnlPropertyUriTemplate;
 		private JLabel lblPropertyName;
@@ -300,25 +303,36 @@ public class PropertyEditorList extends javax.swing.JPanel {
 		
 		private MapItem editedItem;
 
-		private List<CellEditorListener> cellEditorListenerList = new ArrayList<CellEditorListener>();
-
 		public PropertyItemEditor() {
 			initComponents();
 		}
+		
+		private void setCaretToTextField() {
+			txtPropertyTargetMap.requestFocusInWindow();
+			txtPropertyTargetMap.setCaretPosition(txtPropertyTargetMap.getText().length());
+		}
 
 		private void initComponents() {
-			setLayout(new BorderLayout(0, 2));
-			setBorder(BorderFactory.createCompoundBorder(
-					BorderFactory.createLineBorder(new Color(192, 192, 192), 1), 
-					BorderFactory.createEmptyBorder(4, 4, 4, 4))
-			);
-			
+			pnlPropertyMapCell = new JPanel() {
+				public void addNotify() {
+					super.addNotify();
+					setCaretToTextField();
+				}
+			};
+			pnlPropertyMapCell.setRequestFocusEnabled(true);
 			pnlPropertyName = new JPanel();
 			pnlPropertyUriTemplate = new JPanel();
 			lblPropertyName = new JLabel();
 			cboDataTypes = new DataTypeComboBox();
 			lblMapIcon = new JLabel();
 			txtPropertyTargetMap = new JTextField();
+			
+			pnlPropertyMapCell.setLayout(new BorderLayout(0, 2));
+			pnlPropertyMapCell.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(new Color(192, 192, 192), 1), 
+					BorderFactory.createEmptyBorder(4, 4, 4, 4))
+			);
+			pnlPropertyMapCell.setRequestFocusEnabled(true);
 			
 			lblPropertyName.setFont(new java.awt.Font("Tahoma", Font.PLAIN, 12));
 			
@@ -337,72 +351,57 @@ public class PropertyEditorList extends javax.swing.JPanel {
 			pnlPropertyUriTemplate.add(lblMapIcon, BorderLayout.WEST);
 			pnlPropertyUriTemplate.add(txtPropertyTargetMap, BorderLayout.CENTER);
 
-			add(pnlPropertyName, BorderLayout.NORTH);
-			add(pnlPropertyUriTemplate, BorderLayout.SOUTH);
+			pnlPropertyMapCell.add(pnlPropertyName, BorderLayout.NORTH);
+			pnlPropertyMapCell.add(pnlPropertyUriTemplate, BorderLayout.SOUTH);
 		}
 
 		@Override
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-			
-			setBackground(SELECTION_BACKGROUND);
-
+			if (!isSelected) {
+				pnlPropertyMapCell.setBackground(SELECTION_BACKGROUND);
+			}
 			if (value instanceof MapItem) {
 				MapItem entry = (MapItem) value;
+				lblPropertyName.setText(entry.toString());
 				editedItem = entry;
 				if (entry.isObjectMap()) {
 					cboDataTypes.setVisible(true);
+					cboDataTypes.setSelectedItem(entry.getDataType());
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/data_property.png"));
+					txtPropertyTargetMap.setText(entry.getTargetMapping());
 				} else if (entry.isRefObjectMap()) {
 					cboDataTypes.setVisible(false);
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
+					txtPropertyTargetMap.setText(prefixManager.getShortForm(entry.getTargetMapping(), true));
 				}
-				lblPropertyName.setText(entry.toString());
-				cboDataTypes.setSelectedItem(entry.getDataType());
-				txtPropertyTargetMap.setText(entry.getTargetMapping());
 			}
-			return this;
+			return pnlPropertyMapCell;
 		}
 
 		@Override
 		public Object getCellEditorValue() {
 			if (editedItem != null) {
-				editedItem.setDataType((Predicate) cboDataTypes.getSelectedItem());
-				editedItem.setTargetMapping(txtPropertyTargetMap.getText());
+				if (editedItem.isObjectMap()) {
+					editedItem.setDataType((Predicate) cboDataTypes.getSelectedItem());
+					editedItem.setTargetMapping(txtPropertyTargetMap.getText());
+				} else if (editedItem.isRefObjectMap()) {
+					editedItem.setTargetMapping(prefixManager.getExpandForm(txtPropertyTargetMap.getText(), true));
+				}
 			}
 			return editedItem;
 		}
 
 		@Override
 		public boolean isCellEditable(EventObject anEvent) {
-			return true;
-		}
-
-		@Override
-		public boolean shouldSelectCell(EventObject anEvent) {
-			return true;
-		}
-
-		@Override
-		public boolean stopCellEditing() {
-			for (CellEditorListener l : cellEditorListenerList) {
-				l.editingStopped(new ChangeEvent(this));
+			if (anEvent instanceof MouseEvent) {
+				MouseEvent mouseEvent = (MouseEvent) anEvent;
+				if (mouseEvent.getClickCount() == 1) {
+					return true;
+				}
+			} else if (anEvent instanceof ActionEvent) {
+				return true;
 			}
-			return true;
-		}
-
-		@Override
-		public void cancelCellEditing() {
-			// NO-OP
-		}
-
-		@Override
-		public void addCellEditorListener(CellEditorListener l) {
-			cellEditorListenerList.add(l);
-		}
-
-		@Override
-		public void removeCellEditorListener(CellEditorListener l) {
-			cellEditorListenerList.remove(l);
+			return false;
 		}
 	}
 }
