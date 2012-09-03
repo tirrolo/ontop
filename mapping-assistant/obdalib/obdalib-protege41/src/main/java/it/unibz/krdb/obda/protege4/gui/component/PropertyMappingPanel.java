@@ -31,7 +31,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-public class PropertyEditorList extends javax.swing.JPanel {
+public class PropertyMappingPanel extends javax.swing.JPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,7 +41,7 @@ public class PropertyEditorList extends javax.swing.JPanel {
 	private static final Color SELECTION_BACKGROUND = UIManager.getDefaults().getColor("List.selectionBackground");
 	private static final Color NORMAL_BACKGROUND = new Color(240, 245, 240);
 	
-	public PropertyEditorList(OBDAModel obdaModel) {
+	public PropertyMappingPanel(OBDAModel obdaModel) {
 		this.obdaModel = obdaModel;
 		prefixManager = obdaModel.getPrefixManager();
 		initComponents();

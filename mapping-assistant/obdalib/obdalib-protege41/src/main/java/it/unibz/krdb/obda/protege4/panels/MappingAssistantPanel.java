@@ -28,7 +28,7 @@ import it.unibz.krdb.obda.protege4.gui.IconLoader;
 import it.unibz.krdb.obda.protege4.gui.component.AutoSuggestComboBox;
 import it.unibz.krdb.obda.protege4.gui.component.MapItem;
 import it.unibz.krdb.obda.protege4.gui.component.PredicateItem;
-import it.unibz.krdb.obda.protege4.gui.component.PropertyEditorList;
+import it.unibz.krdb.obda.protege4.gui.component.PropertyMappingPanel;
 import it.unibz.krdb.obda.protege4.gui.component.SQLResultTable;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.DataDefinition;
@@ -313,7 +313,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 
         pnlPropertyList.setLayout(new java.awt.BorderLayout());
 
-        pnlPropertyEditorList = new PropertyEditorList(obdaModel);
+        pnlPropertyEditorList = new PropertyMappingPanel(obdaModel);
         pnlPropertyList.add(pnlPropertyEditorList);
 
         pnlProperties.add(pnlPropertyList, java.awt.BorderLayout.CENTER);
@@ -644,7 +644,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
     private javax.swing.JPanel pnlProperties;
     private javax.swing.JPanel pnlPropertiesLabel;
     private javax.swing.JPanel pnlPropertyList;
-    private PropertyEditorList pnlPropertyEditorList;
+    private PropertyMappingPanel pnlPropertyEditorList;
     private javax.swing.JPanel pnlQueryEditor;
     private javax.swing.JPanel pnlResult;
     private javax.swing.JPanel pnlResultFilter;
