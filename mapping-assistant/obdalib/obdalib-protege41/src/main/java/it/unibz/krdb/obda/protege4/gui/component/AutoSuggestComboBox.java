@@ -1,6 +1,7 @@
 package it.unibz.krdb.obda.protege4.gui.component;
 
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -21,6 +22,7 @@ public class AutoSuggestComboBox extends JComboBox {
 	public AutoSuggestComboBox(Vector<Object> items) {
 		super(items);
 		this.items = items;
+		setFont(new Font("Dialog", 0, 14));
 		setEditable(true);
 		setSelectedIndex(-1);
 		overrideEditorBehavior();

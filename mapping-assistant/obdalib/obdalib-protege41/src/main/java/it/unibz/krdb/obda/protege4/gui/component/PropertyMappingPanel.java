@@ -83,8 +83,10 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 
         pnlAddProperty = new javax.swing.JPanel();
         cmdAdd = new javax.swing.JButton();
+        pnlPropertyMapping = new javax.swing.JPanel();
         scrPropertyList = new javax.swing.JScrollPane();
         lstProperties = new javax.swing.JTable();
+        lblCurrentPropertyMapping = new javax.swing.JLabel();
 
         setAlignmentX(5.0F);
         setAlignmentY(5.0F);
@@ -128,9 +130,11 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 
         add(pnlAddProperty, java.awt.BorderLayout.PAGE_START);
 
+        pnlPropertyMapping.setLayout(new java.awt.BorderLayout());
+
         lstProperties.setModel(new DefaultTableModel(0, 1));
         lstProperties.setCellSelectionEnabled(true);
-        lstProperties.setRowHeight(57);
+        lstProperties.setRowHeight(65);
         lstProperties.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstProperties.setTableHeader(null);
         lstProperties.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -142,7 +146,15 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
         new EditableCellFocusAction(lstProperties, KeyStroke.getKeyStroke("F2"));
         scrPropertyList.setViewportView(lstProperties);
 
-        add(scrPropertyList, java.awt.BorderLayout.CENTER);
+        pnlPropertyMapping.add(scrPropertyList, java.awt.BorderLayout.CENTER);
+
+        lblCurrentPropertyMapping.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        lblCurrentPropertyMapping.setForeground(new java.awt.Color(53, 113, 163));
+        lblCurrentPropertyMapping.setText("Current property mappings:");
+        lblCurrentPropertyMapping.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        pnlPropertyMapping.add(lblCurrentPropertyMapping, java.awt.BorderLayout.NORTH);
+
+        add(pnlPropertyMapping, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 	private void lstPropertiesKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_lstPropertiesKeyPressed
@@ -203,9 +215,11 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cmdAdd;
+    private javax.swing.JLabel lblCurrentPropertyMapping;
     private javax.swing.JTable lstProperties;
     private javax.swing.JPanel pnlAddProperty;
     private AutoSuggestComboBox cboPropertyAutoSuggest;
+    private javax.swing.JPanel pnlPropertyMapping;
     private javax.swing.JScrollPane scrPropertyList;
     // End of variables declaration//GEN-END:variables
 
@@ -228,8 +242,10 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			setBackground(NORMAL_BACKGROUND);
 			setLayout(new BorderLayout(0, 2));
 			setBorder(BorderFactory.createCompoundBorder(
-					BorderFactory.createLineBorder(new Color(192, 192, 192), 1), 
-					BorderFactory.createEmptyBorder(4, 4, 4, 4))
+				BorderFactory.createCompoundBorder(
+						BorderFactory.createEmptyBorder(1, 2, 1, 2), 
+						BorderFactory.createLineBorder(new Color(192, 192, 192), 1)),
+				BorderFactory.createEmptyBorder(4, 4, 4, 4))
 			);
 			setFocusable(false);
 			
@@ -240,7 +256,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			lblMapIcon = new JLabel();
 			txtPropertyTargetMap = new JTextField();
 			
-			lblPropertyName.setFont(new java.awt.Font("Tahoma", Font.PLAIN, 12));
+			lblPropertyName.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
 			
 			cboDataTypes.setBackground(Color.WHITE);
 			cboDataTypes.setSelectedIndex(-1);
@@ -252,6 +268,8 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			pnlPropertyName.add(cboDataTypes, BorderLayout.EAST);
 			
 			lblMapIcon.setIcon(IconLoader.getImageIcon("images/link.png"));
+			
+			txtPropertyTargetMap.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
 			
 			pnlPropertyUriTemplate.setLayout(new BorderLayout(5, 0));
 			pnlPropertyUriTemplate.setOpaque(false);
@@ -329,12 +347,14 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			
 			pnlPropertyMapCell.setLayout(new BorderLayout(0, 2));
 			pnlPropertyMapCell.setBorder(BorderFactory.createCompoundBorder(
-					BorderFactory.createLineBorder(new Color(192, 192, 192), 1), 
+					BorderFactory.createCompoundBorder(
+							BorderFactory.createEmptyBorder(1, 2, 1, 2), 
+							BorderFactory.createLineBorder(new Color(192, 192, 192), 1)),
 					BorderFactory.createEmptyBorder(4, 4, 4, 4))
 			);
 			pnlPropertyMapCell.setRequestFocusEnabled(true);
 			
-			lblPropertyName.setFont(new java.awt.Font("Tahoma", Font.PLAIN, 12));
+			lblPropertyName.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
 			
 			cboDataTypes.setBackground(Color.WHITE);
 			cboDataTypes.setSelectedIndex(-1);
@@ -345,6 +365,8 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			pnlPropertyName.add(cboDataTypes, BorderLayout.EAST);
 			
 			lblMapIcon.setIcon(IconLoader.getImageIcon("images/link.png"));
+			
+			txtPropertyTargetMap.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
 			
 			pnlPropertyUriTemplate.setLayout(new BorderLayout(5, 0));
 			pnlPropertyUriTemplate.setOpaque(false);

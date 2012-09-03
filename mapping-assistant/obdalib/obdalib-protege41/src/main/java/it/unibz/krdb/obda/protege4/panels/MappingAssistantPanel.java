@@ -151,7 +151,8 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 
         pnlDataSet.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        lblDataSet.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        lblDataSet.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        lblDataSet.setForeground(new java.awt.Color(53, 113, 163));
         lblDataSet.setText("Data Set:");
         pnlDataSet.add(lblDataSet);
 
@@ -239,9 +240,9 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 
         pnlConcept.setLayout(new java.awt.BorderLayout(0, 2));
 
-        lblClass.setBackground(new java.awt.Color(153, 0, 0));
-        lblClass.setForeground(new java.awt.Color(255, 255, 255));
-        lblClass.setText("Class mapping:");
+        lblClass.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        lblClass.setForeground(new java.awt.Color(53, 113, 163));
+        lblClass.setText("Mapping for class:");
         lblClass.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         lblClass.setOpaque(true);
         pnlConcept.add(lblClass, java.awt.BorderLayout.NORTH);
@@ -278,6 +279,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         pnlClassUriTemplate.setOpaque(false);
         pnlClassUriTemplate.setLayout(new java.awt.BorderLayout(6, 0));
 
+        txtClassUriTemplate.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         txtClassUriTemplate.setText(getDefaultNamespace(true));
         txtClassUriTemplate.setMargin(new java.awt.Insets(0, 0, 0, 0));
         txtClassUriTemplate.setMinimumSize(new java.awt.Dimension(240, 23));
@@ -311,9 +313,9 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         pnlPropertiesLabel.setMinimumSize(new java.awt.Dimension(63, 30));
         pnlPropertiesLabel.setLayout(new java.awt.BorderLayout());
 
-        lblProperties.setBackground(new java.awt.Color(153, 0, 0));
-        lblProperties.setForeground(new java.awt.Color(255, 255, 255));
-        lblProperties.setText("Property mappings:");
+        lblProperties.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        lblProperties.setForeground(new java.awt.Color(53, 113, 163));
+        lblProperties.setText("Add new property mapping:");
         lblProperties.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         lblProperties.setOpaque(true);
         lblProperties.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

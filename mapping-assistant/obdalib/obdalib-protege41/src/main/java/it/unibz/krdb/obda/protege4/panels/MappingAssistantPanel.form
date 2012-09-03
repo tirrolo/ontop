@@ -109,7 +109,10 @@
                         <Component class="javax.swing.JLabel" name="lblDataSet">
                           <Properties>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                              <Font name="Tahoma" size="11" style="1"/>
+                              <Font name="Tahoma" size="12" style="1"/>
+                            </Property>
+                            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                              <Color blue="a3" green="71" red="35" type="rgb"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="Data Set:"/>
                           </Properties>
@@ -298,13 +301,13 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="lblClass">
                   <Properties>
-                    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                      <Color blue="0" green="0" red="99" type="rgb"/>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Tahoma" size="12" style="1"/>
                     </Property>
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                      <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                      <Color blue="a3" green="71" red="35" type="rgb"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Class mapping:"/>
+                    <Property name="text" type="java.lang.String" value="Mapping for class:"/>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
                         <EmptyBorder bottom="2" left="2" right="2" top="2"/>
@@ -402,6 +405,9 @@
                       <SubComponents>
                         <Component class="javax.swing.JTextField" name="txtClassUriTemplate">
                           <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                              <Font name="Dialog" size="14" style="0"/>
+                            </Property>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                               <Connection code="getDefaultNamespace(true)" type="code"/>
                             </Property>
@@ -469,13 +475,13 @@
                   <SubComponents>
                     <Component class="javax.swing.JLabel" name="lblProperties">
                       <Properties>
-                        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                          <Color blue="0" green="0" red="99" type="rgb"/>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="Tahoma" size="12" style="1"/>
                         </Property>
                         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                          <Color blue="a3" green="71" red="35" type="rgb"/>
                         </Property>
-                        <Property name="text" type="java.lang.String" value="Property mappings:"/>
+                        <Property name="text" type="java.lang.String" value="Add new property mapping:"/>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
                             <EmptyBorder bottom="2" left="2" right="2" top="2"/>
