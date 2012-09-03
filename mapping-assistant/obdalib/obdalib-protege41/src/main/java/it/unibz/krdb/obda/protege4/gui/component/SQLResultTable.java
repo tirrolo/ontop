@@ -1,7 +1,5 @@
 package it.unibz.krdb.obda.protege4.gui.component;
 
-import it.unibz.krdb.obda.gui.swing.treemodel.IncrementalResultSetTableModel;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -33,11 +31,6 @@ public class SQLResultTable extends JTable {
 		JTableHeader tableHeader = getTableHeader();
 		tableHeader.setReorderingAllowed(false);
 		tableHeader.addMouseListener(new ColumnHeaderAdapter(this));
-	}
-	
-	public void clear() {
-		IncrementalResultSetTableModel model = (IncrementalResultSetTableModel) getModel();
-		model.clearTable();
 	}
 	
 	/**
