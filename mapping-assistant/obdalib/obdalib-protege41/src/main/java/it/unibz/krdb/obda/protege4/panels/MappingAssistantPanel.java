@@ -362,13 +362,15 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         add(splMainSplitter, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cmdClearAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdClearAllActionPerformed
-        clearForm();
-    }//GEN-LAST:event_cmdClearAllActionPerformed
+	private void cmdClearAllActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmdClearAllActionPerformed
+		clearForm();
+	}// GEN-LAST:event_cmdClearAllActionPerformed
 
-    private void txtRowCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtRowCountFocusLost
-    	executeQuery();
-	}//GEN-LAST:event_txtRowCountFocusLost
+	private void txtRowCountFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtRowCountFocusLost
+		if (selectedSource != null && !txtQueryEditor.getText().isEmpty()) {
+			executeQuery();
+		}
+	}// GEN-LAST:event_txtRowCountFocusLost
 
     private void txtRowCountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtRowCountKeyPressed
     	int code = evt.getKeyCode();
@@ -618,6 +620,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		selectedSource = newSource;
 		addDatabaseTableToDataSetComboBox();
 		releaseResultset();
+		clearForm();
 	}
 
 	private void addDatabaseTableToDataSetComboBox() {
