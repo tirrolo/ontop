@@ -200,6 +200,16 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         txtRowCount.setToolTipText("Insert the limit for data preview or 0 to present all data");
         txtRowCount.setMinimumSize(new java.awt.Dimension(25, 18));
         txtRowCount.setPreferredSize(new java.awt.Dimension(25, 18));
+        txtRowCount.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtRowCountFocusLost(evt);
+            }
+        });
+        txtRowCount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtRowCountKeyPressed(evt);
+            }
+        });
         pnlResultFilter.add(txtRowCount);
 
         lblRows.setText("rows");
@@ -355,6 +365,17 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
     private void cmdClearAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdClearAllActionPerformed
         clearForm();
     }//GEN-LAST:event_cmdClearAllActionPerformed
+
+    private void txtRowCountFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtRowCountFocusLost
+    	executeQuery();
+	}//GEN-LAST:event_txtRowCountFocusLost
+
+    private void txtRowCountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtRowCountKeyPressed
+    	int code = evt.getKeyCode();
+		if (code == KeyEvent.VK_ENTER) {
+			txtRowCount.transferFocus();
+		}
+    }//GEN-LAST:event_txtRowCountKeyPressed
 
 	private void txtClassUriTemplateFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtClassUriTemplateFocusGained
 		SwingUtilities.invokeLater(new Runnable() {
