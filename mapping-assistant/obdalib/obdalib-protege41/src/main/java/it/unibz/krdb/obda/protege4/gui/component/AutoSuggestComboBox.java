@@ -68,6 +68,9 @@ public class AutoSuggestComboBox extends JComboBox {
 								return;
 							}
 						}
+					} else if (code == KeyEvent.VK_ENTER) {
+						tf.transferFocus();
+						hideFlag = true;
 					}
 				}
 			});
