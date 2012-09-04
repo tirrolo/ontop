@@ -10,7 +10,7 @@ import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 
-public class ValueConstantImpl implements ValueConstant {
+public class ValueConstantImpl extends AbstractLiteral implements ValueConstant {
 
 	/**
 	 * 

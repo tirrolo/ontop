@@ -4,6 +4,7 @@ import it.unibz.krdb.obda.codec.DatalogProgramToTextCodec;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDAConnection;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAException;
@@ -12,14 +13,13 @@ import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.obda.model.OBDAResultSet;
 import it.unibz.krdb.obda.model.OBDAStatement;
 import it.unibz.krdb.obda.model.OperationPredicate;
-import it.unibz.krdb.obda.model.NewLiteral;
+import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.ontology.Assertion;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.EquivalentTriplePredicateIterator;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSDataRepositoryManager;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.QueryVocabularyValidator;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.BooleanOWLOBDARefResultSet;
@@ -27,6 +27,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.resultset.EmptyQueryResultSet;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestResultset;
 import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
 import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
+import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.UnfoldingMechanism;
 import it.unibz.krdb.obda.utils.QueryValidator;
 
@@ -35,7 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -48,8 +49,6 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.hp.hpl.jena.query.QueryException;
 
 /**
  * The obda statement provides the implementations necessary to query the
@@ -170,6 +169,9 @@ public class QuestStatement implements OBDAStatement {
 
 				} else {
 
+					if (strquery.contains("langMatches"))
+						System.out.println("Lang");
+					
 					signature = getSignature(strquery);
 					signaturecache.put(strquery, signature);
 
@@ -185,7 +187,8 @@ public class QuestStatement implements OBDAStatement {
 							throw new OBDAException("Error, invalid query");
 						}
 					} catch (Exception e1) {
-						OBDAException obdaException = new OBDAException("Error in SPARQL query. \n" + e1.getLocalizedMessage());
+						log.debug(e1.getMessage(), e1);
+						OBDAException obdaException = new OBDAException(e1);
 						obdaException.setStackTrace(e1.getStackTrace());
 						throw obdaException;
 					}
@@ -194,6 +197,7 @@ public class QuestStatement implements OBDAStatement {
 					isbooleancache.put(strquery, isBoolean);
 
 					log.debug("Start the rewriting process...");
+//					DatalogProgram rewriting = program;
 					DatalogProgram rewriting;
 					try {
 						rewriting = getRewriting(program);
@@ -361,100 +365,98 @@ public class QuestStatement implements OBDAStatement {
 		DatalogProgram program = null;
 		try {
 			program = SparqlAlgebraToDatalogTranslator.translate(strquery);
-		} catch (QueryException e) {
-			throw e;
+			
+			log.debug("Translated query: \n{}", program.toString());			
+
+			DatalogUnfolder unfolder = new DatalogUnfolder(program.clone(), new HashMap<Predicate, List<Integer>>());
+			removeNonAnswerQueries(program);
+			program = unfolder.unfold(program, "ans1");
+			
+			log.debug("Flattened query: \n{}", program.toString());			
+		} catch (Exception e) {
+			OBDAException ex = new OBDAException(e.getMessage());
+			ex.setStackTrace(e.getStackTrace());
+			
+			throw ex;
 		}
 
-		// if (program == null) { // if the SPARQL translator doesn't work,
-		// // use the Datalog parser.
-		// DatalogProgramParser datalogParser = new DatalogProgramParser();
-		// try {
-		// program = datalogParser.parse(strquery);
-		// } catch (RecognitionException e) {
-		// log.warn(e.getMessage());
-		// program = null;
-		// } catch (IllegalArgumentException e2) {
-		// log.warn(e2.getMessage());
-		// }
-		// }
-
-		// Check the datalog object
-		if (validator != null) {
-			log.debug("Validating the user query...");
-			boolean isValid = validator.validatePredicates(program);
-
-			if (!isValid) {
-				Vector<String> invalidList = validator.getInvalidPredicates();
-
-				String msg = "";
-				for (String predicate : invalidList) {
-					msg += "- " + predicate + "\n";
-				}
-				throw new OBDAException(
-						"Found an unknown classes/properties in the query. \nMake sure all classes/properties in your query have been defined in the ontology. \nOffending entities: \n"
-								+ msg);
-			}
-
-			/*
-			 * Validating variables in the head
-			 */
-			Set<Variable> missingVariables = QueryValidator.getUnboundHeadVariables(program);
-			if (missingVariables.size() != 0) {
-				StringBuffer bf = new StringBuffer();
-				boolean comma = false;
-				for (Variable v : missingVariables) {
-					if (comma)
-						bf.append(", ");
-					bf.append(v.getName());
-					comma = true;
-				}
-				throw new OBDAException(
-						"Found variable(s) in SELECT clause that is not metioned in the WHERE clause. \nOffending variables: "
-								+ bf.toString());
-			}
-
-			/*
-			 * Validating variables in the body (variables in condition
-			 * predicates must appear in a data predicate)
-			 */
-
-			Set<Variable> invalidVariables = new HashSet<Variable>();
-			
-			
-			// Collecting all variables in data predicates
-			Set<Variable> dataVariables = new HashSet<Variable>();
-			for (CQIE rule : program.getRules()) {
-				for (Atom atom : rule.getBody()) {
-					if (atom.getPredicate() instanceof OperationPredicate)
-						continue;
-					Set<Variable> vars = atom.getVariables();
-					dataVariables.addAll(vars);
-				}
-			}
-			
-			// Collecting all variables in operation predicates
-			Set<Variable> conditionedVariables = new HashSet<Variable>();
-			for (CQIE rule : program.getRules()) {
-				for (Atom atom : rule.getBody()) {
-					if (!(atom.getPredicate() instanceof OperationPredicate))
-						continue;
-					Set<Variable> vars = atom.getVariables();
-					conditionedVariables.addAll(vars);
-				}
-			}
-			conditionedVariables.removeAll(dataVariables);
-			
-			if (!conditionedVariables.isEmpty()) {
-				StringBuffer errorMsg = new StringBuffer();
-				errorMsg.append("The following conditioned variables are not bound to a triple pattern: ");
-				for (Variable v: conditionedVariables) {
-					errorMsg.append(v.toString() + " ");
-				}
-				throw new OBDAException(errorMsg.toString());
-			}
-			
-
-		}
+//		// Check the datalog object
+//		if (validator != null) {
+//			log.debug("Validating the user query...");
+//			boolean isValid = validator.validatePredicates(program);
+//
+//			if (!isValid) {
+//				Vector<String> invalidList = validator.getInvalidPredicates();
+//
+//				String msg = "";
+//				for (String predicate : invalidList) {
+//					msg += "- " + predicate + "\n";
+//				}
+//				throw new OBDAException(
+//						"Found an unknown classes/properties in the query. \nMake sure all classes/properties in your query have been defined in the ontology. \nOffending entities: \n"
+//								+ msg);
+//			}
+//
+//			/*
+//			 * Validating variables in the head
+//			 */
+//			Set<Variable> missingVariables = QueryValidator.getUnboundHeadVariables(program);
+//			if (missingVariables.size() != 0) {
+//				StringBuffer bf = new StringBuffer();
+//				boolean comma = false;
+//				for (Variable v : missingVariables) {
+//					if (comma)
+//						bf.append(", ");
+//					bf.append(v.getName());
+//					comma = true;
+//				}
+//				throw new OBDAException(
+//						"Found variable(s) in SELECT clause that is not metioned in the WHERE clause. \nOffending variables: "
+//								+ bf.toString());
+//			}
+//
+//			/*
+//			 * Validating variables in the body (variables in condition
+//			 * predicates must appear in a data predicate)
+//			 */
+//
+//			Set<Variable> invalidVariables = new HashSet<Variable>();
+//			
+//			
+//			// Collecting all variables in data predicates
+//			Set<Variable> dataVariables = new HashSet<Variable>();
+//			for (CQIE rule : program.getRules()) {
+//				for (Atom atom : rule.getBody()) {
+//					if (atom.getPredicate() instanceof OperationPredicate)
+//						continue;
+//					Set<Variable> vars = atom.getVariables();
+//					dataVariables.addAll(vars);
+//				}
+//			}
+//			
+//			// Collecting all variables in operation predicates
+//			Set<Variable> conditionedVariables = new HashSet<Variable>();
+//			for (CQIE rule : program.getRules()) {
+//				for (Atom atom : rule.getBody()) {
+//					if (!(atom.getPredicate() instanceof OperationPredicate))
+//						continue;
+//					Set<Variable> vars = atom.getVariables();
+//					conditionedVariables.addAll(vars);
+//				}
+//			}
+//			conditionedVariables.removeAll(dataVariables);
+//			
+//			if (!conditionedVariables.isEmpty()) {
+//				StringBuffer errorMsg = new StringBuffer();
+//				errorMsg.append("The following conditioned variables are not bound to a triple pattern: ");
+//				for (Variable v: conditionedVariables) {
+//					errorMsg.append(v.toString() + " ");
+//				}
+//				throw new OBDAException(errorMsg.toString());
+//			}
+//			
+//
+//		}
 		log.debug("Replacing equivalences...");
 		program = validator.replaceEquivalences(program);
 
@@ -465,9 +467,27 @@ public class QuestStatement implements OBDAStatement {
 	}
 
 	private DatalogProgram getUnfolding(DatalogProgram query) throws OBDAException {
-		log.debug("Start the unfolding process...");
-		OBDAQuery unfolding = unfoldingmechanism.unfold((DatalogProgram) query);
-		return (DatalogProgram) unfolding;
+		log.debug("Start the partial evaluation process...");
+		DatalogProgram unfolding = unfoldingmechanism.unfold((DatalogProgram) query, "ans1");
+		
+		log.debug("Removing non-answer rules");
+		
+		
+		removeNonAnswerQueries(unfolding);
+		
+		log.debug("Result: \n{}", unfolding);
+		
+		return  unfolding;
+	}
+
+	private void removeNonAnswerQueries(DatalogProgram program) {
+		List<CQIE> toRemove = new LinkedList<CQIE>();
+		for (CQIE rule: program.getRules()) {
+			if (!rule.getHead().getPredicate().getName().toString().equals("ans1")) {
+				toRemove.add(rule);
+			}
+		}
+		program.removeRules(toRemove);
 	}
 
 	private String getSQL(DatalogProgram query, List<String> signature) throws OBDAException {
@@ -475,6 +495,8 @@ public class QuestStatement implements OBDAStatement {
 			return "";
 		log.debug("Producing the SQL string...");
 		String sql = querygenerator.generateSourceQuery((DatalogProgram) query, signature);
+		
+		log.debug("Resulting sql: \n{}", sql);
 		return sql;
 	}
 
@@ -709,6 +731,10 @@ public class QuestStatement implements OBDAStatement {
 	private List<String> getSignature(String query) throws OBDAException {
 		List<String> signature = SparqlAlgebraToDatalogTranslator.getSignature(query);
 		return signature;
+	}
+	
+	private boolean isBoolean(String query) {
+		return SparqlAlgebraToDatalogTranslator.isBoolean(query);
 	}
 
 	@Override

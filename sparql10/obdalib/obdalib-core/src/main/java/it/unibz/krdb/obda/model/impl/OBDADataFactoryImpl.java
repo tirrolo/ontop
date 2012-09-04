@@ -5,20 +5,21 @@ import it.unibz.krdb.obda.model.BNode;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDADataSource;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.obda.model.OBDARDBMappingAxiom;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.NewLiteral;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 
 import java.net.URI;
 import java.security.InvalidParameterException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -170,7 +171,7 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 	}
 
 	@Override
-	public DatalogProgram getDatalogProgram(List<CQIE> rules) {
+	public DatalogProgram getDatalogProgram(Collection<CQIE> rules) {
 		DatalogProgram p = new DatalogProgramImpl();
 		p.appendRule(rules);
 		return p;
@@ -481,6 +482,12 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 	public Function getIsNotNullFunction(NewLiteral term) {
 		return getFunctionalTerm(OBDAVocabulary.IS_NOT_NULL, term);
 	}
+
+	@Override
+	public Function getLANGMATCHESFunction(NewLiteral term1, NewLiteral term2) {
+		return getFunctionalTerm(OBDAVocabulary.SPARQL_LANGMATCHES, term1, term2);
+	}
+
 
 	@Override
 	public OBDADataSource getJDBCDataSource(String jdbcurl, String username, String password, String driverclass) {

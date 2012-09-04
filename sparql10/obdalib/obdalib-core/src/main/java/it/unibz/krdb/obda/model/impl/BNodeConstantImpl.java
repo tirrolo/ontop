@@ -11,7 +11,7 @@ import it.unibz.krdb.obda.model.Variable;
 /**
  * Implementation for BNodes.
  */
-public class BNodeConstantImpl implements BNode {
+public class BNodeConstantImpl extends AbstractLiteral implements BNode {
 
 	/**
 	 * 

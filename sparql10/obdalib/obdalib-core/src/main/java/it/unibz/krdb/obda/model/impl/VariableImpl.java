@@ -9,7 +9,7 @@ import java.util.Set;
 
 import com.sun.msv.datatype.xsd.XSDatatype;
 
-public class VariableImpl implements Variable {
+public class VariableImpl extends AbstractLiteral implements Variable {
 
 	/**
 	 * 

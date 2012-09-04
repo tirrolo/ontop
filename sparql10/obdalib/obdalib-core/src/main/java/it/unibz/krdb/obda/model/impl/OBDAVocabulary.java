@@ -118,6 +118,9 @@ public class OBDAVocabulary {
 	public static final String PREFIX_QUEST = "quest:";
 	
 	
+	
+	
+	
 
 	/* Built-in function URIs */
 
@@ -126,4 +129,20 @@ public class OBDAVocabulary {
 
 	// The name of the function that creates URI's in Quest
 	public static final String QUEST_BNODE = "http://obda.org/quest#bnode";
+	
+	
+	/* SPARQL Algebra vocabulary */
+	
+	public static final String SPARQL_JOIN_URI = "Join";
+	
+	public static final String SPARQL_LEFTJOIN_URI = "LeftJoin";
+	
+	public static final String SPARQL_LANGMATCHES_URI = "LangMatches";
+	
+	public static final Predicate SPARQL_JOIN = new AlgebraOperatorPredicateImpl(URI.create(SPARQL_JOIN_URI), COL_TYPE.STRING);
+
+	public static final Predicate SPARQL_LANGMATCHES = new BooleanOperationPredicateImpl(URI.create(SPARQL_LANGMATCHES_URI), 2);
+
+	
+	
 }

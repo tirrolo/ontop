@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * Provides a storage to put the URI constant.
  */
-public class URIConstantImpl implements URIConstant {
+public class URIConstantImpl extends AbstractLiteral implements URIConstant {
 
 	/**
 	 * 

@@ -7,7 +7,7 @@ import java.util.Set;
 
 import it.unibz.krdb.obda.model.Variable;
 
-public class AnonymousVariable implements Variable {
+public class AnonymousVariable extends AbstractLiteral implements Variable {
 
 	/**
 	 * 

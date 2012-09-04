@@ -1,5 +1,8 @@
 package it.unibz.krdb.obda.owlrefplatform.core;
 
+import it.unibz.krdb.obda.model.Atom;
+import it.unibz.krdb.obda.model.BooleanOperationPredicate;
+import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDADataSource;
@@ -40,7 +43,9 @@ import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.UnfoldingMechanism;
 import it.unibz.krdb.obda.utils.MappingAnalyzer;
 import it.unibz.krdb.sql.DBMetadata;
+import it.unibz.krdb.sql.DataDefinition;
 import it.unibz.krdb.sql.JDBCConnectionManager;
+import it.unibz.krdb.sql.api.Attribute;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -50,6 +55,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -161,26 +167,25 @@ public class Quest implements Serializable {
 	private String aboxJdbcDriver;
 
 	private Iterator<Assertion> aboxIterator;
-	
+
 	Map<String, String> querycache = new HashMap<String, String>();
-	
+
 	Map<String, List<String>> signaturecache = new HashMap<String, List<String>>();
-	
+
 	Map<String, Boolean> isbooleancache = new HashMap<String, Boolean>();
 
-
-	protected Map<String,String> getSQLCache() {
+	protected Map<String, String> getSQLCache() {
 		return querycache;
 	}
-	
-	protected Map<String,List<String>> getSignatureCache() {
+
+	protected Map<String, List<String>> getSignatureCache() {
 		return signaturecache;
 	}
-	
-	protected Map<String,Boolean> getIsBooleanCache() {
+
+	protected Map<String, Boolean> getIsBooleanCache() {
 		return isbooleancache;
 	}
-	
+
 	public void loadOBDAModel(OBDAModel model) {
 		isClassified = false;
 		inputOBDAModel = (OBDAModel) model.clone();
@@ -270,20 +275,28 @@ public class Quest implements Serializable {
 	public void setPreferences(Properties preferences) {
 		this.preferences = preferences;
 
-		reformulationTechnique = (String) preferences.get(QuestPreferences.REFORMULATION_TECHNIQUE);
-		bOptimizeEquivalences = Boolean.valueOf((String) preferences.get(QuestPreferences.OPTIMIZE_EQUIVALENCES));
-		bOptimizeTBoxSigma = Boolean.valueOf((String) preferences.get(QuestPreferences.OPTIMIZE_TBOX_SIGMA));
-		bObtainFromOntology = Boolean.valueOf((String) preferences.get(QuestPreferences.OBTAIN_FROM_ONTOLOGY));
-		bObtainFromMappings = Boolean.valueOf((String) preferences.get(QuestPreferences.OBTAIN_FROM_MAPPINGS));
+		reformulationTechnique = (String) preferences
+				.get(QuestPreferences.REFORMULATION_TECHNIQUE);
+		bOptimizeEquivalences = Boolean.valueOf((String) preferences
+				.get(QuestPreferences.OPTIMIZE_EQUIVALENCES));
+		bOptimizeTBoxSigma = Boolean.valueOf((String) preferences
+				.get(QuestPreferences.OPTIMIZE_TBOX_SIGMA));
+		bObtainFromOntology = Boolean.valueOf((String) preferences
+				.get(QuestPreferences.OBTAIN_FROM_ONTOLOGY));
+		bObtainFromMappings = Boolean.valueOf((String) preferences
+				.get(QuestPreferences.OBTAIN_FROM_MAPPINGS));
 		unfoldingMode = (String) preferences.get(QuestPreferences.ABOX_MODE);
 		dbType = (String) preferences.get(QuestPreferences.DBTYPE);
-		inmemory = preferences.getProperty(QuestPreferences.STORAGE_LOCATION).equals(QuestConstants.INMEMORY);
+		inmemory = preferences.getProperty(QuestPreferences.STORAGE_LOCATION)
+				.equals(QuestConstants.INMEMORY);
 
 		if (!inmemory) {
 			aboxJdbcURL = preferences.getProperty(QuestPreferences.JDBC_URL);
 			aboxJdbcUser = preferences.getProperty(QuestPreferences.DBUSER);
-			aboxJdbcPassword = preferences.getProperty(QuestPreferences.DBPASSWORD);
-			aboxJdbcDriver = preferences.getProperty(QuestPreferences.JDBC_DRIVER);
+			aboxJdbcPassword = preferences
+					.getProperty(QuestPreferences.DBPASSWORD);
+			aboxJdbcDriver = preferences
+					.getProperty(QuestPreferences.JDBC_DRIVER);
 		}
 
 		log.info("Quest configuration:");
@@ -294,8 +307,10 @@ public class Quest implements Serializable {
 		if (!unfoldingMode.equals("virtual")) {
 			log.info("Use in-memory database: {}", inmemory);
 			log.info("Schema configuration: {}", dbType);
-			log.info("Get ABox assertions from OBDA models: {}", bObtainFromMappings);
-			log.info("Get ABox assertions from ontology: {}", bObtainFromOntology);
+			log.info("Get ABox assertions from OBDA models: {}",
+					bObtainFromMappings);
+			log.info("Get ABox assertions from ontology: {}",
+					bObtainFromOntology);
 		}
 
 		// for (Object key : preferences.keySet()) {
@@ -316,10 +331,14 @@ public class Quest implements Serializable {
 		if (localConnection != null && !localConnection.isClosed())
 			return true;
 
-		String url = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_URL);
-		String username = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_USERNAME);
-		String password = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_PASSWORD);
-		String driver = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER);
+		String url = obdaSource
+				.getParameter(RDBMSourceParameterConstants.DATABASE_URL);
+		String username = obdaSource
+				.getParameter(RDBMSourceParameterConstants.DATABASE_USERNAME);
+		String password = obdaSource
+				.getParameter(RDBMSourceParameterConstants.DATABASE_PASSWORD);
+		String driver = obdaSource
+				.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER);
 
 		try {
 			Class.forName(driver);
@@ -357,8 +376,10 @@ public class Quest implements Serializable {
 		 * Input checking (we need to extend this)
 		 */
 
-		if (unfoldingMode.equals(QuestConstants.VIRTUAL) && inputOBDAModel == null) {
-			throw new Exception("ERROR: Working in virtual mode but no OBDA model has been defined.");
+		if (unfoldingMode.equals(QuestConstants.VIRTUAL)
+				&& inputOBDAModel == null) {
+			throw new Exception(
+					"ERROR: Working in virtual mode but no OBDA model has been defined.");
 		}
 
 		/*
@@ -382,7 +403,8 @@ public class Quest implements Serializable {
 		if (bOptimizeEquivalences) {
 			// log.debug("Equivalence optimization. Input ontology: {}",
 			// inputTBox.toString());
-			EquivalenceTBoxOptimizer equiOptimizer = new EquivalenceTBoxOptimizer(inputTBox);
+			EquivalenceTBoxOptimizer equiOptimizer = new EquivalenceTBoxOptimizer(
+					inputTBox);
 			equiOptimizer.optimize();
 
 			/* This generates a new TBox with a simpler vocabulary */
@@ -415,39 +437,70 @@ public class Quest implements Serializable {
 				if (inmemory) {
 					// log.debug("Using in an memory database");
 					String driver = "org.h2.Driver";
-					String url = "jdbc:h2:mem:questrepository:" + System.currentTimeMillis();
+					String url = "jdbc:h2:mem:questrepository:"
+							+ System.currentTimeMillis();
 					String username = "sa";
 					String password = "";
 
-					obdaSource = fac.getDataSource(URI.create("http://www.obda.org/ABOXDUMP" + System.currentTimeMillis()));
-					obdaSource.setParameter(RDBMSourceParameterConstants.DATABASE_DRIVER, driver);
-					obdaSource.setParameter(RDBMSourceParameterConstants.DATABASE_PASSWORD, password);
-					obdaSource.setParameter(RDBMSourceParameterConstants.DATABASE_URL, url);
-					obdaSource.setParameter(RDBMSourceParameterConstants.DATABASE_USERNAME, username);
-					obdaSource.setParameter(RDBMSourceParameterConstants.IS_IN_MEMORY, "true");
-					obdaSource.setParameter(RDBMSourceParameterConstants.USE_DATASOURCE_FOR_ABOXDUMP, "true");
+					obdaSource = fac.getDataSource(URI
+							.create("http://www.obda.org/ABOXDUMP"
+									+ System.currentTimeMillis()));
+					obdaSource.setParameter(
+							RDBMSourceParameterConstants.DATABASE_DRIVER,
+							driver);
+					obdaSource.setParameter(
+							RDBMSourceParameterConstants.DATABASE_PASSWORD,
+							password);
+					obdaSource.setParameter(
+							RDBMSourceParameterConstants.DATABASE_URL, url);
+					obdaSource.setParameter(
+							RDBMSourceParameterConstants.DATABASE_USERNAME,
+							username);
+					obdaSource.setParameter(
+							RDBMSourceParameterConstants.IS_IN_MEMORY, "true");
+					obdaSource
+							.setParameter(
+									RDBMSourceParameterConstants.USE_DATASOURCE_FOR_ABOXDUMP,
+									"true");
 
 				} else {
-					obdaSource = fac.getDataSource(URI.create("http://www.obda.org/ABOXDUMP" + System.currentTimeMillis()));
-					obdaSource.setParameter(RDBMSourceParameterConstants.DATABASE_DRIVER, aboxJdbcDriver);
-					obdaSource.setParameter(RDBMSourceParameterConstants.DATABASE_PASSWORD, aboxJdbcPassword);
-					obdaSource.setParameter(RDBMSourceParameterConstants.DATABASE_URL, aboxJdbcURL);
-					obdaSource.setParameter(RDBMSourceParameterConstants.DATABASE_USERNAME, aboxJdbcUser);
-					obdaSource.setParameter(RDBMSourceParameterConstants.IS_IN_MEMORY, "false");
-					obdaSource.setParameter(RDBMSourceParameterConstants.USE_DATASOURCE_FOR_ABOXDUMP, "true");
+					obdaSource = fac.getDataSource(URI
+							.create("http://www.obda.org/ABOXDUMP"
+									+ System.currentTimeMillis()));
+					obdaSource.setParameter(
+							RDBMSourceParameterConstants.DATABASE_DRIVER,
+							aboxJdbcDriver);
+					obdaSource.setParameter(
+							RDBMSourceParameterConstants.DATABASE_PASSWORD,
+							aboxJdbcPassword);
+					obdaSource.setParameter(
+							RDBMSourceParameterConstants.DATABASE_URL,
+							aboxJdbcURL);
+					obdaSource.setParameter(
+							RDBMSourceParameterConstants.DATABASE_USERNAME,
+							aboxJdbcUser);
+					obdaSource.setParameter(
+							RDBMSourceParameterConstants.IS_IN_MEMORY, "false");
+					obdaSource
+							.setParameter(
+									RDBMSourceParameterConstants.USE_DATASOURCE_FOR_ABOXDUMP,
+									"true");
 				}
 
 				connect();
 
 				if (dbType.equals(QuestConstants.SEMANTIC)) {
-					dataRepository = new RDBMSSIRepositoryManager(reformulationOntology.getVocabulary());
+					dataRepository = new RDBMSSIRepositoryManager(
+							reformulationOntology.getVocabulary());
 
 				} else if (dbType.equals(QuestConstants.DIRECT)) {
-					dataRepository = new RDBMSDirectDataRepositoryManager(reformulationOntology.getVocabulary());
+					dataRepository = new RDBMSDirectDataRepositoryManager(
+							reformulationOntology.getVocabulary());
 
 				} else {
-					throw new Exception(dbType
-							+ " is unknown or not yet supported Data Base type. Currently only the direct db type is supported");
+					throw new Exception(
+							dbType
+									+ " is unknown or not yet supported Data Base type. Currently only the direct db type is supported");
 				}
 				dataRepository.setTBox(reformulationOntology);
 
@@ -461,9 +514,11 @@ public class Quest implements Serializable {
 				/* Setting up the OBDA model */
 
 				unfoldingOBDAModel.addSource(obdaSource);
-				unfoldingOBDAModel.addMappings(obdaSource.getSourceID(), dataRepository.getMappings());
+				unfoldingOBDAModel.addMappings(obdaSource.getSourceID(),
+						dataRepository.getMappings());
 
-				for (Axiom axiom : dataRepository.getABoxDependencies().getAssertions()) {
+				for (Axiom axiom : dataRepository.getABoxDependencies()
+						.getAssertions()) {
 					sigma.addEntities(axiom.getReferencedEntities());
 					sigma.addAssertion(axiom);
 				}
@@ -472,24 +527,30 @@ public class Quest implements Serializable {
 
 				// log.debug("Working in virtual mode");
 
-				Collection<OBDADataSource> sources = this.inputOBDAModel.getSources();
+				Collection<OBDADataSource> sources = this.inputOBDAModel
+						.getSources();
 				if (sources == null || sources.size() == 0) {
 					throw new Exception(
 							"No datasource has been defined. Virtual ABox mode requires exactly 1 data source in your OBDA model.");
 				} else if (sources.size() > 1) {
 					throw new Exception(
 							"Quest in virtual ABox mode only supports OBDA models with 1 single data source. Your OBDA model contains "
-									+ sources.size() + " data sources. Please remove the aditional sources.");
+									+ sources.size()
+									+ " data sources. Please remove the aditional sources.");
 				} else {
 
 					/* Setting up the OBDA model */
 
 					obdaSource = sources.iterator().next();
 
-					String url = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_URL);
-					String username = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_USERNAME);
-					String password = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_PASSWORD);
-					String driver = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER);
+					String url = obdaSource
+							.getParameter(RDBMSourceParameterConstants.DATABASE_URL);
+					String username = obdaSource
+							.getParameter(RDBMSourceParameterConstants.DATABASE_USERNAME);
+					String password = obdaSource
+							.getParameter(RDBMSourceParameterConstants.DATABASE_PASSWORD);
+					String driver = obdaSource
+							.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER);
 
 					log.debug("Testing DB connection...");
 					connect();
@@ -502,10 +563,13 @@ public class Quest implements Serializable {
 					 */
 
 					MappingVocabularyTranslator mtrans = new MappingVocabularyTranslator();
-					Collection<OBDAMappingAxiom> newMappings = mtrans.translateMappings(
-							this.inputOBDAModel.getMappings(obdaSource.getSourceID()), equivalenceMaps);
+					Collection<OBDAMappingAxiom> newMappings = mtrans
+							.translateMappings(this.inputOBDAModel
+									.getMappings(obdaSource.getSourceID()),
+									equivalenceMaps);
 
-					unfoldingOBDAModel.addMappings(obdaSource.getSourceID(), newMappings);
+					unfoldingOBDAModel.addMappings(obdaSource.getSourceID(),
+							newMappings);
 				}
 
 			}
@@ -515,34 +579,42 @@ public class Quest implements Serializable {
 			OBDADataSource datasource = unfoldingOBDAModel.getSources().get(0);
 			URI sourceId = datasource.getSourceID();
 
-			DBMetadata metadata = JDBCConnectionManager.getMetaData(localConnection);
-			MappingAnalyzer analyzer = new MappingAnalyzer(unfoldingOBDAModel.getMappings(sourceId), metadata);
+			DBMetadata metadata = JDBCConnectionManager
+					.getMetaData(localConnection);
+			MappingAnalyzer analyzer = new MappingAnalyzer(
+					unfoldingOBDAModel.getMappings(sourceId), metadata);
 			unfoldingProgram = analyzer.constructDatalogProgram();
 
 			/***
 			 * Adding ABox as facts in the unfolding program
 			 */
 			if (unfoldingMode.equals(QuestConstants.VIRTUAL)) {
-				ABoxToFactConverter.addFacts(this.aboxIterator, unfoldingProgram, this.equivalenceMaps);
+				ABoxToFactConverter.addFacts(this.aboxIterator,
+						unfoldingProgram, this.equivalenceMaps);
 			}
 			/*
 			 * T-mappings implementation
 			 */
 			if (unfoldingMode.equals(QuestConstants.VIRTUAL)
-					|| (unfoldingMode.equals(QuestConstants.CLASSIC) && dbType.equals(QuestConstants.DIRECT))) {
+					|| (unfoldingMode.equals(QuestConstants.CLASSIC) && dbType
+							.equals(QuestConstants.DIRECT))) {
 				// log.debug("Setting up T-Mappings");
-				TMappingProcessor tmappingProc = new TMappingProcessor(reformulationOntology);
+				TMappingProcessor tmappingProc = new TMappingProcessor(
+						reformulationOntology);
 				unfoldingProgram = tmappingProc.getTMappings(unfoldingProgram);
 				// log.debug("Resulting mappings: {}",
 				// unfoldingProgram.getRules().size());
-				sigma.addEntities(tmappingProc.getABoxDependencies().getVocabulary());
-				sigma.addAssertions(tmappingProc.getABoxDependencies().getAssertions());
+				sigma.addEntities(tmappingProc.getABoxDependencies()
+						.getVocabulary());
+				sigma.addAssertions(tmappingProc.getABoxDependencies()
+						.getAssertions());
 			}
 
 			/*
 			 * Eliminating redundancy from the unfolding program
 			 */
-			unfoldingProgram = DatalogNormalizer.normalizeDatalogProgram(unfoldingProgram);
+			unfoldingProgram = DatalogNormalizer
+					.normalizeDatalogProgram(unfoldingProgram);
 
 			int unprsz = unfoldingProgram.getRules().size();
 			CQCUtilities.removeContainedQueriesSorted(unfoldingProgram, true);
@@ -552,35 +624,72 @@ public class Quest implements Serializable {
 			/*
 			 * Adding data typing on the mapping axioms.
 			 */
-			MappingDataTypeRepair typeRepair = new MappingDataTypeRepair(metadata);
+			MappingDataTypeRepair typeRepair = new MappingDataTypeRepair(
+					metadata);
 			typeRepair.insertDataTyping(unfoldingProgram);
 
 			/*
 			 * Setting up the unfolder and SQL generation
 			 */
-			unfolder = new DatalogUnfolder(unfoldingProgram, metadata);
-			JDBCUtility jdbcutil = new JDBCUtility(datasource.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER));
-			SQLDialectAdapter sqladapter = SQLAdapterFactory.getSQLDialectAdapter(datasource
-					.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER));
-			datasourceQueryGenerator = new SQLGenerator(metadata, jdbcutil, sqladapter);
+
+			/*
+			 * Collecting primary key data
+			 */
+			Map<Predicate, List<Integer>> pkeys = new HashMap<Predicate, List<Integer>>();
+			for (CQIE mapping : unfoldingProgram.getRules()) {
+				for (Atom newatom : mapping.getBody()) {
+					Predicate newAtomPredicate = newatom.getPredicate();
+					if (newAtomPredicate instanceof BooleanOperationPredicate) {
+						continue;
+					}
+					String newAtomName = newAtomPredicate.toString();
+					DataDefinition def = metadata.getDefinition(newAtomName);
+					List<Integer> pkeyIdx = new LinkedList<Integer>();
+					for (int columnidx = 1; columnidx <= def.countAttribute(); columnidx++) {
+						Attribute column = def.getAttribute(columnidx);
+						if (column.bPrimaryKey) {
+							pkeyIdx.add(columnidx);
+						}
+
+					}
+					if (!pkeyIdx.isEmpty()) {
+						pkeys.put(newatom.getPredicate(), pkeyIdx);
+					}
+
+				}
+			}
+
+			unfolder = new DatalogUnfolder(unfoldingProgram, pkeys);
+			JDBCUtility jdbcutil = new JDBCUtility(
+					datasource
+							.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER));
+			SQLDialectAdapter sqladapter = SQLAdapterFactory
+					.getSQLDialectAdapter(datasource
+							.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER));
+			datasourceQueryGenerator = new SQLGenerator(metadata, jdbcutil,
+					sqladapter);
 
 			/*
 			 * Setting up the TBox we will use for the reformulation
 			 */
 			if (bOptimizeTBoxSigma) {
-				SigmaTBoxOptimizer reducer = new SigmaTBoxOptimizer(reformulationOntology, sigma);
+				SigmaTBoxOptimizer reducer = new SigmaTBoxOptimizer(
+						reformulationOntology, sigma);
 				reformulationOntology = reducer.getReducedOntology();
 			}
 
 			/*
 			 * Setting up the reformulation engine
 			 */
-			if (QuestConstants.PERFECTREFORMULATION.equals(reformulationTechnique)) {
+			if (QuestConstants.PERFECTREFORMULATION
+					.equals(reformulationTechnique)) {
 				rewriter = new DLRPerfectReformulator();
 			} else if (QuestConstants.UCQBASED.equals(reformulationTechnique)) {
 				rewriter = new TreeRedReformulator();
 			} else {
-				throw new IllegalArgumentException("Invalid value for argument: " + QuestPreferences.REFORMULATION_TECHNIQUE);
+				throw new IllegalArgumentException(
+						"Invalid value for argument: "
+								+ QuestPreferences.REFORMULATION_TECHNIQUE);
 			}
 
 			rewriter.setTBox(reformulationOntology);
@@ -589,7 +698,8 @@ public class Quest implements Serializable {
 			/*
 			 * Done, sending a new reasoner with the modules we just configured
 			 */
-			vocabularyValidator = new QueryVocabularyValidator(reformulationOntology, equivalenceMaps);
+			vocabularyValidator = new QueryVocabularyValidator(
+					reformulationOntology, equivalenceMaps);
 
 			log.debug("... Quest has been initialized.");
 			isClassified = true;
@@ -631,10 +741,14 @@ public class Quest implements Serializable {
 
 		Connection conn;
 
-		String url = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_URL);
-		String username = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_USERNAME);
-		String password = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_PASSWORD);
-		String driver = obdaSource.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER);
+		String url = obdaSource
+				.getParameter(RDBMSourceParameterConstants.DATABASE_URL);
+		String username = obdaSource
+				.getParameter(RDBMSourceParameterConstants.DATABASE_USERNAME);
+		String password = obdaSource
+				.getParameter(RDBMSourceParameterConstants.DATABASE_PASSWORD);
+		String driver = obdaSource
+				.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER);
 
 		try {
 			Class.forName(driver);

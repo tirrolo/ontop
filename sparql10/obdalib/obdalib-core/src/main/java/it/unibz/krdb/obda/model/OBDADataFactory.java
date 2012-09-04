@@ -4,6 +4,7 @@ import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 
 import com.sun.msv.datatype.xsd.XSDatatype;
@@ -28,7 +29,7 @@ public interface OBDADataFactory extends Serializable {
 
 	public DatalogProgram getDatalogProgram(CQIE rule);
 
-	public DatalogProgram getDatalogProgram(List<CQIE> rules);
+	public DatalogProgram getDatalogProgram(Collection<CQIE> rules);
 
 	/**
 	 * Construct a {@link Predicate} object.
@@ -118,6 +119,9 @@ public interface OBDADataFactory extends Serializable {
 	public Atom getIsNullAtom(NewLiteral term);
 	
 	public Atom getIsNotNullAtom(NewLiteral term);
+	
+	
+
 
 	/*
 	 * Boolean function terms
@@ -152,6 +156,8 @@ public interface OBDADataFactory extends Serializable {
 	public Function getIsNullFunction(NewLiteral term);
 	
 	public Function getIsNotNullFunction(NewLiteral term);
+	
+	public Function getLANGMATCHESFunction(NewLiteral term1, NewLiteral term2);
 	
 	/*
 	 * JDBC objects
@@ -293,4 +299,5 @@ public interface OBDADataFactory extends Serializable {
 	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String sql, OBDAQuery targetQuery);
 
 	public OBDASQLQuery getSQLQuery(String query);
+
 }

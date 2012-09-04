@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class FunctionalTermImpl implements Function, ListListener {
+public class FunctionalTermImpl extends AbstractLiteral implements Function, ListListener {
 
 	/**
 	 * 
@@ -46,6 +46,9 @@ public class FunctionalTermImpl implements Function, ListListener {
 
 		EventGeneratingLinkedList<NewLiteral> eventlist = new EventGeneratingLinkedList<NewLiteral>();
 		eventlist.addAll(terms);
+		for (NewLiteral t: terms) {
+			t.setParent(this);
+		}
 
 		this.terms = eventlist;
 

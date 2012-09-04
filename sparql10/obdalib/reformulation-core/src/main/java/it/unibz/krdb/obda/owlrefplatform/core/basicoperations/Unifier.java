@@ -37,7 +37,8 @@ import java.util.Map;
  */
 public class Unifier {
 
-	public static Map<Variable, NewLiteral> getMGU(CQIE q, int position1, int position2) throws Exception {
+	public static Map<Variable, NewLiteral> getMGU(CQIE q, int position1,
+			int position2) throws Exception {
 		return getMGU(q.getBody().get(position1), q.getBody().get(position2));
 	}
 
@@ -56,7 +57,8 @@ public class Unifier {
 	 */
 	public static CQIE unify(CQIE q, int i, int j) {
 
-		Map<Variable, NewLiteral> mgu = getMGU(q.getBody().get(i), q.getBody().get(j));
+		Map<Variable, NewLiteral> mgu = getMGU(q.getBody().get(i), q.getBody()
+				.get(j));
 		if (mgu == null)
 			return null;
 
@@ -89,7 +91,8 @@ public class Unifier {
 	 * @param unifier
 	 * @return
 	 */
-	private static Atom unify(Atom atom1, Atom atom2, Map<Variable, NewLiteral> unifier) {
+	private static Atom unify(Function atom1, Atom atom2,
+			Map<Variable, NewLiteral> unifier) {
 		Atom newatom = (Atom) atom1.clone();
 		for (int i = 0; i < atom1.getTerms().size(); i++) {
 			NewLiteral t1 = atom1.getTerms().get(i);
@@ -112,8 +115,14 @@ public class Unifier {
 	 * @param unifier
 	 * @return
 	 */
-	public static CQIE applyUnifier(CQIE q, Map<Variable, NewLiteral> unifier) {
-		CQIE newq = q.clone();
+	public static CQIE applyUnifier(CQIE q, Map<Variable, NewLiteral> unifier,
+			boolean clone) {
+
+		CQIE newq = null;
+		if (clone)
+			newq = q.clone();
+		else
+			newq = q;
 
 		/* applying the unifier to every term in the head */
 		Atom head = newq.getHead();
@@ -124,28 +133,38 @@ public class Unifier {
 		return newq;
 	}
 
-	/**
-	 * This method will apply the substitution in the unifier to all the terms
-	 * of the atom. If nested terms occur, it will apply the unifier to ONLY the
-	 * first level of nesting.
-	 * 
-	 * Note that this method will actually change the list of terms of the atom,
-	 * replacing variables in the domain of the unifier with their substitution
-	 * term.
-	 * 
-	 * @param atom
-	 * @param unifier
-	 */
-	public static void applyUnifier(Atom atom, Map<Variable, NewLiteral> unifier) {
-		applyUnifier(atom.getTerms(), unifier);
+	public static CQIE applyUnifier(CQIE q, Map<Variable, NewLiteral> unifier) {
+		return applyUnifier(q, unifier, true);
 	}
 
-	public static void applyUnifier(Function term, Map<Variable, NewLiteral> unifier) {
+	// /**
+	// * This method will apply the substitution in the unifier to all the terms
+	// * of the atom. If nested terms occur, it will apply the unifier to ONLY
+	// the
+	// * first level of nesting.
+	// *
+	// * Note that this method will actually change the list of terms of the
+	// atom,
+	// * replacing variables in the domain of the unifier with their
+	// substitution
+	// * term.
+	// *
+	// * @param atom
+	// * @param unifier
+	// */
+	// public static void applyUnifier(Atom atom, Map<Variable, NewLiteral>
+	// unifier) {
+	// applyUnifier(atom.getTerms(), unifier);
+	// }
+
+	public static void applyUnifier(Function term,
+			Map<Variable, NewLiteral> unifier) {
 		List<NewLiteral> terms = term.getTerms();
 		applyUnifier(terms, unifier);
 	}
 
-	public static void applyUnifier(List<NewLiteral> terms, Map<Variable, NewLiteral> unifier) {
+	public static void applyUnifier(List<NewLiteral> terms,
+			Map<Variable, NewLiteral> unifier) {
 		for (int i = 0; i < terms.size(); i++) {
 			NewLiteral t = terms.get(i);
 			/*
@@ -172,16 +191,18 @@ public class Unifier {
 	 * @param secondAtom
 	 * @return
 	 */
-	public static Map<Variable, NewLiteral> getMGU(Atom first, Atom second) {
+	public static Map<Variable, NewLiteral> getMGU(Function first,
+			Function second) {
 
-		Atom firstAtom = (Atom) first;
-		Atom secondAtom = (Atom) second;
+		Function firstAtom = (Function) first.clone();
+		Function secondAtom = (Function) second.clone();
 
 		/*
 		 * Basic case, predicates are different or their arity is different,
 		 * then no unifier
 		 */
-		if (!(firstAtom.getPredicate().equals(secondAtom.getPredicate())) || firstAtom.getArity() != secondAtom.getArity()) {
+		if (!(firstAtom.getPredicate().equals(secondAtom.getPredicate()))
+				|| firstAtom.getArity() != secondAtom.getArity()) {
 			return null;
 
 		}
@@ -189,8 +210,10 @@ public class Unifier {
 		/* Computing the disagreement set */
 
 		int arity = firstAtom.getPredicate().getArity();
-		List<NewLiteral> terms1 = new ArrayList<NewLiteral>(firstAtom.getTerms());
-		List<NewLiteral> terms2 = new ArrayList<NewLiteral>(secondAtom.getTerms());
+		List<NewLiteral> terms1 = new ArrayList<NewLiteral>(
+				firstAtom.getTerms());
+		List<NewLiteral> terms2 = new ArrayList<NewLiteral>(
+				secondAtom.getTerms());
 
 		Map<Variable, NewLiteral> mgu = new HashMap<Variable, NewLiteral>();
 
@@ -218,7 +241,8 @@ public class Unifier {
 			 * nested.
 			 */
 
-			if ((term1 instanceof FunctionalTermImpl) && (term2 instanceof FunctionalTermImpl)) {
+			if ((term1 instanceof FunctionalTermImpl)
+					&& (term2 instanceof FunctionalTermImpl)) {
 				/*
 				 * if both of them are a function term then we need to do some
 				 * check in the inner terms, else we can give it to the MGU
@@ -226,7 +250,8 @@ public class Unifier {
 				 */
 				FunctionalTermImpl fterm1 = (FunctionalTermImpl) term1;
 				FunctionalTermImpl fterm2 = (FunctionalTermImpl) term2;
-				if (!fterm1.getFunctionSymbol().equals(fterm2.getFunctionSymbol())) {
+				if (!fterm1.getFunctionSymbol().equals(
+						fterm2.getFunctionSymbol())) {
 					return null;
 				}
 				if (fterm1.getTerms().size() != fterm2.getTerms().size()) {
@@ -298,7 +323,8 @@ public class Unifier {
 	 * @param The
 	 *            substitution to compose
 	 */
-	public static void composeUnifiers(Map<Variable, NewLiteral> unifier, Substitution s) {
+	public static void composeUnifiers(Map<Variable, NewLiteral> unifier,
+			Substitution s) {
 		List<Variable> forRemoval = new LinkedList<Variable>();
 		for (Variable v : unifier.keySet()) {
 			NewLiteral t = unifier.get(v);
@@ -347,9 +373,11 @@ public class Unifier {
 	 * @param term2
 	 * @return
 	 */
-	public static Substitution getSubstitution(NewLiteral term1, NewLiteral term2) {
+	public static Substitution getSubstitution(NewLiteral term1,
+			NewLiteral term2) {
 
-		if (!(term1 instanceof VariableImpl) && !(term2 instanceof VariableImpl)) {
+		if (!(term1 instanceof VariableImpl)
+				&& !(term2 instanceof VariableImpl)) {
 			/*
 			 * none is a variable, impossible to unify unless the two terms are
 			 * equal, in which case there the substitution is empty
@@ -398,7 +426,8 @@ public class Unifier {
 				return new Substitution(t1, t2);
 		}
 		/* This should never happen */
-		throw new RuntimeException("Unsupported unification case: " + term1 + " " + term2);
+		throw new RuntimeException("Unsupported unification case: " + term1
+				+ " " + term2);
 	}
 
 	/***
@@ -417,7 +446,8 @@ public class Unifier {
 	private static boolean isEqual(NewLiteral t1, NewLiteral t2) {
 		if (t1 == null || t2 == null)
 			return false;
-		if ((t1 instanceof AnonymousVariable) || (t2 instanceof AnonymousVariable))
+		if ((t1 instanceof AnonymousVariable)
+				|| (t2 instanceof AnonymousVariable))
 			return true;
 		if (t1.getClass() != t2.getClass())
 			return false;
@@ -440,7 +470,9 @@ public class Unifier {
 			URIConstantImpl ct2 = (URIConstantImpl) t2;
 			return ct1.equals(ct2);
 		} else {
-			throw new RuntimeException("Exception comparing two terms, unknown term class " + t1 + " " + t2);
+			throw new RuntimeException(
+					"Exception comparing two terms, unknown term class " + t1
+							+ " " + t2);
 		}
 	}
 

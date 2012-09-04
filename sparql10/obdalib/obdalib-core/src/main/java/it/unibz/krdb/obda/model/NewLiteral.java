@@ -12,10 +12,17 @@ import java.util.Set;
  */
 public interface NewLiteral extends Serializable {
 
-	
 	public NewLiteral clone();
-	
+
 	public Set<Variable> getReferencedVariables();
 
 	public Map<Variable, Integer> getVariableCount();
+
+	/*
+	 * If this literal is part of a nested literal, it returns the direct
+	 * parent.
+	 */
+	public NewLiteral getParent();
+
+	public void setParent(NewLiteral parent);
 }
