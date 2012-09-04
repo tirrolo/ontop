@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.model.impl;
 
+import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.Variable;
 
 import java.util.Collections;
@@ -81,6 +82,11 @@ public class VariableImpl extends AbstractLiteral implements Variable {
 		Map<Variable,Integer> count =  new HashMap<Variable,Integer>();
 		count.put(this, 1);
 		return count;
+	}
+	
+	@Override
+	public Atom asAtom() {
+		throw new RuntimeException("Impossible to cast as atom: " + this.getClass()); 
 	}
 
 }

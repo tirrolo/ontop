@@ -1,11 +1,20 @@
 package it.unibz.krdb.obda.model.impl;
 
+import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 
 import java.net.URI;
 
 public class OBDAVocabulary {
+	
+	/* Constants */
+	
+	public static final Constant NULL = new ValueConstantImpl("null", COL_TYPE.STRING);
+	
+	public static final Constant TRUE = new ValueConstantImpl("t", COL_TYPE.BOOLEAN);
+	
+	public static final Constant FALSE = new ValueConstantImpl("f", COL_TYPE.BOOLEAN);
 
 	/* Boolean predicate URIs */
 

@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.BNode;
 import it.unibz.krdb.obda.model.Variable;
 
@@ -74,5 +75,10 @@ public class BNodeConstantImpl extends AbstractLiteral implements BNode {
 	@Override
 	public Map<Variable, Integer> getVariableCount() {
 		return new HashMap<Variable,Integer>();
+	}
+	
+	@Override
+	public Atom asAtom() {
+		throw new RuntimeException("Impossible to cast as atom: " + this.getClass()); 
 	}
 }

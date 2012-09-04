@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
@@ -59,6 +60,9 @@ public class ValueConstantImpl extends AbstractLiteral implements ValueConstant 
 		if (obj == null || !(obj instanceof ValueConstantImpl))
 			return false;
 
+		if (this == OBDAVocabulary.NULL)
+			return false;
+		
 		ValueConstantImpl value2 = (ValueConstantImpl) obj;
 		return this.identifier == value2.identifier;
 	}
@@ -112,6 +116,11 @@ public class ValueConstantImpl extends AbstractLiteral implements ValueConstant 
 	@Override
 	public Map<Variable, Integer> getVariableCount() {
 		return new HashMap<Variable,Integer>();
+	}
+	
+	@Override
+	public Atom asAtom() {
+		throw new RuntimeException("Impossible to cast as atom: " + this.getClass()); 
 	}
 
 }

@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.model.impl;
 
+import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.Variable;
 
@@ -39,7 +40,7 @@ public class URIConstantImpl extends AbstractLiteral implements URIConstant {
 
 		if (obj == null || !(obj instanceof URIConstantImpl))
 			return false;
-
+		
 		URIConstantImpl uri2 = (URIConstantImpl) obj;
 		return this.identifier == uri2.identifier;
 	}
@@ -82,6 +83,10 @@ public class URIConstantImpl extends AbstractLiteral implements URIConstant {
 		return new HashMap<Variable,Integer>();
 	}
 	
+	@Override
+	public Atom asAtom() {
+		throw new RuntimeException("Impossible to cast as atom: " + this.getClass()); 
+	}
 	
 
 }

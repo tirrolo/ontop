@@ -194,6 +194,12 @@ public interface OBDADataFactory extends Serializable {
 
 	public BNode getBNodeConstant(String name);
 
+	public Constant getNULL();
+	
+	public Constant getTrue();
+	
+	public Constant getFalse();
+	
 	/**
 	 * Construct a {@link ValueConstant} object.
 	 * 

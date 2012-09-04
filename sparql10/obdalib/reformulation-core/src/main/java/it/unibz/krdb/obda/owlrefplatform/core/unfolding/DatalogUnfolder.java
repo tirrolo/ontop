@@ -17,6 +17,7 @@ import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.model.impl.VariableImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.QueryAnonymizer;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 import it.unibz.krdb.obda.utils.QueryUtils;
@@ -143,6 +144,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		List<CQIE> workingSet = new LinkedList<CQIE>();
 		workingSet.addAll(inputquery.getRules());
 
+		inputquery = DatalogNormalizer.normalizeDatalogProgram(inputquery);
+
 		int[] rcount = { 0 };
 
 		for (int queryIdx = 0; queryIdx < workingSet.size(); queryIdx++) {
@@ -155,7 +158,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 				List<CQIE> result = resolve(currentQuery, location, rcount);
 
 				if (result != null) {
-					workingSet.remove((int)queryIdx);
+					workingSet.remove((int) queryIdx);
 					for (CQIE newquery : result) {
 						if (!workingSet.contains(newquery)) {
 							workingSet.add(queryIdx, newquery);
@@ -167,15 +170,12 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 					 */
 					currentQuery = workingSet.get(queryIdx);
 					atomIdx -= 1;
-					
+
 				}
 				/* once the current query is exausted we move to the next atom */
 			}
 		}
 
-		
-		
-		
 		LinkedHashSet<CQIE> result = new LinkedHashSet<CQIE>();
 		for (CQIE query : workingSet) {
 			unfoldNestedJoin(query);
@@ -618,11 +618,12 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			/* Found a join, removing the Join term and assimilating its terms */
 			List<Atom> body = currentQuery.getBody();
 			body.remove(atomIdx);
-			
+
 			List<Atom> newAtoms = new LinkedList<Atom>();
-			for (NewLiteral innerTerm: function.getTerms()) {
-				Function asFunction = (Function)innerTerm;
-				Atom newatom = termFactory.getAtom(asFunction.getFunctionSymbol(), asFunction.getTerms());
+			for (NewLiteral innerTerm : function.getTerms()) {
+				Function asFunction = (Function) innerTerm;
+				Atom newatom = termFactory.getAtom(
+						asFunction.getFunctionSymbol(), asFunction.getTerms());
 				newAtoms.add(newatom);
 			}
 			body.addAll(atomIdx, newAtoms);
@@ -662,8 +663,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 
 			/* Found a join, removing the Join term and assimilating its terms */
 			List<NewLiteral> innerTerms = innerFunction.getTerms();
-			function.getTerms().remove((int)termIdx);
-			function.getTerms().addAll((int)termIdx, innerTerms);
+			function.getTerms().remove((int) termIdx);
+			function.getTerms().addAll((int) termIdx, innerTerms);
 
 		}
 	}
@@ -1214,31 +1215,32 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 				/* Failed attempt */
 				continue;
 			}
-			
+
 			CQIE temprule = rule.clone();
 			/*
 			 * locating the inner term specified by termidx in the clone
 			 */
-			
+
 			if (termidx.size() > 1) {
-				
+
 				NewLiteral newfocusLiteral = null;
-				for (int y = 0; y < termidx.size() -1; y++) {
+				for (int y = 0; y < termidx.size() - 1; y++) {
 					int i = termidx.get(y);
 					if (newfocusLiteral == null)
 						newfocusLiteral = (Function) temprule.getBody().get(i);
 					else
-						newfocusLiteral = ((Function) newfocusLiteral).getTerm(i);
+						newfocusLiteral = ((Function) newfocusLiteral)
+								.getTerm(i);
 				}
-				Function newfocusFunction = (Function)newfocusLiteral;
+				Function newfocusFunction = (Function) newfocusLiteral;
 
-				
 				List<NewLiteral> innerTerms = newfocusFunction.getTerms();
-				innerTerms.remove((int)termidx.peek());
-				innerTerms.addAll((int)termidx.peek(), freshRule.getBody());
+				innerTerms.remove((int) termidx.peek());
+				innerTerms.addAll((int) termidx.peek(), freshRule.getBody());
 			} else {
-				temprule.getBody().remove((int)termidx.peek());
-				temprule.getBody().addAll((int)termidx.peek(), freshRule.getBody());
+				temprule.getBody().remove((int) termidx.peek());
+				temprule.getBody().addAll((int) termidx.peek(),
+						freshRule.getBody());
 			}
 
 			CQIE newrule = Unifier.applyUnifier(temprule, mgu, false);
@@ -1248,6 +1250,6 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		if (result.size() == 0)
 			return null;
 		return result;
-
 	}
+	
 }

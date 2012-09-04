@@ -25,4 +25,6 @@ public interface NewLiteral extends Serializable {
 	public NewLiteral getParent();
 
 	public void setParent(NewLiteral parent);
+
+	public Atom asAtom();
 }

@@ -52,7 +52,7 @@ public class DatalogNormalizer {
 	 * @param query
 	 * @return
 	 */
-	private static CQIE normalizeANDTrees(CQIE query) {
+	public static CQIE normalizeANDTrees(CQIE query) {
 		CQIE result = query.clone();
 		List<Atom> body = result.getBody();
 		/* Collecting all necessary conditions */
@@ -74,7 +74,7 @@ public class DatalogNormalizer {
 	 *            null if there is an unsatisfiable equality
 	 * @return
 	 */
-	private static CQIE normalizeEQ(CQIE query) {
+	public static CQIE normalizeEQ(CQIE query) {
 		CQIE result = query.clone();
 		List<Atom> body = result.getBody();
 		Map<Variable, NewLiteral> mgu = new HashMap<Variable, NewLiteral>();

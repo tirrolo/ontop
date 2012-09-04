@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.model.impl;
 
+import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.Predicate;
@@ -16,7 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class FunctionalTermImpl extends AbstractLiteral implements Function, ListListener {
+public class FunctionalTermImpl extends AbstractLiteral implements Function,
+		ListListener {
 
 	/**
 	 * 
@@ -32,6 +34,8 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 	// null when the list of terms has been modified
 	protected String string = null;
 
+	protected Atom asAtom = null;
+
 	/**
 	 * The default constructor.
 	 * 
@@ -46,13 +50,15 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 
 		EventGeneratingLinkedList<NewLiteral> eventlist = new EventGeneratingLinkedList<NewLiteral>();
 		eventlist.addAll(terms);
-		for (NewLiteral t: terms) {
+		for (NewLiteral t : terms) {
 			t.setParent(this);
 		}
 
 		this.terms = eventlist;
 
 		eventlist.addListener(this);
+
+		asAtom = new AtomWrapperImpl(this);
 	}
 
 	@Override
@@ -73,8 +79,6 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 		return identifier;
 	}
 
-	
-	
 	@Override
 	public void setPredicate(Predicate predicate) {
 		this.functor = predicate;
@@ -90,12 +94,12 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 		}
 		return variables;
 	}
-	
+
 	@Override
 	public Predicate getPredicate() {
 		return getFunctionSymbol();
 	}
-	
+
 	@Override
 	public Predicate getFunctionSymbol() {
 		return functor;
@@ -113,7 +117,8 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 
 	@Override
 	public FunctionalTermImpl clone() {
-		List<NewLiteral> copyTerms = new ArrayList<NewLiteral>(terms.size() + 10);
+		List<NewLiteral> copyTerms = new ArrayList<NewLiteral>(
+				terms.size() + 10);
 		Iterator<NewLiteral> it = terms.iterator();
 		while (it.hasNext()) {
 			copyTerms.add(it.next().clone());
@@ -228,7 +233,7 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 		Map<Variable, Integer> currentcount = new HashMap<Variable, Integer>();
 		for (NewLiteral t : terms) {
 			Map<Variable, Integer> atomCount = t.getVariableCount();
-			for (Variable var: atomCount.keySet()) {
+			for (Variable var : atomCount.keySet()) {
 				Integer count = currentcount.get(var);
 				if (count != null) {
 					currentcount.put(var, count + atomCount.get(var));
@@ -237,30 +242,27 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 				}
 			}
 		}
-		return currentcount;		
+		return currentcount;
 	}
-	
-
 
 	@Override
 	public NewLiteral getTerm(int index) {
 		return terms.get(index);
 	}
 
-	
 	@Override
 	public void setTerm(int index, NewLiteral newTerm) {
 		listChanged();
 		terms.set(index, newTerm);
 	}
 
-	
 	public void updateTerms(List<NewLiteral> newterms) {
 
 		for (NewLiteral term : terms) {
 			if (term instanceof FunctionalTermImpl) {
 				FunctionalTermImpl function = (FunctionalTermImpl) term;
-				EventGeneratingLinkedList<NewLiteral> innertermlist = (EventGeneratingLinkedList<NewLiteral>) function.getTerms();
+				EventGeneratingLinkedList<NewLiteral> innertermlist = (EventGeneratingLinkedList<NewLiteral>) function
+						.getTerms();
 				innertermlist.removeListener(this);
 			}
 		}
@@ -271,12 +273,17 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 		for (NewLiteral term : terms) {
 			if (term instanceof FunctionalTermImpl) {
 				FunctionalTermImpl function = (FunctionalTermImpl) term;
-				EventGeneratingLinkedList<NewLiteral> innertermlist = (EventGeneratingLinkedList<NewLiteral>) function.getTerms();
+				EventGeneratingLinkedList<NewLiteral> innertermlist = (EventGeneratingLinkedList<NewLiteral>) function
+						.getTerms();
 				innertermlist.addListener(this);
 			}
 		}
 		listChanged();
 	}
-	
-	
+
+	@Override
+	public Atom asAtom() {
+		return asAtom;
+	}
+
 }
