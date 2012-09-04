@@ -565,7 +565,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 				sb.append(",");
 			}
 			sb.append(" ");
-			sb.append(attr.name);
+			sb.append(attr.getName());
 			needComma = true;
 		}
 		sb.append(" ");
