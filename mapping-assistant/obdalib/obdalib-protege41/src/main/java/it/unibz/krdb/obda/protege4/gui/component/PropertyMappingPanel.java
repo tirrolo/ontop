@@ -4,6 +4,8 @@ import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.protege4.gui.IconLoader;
+import it.unibz.krdb.obda.protege4.gui.MapItem;
+import it.unibz.krdb.obda.protege4.gui.PredicateItem;
 import it.unibz.krdb.obda.protege4.gui.action.EditableCellFocusAction;
 
 import java.awt.BorderLayout;

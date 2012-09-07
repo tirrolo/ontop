@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.component;
+package it.unibz.krdb.obda.protege4.gui;
 
 import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.model.Predicate;
