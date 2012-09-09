@@ -13,14 +13,17 @@ import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 
 import java.net.URI;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -105,8 +108,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 		Op op = Algebra.compile(arqQuery);
 
-		log.debug("SPARQL algebra: \n{}",
-				op.toString());
+		log.debug("SPARQL algebra: \n{}", op.toString());
 
 		DatalogProgram result = ofac.getDatalogProgram();
 
@@ -116,8 +118,8 @@ public class SparqlAlgebraToDatalogTranslator {
 				vars.add(ofac.getVariable(vs));
 			}
 		}
-		
-		int[] freshvarcount = {1};
+
+		int[] freshvarcount = { 1 };
 
 		translate(vars, op, result, 1, freshvarcount);
 		return result;
@@ -199,7 +201,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		Atom rightAtom = ofac.getAtom(rightAtomPred, atom2VarsList);
 
 		/* Preparing the head of the Union rules (2 rules) */
-		Collections.sort(vars, comparator);
+		// Collections.sort(vars, comparator);
 		List<NewLiteral> headVars = new LinkedList<NewLiteral>();
 		for (Variable var : vars) {
 			headVars.add(var);
@@ -208,17 +210,63 @@ public class SparqlAlgebraToDatalogTranslator {
 		Atom head = ofac.getAtom(answerPred, headVars);
 
 		/*
-		 * Adding the join to the program
+		 * Adding the UNION to the program, i.e., two rules Note, we need to
+		 * make null any head variables that do not appear in the body of the
+		 * uniones, e.g,
+		 * 
+		 * q(x,y,z) <- Union(R(x,y), R(x,z))
+		 * 
+		 * results in
+		 * 
+		 * q(x,y,null) :- ... R(x,y) ... q(x,null,z) :- ... R(x,z) ...
 		 */
 
+		// finding out null
+		Set<Variable> nullVars = new HashSet<Variable>();
+		nullVars.addAll(vars);
+		nullVars.removeAll(atom1VarsSet); // the remaining variables do not
+											// appear in the body assigning
+											// null;
+		Map<Variable, NewLiteral> nullifier = new HashMap<Variable, NewLiteral>();
+		for (Variable var : nullVars) {
+			nullifier.put(var, OBDAVocabulary.NULL);
+		}
+		// making the rule
 		CQIE newrule1 = ofac.getCQIE(head, leftAtom);
-		CQIE newrule2 = ofac.getCQIE(head, rightAtom);
-		pr.appendRule(newrule1);
-		pr.appendRule(newrule2);
+		pr.appendRule(Unifier.applyUnifier(newrule1, nullifier));
 
-		translate(new LinkedList<Variable>(atom1VarsSet), left, pr, (2 * i), varcount);
-		translate(new LinkedList<Variable>(atom2VarsSet), right, pr,
-				((2 * i) + 1), varcount);
+		// finding out null
+		nullVars = new HashSet<Variable>();
+		nullVars.addAll(vars);
+		nullVars.removeAll(atom2VarsSet); // the remaining variables do not
+											// appear in the body assigning
+											// null;
+		nullifier = new HashMap<Variable, NewLiteral>();
+		for (Variable var : nullVars) {
+			nullifier.put(var, OBDAVocabulary.NULL);
+		}
+		// making the rule
+		CQIE newrule2 = ofac.getCQIE(head, rightAtom);
+		pr.appendRule(Unifier.applyUnifier(newrule2, nullifier));
+
+		
+		/*
+		 * Translating the rest
+		 */
+		{
+			List<Variable> vars1 = new LinkedList<Variable>();
+			for (NewLiteral var : atom1VarsList)
+				vars1.add((Variable) var);
+			translate(vars1, left, pr, 2 * i, varcount);
+		}
+		{
+			List<Variable> vars2 = new LinkedList<Variable>();
+			for (NewLiteral var : atom2VarsList)
+				vars2.add((Variable) var);
+			translate(vars2, right, pr,
+					2 * i + 1, varcount);
+		}
+		
 	}
 
 	private static void translate(List<Variable> vars, OpJoin join,
@@ -249,7 +297,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		Atom joinAtom = ofac.getAtom(joinp, leftAtom, rightAtom);
 
 		/* Preparing the head of the Join rule */
-		Collections.sort(vars, comparator);
+		// Collections.sort(vars, comparator);
 		List<NewLiteral> headVars = new LinkedList<NewLiteral>();
 		for (Variable var : vars) {
 			headVars.add(var);
@@ -267,9 +315,19 @@ public class SparqlAlgebraToDatalogTranslator {
 		/*
 		 * Translating the rest
 		 */
-
-		translate(new LinkedList<Variable>(atom1VarsSet), left, pr, 2 * i, varcount);
-		translate(new LinkedList<Variable>(atom2VarsSet), right, pr, 2 * i + 1, varcount);
+		{
+			List<Variable> vars1 = new LinkedList<Variable>();
+			for (NewLiteral var : atom1VarsList)
+				vars1.add((Variable) var);
+			translate(vars1, left, pr, 2 * i, varcount);
+		}
+		{
+			List<Variable> vars2 = new LinkedList<Variable>();
+			for (NewLiteral var : atom2VarsList)
+				vars2.add((Variable) var);
+			translate(vars2, right, pr,
+					2 * i + 1, varcount);
+		}
 	}
 
 	private static void translate(List<Variable> vars, OpProject projectOp,
@@ -355,12 +413,11 @@ public class SparqlAlgebraToDatalogTranslator {
 		Predicate predicate = ofac.getPredicate("ans" + (i), var.size());
 		List<NewLiteral> vars = new LinkedList<NewLiteral>();
 		vars.addAll(var);
-		
-//		List<Variable> leftList = new LinkedList<Variable>();
-//		leftList.addAll(leftVars);
-		Collections.sort(vars, comparator);
-		
-		
+
+		// List<Variable> leftList = new LinkedList<Variable>();
+		// leftList.addAll(leftVars);
+		// Collections.sort(vars, comparator);
+
 		Atom head = ofac.getAtom(predicate, vars);
 
 		Predicate pbody = ofac.getPredicate("ans" + (i + 1), vars.size());
@@ -405,7 +462,6 @@ public class SparqlAlgebraToDatalogTranslator {
 		} else if (triples.size() >= 2) {
 
 			/* Preparing the head of the Join rule */
-			Collections.sort(vars, comparator);
 			List<NewLiteral> headVars = new LinkedList<NewLiteral>();
 			for (Variable var : vars) {
 				headVars.add(var);
@@ -469,7 +525,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		Node p = triple.getPredicate();
 		Node s = triple.getSubject();
 
-		if (!(p instanceof Node_URI)) {
+		if (!(p instanceof Node_URI || p instanceof Var)) {
 			// if predicate is a variable or literal
 			throw new QueryException("Unsupported query syntax");
 		}
@@ -479,6 +535,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		// Instantiate the subject and object URI
 		URI subjectUri = null;
 		URI objectUri = null;
+		URI propertyUri = null;
 
 		// Instantiate the subject and object data type
 		COL_TYPE subjectType = null;
@@ -488,8 +545,9 @@ public class SparqlAlgebraToDatalogTranslator {
 		Predicate predicate = null;
 		Vector<NewLiteral> terms = new Vector<NewLiteral>();
 
-		if (p.getURI()
-				.equals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
+		if (p instanceof Node_URI
+				&& p.getURI().equals(
+						"http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
 			// Subject node
 			if (s instanceof Var) {
 				Var subject = (Var) s;
@@ -522,7 +580,17 @@ public class SparqlAlgebraToDatalogTranslator {
 
 			// Object node
 			if (o instanceof Var) {
-				throw new QueryException("Unsupported query syntax");
+
+				predicate = OBDAVocabulary.QUEST_TRIPLE_PRED;
+
+				Function rdfTypeConstant = ofac
+						.getFunctionalTerm(
+								ofac.getUriTemplatePredicate(1),
+								ofac.getURIConstant(URI
+										.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")));
+				terms.add(rdfTypeConstant);
+				terms.add(ofac.getVariable(((Var) o).getVarName()));
+
 			} else if (o instanceof Node_Literal) {
 				throw new QueryException("Unsupported query syntax");
 			} else if (o instanceof Node_URI) {
@@ -532,8 +600,10 @@ public class SparqlAlgebraToDatalogTranslator {
 
 			// Construct the predicate
 			URI predicateUri = objectUri;
-
-			if (predicateUri.toString().equals(OBDAVocabulary.RDFS_LITERAL_URI)) {
+			if (predicateUri == null) {
+				// NO OP, already assigned
+			} else if (predicateUri.toString().equals(
+					OBDAVocabulary.RDFS_LITERAL_URI)) {
 				predicate = OBDAVocabulary.RDFS_LITERAL;
 			} else if (predicateUri.toString().equals(
 					OBDAVocabulary.XSD_BOOLEAN_URI)) {
@@ -560,11 +630,17 @@ public class SparqlAlgebraToDatalogTranslator {
 					OBDAVocabulary.XSD_STRING_URI)) {
 				predicate = OBDAVocabulary.XSD_STRING;
 			} else {
+
 				predicate = ofac.getPredicate(predicateUri, 1,
 						new COL_TYPE[] { subjectType });
+
 			}
 
 		} else {
+			/*
+			 * The predicate is NOT rdf:type
+			 */
+
 			// Subject node
 			if (s instanceof Var) {
 				Var subject = (Var) s;
@@ -636,15 +712,21 @@ public class SparqlAlgebraToDatalogTranslator {
 
 			}
 			// Construct the predicate
-			URI predicateUri = URI.create(p.getURI());
-			predicate = ofac.getPredicate(predicateUri, 2, new COL_TYPE[] {
-					subjectType, objectType });
+
+			if (p instanceof Node_URI) {
+				URI predicateUri = URI.create(p.getURI());
+				predicate = ofac.getPredicate(predicateUri, 2, new COL_TYPE[] {
+						subjectType, objectType });
+			} else if (p instanceof Var) {
+				predicate = OBDAVocabulary.QUEST_TRIPLE_PRED;
+				terms.add(1, ofac.getVariable(((Var) p).getVarName()));
+			}
 		}
 		// Construct the atom
 		Atom atom = ofac.getAtom(predicate, terms);
 		result.addFirst(atom);
 
-		Collections.sort(vars, comparator);
+		// Collections.sort(vars, comparator);
 		List<NewLiteral> newvars = new LinkedList<NewLiteral>();
 		for (Variable var : vars) {
 			newvars.add(var);

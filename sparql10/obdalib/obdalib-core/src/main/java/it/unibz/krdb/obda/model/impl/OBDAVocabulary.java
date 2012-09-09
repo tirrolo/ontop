@@ -139,6 +139,11 @@ public class OBDAVocabulary {
 	// The name of the function that creates URI's in Quest
 	public static final String QUEST_BNODE = "http://obda.org/quest#bnode";
 	
+	public static final String QUEST_TRIPLE_STR = "triple";
+	
+	public static final URI QUEST_TRIPLE_URI = URI.create("triple");
+	
+	public static final Predicate QUEST_TRIPLE_PRED = new PredicateImpl(QUEST_TRIPLE_URI, 3, new COL_TYPE[3]);
 	
 	/* SPARQL Algebra vocabulary */
 	

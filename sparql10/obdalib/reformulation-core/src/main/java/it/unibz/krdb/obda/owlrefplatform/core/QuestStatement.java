@@ -169,18 +169,20 @@ public class QuestStatement implements OBDAStatement {
 
 				} else {
 
-					if (strquery.contains("langMatches"))
-						System.out.println("Lang");
-
-					signature = getSignature(strquery);
-					signaturecache.put(strquery, signature);
-
+					
 					DatalogProgram program;
 
 					try {
 						log.debug("Input user query:\n" + strquery);
 
 						Query query = QueryFactory.create(strquery);
+						
+						if (strquery.contains("langMatches"))
+							System.out.println("Lang");
+
+						signature = getSignature(strquery);
+						signaturecache.put(strquery, signature);
+
 
 						program = translateAndPreProcess(query);
 
@@ -389,6 +391,7 @@ public class QuestStatement implements OBDAStatement {
 
 			log.debug("Flattened query: \n{}", program.toString());
 		} catch (Exception e) {
+			e.printStackTrace();
 			OBDAException ex = new OBDAException(e.getMessage());
 			ex.setStackTrace(e.getStackTrace());
 

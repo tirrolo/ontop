@@ -497,11 +497,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 								+ ht.toString() + "\"");
 			}
 
-			if (ht instanceof URIConstant) {
-				sb.append(String.format(typeStr, 1, signature.get(hpos)));
-				URIConstant uc = (URIConstant) ht;
-				sb.append(jdbcutil.getSQLLexicalForm(uc.getURI().toString()));
-			} else if (ht instanceof Function) {
+			if (ht instanceof Function) {
 				Vector<String> vex = new Vector<String>();
 				Function ov = (Function) ht;
 				Predicate function = ov.getFunctionSymbol();
@@ -615,18 +611,51 @@ public class SQLGenerator implements SQLQueryGenerator {
 					/***
 					 * New template based URI building functions
 					 */
+					
+					String langStr = "%s AS \"%sLang\", ";
+					
+					sb.append(String.format(langStr, "NULL", signature.get(hpos)));
+					
 					String result = "";
 
 					result = getSQLStringForURIFunction(ov, body, tableName,
 							viewName, varAtomIndex, varAtomTermIndex, false);
 
+					
 					sb.append(result);
+					
+					
 
 				} else {
 					throw new IllegalArgumentException(
 							"Error generating SQL query. Contact the developers. Found an invalid function during translation: "
 									+ ov.toString());
 				}
+			} else if (ht instanceof URIConstant) {
+
+				
+				sb.append(String.format(typeStr, 1, signature.get(hpos)));
+				
+				String langStr = "%s AS \"%sLang\", ";
+				sb.append(String.format(langStr, "NULL", signature.get(hpos)));
+				
+				URIConstant uc = (URIConstant) ht;
+				sb.append(jdbcutil.getSQLLexicalForm(uc.getURI().toString()));
+
+			} else if (ht instanceof ValueConstant) {
+				if (ht != OBDAVocabulary.NULL) {
+					throw new RuntimeException(
+							"Cannot generate SELECT for term: " + ht.toString());
+				}
+				sb.append(String.format(typeStr, 0, signature.get(hpos)));
+				//
+				String langStr = "%s AS \"%sLang\", ";
+				sb.append(String.format(langStr, "NULL", signature.get(hpos)));
+				// The default value for language column: NULL
+				sb.append("NULL");
+			} else {
+				throw new RuntimeException("Cannot generate SELECT for term: "
+						+ ht.toString());
 			}
 			sb.append(" AS ");
 			sb.append(sqladapter.sqlQuote(signature.get(hpos)));
@@ -705,40 +734,40 @@ public class SQLGenerator implements SQLQueryGenerator {
 			NewLiteral left = atom.getTerms().get(0);
 			NewLiteral right = atom.getTerms().get(1);
 
-//			if (functionSymbol == OBDAVocabulary.SPARQL_LANGMATCHES) {
-//				if (!(left instanceof Function))
-//					return "(FALSE)";
-//				Function literal = (Function)left;
-//				if (literal.getFunctionSymbol() != OBDAVocabulary.RDFS_LITERAL)
-//					return ("FALSE");
-//				NewLiteral langTerm = literal.getTerm(1);
-//				if ((langTerm instanceof ValueConstant) && (right instanceof ValueConstant))
-//				{
-//					if (langTerm.equals(right))
-//						return ("(TRUE)");
-//					else 
-//						return ("(FALSE)");
-//				}
-//				
-//				String leftOp = getSQLString(langTerm, body, tableName, viewName,
-//						varAtomIndex, varAtomTermIndex, true);
-//				String rightOp = getSQLString(right, body, tableName, viewName,
-//						varAtomIndex, varAtomTermIndex, true);
-//				
-//				
-//				String expressionFormat = "%s = %s";
-//				return String.format("("+expressionFormat+")", leftOp, rightOp);
-//				
-//			} else {
-				String expressionFormat = getBooleanOperatorString(functionSymbol);
+			// if (functionSymbol == OBDAVocabulary.SPARQL_LANGMATCHES) {
+			// if (!(left instanceof Function))
+			// return "(FALSE)";
+			// Function literal = (Function)left;
+			// if (literal.getFunctionSymbol() != OBDAVocabulary.RDFS_LITERAL)
+			// return ("FALSE");
+			// NewLiteral langTerm = literal.getTerm(1);
+			// if ((langTerm instanceof ValueConstant) && (right instanceof
+			// ValueConstant))
+			// {
+			// if (langTerm.equals(right))
+			// return ("(TRUE)");
+			// else
+			// return ("(FALSE)");
+			// }
+			//
+			// String leftOp = getSQLString(langTerm, body, tableName, viewName,
+			// varAtomIndex, varAtomTermIndex, true);
+			// String rightOp = getSQLString(right, body, tableName, viewName,
+			// varAtomIndex, varAtomTermIndex, true);
+			//
+			//
+			// String expressionFormat = "%s = %s";
+			// return String.format("("+expressionFormat+")", leftOp, rightOp);
+			//
+			// } else {
+			String expressionFormat = getBooleanOperatorString(functionSymbol);
 
-				String leftOp = getSQLString(left, body, tableName, viewName,
-						varAtomIndex, varAtomTermIndex, true);
-				String rightOp = getSQLString(right, body, tableName, viewName,
-						varAtomIndex, varAtomTermIndex, true);
-				return String.format("(" + expressionFormat + ")", leftOp,
-						rightOp);
-//			}
+			String leftOp = getSQLString(left, body, tableName, viewName,
+					varAtomIndex, varAtomTermIndex, true);
+			String rightOp = getSQLString(right, body, tableName, viewName,
+					varAtomIndex, varAtomTermIndex, true);
+			return String.format("(" + expressionFormat + ")", leftOp, rightOp);
+			// }
 
 		} else {
 			// Throw an exception for other types

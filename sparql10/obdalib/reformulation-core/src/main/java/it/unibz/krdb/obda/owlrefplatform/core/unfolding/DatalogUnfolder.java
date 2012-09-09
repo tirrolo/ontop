@@ -146,7 +146,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 
 		inputquery = DatalogNormalizer.normalizeDatalogProgram(inputquery);
 
-		int[] rcount = { 0 };
+		int[] rcount = { 0,0 };
+		
 
 		for (int queryIdx = 0; queryIdx < workingSet.size(); queryIdx++) {
 
@@ -189,6 +190,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		resultdp = CQCUtilities.removeContainedQueriesSorted(resultdp, true);
 		log.debug("Resulting unfolding size: {} cqs", resultdp.getRules()
 				.size());
+		log.debug("Failed resolution attempts: {}", rcount[1]);
+		System.out.println(rcount[1]);
 
 		log.debug(resultdp.toString());
 
@@ -1213,6 +1216,9 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 
 			if (mgu == null) {
 				/* Failed attempt */
+				resolutionCount[1] += 1;
+				if (resolutionCount[1]%1000 == 0)
+					System.out.println(resolutionCount[1]);
 				continue;
 			}
 
@@ -1251,5 +1257,13 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			return null;
 		return result;
 	}
-	
+
+	public class RuleIndex {
+		
+		// predicate-first-term-second-term
+//		Map<Predicate, Map<Predicate>>
+		
+		// predicate-first-term-second-term
+	}
+
 }

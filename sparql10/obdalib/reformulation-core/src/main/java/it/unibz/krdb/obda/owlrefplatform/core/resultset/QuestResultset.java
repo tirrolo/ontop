@@ -37,7 +37,8 @@ public class QuestResultset implements OBDAResultSet {
 
 	private OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
 
-	private static final Logger log = LoggerFactory.getLogger(QuestResultset.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(QuestResultset.class);
 
 	/***
 	 * Constructs an OBDA statement from an SQL statement, a signature described
@@ -51,7 +52,8 @@ public class QuestResultset implements OBDAResultSet {
 	 * @param st
 	 * @throws OBDAException
 	 */
-	public QuestResultset(ResultSet set, List<String> signature, OBDAStatement st) throws OBDAException {
+	public QuestResultset(ResultSet set, List<String> signature,
+			OBDAStatement st) throws OBDAException {
 		this.set = set;
 		this.st = st;
 
@@ -206,13 +208,17 @@ public class QuestResultset implements OBDAResultSet {
 
 		try {
 
-			COL_TYPE type = getQuestType(set.getByte(name + "QuestType"));
+			System.out.println(set.getString(name));
+			System.out.println(set.getByte(name + "QuestType"));
+			COL_TYPE type = getQuestType((byte)set.getInt(name + "QuestType"));
 
 			if (type == COL_TYPE.OBJECT || type == null) {
 				URI value = getURI(name);
 				result = fac.getURIConstant(value);
 			} else if (type == COL_TYPE.BNODE) {
 				result = fac.getBNodeConstant(set.getString(name));
+			} else if (type == COL_TYPE.UNBOUND) {
+				result = null;
 			} else {
 				/*
 				 * The constant is a literal, we need to find if its
@@ -236,7 +242,8 @@ public class QuestResultset implements OBDAResultSet {
 
 				} else if (type == COL_TYPE.DATETIME) {
 					Timestamp value = set.getTimestamp(name);
-					result = fac.getValueConstant(value.toString().replace(' ', 'T'), type);
+					result = fac.getValueConstant(
+							value.toString().replace(' ', 'T'), type);
 
 					// if (value)
 					// result = fac.getValueConstant("true", type);
@@ -283,8 +290,11 @@ public class QuestResultset implements OBDAResultSet {
 			return COL_TYPE.DATETIME;
 		} else if (sqltype == 9) {
 			return COL_TYPE.BOOLEAN;
+		} else if (sqltype == 0) {
+			return COL_TYPE.UNBOUND;
+		} else {
+			throw new RuntimeException("COLTYPE unknown: " + sqltype);
 		}
-		return COL_TYPE.UNBOUND;
 	}
 
 	@Override
@@ -296,7 +306,7 @@ public class QuestResultset implements OBDAResultSet {
 			return URI.create(encoded);
 		} catch (SQLException e) {
 			throw new OBDAException(e.getMessage());
-		} 
+		}
 	}
 
 	@Override

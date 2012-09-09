@@ -4,6 +4,8 @@ import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
+import it.unibz.krdb.obda.model.Function;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDADataSource;
 import it.unibz.krdb.obda.model.OBDAException;
@@ -11,6 +13,7 @@ import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
+import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
 import it.unibz.krdb.obda.ontology.Assertion;
 import it.unibz.krdb.obda.ontology.Axiom;
@@ -658,6 +661,62 @@ public class Quest implements Serializable {
 
 				}
 			}
+
+			/*
+			 * Adding "triple(x,y,z)" mappings for support of unbounded
+			 * predicates and variables as class names (implemented in the
+			 * sparql translator)
+			 */
+
+			/*
+			 * Collecting primary key data
+			 */
+			List<CQIE> newmappings = new LinkedList<CQIE>();
+			for (CQIE mapping : unfoldingProgram.getRules()) {
+				Atom newhead = null;
+				Atom currenthead = mapping.getHead();
+				Predicate pred = OBDAVocabulary.QUEST_TRIPLE_PRED;
+				LinkedList<NewLiteral> terms = new LinkedList<NewLiteral>();
+				if (currenthead.getArity() == 1) {
+
+					/*
+					 * head is Class(x) Forming head as triple(x,uri(rdf:type),
+					 * uri(Class))
+					 */
+					terms.add(currenthead.getTerm(0));
+					Function rdfTypeConstant = fac
+							.getFunctionalTerm(
+									fac.getUriTemplatePredicate(1),
+									fac.getURIConstant(URI
+											.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")));
+					terms.add(rdfTypeConstant);
+
+					URI classname = currenthead.getPredicate().getName();
+					terms.add(fac.getFunctionalTerm(
+							fac.getUriTemplatePredicate(1),
+							fac.getURIConstant(classname)));
+					newhead = fac.getAtom(pred, terms);
+
+				} else if (currenthead.getArity() == 2) {
+					/*
+					 * head is Property(x,y) Forming head as
+					 * triple(x,uri(Property), y)
+					 */
+					terms.add(currenthead.getTerm(0));
+
+					URI propname = currenthead.getPredicate().getName();
+					Function propconstant = fac.getFunctionalTerm(
+							fac.getUriTemplatePredicate(1),
+							fac.getURIConstant(propname));
+					terms.add(propconstant);
+					terms.add(currenthead.getTerm(1));
+
+					newhead = fac.getAtom(pred, terms);
+				}
+				CQIE newmapping = fac.getCQIE(newhead, mapping.getBody());
+				newmappings.add(newmapping);
+			}
+			unfoldingProgram.appendRule(newmappings);
 
 			unfolder = new DatalogUnfolder(unfoldingProgram, pkeys);
 			JDBCUtility jdbcutil = new JDBCUtility(
