@@ -1,24 +1,32 @@
 package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
 
+import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
 import it.unibz.krdb.obda.model.Atom;
+import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.NewLiteral;
+import it.unibz.krdb.obda.model.OBDADataFactory;
+import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import com.hp.hpl.jena.sparql.util.NodeUtils.EqualityTest;
 
 public class DatalogNormalizer {
 
-	private final static OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
+	private final static OBDADataFactory fac = OBDADataFactoryImpl
+			.getInstance();
 
 	/***
 	 * Normalizes all the rules in a Datalog program, pushing equalities into
@@ -47,7 +55,9 @@ public class DatalogNormalizer {
 	}
 
 	/***
-	 * This expands all AND trees into individual comparison atoms
+	 * This expands all AND trees into individual comparison atoms in the body
+	 * of the query. Nested AND trees inside Join or LeftJoin atoms are not
+	 * touched.
 	 * 
 	 * @param query
 	 * @return
@@ -83,7 +93,8 @@ public class DatalogNormalizer {
 			Atom atom = body.get(i);
 			Unifier.applyUnifier(atom, mgu);
 			if (atom.getPredicate() == OBDAVocabulary.EQ) {
-				Substitution s = Unifier.getSubstitution(atom.getTerm(0), atom.getTerm(1));
+				Substitution s = Unifier.getSubstitution(atom.getTerm(0),
+						atom.getTerm(1));
 				if (s == null) {
 					return null;
 				}
@@ -98,6 +109,175 @@ public class DatalogNormalizer {
 		}
 		result = Unifier.applyUnifier(result, mgu);
 		return result;
+	}
+
+	/***
+	 * This will
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public static CQIE pullUpNestedReferences(CQIE query) {
+		CQIE result = query.clone();
+
+		List<Atom> body = query.getBody();
+		/*
+		 * This set is only for reference
+		 */
+		Set<Variable> currentLevelVariables = new HashSet<Variable>();
+		for (Atom l : body) {
+			Function atom = (Function) l;
+			Predicate functionSymbol = atom.getFunctionSymbol();
+			if (functionSymbol instanceof AlgebraOperatorPredicate
+					|| functionSymbol instanceof BooleanOperationPredicate)
+				continue;
+			currentLevelVariables.addAll(atom.getReferencedVariables());
+		}
+
+		/*
+		 * This set will be modified in the process
+		 */
+		Set<Function> resultingBooleanConditions = new HashSet<Function>();
+		
+
+		/*
+		 * Analyze each atom that is a Join or LeftJoin, the process will replace
+		 * everything needed.
+		 */
+		int[] freshVariableCount = { 0 };
+		for (Atom atom : body) {
+			Function f = atom;
+			if (!(f.getFunctionSymbol() instanceof AlgebraOperatorPredicate))
+				continue;
+			pullUpNestedReferences(f.getTerms(), currentLevelVariables,
+					resultingBooleanConditions, freshVariableCount);
+		}
+		
+		/*
+		 * Adding any remiding boolean conditions to the top level.
+		 */
+		for (Function condition: resultingBooleanConditions) {
+			body.add(condition.asAtom());
+		}
+		
+
+		return result;
+	}
+
+	public static void pullUpNestedReferences(
+			List<NewLiteral> currentLevelAtoms,
+			Set<Variable> upperLevelVariables, Set<Function> booleanConditions,
+			int[] freshVariableCount) {
+
+		/*
+		 * Collecting the variables mentioned in data atoms in the current
+		 * level.
+		 */
+		Set<Variable> currentLevelVariables = new HashSet<Variable>();
+		for (NewLiteral l : currentLevelAtoms) {
+			Function atom = (Function) l;
+			Predicate functionSymbol = atom.getFunctionSymbol();
+			if (functionSymbol instanceof AlgebraOperatorPredicate
+					|| functionSymbol instanceof BooleanOperationPredicate)
+				continue;
+			currentLevelVariables.addAll(atom.getReferencedVariables());
+		}
+		Set<Variable> mergedVariables = new HashSet<Variable>();
+		mergedVariables.addAll(upperLevelVariables);
+		mergedVariables.addAll(currentLevelVariables);
+
+		/*
+		 * Call recursively on each atom that is a Join or a LeftJoin passing
+		 * the variables of this level
+		 */
+		for (NewLiteral l : currentLevelAtoms) {
+			Function atom = (Function) l;
+			if (!(atom.getFunctionSymbol() instanceof AlgebraOperatorPredicate))
+				continue;
+			List<NewLiteral> terms = atom.getTerms();
+			pullUpNestedReferences(terms, mergedVariables, booleanConditions,
+					freshVariableCount);
+		}
+
+		/*
+		 * Add the resulting equalities that belong to the current level. An
+		 * equality belongs to this level if ALL its variables are defined at
+		 * the current level and not at the upper levels.
+		 */
+		Set<Function> removedBooleanConditions = new HashSet<Function>();
+		for (Function equality : booleanConditions) {
+			Set<Variable> atomVariables = equality.getVariables();
+			boolean belongsToThisLevel = true;
+			for (Variable var : atomVariables) {
+				if (currentLevelVariables.contains(var)
+						&& !upperLevelVariables.contains(var))
+					continue;
+				belongsToThisLevel = false;
+			}
+			if (!belongsToThisLevel)
+				continue;
+			currentLevelAtoms.add(equality);
+			removedBooleanConditions.add(equality);
+		}
+		booleanConditions.removeAll(removedBooleanConditions);
+
+		/*
+		 * Review the atoms of the current level and generate any variables,
+		 * equalities needed at this level (no further recursivity calls).
+		 * Generate new variables for each variable that appears at this level,
+		 * and also appears at a top level. We do this only for data atoms.
+		 * 
+		 * We do this by creating a substitution for each of the, and then
+		 * applying the substitution. We also add an equality for each
+		 * substitution we created.
+		 */
+		Set<Variable> problemVariables = new HashSet<Variable>();
+		problemVariables.addAll(currentLevelVariables);
+		problemVariables.removeAll(upperLevelVariables);
+		Map<Variable, NewLiteral> substitution = new HashMap<Variable, NewLiteral>();
+
+		for (Variable var : problemVariables) {
+			freshVariableCount[0] += 1;
+			Variable freshVar = fac.getVariable(var.getName() + "_FRESH"
+					+ freshVariableCount[0]);
+			substitution.put(var, freshVar);
+
+			booleanConditions.add(fac.getEQFunction(var, freshVar));
+		}
+		Unifier.applyUnifier(currentLevelAtoms, substitution);
+
+		/*
+		 * Review the current boolean atoms, if the refer to upper level
+		 * variables then remove them from the current level and add them to the
+		 * equalities set for the upper level.
+		 * 
+		 * If an contains at least 1 variable that is mentioned in an upper
+		 * level, then this condition is removed from the current level and
+		 * moved forward by adding it to the booleanConditions set.
+		 */
+
+		for (int index = 0; index <= currentLevelAtoms.size(); index++) {
+			NewLiteral l = currentLevelAtoms.get(index);
+			Function atom = (Function) l;
+			if (!(atom.getFunctionSymbol() instanceof BooleanOperationPredicate))
+				continue;
+			Set<Variable> variables = atom.getReferencedVariables();
+			boolean belongsUp = false;
+			for (Variable var : variables) {
+				if (upperLevelVariables.contains(var)) {
+					belongsUp = true;
+					break;
+				}
+			}
+			if (!belongsUp)
+				continue;
+
+			// Belongs up, removing and pushing up
+			currentLevelAtoms.remove(index);
+			index -= 1;
+			booleanConditions.add(atom);
+		}
+
 	}
 
 	/***
@@ -137,8 +317,7 @@ public class DatalogNormalizer {
 
 		if (term.getFunctionSymbol() != OBDAVocabulary.AND) {
 			result.add(term);
-		}
-		else {
+		} else {
 			List<NewLiteral> terms = term.getTerms();
 			for (NewLiteral currentterm : terms) {
 				if (currentterm instanceof Function) {

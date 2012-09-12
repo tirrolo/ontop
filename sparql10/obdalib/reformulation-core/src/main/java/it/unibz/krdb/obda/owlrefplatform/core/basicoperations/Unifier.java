@@ -16,7 +16,9 @@ import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.impl.AlgebraOperatorPredicateImpl;
 import it.unibz.krdb.obda.model.impl.AnonymousVariable;
+import it.unibz.krdb.obda.model.impl.AtomWrapperImpl;
 import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
 import it.unibz.krdb.obda.model.impl.URIConstantImpl;
 import it.unibz.krdb.obda.model.impl.ValueConstantImpl;
@@ -163,6 +165,20 @@ public class Unifier {
 		applyUnifier(terms, unifier);
 	}
 
+//	public static void applyUnifier(List<Function> terms,
+//			Map<Variable, NewLiteral> unifier) {
+//		for (Function f : terms) {
+//			applyUnifier(f, unifier);
+//		}
+//	}
+
+	/***
+	 * Applies the subsittution to all the terms in the list. Note that this
+	 * will not clone the list or the terms insdie the list.
+	 * 
+	 * @param terms
+	 * @param unifier
+	 */
 	public static void applyUnifier(List<NewLiteral> terms,
 			Map<Variable, NewLiteral> unifier) {
 		for (int i = 0; i < terms.size(); i++) {
@@ -469,10 +485,19 @@ public class Unifier {
 			URIConstantImpl ct1 = (URIConstantImpl) t1;
 			URIConstantImpl ct2 = (URIConstantImpl) t2;
 			return ct1.equals(ct2);
+		} else if (t1 instanceof AlgebraOperatorPredicateImpl) {
+			AlgebraOperatorPredicateImpl ct1 = (AlgebraOperatorPredicateImpl) t1;
+			AlgebraOperatorPredicateImpl ct2 = (AlgebraOperatorPredicateImpl) t2;
+			return ct1.equals(ct2);
+		} else if (t1 instanceof AtomWrapperImpl) {
+			AtomWrapperImpl ct1 = (AtomWrapperImpl) t1;
+			AtomWrapperImpl ct2 = (AtomWrapperImpl) t2;
+			return ct1.equals(ct2);
 		} else {
 			throw new RuntimeException(
-					"Exception comparing two terms, unknown term class " + t1
-							+ " " + t2);
+					"Exception comparing two terms, unknown term class. Terms: "
+							+ t1 + ", " + t2 + " Classes: " + t1.getClass()
+							+ ", " + t2.getClass());
 		}
 	}
 

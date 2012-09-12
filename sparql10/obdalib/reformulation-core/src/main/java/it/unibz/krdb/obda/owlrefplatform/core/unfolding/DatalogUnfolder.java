@@ -146,8 +146,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 
 		inputquery = DatalogNormalizer.normalizeDatalogProgram(inputquery);
 
-		int[] rcount = { 0,0 };
-		
+		int[] rcount = { 0, 0 };
 
 		for (int queryIdx = 0; queryIdx < workingSet.size(); queryIdx++) {
 
@@ -568,7 +567,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 	// }
 
 	/***
-	 * This method will attempt to unfold nested joins </ul>
+	 * This method will attempt to unfold the TOP LEVEL nested JOINs. Adding
+	 * them as conjuncts to the body of the UCQ </ul>
 	 * 
 	 * <p>
 	 * 
@@ -580,35 +580,6 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 	private void unfoldNestedJoin(CQIE currentQuery) {
 		for (int atomIdx = 0; atomIdx < currentQuery.getBody().size(); atomIdx++) {
 			Atom function = currentQuery.getBody().get(atomIdx);
-
-			/*
-			 * DUplicated code WE NEED TO JOIN BY MODIFYING THE QUERY API
-			 */
-
-			for (int termIdx = 0; termIdx < function.getTerms().size(); termIdx++) {
-				NewLiteral innerTerm = function.getTerm(termIdx);
-				unfoldNestedJoin(innerTerm);
-
-				if (!(innerTerm instanceof Function)) {
-					continue;
-				}
-
-				Function innerFunction = ((Function) innerTerm);
-				Predicate innerPredicate = innerFunction.getFunctionSymbol();
-				if (!(innerPredicate.getName().toString()
-						.equals(OBDAVocabulary.SPARQL_JOIN_URI)))
-					continue;
-
-				/*
-				 * Found a join, removing the Join term and assimilating its
-				 * terms
-				 */
-				List<NewLiteral> innerTerms = innerFunction.getTerms();
-				function.getTerms().remove(termIdx);
-				function.getTerms().addAll(termIdx, innerTerms);
-
-			}
-
 			/*
 			 * Unfolding the Join atom
 			 */
@@ -621,15 +592,11 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			/* Found a join, removing the Join term and assimilating its terms */
 			List<Atom> body = currentQuery.getBody();
 			body.remove(atomIdx);
-
-			List<Atom> newAtoms = new LinkedList<Atom>();
-			for (NewLiteral innerTerm : function.getTerms()) {
-				Function asFunction = (Function) innerTerm;
-				Atom newatom = termFactory.getAtom(
-						asFunction.getFunctionSymbol(), asFunction.getTerms());
-				newAtoms.add(newatom);
+			for (int subtermidx = function.getTerms().size() - 1; subtermidx >= 0; subtermidx--) {
+				NewLiteral atom = function.getTerm(subtermidx);
+				body.add(atomIdx, atom.asAtom());
 			}
-			body.addAll(atomIdx, newAtoms);
+			atomIdx += -1;
 		}
 	}
 
@@ -1217,7 +1184,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			if (mgu == null) {
 				/* Failed attempt */
 				resolutionCount[1] += 1;
-				if (resolutionCount[1]%1000 == 0)
+				if (resolutionCount[1] % 1000 == 0)
 					System.out.println(resolutionCount[1]);
 				continue;
 			}
@@ -1259,10 +1226,10 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 	}
 
 	public class RuleIndex {
-		
+
 		// predicate-first-term-second-term
-//		Map<Predicate, Map<Predicate>>
-		
+		// Map<Predicate, Map<Predicate>>
+
 		// predicate-first-term-second-term
 	}
 

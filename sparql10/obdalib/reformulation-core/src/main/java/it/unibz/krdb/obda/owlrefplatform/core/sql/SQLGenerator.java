@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.owlrefplatform.core.sql;
 
+import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.CQIE;
@@ -15,8 +16,6 @@ import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Substitution;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.JDBCUtility;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
 import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
@@ -28,9 +27,11 @@ import it.unibz.krdb.sql.ViewDefinition;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -74,74 +75,6 @@ public class SQLGenerator implements SQLQueryGenerator {
 		this.sqladapter = sqladapter;
 	}
 
-	/***
-	 * Creates an index for the variables that appear in the body of query. The
-	 * indexes are
-	 * <p/>
-	 * Variable -> Count (number of appereances in DB atoms)<br/>
-	 * Variable -> List(Integer) array of size body.size(), true if the variable
-	 * appears in that atom<br/>
-	 * Variable -> Atom -> List(integer) -> boolean[] (variable, and atom index
-	 * to the locations in that atom where the variable appears.
-	 * 
-	 * @param query
-	 */
-	private void createVariableIndex(CQIE query,
-			Map<Variable, Integer> varCount,
-			Map<Variable, List<Integer>> varAtomIndex,
-			Map<Variable, Map<Atom, List<Integer>>> varAtomTermIndex) {
-		List<Atom> body = query.getBody();
-
-		int atomindex = -1;
-		for (Atom atom : body) {
-			atomindex += 1;
-			if (atom.getPredicate() instanceof BooleanOperationPredicate) {
-				continue;
-			}
-			int termindex = -1;
-			for (NewLiteral term : atom.getTerms()) {
-				termindex += 1;
-				if (term instanceof Variable) {
-					Variable var = (Variable) term;
-
-					/* Updating the count */
-
-					Integer count = varCount.get(var);
-					if (count == null) {
-						count = 1;
-					} else {
-						count += 1;
-					}
-					varCount.put(var, count);
-
-					/* Updating the atom position */
-
-					List<Integer> atomIndex = varAtomIndex.get(var);
-					if (atomIndex == null) {
-						atomIndex = new LinkedList<Integer>();
-						varAtomIndex.put(var, atomIndex);
-					}
-					atomIndex.add(atomindex);
-
-					/* Updating the term in atom position */
-
-					Map<Atom, List<Integer>> atomTermIndex = varAtomTermIndex
-							.get(var);
-					if (atomTermIndex == null) {
-						atomTermIndex = new HashMap<Atom, List<Integer>>();
-						varAtomTermIndex.put(var, atomTermIndex);
-					}
-					List<Integer> termIndex = atomTermIndex.get(atom);
-					if (termIndex == null) {
-						termIndex = new LinkedList<Integer>();
-						atomTermIndex.put(atom, termIndex);
-					}
-					termIndex.add(termindex);
-				}
-			}
-		}
-	}
-
 	@Override
 	public String generateSourceQuery(DatalogProgram query,
 			List<String> signature) throws OBDAException {
@@ -177,290 +110,497 @@ public class SQLGenerator implements SQLQueryGenerator {
 		}
 	}
 
+	/***
+	 * Utility class to resolve "database" atoms to view definitions ready to be
+	 * used in a FROM clause, and variables, to column references defined over
+	 * the existing view definitons of a query.
+	 * 
+	 * 
+	 * @author mariano
+	 * 
+	 */
+	public class QueryAliasIndex {
+
+		Map<Function, String> viewNames = new HashMap<Function, String>();
+		Map<Function, String> tableNames = new HashMap<Function, String>();
+		Map<Function, DataDefinition> dataDefinitions = new HashMap<Function, DataDefinition>();
+		Map<Variable, LinkedHashSet<String>> columnReferences = new HashMap<Variable, LinkedHashSet<String>>();
+
+		int dataTableCount = 0;
+		boolean isEmpty = false;
+
+		public QueryAliasIndex(CQIE query) {
+			List<Atom> body = query.getBody();
+			generateViews(body);
+		}
+
+		private void generateViews(List<Atom> atoms) {
+			for (Atom atom : atoms) {
+				/*
+				 * Thios wil call recursively if necessary
+				 */
+				generateViewsIndexVariables(atom);
+			}
+		}
+
+		/***
+		 * We assiciate each atom to a view definition. This will be
+		 * <p>
+		 * "tablename" as "viewX" or
+		 * <p>
+		 * (some nested sql view) as "viewX"
+		 * 
+		 * <p>
+		 * View definitions are only done for data atoms. Join/LeftJoin and
+		 * boolean atoms are not associated to view definitions.
+		 * 
+		 * @param atom
+		 */
+		private void generateViewsIndexVariables(Function atom) {
+			if (atom.getFunctionSymbol() instanceof BooleanOperationPredicate) {
+				return;
+			} else if (atom.getFunctionSymbol() instanceof AlgebraOperatorPredicate) {
+				List<NewLiteral> lit = atom.getTerms();
+				for (NewLiteral subatom : lit) {
+					if (subatom instanceof Function) {
+						generateViewsIndexVariables((Function) subatom);
+					}
+
+				}
+			}
+
+			Predicate tablePredicate = atom.getFunctionSymbol();
+			String tableName = tablePredicate.toString();
+			DataDefinition def = metadata.getDefinition(tableName);
+			if (def == null) {
+				/*
+				 * There is no definition for this atom, its not a database
+				 * predicate, the query is empty.
+				 */
+				isEmpty = true;
+				return;
+			}
+
+			dataTableCount += 1;
+			viewNames.put(atom, String.format(VIEW_NAME, dataTableCount));
+			tableNames.put(atom, tableName);
+			dataDefinitions.put(atom, def);
+
+			indexVariables(atom);
+
+		}
+
+		private void indexVariables(Function atom) {
+			DataDefinition def = dataDefinitions.get(atom);
+			String viewName = viewNames.get(atom);
+			for (int index = 0; index < atom.getTerms().size(); index++) {
+
+				NewLiteral term = atom.getTerms().get(index);
+				if (!(term instanceof Variable))
+					continue;
+
+				LinkedHashSet<String> references = columnReferences.get(term);
+				if (references == null) {
+					references = new LinkedHashSet<String>();
+					columnReferences.put((Variable) term, references);
+				}
+				String columnName = def.getAttributeName(index +1);
+				String reference = viewName + "." + columnName;
+				references.add(reference);
+			}
+
+		}
+
+		/***
+		 * Returns all the column aliases that correspond to this variable,
+		 * across all the DATA atoms in the query (not algebra operators or
+		 * boolean conditions.
+		 * 
+		 * @param var
+		 *            The variable we want the referenced columns.
+		 */
+		public LinkedHashSet<String> getColumnReferences(Variable var) {
+
+			return columnReferences.get(var);
+		}
+
+		public String getViewDefinition(Function atom) {
+			DataDefinition def = dataDefinitions.get(atom);
+			if (def instanceof TableDefinition) {
+				return sqladapter.sqlTableName(tableNames.get(atom),
+						viewNames.get(atom));
+			} else if (def instanceof ViewDefinition) {
+				return String.format("(%s) %s",
+						((ViewDefinition) def).getStatement(),
+						viewNames.get(atom));
+			}
+			throw new RuntimeException(
+					"Impossible to get data definition for: " + atom
+							+ ", type: " + def);
+		}
+
+		// /* returns the number of appeareance of the variable in DB atoms */
+		// public List<Atom> getAtoms(Variable var) {
+		// return null;
+		// }
+		//
+		// public List<String> getColumnReferences(Variable var, Atom atom) {
+		// return null;
+		// }
+	}
+
+	/***
+	 * Returns a string with boolean conditions formed with the boolean atoms
+	 * found in the atoms list.
+	 */
+	private LinkedHashSet<String> getBooleanConditionsString(
+			List<Function> atoms, QueryAliasIndex index) {
+
+		LinkedHashSet<String> conditions = new LinkedHashSet<String>();
+
+		for (int atomidx = 0; atomidx < atoms.size(); atomidx++) {
+			NewLiteral innerAtom = atoms.get(atomidx);
+			Function innerAtomAsFunction = (Function) innerAtom;
+
+			if (isDataAtom(innerAtomAsFunction))
+				continue;
+
+			/* This is a boolean atom */
+			String condition = getSQLCondition(innerAtomAsFunction, index);
+			conditions.add(condition);
+		}
+
+		return conditions;
+	}
+
+	/***
+	 * Returns the table definition for these atoms. By default, a list of atoms
+	 * represents JOIN or LEFT JOIN of all the atoms, left to right. All boolean
+	 * atoms in the list are considered conditions in the ON clause of the JOIN.
+	 * 
+	 * <p>
+	 * If the list is a LeftJoin, then it can only have 2 data atoms, and it HAS
+	 * to have 2 data atoms.
+	 * 
+	 * <p>
+	 * If process boolean operators is enabled, all boolean conditions will be
+	 * added to the ON clause of the first JOIN.
+	 * 
+	 * @param atoms
+	 * @param index
+	 * @param isTopLevel
+	 *            indicates if the list of atoms is actually the main body of
+	 *            the conjunctive query. If it is, no JOIN is generated, but a
+	 *            cross product with WHERE clause. Moreover, the isLeftJoin
+	 *            argument will be ignored.
+	 * 
+	 * @return
+	 */
+	private String getTableDefinitions(List<Function> inneratoms,
+			QueryAliasIndex index, boolean isTopLevel, boolean isLeftJoin) {
+
+		/*
+		 * We now collect the view definitions for each data atom each
+		 * condition, and each each nested Join/LeftJoin
+		 */
+
+		List<String> tableDefinitions = new LinkedList<String>();
+
+		for (int atomidx = 0; atomidx < inneratoms.size(); atomidx++) {
+			NewLiteral innerAtom = inneratoms.get(atomidx);
+			Function innerAtomAsFunction = (Function) innerAtom;
+
+			if (!isDataAtom(innerAtomAsFunction))
+				continue;
+
+			String definition = getTableDefinition(innerAtomAsFunction, index);
+			tableDefinitions.add(definition);
+
+		}
+
+		/*
+		 * Now we generate the table definition, this will be either a comma
+		 * separated list for TOP level (FROM clause) or a Join/LeftJoin
+		 * (possibly nested if there are more than 2 table definitions in the
+		 * current list) in case this method was called recursively.
+		 */
+
+		StringBuffer tableDefinitionsString = new StringBuffer();
+
+		int size = tableDefinitions.size();
+		if (isTopLevel) {
+
+			if (size == 0)
+				throw new RuntimeException("No table definitions");
+
+			Iterator<String> tableDefinitionsIterator = tableDefinitions
+					.iterator();
+			tableDefinitionsString.append(tableDefinitionsIterator.next());
+			while (tableDefinitionsIterator.hasNext()) {
+				tableDefinitionsString.append(", ");
+				tableDefinitionsString.append(tableDefinitionsIterator.next());
+			}
+
+		} else {
+
+			/*
+			 * This is actually a Join or LeftJoin, so we form the JOINs/LEFT
+			 * JOINs and the ON clauses
+			 */
+			String JOIN_KEYWORD = null;
+			if (isLeftJoin) {
+				JOIN_KEYWORD = "LEFT JOIN";
+			} else {
+				JOIN_KEYWORD = "JOIN";
+			}
+			String JOIN = "(%s " + JOIN_KEYWORD + " %s)";
+
+			if (size < 2)
+				throw new RuntimeException(
+						"JOIN generation requires at least 2 tables");
+
+			/*
+			 * To form the JOIN we will cycle through each data definition,
+			 * nesting the JOINs as we go. The conditions in the ON clause will
+			 * go on the TOP level only.
+			 */
+			String currentJoin = String.format(JOIN,
+					tableDefinitions.get(size - 2),
+					tableDefinitions.get(size - 1));
+			tableDefinitions.remove(size - 1);
+			tableDefinitions.remove(size - 1);
+
+			int currentSize = tableDefinitions.size();
+			while (currentSize > 0) {
+				currentJoin = String.format(JOIN,
+						tableDefinitions.get(currentSize - 1), currentJoin);
+				tableDefinitions.remove(currentSize - 1);
+			}
+			tableDefinitions.add(currentJoin);
+
+			/*
+			 * If there are ON conditions we add them now. We need to remove the
+			 * last parenthesis ')' and replace it with ' ON %s)' where %s are
+			 * all the conditions
+			 */
+			String conditions = getConditionsString(inneratoms, index);
+
+			if (conditions.length() > 0) {
+				tableDefinitionsString
+						.deleteCharAt(tableDefinitions.size() - 1);
+				String ON_CLAUSE = String.format(" ON %s)", conditions);
+				tableDefinitionsString.append(ON_CLAUSE);
+			}
+		}
+
+		return tableDefinitionsString.toString();
+	}
+
+	/***
+	 * Returns the table definition for the given atom. If the atom is a simple
+	 * table or view, then it returns the value as defined by the
+	 * QueryAliasIndex. If the atom is a Join or Left Join, it will call
+	 * getTableDefinitions on the nested term list.
+	 * 
+	 * @param atom
+	 * @param index
+	 * @return
+	 */
+	private String getTableDefinition(Function atom, QueryAliasIndex index) {
+
+		Predicate predicate = atom.getPredicate();
+
+		if (predicate instanceof BooleanOperationPredicate) {
+			/*
+			 * These don't participate in the FROM clause
+			 */
+			return "";
+		} else if (predicate instanceof AlgebraOperatorPredicate) {
+
+			List<Function> innerTerms = new LinkedList<Function>();
+			for (NewLiteral innerTerm : atom.getTerms())
+				innerTerms.add((Function) innerTerm);
+			if (predicate == OBDAVocabulary.SPARQL_JOIN) {
+				return getTableDefinitions(innerTerms, index, false, false);
+			} else if (predicate == OBDAVocabulary.SPARQL_LEFTJOIN) {
+				return getTableDefinitions(innerTerms, index, false, true);
+			}
+		}
+
+		/*
+		 * This is a data atom
+		 */
+		String def = index.getViewDefinition(atom);
+		return def;
+	}
+
+	private String getFROM(CQIE query, QueryAliasIndex index) {
+		List<Function> atoms = new LinkedList<Function>();
+		for (Atom atom : query.getBody())
+			atoms.add((Function) atom);
+
+		String tableDefinitions = getTableDefinitions(atoms, index, true, false);
+		return " FROM " + tableDefinitions;
+
+	}
+
+	/***
+	 * Generates all the conditions on the given atoms, e.g., shared variables
+	 * and boolean conditions. This string can then be used to form a WHERE or
+	 * an ON clause.
+	 * 
+	 * <p>
+	 * The method assumes that no variable in this list (or nested ones) referes
+	 * to an upper level one.
+	 * 
+	 * @param atoms
+	 * @param index
+	 * @return
+	 */
+	private String getConditionsString(List<Function> atoms,
+			QueryAliasIndex index) {
+
+		LinkedHashSet<String> equalityConditions = getConditionsSharedVariables(
+				atoms, index);
+		LinkedHashSet<String> booleanConditions = getBooleanConditionsString(
+				atoms, index);
+
+		LinkedHashSet<String> conditions = new LinkedHashSet<String>();
+		conditions.addAll(equalityConditions);
+		conditions.addAll(booleanConditions);
+
+		/*
+		 * Collecting all the conditions in a single string for the ON or WHERE
+		 * clause
+		 */
+		StringBuffer conditionsString = new StringBuffer();
+		Iterator<String> conditionsIterator = conditions.iterator();
+		if (conditionsIterator.hasNext())
+			conditionsString.append(conditionsIterator.next());
+		while (conditionsIterator.hasNext()) {
+			conditionsString.append(" AND ");
+			conditionsString.append(conditionsIterator.next());
+		}
+		return conditionsString.toString();
+	}
+
+	/***
+	 * Returns a list of equality conditions that reflect the semantics of the
+	 * shared variables in the list of atoms.
+	 * <p>
+	 * The method assumes that no variables are shared across deeper levels of
+	 * nesting (through Join or LeftJoin atoms), it will not call itself
+	 * recursively. Nor across upper levels.
+	 * 
+	 * <p>
+	 * When generating equalities recursively, we will also generate a minimal
+	 * number of equalities. E.g., if we have A(x), Join(R(x,y), Join(R(y,
+	 * x),B(x))
+	 * 
+	 */
+	private LinkedHashSet<String> getConditionsSharedVariables(
+			List<Function> atoms, QueryAliasIndex index) {
+		LinkedHashSet<String> equalities = new LinkedHashSet<String>();
+
+		Set<Variable> currentLevelVariables = new LinkedHashSet<Variable>();
+		for (Function atom : atoms) {
+			Predicate f = atom.getFunctionSymbol();
+			if (f instanceof AlgebraOperatorPredicate
+					|| f instanceof BooleanOperationPredicate) {
+				continue;
+			}
+			currentLevelVariables.addAll(atom.getReferencedVariables());
+		}
+
+		/*
+		 * For each variable we collect all the columns that shold be equated
+		 * (due to repeated positions of the variable). then we form atoms of
+		 * the form "COL1 = COL2"
+		 */
+
+		for (Variable var : currentLevelVariables) {
+			Set<String> references = index.getColumnReferences(var);
+			if (references.size() < 2) {
+				// No need for equality
+				continue;
+			}
+			Iterator<String> referenceIterator = references.iterator();
+			String leftColumnReference = referenceIterator.next();
+			while (referenceIterator.hasNext()) {
+				String rightColumnReference = referenceIterator.next();
+				String equality = String.format("(%s = %s)",
+						leftColumnReference, rightColumnReference);
+				equalities.add(equality);
+				leftColumnReference = rightColumnReference;
+			}
+		}
+		return equalities;
+
+	}
+
+	private String getWHERE(CQIE query, QueryAliasIndex index) {
+		List<Function> atoms = new LinkedList<Function>();
+		for (Atom atom : query.getBody())
+			atoms.add((Function) atom);
+
+		String conditions = getConditionsString(atoms, index);
+		if (conditions.length() == 0)
+			return "";
+
+		return " WHERE " + conditions;
+	}
+
 	private String generateQuery(DatalogProgram query, List<String> signature,
 			String indent) throws OBDAException {
-		int ruleSize = query.getRules().size();
 
-		if (ruleSize == 0) {
-			throw new OBDAException("Cannot generate SQL for an empty query");
-		}
-		// if (!isUCQ(query)) {
-		// throw new
-		// InvalidParameterException("Only UCQs are supported at the moment");
-		// }
-		log.debug("Generating SQL. Initial query size: {}", query.getRules()
-				.size());
-		List<CQIE> cqs = query.getRules();
-
-		if (cqs.size() < 1) {
-			return "";
-		}
-		/*
-		 * BEFORE DOING ANytHING WE SHOULD NORMALIZE EQ ATOMS A(x), B(y),
-		 * EQ(x,y), should be transformed into A(x), B(x)
-		 */
 		boolean distinct = query.getQueryModifiers().isDistinct();
+		int numberOfQueries = query.getRules().size();
 
+		List<String> queriesStrings = new LinkedList<String>();
 		/* Main loop, constructing the SPJ query for each CQ */
-		StringBuffer result = new StringBuffer();
-		boolean isMoreThanOne = false;
-		for (CQIE cq : cqs) {
+		for (CQIE cq : query.getRules()) {
 
-			if (!cq.getHead().getPredicate().getName().toString()
-					.equals("ans1")) {
+			Predicate headPredicate = cq.getHead().getFunctionSymbol();
+			if (!headPredicate.getName().toString().equals("ans1")) {
 				// not a target query, skip it.
 				continue;
 			}
 
-			StringBuffer sb = new StringBuffer();
-			int size = cq.getBody().size();
-			String[] viewNames = new String[size];
-			String[] tableNames = new String[size];
-			DataDefinition[] dataDefinitions = new DataDefinition[size];
+			QueryAliasIndex index = new QueryAliasIndex(cq);
 
-			LinkedList<String> fromTables = new LinkedList<String>();
-			LinkedList<String> whereConditions = new LinkedList<String>();
-
-			/*
-			 * Generating FROM clause and stablishing view names for all the
-			 * atoms in the query
-			 */
-			List<Atom> body = new ArrayList<Atom>(cq.getBody());
-
-			/* Contains the list of all the table/views in the FROM clause */
-			boolean isempty = false;
-			for (int i = 0; i < body.size(); i++) {
-
-				Atom atom = body.get(i);
-				if (atom.getPredicate() instanceof BooleanOperationPredicate) {
-					continue;
-				}
-				Predicate tablePredicate = atom.getPredicate();
-				String tableName = tablePredicate.toString();
-				DataDefinition def = metadata.getDefinition(tableName);
-				if (def == null) {
-					/*
-					 * There is no definition for this atom, its not a database
-					 * predicate, the query is empty.
-					 */
-					isempty = true;
-					break;
-				}
-				viewNames[i] = String.format(VIEW_NAME, i);
-				tableNames[i] = tableName;
-				dataDefinitions[i] = def;
-
-				if (def instanceof TableDefinition) {
-					fromTables.add(sqladapter.sqlTableName(tableNames[i],
-							viewNames[i]));
-				}
-				if (def instanceof ViewDefinition) {
-					fromTables.add(String
-							.format("(%s) %s",
-									((ViewDefinition) def).getStatement(),
-									viewNames[i]));
-				}
-			}
-			if (isempty) {
-				continue;
+			boolean innerdistincts = false;
+			if (distinct && numberOfQueries == 1) {
+				innerdistincts = true;
 			}
 
-			/*
-			 * First we generate all conditions for shared variables (join
-			 * conditions, and duplicated variables in single atoms
-			 */
+			String FROM = getFROM(cq, index);
+			String WHERE = getWHERE(cq, index);
+			String SELECT = getSelectClause(signature, cq, index,
+					innerdistincts);
 
-			Map<Variable, Integer> varCount = new HashMap<Variable, Integer>();
-			Map<Variable, List<Integer>> varAtomIndex = new HashMap<Variable, List<Integer>>();
-			Map<Variable, Map<Atom, List<Integer>>> varAtomTermIndex = new HashMap<Variable, Map<Atom, List<Integer>>>();
-			createVariableIndex(cq, varCount, varAtomIndex, varAtomTermIndex);
-
-			for (Variable var : varCount.keySet()) {
-				int count = varCount.get(var);
-				if (count < 2) {
-					continue;
-				}
-				List<Integer> atomIndexes = varAtomIndex.get(var);
-
-				/* first shared within the same atom, e.g., atom(x,y,x,x) */
-				for (int index : atomIndexes) {
-					Atom atom = body.get(index);
-					List<Integer> positionsInAtom = varAtomTermIndex.get(var)
-							.get(atom);
-					if (positionsInAtom.size() < 2) {
-						continue;
-					}
-					Iterator<Integer> positionIterator = positionsInAtom
-							.iterator();
-					Integer position1 = positionIterator.next();
-					while (positionIterator.hasNext()) {
-						Integer position2 = positionIterator.next();
-						String currentView = viewNames[index];
-						String attributeName1 = metadata.getAttributeName(
-								tableNames[index], position1 + 1);
-						String column1 = getColumnName(attributeName1);
-						String qualifiedNameColumn1 = sqladapter
-								.sqlQualifiedColumn(currentView, column1);
-						String attributeName2 = metadata.getAttributeName(
-								tableNames[index], position2 + 1);
-						String column2 = getColumnName(attributeName2);
-						String qualifiedNameColumn2 = sqladapter
-								.sqlQualifiedColumn(currentView, column2);
-						String currentcondition = String.format("("
-								+ EQ_OPERATOR + ")", qualifiedNameColumn1,
-								qualifiedNameColumn2);
-						whereConditions.add(currentcondition);
-					}
-				}
-
-				/* doing shared across atoms e.g., atom1(x,y,z), atom2(m,x,k) */
-				Iterator<Integer> atomIndexIterator = varAtomIndex.get(var)
-						.iterator();
-				int indexatom1 = atomIndexIterator.next();
-				Atom atom = body.get(indexatom1);
-				int indexatom1var = varAtomTermIndex.get(var).get(atom).get(0);
-				while (atomIndexIterator.hasNext()) {
-					int indexatom2 = atomIndexIterator.next();
-					Atom atom2 = body.get(indexatom2);
-					for (int indexatom2var2 : varAtomTermIndex.get(var).get(
-							atom2)) {
-						String view1 = viewNames[indexatom1];
-						String attributeName1 = metadata.getAttributeName(
-								tableNames[indexatom1], indexatom1var + 1);
-						String column1 = getColumnName(attributeName1);
-						String qualifiedNameColumn1 = sqladapter
-								.sqlQualifiedColumn(view1, column1);
-						String view2 = viewNames[indexatom2];
-						String attributeName2 = metadata.getAttributeName(
-								tableNames[indexatom2], indexatom2var2 + 1);
-						String column2 = getColumnName(attributeName2);
-						String qualifiedNameColumn2 = sqladapter
-								.sqlQualifiedColumn(view2, column2);
-						String currentcondition = String.format("("
-								+ EQ_OPERATOR + ")", qualifiedNameColumn1,
-								qualifiedNameColumn2);
-						whereConditions.add(currentcondition);
-					}
-				}
-			}
-
-			/*
-			 * Generating the rest of the where clause, that is, constants in
-			 * the atoms, and boolean condition atoms
-			 */
-			for (int i1 = 0; i1 < body.size(); i1++) {
-
-				Atom atom = body.get(i1);
-				Predicate predicate = atom.getPredicate();
-				List<NewLiteral> terms = atom.getTerms();
-
-				if (predicate instanceof BooleanOperationPredicate) {
-					/*
-					 * This is a comparison atom, not associated with a DB atom,
-					 * but imposing conditions on columns of those.
-					 */
-					whereConditions.add(getSQLCondition(atom, body, tableNames,
-							viewNames, varAtomIndex, varAtomTermIndex));
-
-				} else {
-					/*
-					 * This is a normal DB atom, which can impose conditions
-					 * (besides joins) by having constants in some terms.
-					 */
-					for (int termj = 0; termj < terms.size(); termj++) {
-						NewLiteral term = terms.get(termj);
-						if (term instanceof ValueConstant) {
-							ValueConstant ct = (ValueConstant) term;
-							String value = jdbcutil.getSQLLexicalForm(ct);
-							String attributeName = metadata.getAttributeName(
-									tableNames[i1], termj + 1);
-							String colname = getColumnName(attributeName);
-							String qualifiedName = sqladapter
-									.sqlQualifiedColumn(viewNames[i1], colname);
-							String condition = String.format("(" + EQ_OPERATOR
-									+ ")", qualifiedName, value);
-							whereConditions.add(condition);
-						} else if (term instanceof URIConstant) {
-							URIConstant ct = (URIConstant) term;
-							String value = jdbcutil.getSQLLexicalForm(ct
-									.getURI().toString());
-							String attributeName = metadata.getAttributeName(
-									tableNames[i1], termj + 1);
-							String colname = getColumnName(attributeName);
-							String qualifiedName = sqladapter
-									.sqlQualifiedColumn(viewNames[i1], colname);
-							String condition = String.format("(" + EQ_OPERATOR
-									+ ")", qualifiedName, value);
-							whereConditions.add(condition);
-						} else if (term instanceof Variable) {
-							// NO-OP
-						} else if (term instanceof Function) {
-							// NO-OP
-						} else {
-							throw new RuntimeException(
-									"Found a non-supported term in the body while generating SQL");
-						}
-					}
-				}
-			}
-
-			/* Creating the FROM */
-			StringBuffer fromBf = new StringBuffer();
-			fromBf.append(indent + "FROM ");
-			boolean moreThanOne = false;
-			for (String tdefinition : fromTables) {
-				if (moreThanOne) {
-					fromBf.append(", ");
-				}
-				fromBf.append("\n" + indent + "    ");
-				fromBf.append(tdefinition);
-				moreThanOne = true;
-			}
-
-			/* Creating the WHERE */
-			StringBuffer whereBf = new StringBuffer();
-			whereBf.append(indent + "WHERE ");
-			moreThanOne = false;
-			for (String tdefinition : whereConditions) {
-				whereBf.append("\n" + indent + "    ");
-				if (moreThanOne) {
-					whereBf.append(" AND ");
-				}
-				whereBf.append(tdefinition);
-				moreThanOne = true;
-			}
-
-			/* Creating the SELECT */
-			Atom head = cq.getHead();
-			sb.append(indent + "SELECT ");
-			if (distinct && cqs.size() == 1) {
-				sb.append("DISTINCT ");
-			}
-			sb.append(getSelectClause(head, body, signature, tableNames,
-					viewNames, varAtomIndex, varAtomTermIndex, indent));
-
-			StringBuffer sqlquery = new StringBuffer();
-			sqlquery.append(sb);
-			sqlquery.append("\n");
-			sqlquery.append(fromBf);
-			if (whereConditions.size() > 0) {
-				sqlquery.append("\n");
-				sqlquery.append(whereBf);
-			}
-			if (isMoreThanOne) {
-				if (distinct) {
-					result.append("\n\n");
-					result.append(indent + "UNION");
-					result.append("\n\n");
-				} else {
-					result.append("\n\n");
-					result.append(indent + "UNION ALL");
-					result.append("\n\n");
-				}
-			}
-			result.append(sqlquery);
-			isMoreThanOne = true;
+			String querystr = SELECT + FROM + WHERE;
+			queriesStrings.add(querystr);
 		}
+
+		Iterator<String> queryStringIterator = queriesStrings.iterator();
+		StringBuffer result = new StringBuffer();
+		if (queryStringIterator.hasNext()) {
+			result.append(queryStringIterator.next());
+		}
+
+		String UNION = null;
+		if (distinct)
+			UNION = "UNION";
+		else
+			UNION = "UNION ALL";
+
+		while (queryStringIterator.hasNext()) {
+			result.append("\n\n");
+			result.append(UNION);
+			result.append("\n\n");
+			result.append(queryStringIterator.next());
+		}
+
 		return result.toString();
 	}
 
@@ -471,25 +611,31 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 *            the query
 	 * @return the sql select clause
 	 */
-	private String getSelectClause(Atom head, List<Atom> body,
-			List<String> signature, String[] tableName, String[] viewName,
-			Map<Variable, List<Integer>> varAtomIndex,
-			Map<Variable, Map<Atom, List<Integer>>> varAtomTermIndex,
-			String indent) throws OBDAException {
-		List<NewLiteral> headterms = head.getTerms();
+	private String getSelectClause(List<String> signature, CQIE query,
+			QueryAliasIndex index, boolean distinct) throws OBDAException {
 
-		String typeStr = "%s AS \"%sQuestType\", ";
+		/*
+		 * If the head has size 0 this is a boolean query.
+		 */
 
+		List<NewLiteral> headterms = query.getHead().getTerms();
 		StringBuilder sb = new StringBuilder();
+
+		sb.append("SELECT ");
+		if (distinct)
+			sb.append("DISTINCT ");
+
 		if (headterms.size() == 0) {
 			sb.append("true as x");
 			return sb.toString();
 		}
 
+		String typeStr = "%s AS \"%sQuestType\", ";
+
 		Iterator<NewLiteral> hit = headterms.iterator();
 		int hpos = 0;
 		while (hit.hasNext()) {
-			sb.append("\n" + indent + "   ");
+			sb.append(" ");
 			NewLiteral ht = hit.next();
 			if (!((ht instanceof Function) || (ht instanceof Constant))) {
 				throw new IllegalArgumentException(
@@ -569,9 +715,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 								lang = jdbcutil
 										.getSQLLexicalForm((ValueConstant) langTerm);
 							} else {
-								lang = getSQLString(langTerm, body, tableName,
-										viewName, varAtomIndex,
-										varAtomTermIndex, false);
+								lang = getSQLString(langTerm, index, false);
 							}
 						}
 						sb.append(String.format(langStr, lang,
@@ -583,9 +727,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 							termStr = jdbcutil
 									.getSQLLexicalForm((ValueConstant) term);
 						} else {
-							termStr = getSQLString(term, body, tableName,
-									viewName, varAtomIndex, varAtomTermIndex,
-									false);
+							termStr = getSQLString(term, index, false);
 						}
 						sb.append(termStr);
 
@@ -598,9 +740,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 						NewLiteral term = ov.getTerms().get(0);
 						if (term instanceof Variable) {
 							Variable v = (Variable) term;
-							String column = getSQLString(v, body, tableName,
-									viewName, varAtomIndex, varAtomTermIndex,
-									false);
+							String column = getSQLString(v, index, false);
 							sb.append(column);
 						} else if (term instanceof ValueConstant) {
 							ValueConstant c = (ValueConstant) term;
@@ -611,20 +751,17 @@ public class SQLGenerator implements SQLQueryGenerator {
 					/***
 					 * New template based URI building functions
 					 */
-					
+
 					String langStr = "%s AS \"%sLang\", ";
-					
-					sb.append(String.format(langStr, "NULL", signature.get(hpos)));
-					
+
+					sb.append(String.format(langStr, "NULL",
+							signature.get(hpos)));
+
 					String result = "";
 
-					result = getSQLStringForURIFunction(ov, body, tableName,
-							viewName, varAtomIndex, varAtomTermIndex, false);
+					result = getSQLStringForURIFunction(ov, index);
 
-					
 					sb.append(result);
-					
-					
 
 				} else {
 					throw new IllegalArgumentException(
@@ -633,12 +770,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 				}
 			} else if (ht instanceof URIConstant) {
 
-				
 				sb.append(String.format(typeStr, 1, signature.get(hpos)));
-				
+
 				String langStr = "%s AS \"%sLang\", ";
 				sb.append(String.format(langStr, "NULL", signature.get(hpos)));
-				
+
 				URIConstant uc = (URIConstant) ht;
 				sb.append(jdbcutil.getSQLLexicalForm(uc.getURI().toString()));
 
@@ -668,13 +804,29 @@ public class SQLGenerator implements SQLQueryGenerator {
 		return sb.toString();
 	}
 
-	public String getSQLStringForURIFunction(Function ov, List<Atom> body,
-			String[] tableName, String[] viewName,
-			Map<Variable, List<Integer>> varAtomIndex,
-			Map<Variable, Map<Atom, List<Integer>>> varAtomTermIndex, boolean b) {
-		String result = "";
+	/***
+	 * Returns the SQL that builds a URI String out of an atom of the form
+	 * uri("htttp:...", x, y,...)
+	 * 
+	 * @param ov
+	 * @param index
+	 * @return
+	 */
+	public String getSQLStringForURIFunction(Function ov, QueryAliasIndex index) {
+
+		/*
+		 * The first inner term determines the form of the result
+		 */
 		NewLiteral t = ov.getTerms().get(0);
+
 		if (t instanceof ValueConstant) {
+			/*
+			 * The function is actually a template. The first parameter is a
+			 * string of the form http://.../.../ with place holders of the form
+			 * {}. The rest are variables or constants that should be put in
+			 * place of the palce holders. We need to tokenize and form the
+			 * CONCAT
+			 */
 			ValueConstant c = (ValueConstant) t;
 			StringTokenizer tokenizer = new StringTokenizer(c.toString(), "{}");
 			String functionString = jdbcutil.getSQLLexicalForm(tokenizer
@@ -683,8 +835,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 			int termIndex = 1;
 			do {
 				NewLiteral currentTerm = ov.getTerms().get(termIndex);
-				vex.add(getSQLString(currentTerm, body, tableName, viewName,
-						varAtomIndex, varAtomTermIndex, false));
+				vex.add(getSQLString(currentTerm, index, false));
 				if (tokenizer.hasMoreTokens()) {
 					vex.add(jdbcutil.getSQLLexicalForm(tokenizer.nextToken()));
 				}
@@ -699,33 +850,46 @@ public class SQLGenerator implements SQLQueryGenerator {
 				params[i] = param;
 				i += 1;
 			}
-			String concat = sqladapter.strconcat(params);
-			result = concat;
+			return sqladapter.strconcat(params);
 		} else if (t instanceof Variable) {
-			result = getSQLString(((Variable) t), body, tableName, viewName,
-					varAtomIndex, varAtomTermIndex, false);
+			/*
+			 * The function is of the form uri(x), we need to simply return the
+			 * value of X
+			 */
+
+			return getSQLString(((Variable) t), index, false);
 		} else if (t instanceof URIConstant) {
 			URIConstant uc = (URIConstant) t;
-			result = jdbcutil.getSQLLexicalForm(uc.getURI().toString());
-		} else {
-			throw new IllegalArgumentException(
-					"Error, cannot generate URI constructor clause for a term. Contact the authors. Term: "
-							+ ov.toString());
+			/*
+			 * The function is of the form uri("http://some.uri/"), i.e., a
+			 * concrete URI, we return the string representing that URI.
+			 */
+			return jdbcutil.getSQLLexicalForm(uc.getURI().toString());
 		}
-		return result;
+
+		/*
+		 * Unsupported case
+		 */
+		throw new IllegalArgumentException(
+				"Error, cannot generate URI constructor clause for a term. Contact the authors. Term: "
+						+ ov.toString());
+
 	}
 
-	public String getSQLCondition(Atom atom, List<Atom> body,
-			String[] tableName, String[] viewName,
-			Map<Variable, List<Integer>> varAtomIndex,
-			Map<Variable, Map<Atom, List<Integer>>> varAtomTermIndex) {
-		final Predicate functionSymbol = atom.getPredicate();
+	/***
+	 * Returns the SQL for an atom representing an SQL condition (booleans)
+	 * 
+	 * @param atom
+	 * @param index
+	 * @return
+	 */
+	public String getSQLCondition(Function atom, QueryAliasIndex index) {
+		Predicate functionSymbol = atom.getFunctionSymbol();
 		if (isUnary(atom)) {
 			// For unary boolean operators, e.g., NOT, IS NULL, IS NOT NULL.
 			NewLiteral term = atom.getTerms().get(0);
 			String expressionFormat = getBooleanOperatorString(functionSymbol);
-			String column = getSQLString(term, body, tableName, viewName,
-					varAtomIndex, varAtomTermIndex, false);
+			String column = getSQLString(term, index, false);
 			return String.format(expressionFormat, column);
 
 		} else if (isBinary(atom)) {
@@ -733,48 +897,18 @@ public class SQLGenerator implements SQLQueryGenerator {
 			// LangMatches
 			NewLiteral left = atom.getTerms().get(0);
 			NewLiteral right = atom.getTerms().get(1);
-
-			// if (functionSymbol == OBDAVocabulary.SPARQL_LANGMATCHES) {
-			// if (!(left instanceof Function))
-			// return "(FALSE)";
-			// Function literal = (Function)left;
-			// if (literal.getFunctionSymbol() != OBDAVocabulary.RDFS_LITERAL)
-			// return ("FALSE");
-			// NewLiteral langTerm = literal.getTerm(1);
-			// if ((langTerm instanceof ValueConstant) && (right instanceof
-			// ValueConstant))
-			// {
-			// if (langTerm.equals(right))
-			// return ("(TRUE)");
-			// else
-			// return ("(FALSE)");
-			// }
-			//
-			// String leftOp = getSQLString(langTerm, body, tableName, viewName,
-			// varAtomIndex, varAtomTermIndex, true);
-			// String rightOp = getSQLString(right, body, tableName, viewName,
-			// varAtomIndex, varAtomTermIndex, true);
-			//
-			//
-			// String expressionFormat = "%s = %s";
-			// return String.format("("+expressionFormat+")", leftOp, rightOp);
-			//
-			// } else {
 			String expressionFormat = getBooleanOperatorString(functionSymbol);
 
-			String leftOp = getSQLString(left, body, tableName, viewName,
-					varAtomIndex, varAtomTermIndex, true);
-			String rightOp = getSQLString(right, body, tableName, viewName,
-					varAtomIndex, varAtomTermIndex, true);
+			String leftOp = getSQLString(left, index, true);
+			String rightOp = getSQLString(right, index, true);
 			return String.format("(" + expressionFormat + ")", leftOp, rightOp);
-			// }
 
-		} else {
-			// Throw an exception for other types
-			throw new RuntimeException(
-					"No support for n-ary boolean condition predicate: "
-							+ atom.getPredicate());
 		}
+		// SQL conditions can only be unary or binary!
+		throw new RuntimeException(
+				"No support for n-ary boolean condition predicate: "
+						+ atom.getPredicate());
+
 	}
 
 	/**
@@ -805,102 +939,87 @@ public class SQLGenerator implements SQLQueryGenerator {
 		return (fun.getArity() == 2) ? true : false;
 	}
 
-	public String getSQLString(NewLiteral term, List<Atom> body,
-			String[] tableName, String[] viewName,
-			Map<Variable, List<Integer>> varAtomIndex,
-			Map<Variable, Map<Atom, List<Integer>>> varAtomTermIndex,
+	public String getSQLString(NewLiteral term, QueryAliasIndex index,
 			boolean useBrackets) {
-		StringBuffer result = new StringBuffer();
 		if (term instanceof ValueConstant) {
 			ValueConstant ct = (ValueConstant) term;
-			result.append(jdbcutil.getSQLLexicalForm(ct));
-
+			return jdbcutil.getSQLLexicalForm(ct);
 		} else if (term instanceof URIConstant) {
 			URIConstant uc = (URIConstant) term;
-			result.append(jdbcutil.getSQLLexicalForm(uc.toString()));
+			return jdbcutil.getSQLLexicalForm(uc.toString());
 
 		} else if (term instanceof Variable) {
 			Variable var = (Variable) term;
-			List<Integer> posList = varAtomIndex.get(var); // Locating the first
-															// occurrence of the
-															// variable in a DB
-															// atom (using the
-															// indexes)
-			if (posList == null) {
+			LinkedHashSet<String> posList = index.getColumnReferences(var);
+			if (posList.size() == 0) {
 				throw new RuntimeException(
 						"Unbound variable found in WHERE clause: " + term);
 			}
-			int atomidx = posList.get(0);
-			Atom atom = body.get(atomidx);
-			int termidx = varAtomTermIndex.get(var).get(atom).get(0);
-			String viewname = viewName[atomidx];
-			String attributeName = metadata.getAttributeName(
-					tableName[atomidx], termidx + 1);
-			String columnName = getColumnName(attributeName);
-			result.append(sqladapter.sqlQualifiedColumn(viewname, columnName));
+			return posList.iterator().next();
+		}
 
-		} else if (term instanceof Function) {
-			Function function = (Function) term;
-			Predicate functionSymbol = function.getFunctionSymbol();
-			if (functionSymbol instanceof DataTypePredicate) {
-				result.append(getSQLString(function.getTerms().get(0), body,
-						tableName, viewName, varAtomIndex, varAtomTermIndex,
-						false));
-			} else if (functionSymbol instanceof BooleanOperationPredicate) {
-				if (isUnary(function)) {
-					// for unary functions, e.g., NOT, IS NULL, IS NOT NULL
-					String expressionFormat = getBooleanOperatorString(functionSymbol);
-					String op = getSQLString(function.getTerms().get(0), body,
-							tableName, viewName, varAtomIndex,
-							varAtomTermIndex, true);
-					result.append(String.format(expressionFormat, op));
-				} else if (isBinary(function)) {
-					// for binary functions, e.g., AND, OR, EQ, NEQ, GT, etc.
-					String expressionFormat = getBooleanOperatorString(functionSymbol);
-					String leftOp = getSQLString(function.getTerms().get(0),
-							body, tableName, viewName, varAtomIndex,
-							varAtomTermIndex, true);
-					String rightOp = getSQLString(function.getTerms().get(1),
-							body, tableName, viewName, varAtomIndex,
-							varAtomTermIndex, true);
-					result.append(String.format(expressionFormat, leftOp,
-							rightOp));
-					if (useBrackets) {
-						result.insert(0, "(");
-						result.append(")");
-					}
+		/* If its not constant, or variable its a function */
+
+		Function function = (Function) term;
+		Predicate functionSymbol = function.getFunctionSymbol();
+		NewLiteral term1 = function.getTerms().get(0);
+
+		if (functionSymbol instanceof DataTypePredicate) {
+
+			/* atoms of the form integer(x) */
+			return getSQLString(term1, index, false);
+
+		} else if (functionSymbol instanceof BooleanOperationPredicate) {
+
+			/* atoms of the form EQ(x,y) */
+
+			String expressionFormat = getBooleanOperatorString(functionSymbol);
+			if (isUnary(function)) {
+
+				// for unary functions, e.g., NOT, IS NULL, IS NOT NULL
+				String op = getSQLString(term1, index, true);
+				return String.format(expressionFormat, op);
+			} else if (isBinary(function)) {
+
+				// for binary functions, e.g., AND, OR, EQ, NEQ, GT, etc.
+				String leftOp = getSQLString(term1, index, true);
+				NewLiteral term2 = function.getTerms().get(1);
+				String rightOp = getSQLString(term2, index, true);
+				String result = String
+						.format(expressionFormat, leftOp, rightOp);
+				if (useBrackets) {
+					return String.format("(%)", result);
 				}
-			} else if (function.getFunctionSymbol().toString()
-					.equals(OBDAVocabulary.QUEST_URI)) {
-				result.append(getSQLStringForURIFunction(function, body,
-						tableName, viewName, varAtomIndex, varAtomTermIndex,
-						true));
-
+				return result;
 			} else {
-				throw new RuntimeException("Unexpected function in the query: "
-						+ functionSymbol);
+				throw new RuntimeException(
+						"Cannot translate boolean function: " + functionSymbol);
 			}
 		}
-		return result.toString();
+
+		/*
+		 * The atom must be of the form uri("...", x, y)
+		 */
+
+		String functionName = function.getFunctionSymbol().toString();
+		if (functionName.equals(OBDAVocabulary.QUEST_URI)) {
+			return getSQLStringForURIFunction(function, index);
+
+		} else {
+			throw new RuntimeException("Unexpected function in the query: "
+					+ functionSymbol);
+
+		}
+
 	}
 
-	// private boolean isUCQ(DatalogProgram query) {
-	// boolean isUCQ = true;
-	// int arity = query.getRules().get(0).getHead().getArity();
-	// for (CQIE cq : query.getRules()) {
-	// if
-	// (!cq.getHead().getPredicate().getName().equals(OBDALibConstants.QUERY_HEAD_URI))
-	// {
-	// isUCQ = false;
-	// }
-	// if (cq.getHead().getArity() != arity)
-	// isUCQ = false;
-	// if (isUCQ == false)
-	// break;
-	// }
-	// return isUCQ;
-	// }
-
+	/***
+	 * Returns the SQL string for the boolean operator, including placeholders
+	 * for the terms to be used, e.g., %s = %s, %s IS NULL, etc.
+	 * 
+	 * @param functionSymbol
+	 * @return
+	 */
 	private String getBooleanOperatorString(Predicate functionSymbol) {
 		String operator = null;
 		if (functionSymbol.equals(OBDAVocabulary.EQ)) {
@@ -940,5 +1059,22 @@ public class SQLGenerator implements SQLQueryGenerator {
 					attributeName.lastIndexOf(".") + 1, attributeName.length());
 		}
 		return columnName;
+	}
+
+	// private int countDataAtoms(List<Function> atoms) {
+	// int count = 0;
+	// for (int atomidx = 0; atomidx < atoms.size(); atomidx++) {
+	// Function atom = atoms.get(atomidx);
+	// if (atom.getFunctionSymbol() instanceof BooleanOperationPredicate)
+	// continue;
+	// count += 1;
+	// }
+	// return count;
+	// }
+
+	private boolean isDataAtom(Function atom) {
+		if (atom.getFunctionSymbol() instanceof BooleanOperationPredicate)
+			return false;
+		return true;
 	}
 }

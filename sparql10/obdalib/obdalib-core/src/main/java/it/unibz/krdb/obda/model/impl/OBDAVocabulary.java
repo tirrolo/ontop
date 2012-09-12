@@ -154,6 +154,8 @@ public class OBDAVocabulary {
 	public static final String SPARQL_LANGMATCHES_URI = "LangMatches";
 	
 	public static final Predicate SPARQL_JOIN = new AlgebraOperatorPredicateImpl(URI.create(SPARQL_JOIN_URI), COL_TYPE.STRING);
+	
+	public static final Predicate SPARQL_LEFTJOIN = new AlgebraOperatorPredicateImpl(URI.create(SPARQL_LEFTJOIN_URI), COL_TYPE.STRING);
 
 	public static final Predicate SPARQL_LANGMATCHES = new BooleanOperationPredicateImpl(URI.create(SPARQL_LANGMATCHES_URI), 2);
 

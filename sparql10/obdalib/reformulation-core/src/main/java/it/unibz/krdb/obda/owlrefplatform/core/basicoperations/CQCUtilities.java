@@ -11,6 +11,7 @@ import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.AnonymousVariable;
+import it.unibz.krdb.obda.model.impl.AtomWrapperImpl;
 import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.VariableImpl;
@@ -342,7 +343,7 @@ public class CQCUtilities {
 				}
 				headterms.set(i, substitution);
 			} else if (term instanceof Function) {
-				FunctionalTermImpl function = (FunctionalTermImpl) term;
+				Function function = (Function) term;
 				List<NewLiteral> functionterms = function.getTerms();
 				for (int j = 0; j < functionterms.size(); j++) {
 					NewLiteral fterm = functionterms.get(j);
