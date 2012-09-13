@@ -2,10 +2,10 @@ package it.unibz.krdb.obda.model.impl;
 
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers;
 import it.unibz.krdb.obda.model.NewLiteral;
+import it.unibz.krdb.obda.model.OBDAQueryModifiers;
 import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.utils.EventGeneratingLinkedList;
+import it.unibz.krdb.obda.utils.EventGeneratingArrayList;
 import it.unibz.krdb.obda.utils.ListListener;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class CQIEImpl implements CQIE, ListListener {
 		// The syntax for CQ may contain no body, thus, this condition will
 		// check whether the construction of the link list is possible or not.
 		if (body != null) {
-			EventGeneratingLinkedList<Atom> eventbody = new EventGeneratingLinkedList<Atom>();
+			EventGeneratingArrayList<Atom> eventbody = new EventGeneratingArrayList<Atom>(body.size()*20);
 			eventbody.addAll(body);
 
 			this.body = eventbody;
@@ -63,7 +63,7 @@ public class CQIEImpl implements CQIE, ListListener {
 		if (head != null) {
 			this.head = head;
 
-			EventGeneratingLinkedList<NewLiteral> headterms = (EventGeneratingLinkedList<NewLiteral>) head.getTerms();
+			EventGeneratingArrayList<NewLiteral> headterms = (EventGeneratingArrayList<NewLiteral>) head.getTerms();
 			headterms.addListener(this);
 		}
 	}
@@ -78,10 +78,11 @@ public class CQIEImpl implements CQIE, ListListener {
 
 	public void updateHead(Atom head) {
 
-		EventGeneratingLinkedList<NewLiteral> headterms = (EventGeneratingLinkedList<NewLiteral>) head.getTerms();
+		EventGeneratingArrayList<NewLiteral> headterms = (EventGeneratingArrayList<NewLiteral>) head.getTerms();
 		headterms.removeListener(this);
 
 		this.head = head;
+		((EventGeneratingArrayList)head.getTerms()).addListener(this);
 
 		rehash = true;
 		string = null;

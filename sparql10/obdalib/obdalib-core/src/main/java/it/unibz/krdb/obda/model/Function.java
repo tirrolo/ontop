@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This class defines a type of {@link NewLiteral} in which it denotes a mapping of
- * one or more elements in a set (called the domain of the function) into a
+ * This class defines a type of {@link NewLiteral} in which it denotes a mapping
+ * of one or more elements in a set (called the domain of the function) into a
  * unique element of another set (the range of the function).
  * <p>
  * A function expression is a function symbol followed by its arguments. The
@@ -37,11 +37,10 @@ public interface Function extends NewLiteral {
 	 * @return the predicate object.
 	 */
 	public Predicate getFunctionSymbol();
-	
-	
-	
+
 	/***
 	 * Same as before
+	 * 
 	 * @return
 	 */
 	@Deprecated
@@ -55,15 +54,21 @@ public interface Function extends NewLiteral {
 	public int getArity();
 
 	public int getFirstOcurrance(NewLiteral t, int i);
-	
+
 	public NewLiteral getTerm(int index);
-	
+
 	public void setTerm(int index, NewLiteral term);
-	
+
 	public Set<Variable> getVariables();
-	
+
 	public void updateTerms(List<NewLiteral> literals);
-	
+
 	public void setPredicate(Predicate p);
+
+	boolean isDataFunction();
+
+	boolean isBooleanFunction();
+
+	boolean isAlgebraFunction();
 
 }

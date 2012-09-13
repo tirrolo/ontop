@@ -14,6 +14,7 @@ import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
+import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.AlgebraOperatorPredicateImpl;
@@ -24,7 +25,6 @@ import it.unibz.krdb.obda.model.impl.URIConstantImpl;
 import it.unibz.krdb.obda.model.impl.ValueConstantImpl;
 import it.unibz.krdb.obda.model.impl.VariableImpl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -165,12 +165,12 @@ public class Unifier {
 		applyUnifier(terms, unifier);
 	}
 
-//	public static void applyUnifier(List<Function> terms,
-//			Map<Variable, NewLiteral> unifier) {
-//		for (Function f : terms) {
-//			applyUnifier(f, unifier);
-//		}
-//	}
+	// public static void applyUnifier(List<Function> terms,
+	// Map<Variable, NewLiteral> unifier) {
+	// for (Function f : terms) {
+	// applyUnifier(f, unifier);
+	// }
+	// }
 
 	/***
 	 * Applies the subsittution to all the terms in the list. Note that this
@@ -210,26 +210,28 @@ public class Unifier {
 	public static Map<Variable, NewLiteral> getMGU(Function first,
 			Function second) {
 
-		Function firstAtom = (Function) first.clone();
-		Function secondAtom = (Function) second.clone();
-
+		
 		/*
 		 * Basic case, predicates are different or their arity is different,
 		 * then no unifier
 		 */
-		if (!(firstAtom.getPredicate().equals(secondAtom.getPredicate()))
-				|| firstAtom.getArity() != secondAtom.getArity()) {
+		Predicate predicate1 = first.getFunctionSymbol();
+		Predicate predicate2 = second.getFunctionSymbol();
+		if ((first.getArity() != second.getArity() || !predicate1
+				.equals(predicate2))) {
 			return null;
 
 		}
+		
+		Function firstAtom = (Function) first.clone();
+		Function secondAtom = (Function) second.clone();
+
 
 		/* Computing the disagreement set */
 
-		int arity = firstAtom.getPredicate().getArity();
-		List<NewLiteral> terms1 = new ArrayList<NewLiteral>(
-				firstAtom.getTerms());
-		List<NewLiteral> terms2 = new ArrayList<NewLiteral>(
-				secondAtom.getTerms());
+		int arity = predicate1.getArity();
+		List<NewLiteral> terms1 = firstAtom.getTerms();
+		List<NewLiteral> terms2 = secondAtom.getTerms();
 
 		Map<Variable, NewLiteral> mgu = new HashMap<Variable, NewLiteral>();
 
@@ -257,15 +259,14 @@ public class Unifier {
 			 * nested.
 			 */
 
-			if ((term1 instanceof FunctionalTermImpl)
-					&& (term2 instanceof FunctionalTermImpl)) {
+			if ((term1 instanceof Function) && (term2 instanceof Function)) {
 				/*
 				 * if both of them are a function term then we need to do some
 				 * check in the inner terms, else we can give it to the MGU
 				 * calculator directly
 				 */
-				FunctionalTermImpl fterm1 = (FunctionalTermImpl) term1;
-				FunctionalTermImpl fterm2 = (FunctionalTermImpl) term2;
+				Function fterm1 = (Function) term1;
+				Function fterm2 = (Function) term2;
 				if (!fterm1.getFunctionSymbol().equals(
 						fterm2.getFunctionSymbol())) {
 					return null;

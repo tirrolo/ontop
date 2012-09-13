@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
 
+import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.CQIE;
@@ -29,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.slf4j.Logger;
@@ -72,6 +74,17 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 
 	private Map<Predicate, List<CQIE>> ruleIndex = new LinkedHashMap<Predicate, List<CQIE>>();
 
+	/***
+	 * Leaf predicates are those that do not appear in the head of any rule. If
+	 * a predicate is a leaf predicate, it should not be unfolded, they indicate
+	 * stop points to get partial evaluations.
+	 * <p>
+	 * Any atom that is not a leaf, and that cannot be unified with a rule
+	 * (either cause of lack of MGU, or because of a rule for the predicate of
+	 * the atom) is logically empty w.r.t. to the program.
+	 */
+	private Set<Predicate> leafPredicates = new HashSet<Predicate>();
+
 	public DatalogUnfolder(DatalogProgram unfoldingProgram,
 			Map<Predicate, List<Integer>> primaryKeys) throws Exception {
 		this.primaryKeys = primaryKeys;
@@ -81,6 +94,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		 * Creating a local index for the rules according to their predicate
 		 */
 
+		HashSet<Predicate> allPredicates = new HashSet<Predicate>();
 		for (CQIE mappingrule : unfoldingProgram.getRules()) {
 			Atom head = mappingrule.getHead();
 
@@ -90,7 +104,39 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 				ruleIndex.put(head.getFunctionSymbol(), rules);
 			}
 			rules.add(mappingrule);
+
+			/*
+			 * Collecting the predicates that appear in the body of rules.
+			 */
+			for (Atom atom : mappingrule.getBody()) {
+				allPredicates.addAll(getPredicates(atom));
+			}
+
 		}
+
+		/*
+		 * the predicates taht do not appear in the head of rules are leaf
+		 * predicates
+		 */
+		allPredicates.removeAll(ruleIndex.keySet());
+		leafPredicates.addAll(allPredicates);
+	}
+
+	private Set<Predicate> getPredicates(Function atom) {
+		Set<Predicate> predicates = new HashSet<Predicate>();
+		Predicate currentpred = atom.getFunctionSymbol();
+		if (currentpred instanceof BooleanOperationPredicate)
+			return predicates;
+		else if (currentpred instanceof AlgebraOperatorPredicate) {
+			for (NewLiteral innerTerm : atom.getTerms()) {
+				if (!(innerTerm instanceof Function))
+					continue;
+				predicates.addAll(getPredicates((Function) innerTerm));
+			}
+		} else {
+			predicates.add(currentpred);
+		}
+		return predicates;
 	}
 
 	/***
@@ -141,44 +187,18 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		// LinkedHashSet<CQIE> evaluation = new LinkedHashSet<CQIE>();
 		// evaluation.addAll(inputquery.getRules());
 
-		List<CQIE> workingSet = new LinkedList<CQIE>();
-		workingSet.addAll(inputquery.getRules());
-
 		inputquery = DatalogNormalizer.normalizeDatalogProgram(inputquery);
 
-		int[] rcount = { 0, 0 };
-
-		for (int queryIdx = 0; queryIdx < workingSet.size(); queryIdx++) {
-
-			CQIE currentQuery = workingSet.get(queryIdx);
-
-			for (int atomIdx = 0; atomIdx < currentQuery.getBody().size(); atomIdx++) {
-				Stack<Integer> location = new Stack<Integer>();
-				location.add(atomIdx);
-				List<CQIE> result = resolve(currentQuery, location, rcount);
-
-				if (result != null) {
-					workingSet.remove((int) queryIdx);
-					for (CQIE newquery : result) {
-						if (!workingSet.contains(newquery)) {
-							workingSet.add(queryIdx, newquery);
-						}
-					}
-					/*
-					 * it will cycle in the same atom until it can no longer be
-					 * unfolder, then it moves to the next atom
-					 */
-					currentQuery = workingSet.get(queryIdx);
-					atomIdx -= 1;
-
-				}
-				/* once the current query is exausted we move to the next atom */
-			}
+		List<CQIE> workingSet = new LinkedList<CQIE>();
+		workingSet.addAll(inputquery.getRules());
+		for (CQIE query : workingSet) {
+			unfoldNestedJoin(query);
 		}
+
+		int failedAtempts = computePartialEvaluation(workingSet);
 
 		LinkedHashSet<CQIE> result = new LinkedHashSet<CQIE>();
 		for (CQIE query : workingSet) {
-			unfoldNestedJoin(query);
 			result.add(query);
 		}
 
@@ -189,8 +209,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		resultdp = CQCUtilities.removeContainedQueriesSorted(resultdp, true);
 		log.debug("Resulting unfolding size: {} cqs", resultdp.getRules()
 				.size());
-		log.debug("Failed resolution attempts: {}", rcount[1]);
-		System.out.println(rcount[1]);
+		log.debug("Failed resolution attempts: {}", failedAtempts);
+		System.out.println(failedAtempts);
 
 		log.debug(resultdp.toString());
 
@@ -224,7 +244,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		HashSet<CQIE> relevantrules = new HashSet<CQIE>();
 		for (CQIE cq : inputquery.getRules()) {
 			for (Atom atom : cq.getBody()) {
-				for (CQIE rule : unfoldingProgram.getRules(atom.getPredicate())) {
+				for (CQIE rule : unfoldingProgram.getRules(atom.getFunctionSymbol())) {
 					/*
 					 * No repeteatin is assured by the HashSet and the hashing
 					 * implemented in each CQIE
@@ -600,44 +620,6 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		}
 	}
 
-	/***
-	 * This method will attempt to unfold nested joins </ul>
-	 * 
-	 * <p>
-	 * 
-	 * @param pos
-	 * @param currentQuery
-	 * @param count
-	 * @return
-	 */
-	private void unfoldNestedJoin(NewLiteral term) {
-		if (!(term instanceof Function)) {
-			return;
-		}
-
-		Function function = (Function) term;
-
-		for (int termIdx = 0; termIdx < function.getTerms().size(); termIdx++) {
-			NewLiteral innerTerm = function.getTerm(termIdx);
-			unfoldNestedJoin(innerTerm);
-
-			if (!(innerTerm instanceof Function)) {
-				continue;
-			}
-
-			Function innerFunction = ((Function) innerTerm);
-			Predicate innerPredicate = innerFunction.getFunctionSymbol();
-			if (!(innerPredicate.getName().toString()
-					.equals(OBDAVocabulary.SPARQL_JOIN_URI)))
-				continue;
-
-			/* Found a join, removing the Join term and assimilating its terms */
-			List<NewLiteral> innerTerms = innerFunction.getTerms();
-			function.getTerms().remove((int) termIdx);
-			function.getTerms().addAll((int) termIdx, innerTerms);
-
-		}
-	}
 
 	// /***
 	// * Unfolds the inner terms of a literal. If the literal is not a function,
@@ -1103,71 +1085,199 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 	}
 
 	/***
-	 * This method asumes that the inner term (termidx) of term is a Function,
+	 * This method asumes that the inner term (termidx) of term is a data atom,
+	 * or a nested atom.
+	 * <p>
+	 * If the term is a data atom, it returns all the new rule resulting from
+	 * resolving that atom with unifiable rules in the unfoldign program. If
+	 * there are no such rules it returns null (the atom is logically empty).
+	 * <p>
+	 * If the atom is a Join or LeftJoin (algebra operators) it will recursively
+	 * call unfoldin into each term until one method returns something different
+	 * than the rule itself.
+	 * <p>
+	 * If the term is not a data atom, e.g., datatype atom, variable, constant,
+	 * boolean atom., the method returns the original rule, without change.
+	 * 
 	 * otherwise it does nothing (i.e., variables, constants, etc cannot be
-	 * resolved against rule.
+	 * resolved against rule
 	 * 
 	 * @param resolvent
 	 * @param term
 	 * @param termidx
 	 * @return
 	 */
-	public List<CQIE> resolve(CQIE rule, Stack<Integer> termidx,
-			int[] resolutionCount) {
+	public int computePartialEvaluation(List<CQIE> workingList) {
 
-		/*
-		 * locating the inner term specified by termidx
-		 */
-		NewLiteral focusLiteral = null;
-		for (Integer i : termidx) {
-			if (focusLiteral == null)
-				focusLiteral = (Function) rule.getBody().get(i);
-			else
-				focusLiteral = ((Function) focusLiteral).getTerm(i);
-		}
+		int[] rcount = { 0, 0 };
 
-		if (!(focusLiteral instanceof Function))
-			return null;
+		for (int queryIdx = 0; queryIdx < workingList.size(); queryIdx++) {
 
-		Function focusFunction = (Function) focusLiteral;
+			CQIE rule = workingList.get(queryIdx);
 
-		/* If the function is a built in, we need to ignore it */
+			Stack<Integer> termidx = new Stack<Integer>();
 
-		Predicate mainPredicate = focusFunction.getFunctionSymbol();
-		String predicateName = mainPredicate.getName().toString();
-
-		if (mainPredicate instanceof DataTypePredicate
-				|| mainPredicate instanceof URITemplatePredicate
-				|| mainPredicate instanceof BooleanOperationPredicate) {
-			/*
-			 * This is a casting, comparison or tempalte, nothing to unfold
-			 */
-			return null;
-		}
-
-		if (predicateName.equals(OBDAVocabulary.SPARQL_JOIN_URI)
-				|| predicateName.equals(OBDAVocabulary.SPARQL_LEFTJOIN_URI)) {
-			/*
-			 * These may contain data atoms that need to be unfolded, we need to
-			 * recursively unfold each term.
-			 */
-			for (int i = 0; i < focusFunction.getTerms().size(); i++) {
-				termidx.push(i);
-				List<CQIE> result = resolve(rule, termidx, resolutionCount);
-				termidx.pop();
-				if (result != null) {
-					return result;
-				}
+			List<Atom> currentTerms = rule.getBody();
+			List<NewLiteral> tempList = new LinkedList<NewLiteral>();
+			for (Atom a : currentTerms) {
+				tempList.add(a);
 			}
 
+			List<CQIE> result = computePartialEvaluation(tempList, rule,
+					rcount, termidx);
+
+			if (result == null) {
+
+				/*
+				 * If the result is null the rule is logically empty
+				 */
+				workingList.remove(queryIdx);
+				queryIdx -= 1;
+				continue;
+			} else if (result.size() == 0) {
+
+				/*
+				 * This rule is already a partial evaluation
+				 */
+				continue;
+			}
+
+			/*
+			 * One more step in the partial evaluation was computed, we need to
+			 * remove the old query and add the result instead. Each of the new
+			 * queries could still require more steps of evaluation, so we
+			 * decrease the index.
+			 */
+			workingList.remove(queryIdx);
+			for (CQIE newquery : result) {
+				if (!workingList.contains(newquery)) {
+					workingList.add(queryIdx, newquery);
+				}
+			}
+			queryIdx -= 1;
 		}
+		return rcount[1];
+	}
+
+	/***
+	 * Goes trhough each term, and recursively each inner term trying to resovle
+	 * each atom. Returns an empty list if the partial evaluation is completed
+	 * (no atoms can be resovled and each atom is a leaf atom), null if there is
+	 * at least one atom that is not leaf and cant be resolved, or a list with
+	 * one or more queries if there was one atom that could be resolved againts
+	 * one or more rules. The list containts the result of the resolution steps
+	 * againts those rules.
+	 * 
+	 * @param currentTerms
+	 * @param rule
+	 * @param resolutionCount
+	 * @param termidx
+	 * @return
+	 */
+	private List<CQIE> computePartialEvaluation(List<NewLiteral> currentTerms,
+			CQIE rule, int[] resolutionCount, Stack<Integer> termidx) {
+
+		for (int atomIdx = 0; atomIdx < currentTerms.size(); atomIdx++) {
+			termidx.push(atomIdx);
+
+			Function focusLiteral = (Function) currentTerms.get(atomIdx);
+
+			if (focusLiteral.isBooleanFunction()) {
+				termidx.pop();
+				continue;
+			}
+
+			if (focusLiteral.isAlgebraFunction()) {
+				/*
+				 * These may contain data atoms that need to be unfolded, we
+				 * need to recursively unfold each term.
+				 */
+
+				for (int i = 0; i < focusLiteral.getTerms().size(); i++) {
+
+					List<CQIE> result = computePartialEvaluation(
+							focusLiteral.getTerms(), rule, resolutionCount,
+							termidx);
+
+					if (result == null)
+						return null;
+
+					if (result.size() == 0)
+						continue;
+
+					if (result.size() > 0)
+						return result;
+
+				}
+				// if we finish and havent returned, it means 
+				// no change, so we return an empty list
+				return new LinkedList<CQIE>();
+			}
+
+			/*
+			 * This is a data atom, it should be unfolded with the usual
+			 * resolution algorithm.
+			 */
+
+			List<CQIE> result = resolveDataAtom(focusLiteral, rule, termidx,
+					resolutionCount);
+
+			if (result == null) 
+				return null;
+
+			if (result.size() > 0)
+				return result;
+
+			termidx.pop();
+		}
+
+		return new LinkedList<CQIE>();
+	}
+
+	/***
+	 * This resolves one single data atom againts the set of rules of the
+	 * program. It will return null if the atom is logically empty, an empty
+	 * list if the atom marks the end of a resolution branch and hence its part
+	 * of a partial evaluation, or a list of rule that resulted from one or more
+	 * successfull unifications with the rules from the program.
+	 * 
+	 * @param focusAtom
+	 *            The atom to be resolved.
+	 * @param rule
+	 *            The rule in which this atom resides
+	 * @param termidx
+	 *            The index of the atom in the rule (ifts nested, the stack
+	 *            indicates the nesting)
+	 * @param resolutionCount
+	 *            The number of resolution attemts done globaly, needed to spawn
+	 *            fresh variables.
+	 * @return
+	 */
+	public List<CQIE> resolveDataAtom(Function focusAtom, CQIE rule,
+			Stack<Integer> termidx, int[] resolutionCount) {
+
+		if (!focusAtom.isDataFunction())
+			throw new RuntimeException("Cannot unfold a non-data atom: "
+					+ focusAtom);
+
 		/*
-		 * This is a data atom, it should be unfolded with the usual resolution
-		 * algorithm.
+		 * Leaf predicates are ignored (as boolean or algebra predicates)
+		 */
+		Predicate pred = focusAtom.getFunctionSymbol();
+		if (leafPredicates.contains(pred))
+			// The atom is a leaf, that means that is a data atom that
+			// has no resolvent rule, and marks the end points to compute
+			// partial evaluations
+
+			return new LinkedList<CQIE>();
+
+		/*
+		 * This is a real data atom, it either generates something, or null
+		 * (empty)
 		 */
 
 		List<CQIE> result = new LinkedList<CQIE>();
-		List<CQIE> candidateMatches = ruleIndex.get(focusFunction
+		List<CQIE> candidateMatches = ruleIndex.get(focusAtom
 				.getFunctionSymbol());
 
 		if (candidateMatches == null)
@@ -1175,11 +1285,11 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 
 		for (CQIE candidateRule : candidateMatches) {
 
-			CQIE freshRule = getFreshRule(candidateRule, resolutionCount[0]);
 			resolutionCount[0] += 1;
+			CQIE freshRule = getFreshRule(candidateRule, resolutionCount[0]);
 
 			Map<Variable, NewLiteral> mgu = Unifier.getMGU(freshRule.getHead(),
-					focusFunction);
+					focusAtom);
 
 			if (mgu == null) {
 				/* Failed attempt */
@@ -1189,28 +1299,38 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 				continue;
 			}
 
+			/*
+			 * We have a matching rule, generating the new body of the query
+			 */
+
 			CQIE temprule = rule.clone();
 			/*
-			 * locating the inner term specified by termidx in the clone
+			 * locating the list that contains the current Atom (either body or
+			 * inner term) and replacing the current atom, with the body of the
+			 * matching rule.
 			 */
 
 			if (termidx.size() > 1) {
-
-				NewLiteral newfocusLiteral = null;
+				/*
+				 * Its a nested term
+				 */
+				NewLiteral nestedTerm = null;
 				for (int y = 0; y < termidx.size() - 1; y++) {
 					int i = termidx.get(y);
-					if (newfocusLiteral == null)
-						newfocusLiteral = (Function) temprule.getBody().get(i);
+					if (nestedTerm == null)
+						nestedTerm = (Function) temprule.getBody().get(i);
 					else
-						newfocusLiteral = ((Function) newfocusLiteral)
-								.getTerm(i);
+						nestedTerm = ((Function) nestedTerm).getTerm(i);
 				}
-				Function newfocusFunction = (Function) newfocusLiteral;
+				Function newfocusFunction = (Function) nestedTerm;
 
 				List<NewLiteral> innerTerms = newfocusFunction.getTerms();
 				innerTerms.remove((int) termidx.peek());
 				innerTerms.addAll((int) termidx.peek(), freshRule.getBody());
 			} else {
+				/*
+				 * Its directly on the body of the query
+				 */
 				temprule.getBody().remove((int) termidx.peek());
 				temprule.getBody().addAll((int) termidx.peek(),
 						freshRule.getBody());
@@ -1220,17 +1340,12 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			result.add(newrule);
 		}
 
-		if (result.size() == 0)
+		if (result.size() == 0) {
 			return null;
+			// No unification atempt was successfull, retur null (empty query,
+			// no data for the atom)
+		}
 		return result;
-	}
-
-	public class RuleIndex {
-
-		// predicate-first-term-second-term
-		// Map<Predicate, Map<Predicate>>
-
-		// predicate-first-term-second-term
 	}
 
 }

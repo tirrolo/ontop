@@ -204,8 +204,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 					references = new LinkedHashSet<String>();
 					columnReferences.put((Variable) term, references);
 				}
-				String columnName = def.getAttributeName(index +1);
-				String reference = viewName + "." + columnName;
+				String columnName = def.getAttributeName(index + 1);
+				String reference = sqladapter.sqlQualifiedColumn(viewName, columnName);
 				references.add(reference);
 			}
 
@@ -224,6 +224,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 			return columnReferences.get(var);
 		}
 
+		/***
+		 * Generates the view definition, i.e., "tablename viewname"
+		 * @param atom
+		 * @return
+		 */
 		public String getViewDefinition(Function atom) {
 			DataDefinition def = dataDefinitions.get(atom);
 			if (def instanceof TableDefinition) {
@@ -237,6 +242,17 @@ public class SQLGenerator implements SQLQueryGenerator {
 			throw new RuntimeException(
 					"Impossible to get data definition for: " + atom
 							+ ", type: " + def);
+		}
+		
+		public String getView(Function atom) {
+			return viewNames.get(atom);
+		}
+
+		public String getColumnReference(Function atom, int column) {
+			String viewName = getView(atom);
+			DataDefinition def = dataDefinitions.get(atom);
+			String columnname = def.getAttributeName(column +1);
+			return sqladapter.sqlQualifiedColumn(viewName, columnname);
 		}
 
 		// /* returns the number of appeareance of the variable in DB atoms */
@@ -460,7 +476,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 	private String getConditionsString(List<Function> atoms,
 			QueryAliasIndex index) {
 
-		LinkedHashSet<String> equalityConditions = getConditionsSharedVariables(
+		LinkedHashSet<String> equalityConditions = getConditionsSharedVariablesAndConstants(
 				atoms, index);
 		LinkedHashSet<String> booleanConditions = getBooleanConditionsString(
 				atoms, index);
@@ -498,19 +514,19 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 * x),B(x))
 	 * 
 	 */
-	private LinkedHashSet<String> getConditionsSharedVariables(
+	private LinkedHashSet<String> getConditionsSharedVariablesAndConstants(
 			List<Function> atoms, QueryAliasIndex index) {
 		LinkedHashSet<String> equalities = new LinkedHashSet<String>();
 
 		Set<Variable> currentLevelVariables = new LinkedHashSet<Variable>();
 		for (Function atom : atoms) {
-			Predicate f = atom.getFunctionSymbol();
-			if (f instanceof AlgebraOperatorPredicate
-					|| f instanceof BooleanOperationPredicate) {
+			if (!atom.isDataFunction())
 				continue;
-			}
 			currentLevelVariables.addAll(atom.getReferencedVariables());
+			
 		}
+		
+		
 
 		/*
 		 * For each variable we collect all the columns that shold be equated
@@ -534,6 +550,22 @@ public class SQLGenerator implements SQLQueryGenerator {
 				leftColumnReference = rightColumnReference;
 			}
 		}
+		
+		
+		for (Function atom : atoms) {
+			if (!atom.isDataFunction())
+				continue;
+			for (int idx = 0; idx < atom.getArity(); idx++) {
+				NewLiteral l = atom.getTerm(idx);
+				if (l instanceof Constant) {
+					String value = getSQLString(l, index, false);
+					String columnReference = index.getColumnReference(atom,idx);
+					equalities.add(String.format("(%s = %s)", columnReference, value));
+				}
+			}
+			
+		}
+		
 		return equalities;
 
 	}
@@ -988,7 +1020,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 				String result = String
 						.format(expressionFormat, leftOp, rightOp);
 				if (useBrackets) {
-					return String.format("(%)", result);
+					return String.format("(%s)", result);
 				}
 				return result;
 			} else {

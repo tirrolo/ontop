@@ -5,10 +5,10 @@ import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.utils.EventGeneratingArrayList;
 import it.unibz.krdb.obda.utils.EventGeneratingLinkedList;
 import it.unibz.krdb.obda.utils.ListListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,7 +25,7 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 	 */
 	protected static final long serialVersionUID = 2832481815465364535L;
 	protected Predicate functor = null;
-	protected List<NewLiteral> terms = null;
+	protected EventGeneratingArrayList<NewLiteral> terms = null;
 	protected int identifier = -1;
 
 	// true when the list of terms has been modified
@@ -48,17 +48,19 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 	protected FunctionalTermImpl(Predicate functor, List<NewLiteral> terms) {
 		this.functor = functor;
 
-		EventGeneratingLinkedList<NewLiteral> eventlist = new EventGeneratingLinkedList<NewLiteral>();
+		EventGeneratingArrayList<NewLiteral> eventlist = new EventGeneratingArrayList<NewLiteral>(terms.size() * 10);
 		eventlist.addAll(terms);
-		for (NewLiteral t : terms) {
-			t.setParent(this);
-		}
-
 		this.terms = eventlist;
-
 		eventlist.addListener(this);
 
-		asAtom = new AtomWrapperImpl(this);
+	}
+
+	protected FunctionalTermImpl(Predicate functor,
+			EventGeneratingArrayList<NewLiteral> terms) {
+		this.functor = functor;
+		this.terms = terms;
+		terms.addListener(this);
+
 	}
 
 	@Override
@@ -112,13 +114,12 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 
 	@Override
 	public int getArity() {
-		return getTerms().size();
+		return functor.getArity();
 	}
 
 	@Override
 	public FunctionalTermImpl clone() {
-		List<NewLiteral> copyTerms = new ArrayList<NewLiteral>(
-				terms.size() + 10);
+		EventGeneratingLinkedList<NewLiteral> copyTerms = new EventGeneratingLinkedList<NewLiteral>();
 		Iterator<NewLiteral> it = terms.iterator();
 		while (it.hasNext()) {
 			copyTerms.add(it.next().clone());
@@ -261,7 +262,7 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 		for (NewLiteral term : terms) {
 			if (term instanceof FunctionalTermImpl) {
 				FunctionalTermImpl function = (FunctionalTermImpl) term;
-				EventGeneratingLinkedList<NewLiteral> innertermlist = (EventGeneratingLinkedList<NewLiteral>) function
+				EventGeneratingArrayList<NewLiteral> innertermlist = (EventGeneratingArrayList<NewLiteral>) function
 						.getTerms();
 				innertermlist.removeListener(this);
 			}
@@ -273,7 +274,7 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 		for (NewLiteral term : terms) {
 			if (term instanceof FunctionalTermImpl) {
 				FunctionalTermImpl function = (FunctionalTermImpl) term;
-				EventGeneratingLinkedList<NewLiteral> innertermlist = (EventGeneratingLinkedList<NewLiteral>) function
+				EventGeneratingArrayList<NewLiteral> innertermlist = (EventGeneratingArrayList<NewLiteral>) function
 						.getTerms();
 				innertermlist.addListener(this);
 			}
@@ -283,7 +284,24 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 
 	@Override
 	public Atom asAtom() {
+		if (asAtom == null)
+			asAtom = new AtomWrapperImpl(this);
 		return asAtom;
+	}
+
+	@Override
+	public boolean isDataFunction() {
+		return this.functor.isDataPredicate();
+	}
+
+	@Override
+	public boolean isBooleanFunction() {
+		return this.functor.isBooleanPredicate();
+	}
+
+	@Override
+	public boolean isAlgebraFunction() {
+		return this.functor.isAlgebraPredicate();
 	}
 
 }

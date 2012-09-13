@@ -104,6 +104,9 @@ public class CQCUtilities {
 		factMap = new HashMap<Predicate, List<Atom>>(canonicalbody.size() * 2);
 		for (Atom atom : canonicalbody) {
 			Atom fact = (Atom) atom;
+			if (!fact.isDataFunction())
+				continue;
+			
 			Predicate predicate = fact.getPredicate();
 			canonicalpredicates.add(predicate);
 			List<Atom> facts = factMap.get(predicate);
@@ -131,7 +134,7 @@ public class CQCUtilities {
 	 */
 	public CQIE chaseQuery(CQIE query, Ontology sigma) {
 		sigma.saturate();
-		Atom head = (Atom) query.getHead().clone();
+		Atom head = (Atom) query.getHead();
 
 		LinkedHashSet<Atom> body = new LinkedHashSet<Atom>();
 		body.addAll(query.getBody());
@@ -381,18 +384,18 @@ public class CQCUtilities {
 	 * @return
 	 */
 	public boolean isContainedIn(CQIE query) {
-		CQIE duplicate1 = query.clone();
+//		CQIE duplicate1 = query.clone();
 
-		if (!query.getHead().getPredicate().equals(canonicalhead.getPredicate()))
+		if (!query.getHead().getFunctionSymbol().equals(canonicalhead.getFunctionSymbol()))
 			return false;
 
 		for (Atom queryatom : query.getBody()) {
-			if (!canonicalpredicates.contains(((Atom) queryatom).getPredicate())) {
+			if (!canonicalpredicates.contains(((Atom) queryatom).getFunctionSymbol())) {
 				return false;
 			}
 		}
 
-		return hasAnswer(duplicate1);
+		return hasAnswer(query);
 	}
 
 	/***
@@ -485,7 +488,9 @@ public class CQCUtilities {
 	}
 
 	public boolean hasAnswer(CQIE query) {
-		query = QueryAnonymizer.deAnonymize(query);
+		query = query.clone();
+		QueryAnonymizer.deAnonymize(query);
+
 
 		int bodysize = query.getBody().size();
 		int maxIdxReached = -1;
@@ -507,6 +512,8 @@ public class CQCUtilities {
 				maxIdxReached = currentAtomIdx;
 
 			currentAtom = currentBody.get(currentAtomIdx);
+			
+				
 			Predicate currentPredicate = currentAtom.getPredicate();
 
 			/* Looking for options for this atom */
@@ -524,17 +531,17 @@ public class CQCUtilities {
 			boolean choiceMade = false;
 			CQIE newquery = null;
 			while (!factChoices.isEmpty()) {
-				Map<Variable, NewLiteral> mgu = unifier.getMGU(currentAtom, factChoices.pop());
+				Map<Variable, NewLiteral> mgu = Unifier.getMGU(currentAtom, factChoices.pop());
 				if (mgu == null) {
 					/* No way to use the current fact */
 					continue;
 				}
-				newquery = unifier.applyUnifier(currentQuery, mgu);
+				newquery = Unifier.applyUnifier(currentQuery, mgu);
 				/*
 				 * Stopping early if we have chosen an MGU that has no
 				 * possibility of being successful because of the head.
 				 */
-				if (unifier.getMGU(canonicalhead, newquery.getHead()) == null) {
+				if (Unifier.getMGU(canonicalhead, newquery.getHead()) == null) {
 					/*
 					 * There is no chance to unifiy the two heads, hence this
 					 * fact is not good.
@@ -625,9 +632,9 @@ public class CQCUtilities {
 			Atom currentAtom = result.getBody().get(i);
 			for (int j = i + 1; j < result.getBody().size(); j++) {
 				Atom nextAtom = result.getBody().get(j);
-				Map<Variable, NewLiteral> map = unifier.getMGU(currentAtom, nextAtom);
+				Map<Variable, NewLiteral> map = Unifier.getMGU(currentAtom, nextAtom);
 				if (map != null && map.isEmpty()) {
-					result = unifier.unify(result, i, j);
+					result = Unifier.unify(result, i, j);
 				}
 			}
 

@@ -85,26 +85,21 @@ public class AtomWrapperImpl implements Atom {
 	}
 
 	@Override
-	public NewLiteral getParent() {
-		return f.getParent();
-	}
-
-	@Override
-	public void setParent(NewLiteral parent) {
-		f.setParent(parent);
-	}
-
-	@Override
 	public Atom asAtom() {
 		return this;
 	}
 
 	@Override
 	public Atom clone() {
-		Function fclone = (Function) f.clone();
+		Function fclone = null;
+		if (f instanceof AtomWrapperImpl) {
+			((AtomWrapperImpl) f).f.clone();
+		} else {
+			fclone = (Function) f.clone();
+		}
 		return new AtomWrapperImpl(fclone);
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof AtomWrapperImpl)
@@ -113,15 +108,31 @@ public class AtomWrapperImpl implements Atom {
 			return (f.equals(o));
 		return f.equals(o);
 	}
-	
-	@Override 
+
+	@Override
 	public int hashCode() {
 		return f.hashCode();
 	}
-	
+
 	@Override
 	public String toString() {
 		return f.toString();
+	}
+
+	@Override
+	public boolean isDataFunction() {
+		return this.f.isDataFunction();
+
+	}
+
+	@Override
+	public boolean isBooleanFunction() {
+		return this.f.isBooleanFunction();
+	}
+
+	@Override
+	public boolean isAlgebraFunction() {
+		return this.f.isAlgebraFunction();
 	}
 
 }

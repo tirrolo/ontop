@@ -212,7 +212,7 @@ public class QueryAnonymizer {
 	}
 
 	public static CQIE deAnonymize(CQIE query) {
-		query = query.clone();
+//		query = query.clone();
 		Atom head = query.getHead();
 		Iterator<NewLiteral> hit = head.getTerms().iterator();
 		OBDADataFactory factory = OBDADataFactoryImpl.getInstance();
@@ -227,7 +227,7 @@ public class QueryAnonymizer {
 				NewLiteral newT = factory.getVariable(newName);
 				newTerms.add(newT);
 			} else {
-				newTerms.add(t.clone());
+				newTerms.add(t);
 			}
 			i++;
 		}
@@ -247,7 +247,7 @@ public class QueryAnonymizer {
 					NewLiteral newT = factory.getVariable(newName);
 					vec.add(newT);
 				} else {
-					vec.add(t.clone());
+					vec.add(t);
 				}
 				i++;
 			}

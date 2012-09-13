@@ -49,6 +49,7 @@ public class DatalogNormalizer {
 	public static CQIE normalizeCQIE(CQIE query) {
 		CQIE result = normalizeANDTrees(query);
 		result = normalizeEQ(result);
+		result = normalizeJoinTrees(result);
 		if (result == null)
 			return null;
 		return result;
@@ -71,6 +72,31 @@ public class DatalogNormalizer {
 			if (currentAtom.getPredicate() == OBDAVocabulary.AND) {
 				body.remove(i);
 				body.addAll(getUnfolderAtomList(currentAtom));
+			}
+		}
+		return result;
+	}
+
+	/***
+	 * This expands all Join that can be directly added as conjuncts to a
+	 * query's body. Nested Join trees inside left joins are not touched.
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public static CQIE normalizeJoinTrees(CQIE query) {
+		CQIE result = query.clone();
+		List<Atom> body = result.getBody();
+		/* Collecting all necessary conditions */
+		for (int i = 0; i < body.size(); i++) {
+			Atom currentAtom = body.get(i);
+			if (currentAtom.getPredicate() == OBDAVocabulary.SPARQL_JOIN) {
+				body.remove(i);
+				for (int j = currentAtom.getTerms().size()-1; j >= 0; j--) {
+					NewLiteral term = currentAtom.getTerm(j);
+					body.add(i,term.asAtom());
+				}
+				i -= 1;
 			}
 		}
 		return result;
@@ -138,11 +164,10 @@ public class DatalogNormalizer {
 		 * This set will be modified in the process
 		 */
 		Set<Function> resultingBooleanConditions = new HashSet<Function>();
-		
 
 		/*
-		 * Analyze each atom that is a Join or LeftJoin, the process will replace
-		 * everything needed.
+		 * Analyze each atom that is a Join or LeftJoin, the process will
+		 * replace everything needed.
 		 */
 		int[] freshVariableCount = { 0 };
 		for (Atom atom : body) {
@@ -152,14 +177,13 @@ public class DatalogNormalizer {
 			pullUpNestedReferences(f.getTerms(), currentLevelVariables,
 					resultingBooleanConditions, freshVariableCount);
 		}
-		
+
 		/*
 		 * Adding any remiding boolean conditions to the top level.
 		 */
-		for (Function condition: resultingBooleanConditions) {
+		for (Function condition : resultingBooleanConditions) {
 			body.add(condition.asAtom());
 		}
-		
 
 		return result;
 	}

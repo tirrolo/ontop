@@ -101,7 +101,6 @@ public class Tester {
     }
 
     public void load(String onto, QuestPreferences pref) throws Exception {
-        Runtime.getRuntime().gc();
 
         String owlfile = owlloc + onto + ".owl";
         String resultfile = xmlLoc + onto + ".xml";
@@ -140,6 +139,7 @@ public class Tester {
                 }
             }
         }
+        
     }
 
     public Set<String> getQueryIds() {
@@ -149,6 +149,10 @@ public class Tester {
     public Set<String> executeQuery(String id) throws Exception {
         String query = queryMap.get(id);
         return execute(query, id);
+    }
+    
+    public void dispose() {
+    	reasoner.dispose();
     }
 
     public Set<String> getExpectedResult(String id) {
@@ -178,6 +182,8 @@ public class Tester {
             }
             tuples.add(tuple);
         }
+        result.close();
+        statement.close();
         return tuples;
     }
 

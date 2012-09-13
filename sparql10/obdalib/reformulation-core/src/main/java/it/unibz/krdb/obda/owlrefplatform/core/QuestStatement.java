@@ -18,6 +18,7 @@ import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.ontology.Assertion;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.EquivalentTriplePredicateIterator;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSDataRepositoryManager;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.QueryVocabularyValidator;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.BooleanOWLOBDARefResultSet;
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.sparql.function.library.e;
 
 /**
  * The obda statement provides the implementations necessary to query the
@@ -145,12 +147,12 @@ public class QuestStatement implements OBDAStatement {
 		}
 
 		public void cancel() throws SQLException {
-			synchronized (this) {
+//			synchronized (this) {
 				if (!executingSQL)
 					this.stop();
 				else
 					sqlstatement.cancel();
-			}
+//			}
 
 		}
 
@@ -185,6 +187,9 @@ public class QuestStatement implements OBDAStatement {
 
 
 						program = translateAndPreProcess(query);
+						
+						program = DatalogNormalizer.normalizeDatalogProgram(program);
+						log.debug("Normalized program: \n{}", program);
 
 						/***
 						 * Empty unfolding, constructing an empty result set
@@ -208,6 +213,8 @@ public class QuestStatement implements OBDAStatement {
 					try {
 						rewriting = getRewriting(program);
 					} catch (Exception e1) {
+						log.debug(e1.getMessage(), e1);
+
 						OBDAException obdaException = new OBDAException(
 								"Error rewriting query. \n" + e1.getMessage());
 						obdaException.setStackTrace(e1.getStackTrace());
@@ -218,6 +225,7 @@ public class QuestStatement implements OBDAStatement {
 					try {
 						unfolding = getUnfolding(rewriting);
 					} catch (Exception e1) {
+						log.debug(e1.getMessage(), e1);
 						OBDAException obdaException = new OBDAException(
 								"Error unfolding query. \n" + e1.getMessage());
 						obdaException.setStackTrace(e1.getStackTrace());
@@ -228,6 +236,8 @@ public class QuestStatement implements OBDAStatement {
 						sql = getSQL(unfolding, signature);
 						querycache.put(strquery, sql);
 					} catch (Exception e1) {
+						log.debug(e1.getMessage(), e1);
+
 						OBDAException obdaException = new OBDAException(
 								"Error generating SQL. \n" + e1.getMessage());
 						obdaException.setStackTrace(e1.getStackTrace());
@@ -251,9 +261,9 @@ public class QuestStatement implements OBDAStatement {
 					ResultSet set;
 					try {
 
-						synchronized (this) {
+//						synchronized (this) {
 							executingSQL = true;
-						}
+//						}
 
 						set = sqlstatement.executeQuery(sql);
 					} catch (SQLException e) {
@@ -387,6 +397,9 @@ public class QuestStatement implements OBDAStatement {
 			DatalogUnfolder unfolder = new DatalogUnfolder(program.clone(),
 					new HashMap<Predicate, List<Integer>>());
 			removeNonAnswerQueries(program);
+			
+			
+			
 			program = unfolder.unfold(program, "ans1");
 
 			log.debug("Flattened query: \n{}", program.toString());
@@ -524,6 +537,9 @@ public class QuestStatement implements OBDAStatement {
 		if (((DatalogProgram) query).getRules().size() == 0)
 			return "";
 		log.debug("Producing the SQL string...");
+		
+		query = DatalogNormalizer.normalizeDatalogProgram(query);
+		
 		String sql = querygenerator.generateSourceQuery((DatalogProgram) query,
 				signature);
 
@@ -549,9 +565,9 @@ public class QuestStatement implements OBDAStatement {
 		}
 
 		if (canceled == true) {
-			synchronized (this) {
+//			synchronized (this) {
 				canceled = false;
-			}
+//			}
 			throw new OBDAException("Query execution was cancelled");
 		}
 		return executionthread.getResult();
@@ -580,6 +596,9 @@ public class QuestStatement implements OBDAStatement {
 	 */
 	public DatalogProgram getRewriting(DatalogProgram program)
 			throws OBDAException {
+		
+		
+		
 		OBDAQuery rewriting = rewriter.rewrite(program);
 		return (DatalogProgram) rewriting;
 
