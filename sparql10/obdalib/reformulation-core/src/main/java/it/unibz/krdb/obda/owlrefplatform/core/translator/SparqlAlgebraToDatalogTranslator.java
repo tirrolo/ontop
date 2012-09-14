@@ -101,6 +101,12 @@ public class SparqlAlgebraToDatalogTranslator {
 	protected static org.slf4j.Logger log = LoggerFactory
 			.getLogger(SparqlAlgebraToDatalogTranslator.class);
 
+	
+	public static DatalogProgram translate(String query) {
+		Query arqQuery = QueryFactory.create(query);
+		return translate(arqQuery);
+	}
+	
 	public static DatalogProgram translate(Query arqQuery) {
 		// Query arqQuery = QueryFactory.create(strquery);
 		if (arqQuery.isConstructType() || arqQuery.isDescribeType()) {

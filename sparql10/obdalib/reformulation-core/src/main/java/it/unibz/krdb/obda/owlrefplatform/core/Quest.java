@@ -1,7 +1,6 @@
 package it.unibz.krdb.obda.owlrefplatform.core;
 
 import it.unibz.krdb.obda.model.Atom;
-import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
@@ -47,9 +46,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.UnfoldingMechanism;
 import it.unibz.krdb.obda.utils.MappingAnalyzer;
 import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.DataDefinition;
 import it.unibz.krdb.sql.JDBCConnectionManager;
-import it.unibz.krdb.sql.api.Attribute;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -657,29 +654,7 @@ public class Quest implements Serializable {
 			/*
 			 * Collecting primary key data
 			 */
-			Map<Predicate, List<Integer>> pkeys = new HashMap<Predicate, List<Integer>>();
-			for (CQIE mapping : unfoldingProgram.getRules()) {
-				for (Atom newatom : mapping.getBody()) {
-					Predicate newAtomPredicate = newatom.getPredicate();
-					if (newAtomPredicate instanceof BooleanOperationPredicate) {
-						continue;
-					}
-					String newAtomName = newAtomPredicate.toString();
-					DataDefinition def = metadata.getDefinition(newAtomName);
-					List<Integer> pkeyIdx = new LinkedList<Integer>();
-					for (int columnidx = 1; columnidx <= def.countAttribute(); columnidx++) {
-						Attribute column = def.getAttribute(columnidx);
-						if (column.bPrimaryKey) {
-							pkeyIdx.add(columnidx);
-						}
-
-					}
-					if (!pkeyIdx.isEmpty()) {
-						pkeys.put(newatom.getPredicate(), pkeyIdx);
-					}
-
-				}
-			}
+			Map<Predicate, List<Integer>> pkeys = DBMetadata.extractPKs(metadata, unfoldingProgram);
 
 			/*
 			 * Setting up the unfolder and SQL generation

@@ -5,6 +5,7 @@ import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.NewLiteral;
+import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.sql.DBMetadata;
@@ -14,6 +15,7 @@ import it.unibz.krdb.sql.api.Attribute;
 import java.sql.Types;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -107,7 +109,8 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 	}
 
 	public void testRedundancyElimination() throws Exception {
-		DatalogUnfolder unfolder = new DatalogUnfolder(unfoldingProgram, metadata);
+		Map<Predicate, List<Integer>> pkeys = DBMetadata.extractPKs(metadata, unfoldingProgram);
+		DatalogUnfolder unfolder = new DatalogUnfolder(unfoldingProgram, pkeys);
 
 		LinkedList<NewLiteral> headterms = new LinkedList<NewLiteral>();
 		headterms.add(fac.getVariable("m"));
@@ -123,7 +126,7 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 		CQIE query = fac.getCQIE(head, body);
 
 		DatalogProgram input = fac.getDatalogProgram(query);
-		DatalogProgram output = unfolder.unfold(input);
+		DatalogProgram output = unfolder.unfold(input, "q");
 		System.out.println("input " + input);
 
 		int atomcount = 0;
@@ -152,7 +155,7 @@ public class DatalogUnfoldingPrimaryKeyOptimizationTests extends TestCase {
 		query = fac.getCQIE(head, body);
 
 		input = fac.getDatalogProgram(query);
-		output = unfolder.unfold(input);
+		output = unfolder.unfold(input, "q");
 		System.out.println("input " + input);
 
 		atomcount = 0;

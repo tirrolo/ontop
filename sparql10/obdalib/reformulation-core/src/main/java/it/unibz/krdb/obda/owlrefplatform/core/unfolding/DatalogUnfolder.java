@@ -244,7 +244,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		HashSet<CQIE> relevantrules = new HashSet<CQIE>();
 		for (CQIE cq : inputquery.getRules()) {
 			for (Atom atom : cq.getBody()) {
-				for (CQIE rule : unfoldingProgram.getRules(atom.getFunctionSymbol())) {
+				for (CQIE rule : unfoldingProgram.getRules(atom
+						.getFunctionSymbol())) {
 					/*
 					 * No repeteatin is assured by the HashSet and the hashing
 					 * implemented in each CQIE
@@ -619,7 +620,6 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			atomIdx += -1;
 		}
 	}
-
 
 	// /***
 	// * Unfolds the inner terms of a literal. If the literal is not a function,
@@ -1209,7 +1209,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 						return result;
 
 				}
-				// if we finish and havent returned, it means 
+				// if we finish and havent returned, it means
 				// no change, so we return an empty list
 				return new LinkedList<CQIE>();
 			}
@@ -1222,7 +1222,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			List<CQIE> result = resolveDataAtom(focusLiteral, rule, termidx,
 					resolutionCount);
 
-			if (result == null) 
+			if (result == null)
 				return null;
 
 			if (result.size() > 0)
@@ -1247,10 +1247,14 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 	 *            The rule in which this atom resides
 	 * @param termidx
 	 *            The index of the atom in the rule (ifts nested, the stack
-	 *            indicates the nesting)
+	 *            indicates the nesting, position by position, the first being
+	 *            "list" positions (function term lists) and the last the focus
+	 *            atoms position.
 	 * @param resolutionCount
 	 *            The number of resolution attemts done globaly, needed to spawn
 	 *            fresh variables.
+	 * @param atomindx
+	 *            The location of the focustAtom in the currentlist
 	 * @return
 	 */
 	public List<CQIE> resolveDataAtom(Function focusAtom, CQIE rule,
@@ -1303,41 +1307,116 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			 * We have a matching rule, generating the new body of the query
 			 */
 
-			CQIE temprule = rule.clone();
+			CQIE partialEvalution = rule.clone();
 			/*
 			 * locating the list that contains the current Atom (either body or
 			 * inner term) and replacing the current atom, with the body of the
 			 * matching rule.
 			 */
 
-			if (termidx.size() > 1) {
-				/*
-				 * Its a nested term
-				 */
-				NewLiteral nestedTerm = null;
-				for (int y = 0; y < termidx.size() - 1; y++) {
-					int i = termidx.get(y);
-					if (nestedTerm == null)
-						nestedTerm = (Function) temprule.getBody().get(i);
-					else
-						nestedTerm = ((Function) nestedTerm).getTerm(i);
+			List innerAtoms = getNestedList(termidx, partialEvalution);
+
+			innerAtoms.remove((int) termidx.peek());
+			innerAtoms.addAll((int) termidx.peek(), freshRule.getBody());
+
+			Unifier.applyUnifier(partialEvalution, mgu, false);
+
+			/***
+			 * DONE WITH BASIC RESOLUTION STEP
+			 */
+
+			/***
+			 * OPTIMIZING
+			 */
+
+			/*
+			 * OPTIMIZATION 1: PRIMARY KEYS
+			 * 
+			 * We now take into account Primary Key constraints on the database
+			 * to avoid adding redundant atoms to the query. This could also be
+			 * done as an afterstep, using unification and CQC checks, however,
+			 * its is much more expensive that way.
+			 */
+
+			/*
+			 * Given a primary Key on A, on columns 1,2, and an atom A(x,y,z)
+			 * added by the resolution engine (always added at the end of the CQ
+			 * body), we will look for other atom A(x,y,z') if the atom exists,
+			 * we can unify both atoms, apply the MGU to the query and remove
+			 * one of the atoms.
+			 */
+
+			int newatomcount = freshRule.getBody().size();
+			int newatomsfirstIndex = termidx.peek();
+			if (termidx.peek() > 0)
+				for (int newatomidx = newatomsfirstIndex; newatomidx < newatomsfirstIndex + newatomcount; newatomidx++) {
+					
+					Function newatom = (Function) innerAtoms.get(newatomidx);
+					if (!newatom.isDataFunction())
+						continue;
+
+					List<Integer> pkey = primaryKeys.get(newatom
+							.getFunctionSymbol());
+					if (pkey != null && !pkey.isEmpty()) {
+						/*
+						 * the predicate has a primary key, looking for
+						 * candidates for unification, when we find one we can
+						 * stop, since the application of this optimization at
+						 * each step of the derivation tree guarantees there
+						 * wont be any other redundant atom.
+						 */
+						Function replacement = null;
+
+						Map<Variable, NewLiteral> mgu1 = null;
+						for (int idx2 = 0; idx2 < termidx.peek(); idx2++) {
+							Function tempatom = (Function) innerAtoms.get(idx2);
+
+							if (tempatom.getFunctionSymbol().equals(
+									newatom.getFunctionSymbol())) {
+
+								boolean redundant = true;
+								for (Integer termidx2 : pkey) {
+									if (!newatom.getTerm(termidx2 - 1).equals(
+											tempatom.getTerm(termidx2 - 1))) {
+										redundant = false;
+										break;
+									}
+								}
+								if (redundant) {
+									/* found a candidate replacement atom */
+									mgu1 = Unifier.getMGU(newatom, tempatom);
+									if (mgu1 != null) {
+										replacement = tempatom;
+										break;
+									}
+								}
+
+							}
+						}
+
+						if (replacement != null) {
+
+							if (mgu1 == null)
+								throw new RuntimeException(
+										"Unexcpected case found while performing JOIN elimination. Contact the authors for debugging.");
+							partialEvalution = Unifier.applyUnifier(
+									partialEvalution, mgu1);
+
+							innerAtoms = getNestedList(termidx,
+									partialEvalution);
+							innerAtoms.remove(newatomidx);
+							newatomidx -= 1;
+							newatomcount -= 1;
+							continue;
+						}
+					}
 				}
-				Function newfocusFunction = (Function) nestedTerm;
 
-				List<NewLiteral> innerTerms = newfocusFunction.getTerms();
-				innerTerms.remove((int) termidx.peek());
-				innerTerms.addAll((int) termidx.peek(), freshRule.getBody());
-			} else {
-				/*
-				 * Its directly on the body of the query
-				 */
-				temprule.getBody().remove((int) termidx.peek());
-				temprule.getBody().addAll((int) termidx.peek(),
-						freshRule.getBody());
-			}
+			/***
+			 * DONE OPTIMIZING RETURN THE RESULT
+			 */
 
-			CQIE newrule = Unifier.applyUnifier(temprule, mgu, false);
-			result.add(newrule);
+			result.add(partialEvalution);
 		}
 
 		if (result.size() == 0) {
@@ -1346,6 +1425,57 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			// no data for the atom)
 		}
 		return result;
+	}
+
+	/***
+	 * Returns the list of terms contained in the nested atom indicated by term
+	 * idx. If termidx is empty, then this is the list of atoms in the body of
+	 * the rule, otherwise the list correspond to the terms of the nested atom
+	 * indicated by termidx viewed as a path of atoms. For example, if termidx =
+	 * <2,4> then this atom returns the list of terms of the 4 atom, of the
+	 * second atom in the body of the rule.
+	 * 
+	 * <p>
+	 * Example two. IF the rule is q(x):-A(x), Join(R(x,y), Join(P(s),R(x,y) and
+	 * termidx = <1,2>, then this method returns the the terms of the second
+	 * join atom, ie.,
+	 * <P(s),R(x,y)>
+	 * ,
+	 * 
+	 * <p>
+	 * note that this list is the actual list of terms of the atom, so
+	 * manipulating the list will change the atom.
+	 * 
+	 * 
+	 * @param termidx
+	 * @param rule
+	 * @return
+	 */
+	private List getNestedList(Stack<Integer> termidx, CQIE rule) {
+		List innerTerms = null;
+
+		if (termidx.size() > 1) {
+			/*
+			 * Its a nested term
+			 */
+			NewLiteral nestedTerm = null;
+			for (int y = 0; y < termidx.size() - 1; y++) {
+				int i = termidx.get(y);
+				if (nestedTerm == null)
+					nestedTerm = (Function) rule.getBody().get(i);
+				else
+					nestedTerm = ((Function) nestedTerm).getTerm(i);
+			}
+			Function newfocusFunction = (Function) nestedTerm;
+
+			innerTerms = newfocusFunction.getTerms();
+		} else {
+			/*
+			 * Its directly on the body of the query
+			 */
+			innerTerms = rule.getBody();
+		}
+		return innerTerms;
 	}
 
 }
