@@ -26,9 +26,11 @@ public class QueryConnectedComponent {
 	
 	private boolean noFreeTerms; // no free variables and no constants 
 	                             // if true the component can be mapped onto the anonymous part of the canonical model
+	private boolean isDegenerate; // contains just a single term (and no proper edges)
 
 	private QueryConnectedComponent(List<Edge> edges, Set<Term> terms, Set<Term> headTerms) {
 		this.edges = edges;
+		this.isDegenerate = (terms.size() == 1);
 
 		variables = new ArrayList<Term>(terms.size());
 		quantifiedVariables = new ArrayList<Variable>(terms.size());
@@ -142,6 +144,10 @@ public class QueryConnectedComponent {
 		}
 		
 		return ccs;
+	}
+	
+	public boolean isDegenerate() {
+		return isDegenerate;
 	}
 	
 	

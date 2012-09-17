@@ -237,13 +237,20 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			// DETACHED TREE WITNESS
 			if (cc.hasNoFreeTerms()) {
 				Set<TreeWitnessGenerator> generators = new HashSet<TreeWitnessGenerator>();
-				for (TreeWitness tw : tws) 
-					if (tw.getDomain().containsAll(cc.getVariables())) {
-						log.debug("TREE WITNESS " + tw + " COVERS THE QUERY");
-						for (TreeWitnessGenerator some : reasoner.getGenerators())
-							if (isGenerated(some, tw.getRootType())) 
-								generators.add(some);
-					}
+				
+				if (cc.isDegenerate()) {
+					for (TreeWitnessGenerator some : reasoner.getGenerators())
+						if (isGenerated(some, cc.getEdges().get(0).getAtoms())) 
+							generators.add(some);					
+				} else {
+					for (TreeWitness tw : tws) 
+						if (tw.getDomain().containsAll(cc.getVariables())) {
+							log.debug("TREE WITNESS " + tw + " COVERS THE QUERY");
+							for (TreeWitnessGenerator some : reasoner.getGenerators())
+								if (isGenerated(some, tw.getRootType())) 
+									generators.add(some);
+						}
+				}
 				boolean saturated = true;
 				do {
 					Set<TreeWitnessGenerator> delta = new HashSet<TreeWitnessGenerator>();
@@ -313,11 +320,6 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			if (edgeAtom == null)	// no tree witnesses -- direct insertion into the main body
 				mainbody.addAll(extAtoms);
 		}
-		// if no binary predicates 
-		// TODO: change!!!
-		// if (cc.getEdges().size() == 0)
-		//	for (Atom a : cqie.getBody())
-		//		mainbody.add(getExtAtom(a, exts));
 
 		output.appendRule(fac.getCQIE(headAtom, mainbody.getBody())); 
 				
@@ -337,7 +339,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		double startime = System.currentTimeMillis();
 		
 		DatalogProgram dp = (DatalogProgram) input;
-		DatalogProgram output = fac.getDatalogProgram(); // (cqie.getHead().getPredicate());
+		DatalogProgram output = fac.getDatalogProgram();
 
 		try {
 			for (CQIE cqie : dp.getRules()) {
@@ -421,11 +423,13 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return subtws;
 	}
 
-	private Set<TreeWitness> getTreeWitnesses(QueryConnectedComponent query) {
-		log.debug("QUANTIFIED VARIABLES: " + query.getQuantifiedVariables());
-		
+	private Set<TreeWitness> getTreeWitnesses(QueryConnectedComponent query) {		
 		Set<TreeWitness> treewitnesses = new HashSet<TreeWitness>();
 		
+		if (query.isDegenerate())
+			return treewitnesses;
+		
+		log.debug("QUANTIFIED VARIABLES: " + query.getQuantifiedVariables());
 		for (Term v : query.getQuantifiedVariables()) {
 			log.debug("VARIABLE " + v); 
 			
@@ -606,7 +610,9 @@ public class TreeWitnessRewriter implements QueryRewriter {
 
 	private boolean isGenerated(TreeWitnessGenerator g, Set<Atom> endtype) {
 		for (Atom a : endtype) {
-			 assert (a.getArity() == 1);
+			 if (a.getArity() != 1)
+				 return false;        // binary predicates R(x,x) cannot be matched to the anonymous part
+			 
 			 BasicClassDescription con = ontFactory.createClass(a.getPredicate());
 			 if (!reasoner.getSubConcepts(con).contains(g.getFiller()) && 
 					 !reasoner.getSubConcepts(con).contains(g.getRoleEndType())) {
