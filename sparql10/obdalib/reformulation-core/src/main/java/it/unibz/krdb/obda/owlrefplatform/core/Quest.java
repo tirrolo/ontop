@@ -587,6 +587,10 @@ public class Quest implements Serializable {
 					unfoldingOBDAModel.getMappings(sourceId), metadata);
 			unfoldingProgram = analyzer.constructDatalogProgram();
 
+			
+			unfoldingProgram = DatalogNormalizer
+					.pushEqualities(unfoldingProgram);
+
 			/***
 			 * Adding ABox as facts in the unfolding program
 			 */
@@ -616,7 +620,7 @@ public class Quest implements Serializable {
 			 * Eliminating redundancy from the unfolding program
 			 */
 			unfoldingProgram = DatalogNormalizer
-					.normalizeDatalogProgram(unfoldingProgram);
+					.pushEqualities(unfoldingProgram);
 
 			int unprsz = unfoldingProgram.getRules().size();
 			CQCUtilities.removeContainedQueriesSorted(unfoldingProgram, true);

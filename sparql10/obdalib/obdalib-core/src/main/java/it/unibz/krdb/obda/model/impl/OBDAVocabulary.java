@@ -18,27 +18,27 @@ public class OBDAVocabulary {
 
 	/* Boolean predicate URIs */
 
-	public static final String strAND = "http://obdalib.org/predicates/boolean#AND";
+	public static final String strAND = "AND";
 
-	public static final String strEQ = "http://obdalib.org/predicates/boolean#EQ";
+	public static final String strEQ = "EQ";
 
-	public static final String strGTE = "http://obdalib.org/predicates/boolean#GTE";
+	public static final String strGTE = "GTE";
 
-	public static final String strGT = "http://obdalib.org/predicates/boolean#GT";
+	public static final String strGT = "GT";
 
-	public static final String strLTE = "http://obdalib.org/predicates/boolean#LTE";
+	public static final String strLTE = "LTE";
 
-	public static final String strLT = "http://obdalib.org/predicates/boolean#LT";
+	public static final String strLT = "LT";
 
-	public static final String strNEQ = "http://obdalib.org/predicates/boolean#NEQ";
+	public static final String strNEQ = "NEQ";
 
-	public static final String strNOT = "http://obdalib.org/predicates/boolean#NOT";
+	public static final String strNOT = "NOT";
 
-	public static final String strOR = "http://obdalib.org/predicates/boolean#OR";
+	public static final String strOR = "OR";
 
-	public static final String strIS_NULL = "http://obdalib.org/predicates/boolean#IS_NULL";
+	public static final String strIS_NULL = "IS_NULL";
 
-	public static final String strIS_NOT_NULL = "http://obdalib.org/predicates/boolean#IS_NOT_NULL";
+	public static final String strIS_NOT_NULL = "IS_NOT_NULL";
 
 	/* Boolean predicates */
 
@@ -134,10 +134,10 @@ public class OBDAVocabulary {
 	/* Built-in function URIs */
 
 	// The name of the function that creates URI's in Quest
-	public static final String QUEST_URI = "http://obda.org/quest#uri";
+	public static final String QUEST_URI = "URI";
 
 	// The name of the function that creates URI's in Quest
-	public static final String QUEST_BNODE = "http://obda.org/quest#bnode";
+	public static final String QUEST_BNODE = "BNODE";
 	
 	public static final String QUEST_TRIPLE_STR = "triple";
 	

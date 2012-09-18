@@ -191,7 +191,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 			NewLiteral innerAtom = atoms.get(atomidx);
 			Function innerAtomAsFunction = (Function) innerAtom;
 
-			if (innerAtomAsFunction.isDataFunction())
+			if (innerAtomAsFunction.isDataFunction()
+					|| innerAtomAsFunction.isAlgebraFunction())
 				continue;
 
 			/* This is a boolean atom */
@@ -201,7 +202,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 		return conditions;
 	}
-	
+
 	/***
 	 * Returns the SQL for an atom representing an SQL condition (booleans)
 	 * 
@@ -273,11 +274,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 			NewLiteral innerAtom = inneratoms.get(atomidx);
 			Function innerAtomAsFunction = (Function) innerAtom;
 
-			if (!innerAtomAsFunction.isDataFunction())
-				continue;
-
-			String definition = getTableDefinition(innerAtomAsFunction, index);
-			tableDefinitions.add(definition);
+			if (!innerAtomAsFunction.isBooleanFunction()) {
+				String definition = getTableDefinition(innerAtomAsFunction,
+						index);
+				tableDefinitions.add(definition);
+			}
 
 		}
 
@@ -320,9 +321,13 @@ public class SQLGenerator implements SQLQueryGenerator {
 			}
 			String JOIN = "(%s " + JOIN_KEYWORD + " %s)";
 
-			if (size < 2)
+			if (size == 0) {
 				throw new RuntimeException(
-						"JOIN generation requires at least 2 tables");
+						"Cannot generate definition for empty data");
+			}
+			if (size == 1) {
+				return tableDefinitions.get(0);
+			}
 
 			/*
 			 * To form the JOIN we will cycle through each data definition,
@@ -333,16 +338,18 @@ public class SQLGenerator implements SQLQueryGenerator {
 					tableDefinitions.get(size - 2),
 					tableDefinitions.get(size - 1));
 			tableDefinitions.remove(size - 1);
-			tableDefinitions.remove(size - 1);
+			tableDefinitions.remove(size - 2);
 
 			int currentSize = tableDefinitions.size();
 			while (currentSize > 0) {
 				currentJoin = String.format(JOIN,
 						tableDefinitions.get(currentSize - 1), currentJoin);
 				tableDefinitions.remove(currentSize - 1);
+				currentSize = tableDefinitions.size();
 			}
 			tableDefinitions.add(currentJoin);
 
+			tableDefinitionsString.append(currentJoin);
 			/*
 			 * If there are ON conditions we add them now. We need to remove the
 			 * last parenthesis ')' and replace it with ' ON %s)' where %s are
@@ -351,9 +358,9 @@ public class SQLGenerator implements SQLQueryGenerator {
 			String conditions = getConditionsString(inneratoms, index);
 
 			if (conditions.length() > 0) {
-				tableDefinitionsString
-						.deleteCharAt(tableDefinitions.size() - 1);
-				String ON_CLAUSE = String.format(" ON %s)", conditions);
+				tableDefinitionsString.deleteCharAt(tableDefinitionsString
+						.length() - 1);
+				String ON_CLAUSE = String.format(" ON %s\n)", conditions);
 				tableDefinitionsString.append(ON_CLAUSE);
 			}
 		}
@@ -440,10 +447,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 		 */
 		StringBuffer conditionsString = new StringBuffer();
 		Iterator<String> conditionsIterator = conditions.iterator();
-		if (conditionsIterator.hasNext())
+		if (conditionsIterator.hasNext()) {
 			conditionsString.append("   ");
-		conditionsString.append(conditionsIterator.next());
-		conditionsString.append("\n");
+			conditionsString.append(conditionsIterator.next());
+			conditionsString.append("\n");
+		}
 		while (conditionsIterator.hasNext()) {
 			conditionsString.append("   AND ");
 			conditionsString.append(conditionsIterator.next());
@@ -805,8 +813,6 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 	}
 
-
-
 	/**
 	 * Determines if it is a unary function.
 	 */
@@ -854,7 +860,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 		} else if (term instanceof Variable) {
 			Variable var = (Variable) term;
 			LinkedHashSet<String> posList = index.getColumnReferences(var);
-			if (posList.size() == 0) {
+			if (posList == null || posList.size() == 0) {
 				throw new RuntimeException(
 						"Unbound variable found in WHERE clause: " + term);
 			}

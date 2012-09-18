@@ -161,7 +161,7 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 					sb.append(fname);
 				}
 			} else {
-				if (fname.equals("quest:uri")) { // TODO: Make this as a
+				if (functionSymbol.getName().toString().equals(OBDAVocabulary.QUEST_URI)) { // TODO: Make this as a
 													// BuildinPredicate
 					String uriTemplate = function.getTerms().get(0).toString();
 

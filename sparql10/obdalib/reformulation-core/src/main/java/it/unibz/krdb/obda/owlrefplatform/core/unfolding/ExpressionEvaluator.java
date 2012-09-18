@@ -166,7 +166,9 @@ public class ExpressionEvaluator {
 		NewLiteral eval1 = teval1 instanceof Function ? teval1 : teval2;
 		NewLiteral eval2 = teval1 instanceof Function ? teval2 : teval1;
 
-		if ((eval1 instanceof Constant && eval2 instanceof Constant) || (eval1 instanceof Variable && eval2 instanceof Variable)) {
+		if (eval1 instanceof Variable || eval2 instanceof Variable) {
+			// no - op
+		} else if (eval1 instanceof Constant && eval2 instanceof Constant) {
 			if (eval1.equals(eval2))
 				if (eq)
 					return fac.getTrue();

@@ -101,12 +101,11 @@ public class SparqlAlgebraToDatalogTranslator {
 	protected static org.slf4j.Logger log = LoggerFactory
 			.getLogger(SparqlAlgebraToDatalogTranslator.class);
 
-	
 	public static DatalogProgram translate(String query) {
 		Query arqQuery = QueryFactory.create(query);
 		return translate(arqQuery);
 	}
-	
+
 	public static DatalogProgram translate(Query arqQuery) {
 		// Query arqQuery = QueryFactory.create(strquery);
 		if (arqQuery.isConstructType() || arqQuery.isDescribeType()) {
@@ -364,7 +363,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		Predicate joinp = OBDAVocabulary.SPARQL_LEFTJOIN;
 		Atom joinAtom = ofac.getAtom(joinp, leftAtom, rightAtom);
 
-		/* Preparing the head of the Join rule */
+		/* Preparing the head of the LeftJoin rule */
 		// Collections.sort(vars, comparator);
 		List<NewLiteral> headVars = new LinkedList<NewLiteral>();
 		for (Variable var : vars) {
@@ -379,9 +378,12 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		List<Atom> atoms = new LinkedList<Atom>();
 		atoms.add(joinAtom);
-		for (Expr expr : filter.getList()) {
-			atoms.add(((Function) getBooleanTerm(expr)).asAtom());
-		}
+		
+		/* adding the conditions of the filter for the LeftJoin */
+		if (filter != null)
+			for (Expr expr : filter.getList()) {
+				atoms.add(((Function) getBooleanTerm(expr)).asAtom());
+			}
 
 		CQIE newrule = ofac.getCQIE(head, atoms);
 		pr.appendRule(newrule);
@@ -488,7 +490,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		vars.addAll(var);
 		Atom head = ofac.getAtom(predicate, vars);
 
-		Predicate pbody = ofac.getPredicate("ans" + (i*2), vars.size());
+		Predicate pbody = ofac.getPredicate("ans" + (i * 2), vars.size());
 		Atom bodyAtom = ofac.getAtom(pbody, vars);
 
 		LinkedList<Atom> body = new LinkedList<Atom>();
@@ -500,7 +502,7 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		Op sub = op.getSubOp();
 
-		translate(var, sub, pr, (i*2), varcount);
+		translate(var, sub, pr, (i * 2), varcount);
 	}
 
 	public static void translate(List<Variable> vars, OpBGP op,

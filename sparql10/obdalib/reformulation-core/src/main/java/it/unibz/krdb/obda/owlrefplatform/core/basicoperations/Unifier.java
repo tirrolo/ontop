@@ -192,7 +192,9 @@ public class Unifier {
 				if (replacement != null)
 					terms.set(i, replacement);
 			} else if (t instanceof Function) {
-				applyUnifier((Function) t, unifier);
+				Function t2 = (Function) t;
+				applyUnifier(t2, unifier);
+
 			}
 		}
 	}
@@ -210,7 +212,6 @@ public class Unifier {
 	public static Map<Variable, NewLiteral> getMGU(Function first,
 			Function second) {
 
-		
 		/*
 		 * Basic case, predicates are different or their arity is different,
 		 * then no unifier
@@ -222,10 +223,9 @@ public class Unifier {
 			return null;
 
 		}
-		
+
 		Function firstAtom = (Function) first.clone();
 		Function secondAtom = (Function) second.clone();
-
 
 		/* Computing the disagreement set */
 

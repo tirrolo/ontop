@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.hp.hpl.jena.sparql.util.NodeUtils.EqualityTest;
-
 public class DatalogNormalizer {
 
 	private final static OBDADataFactory fac = OBDADataFactoryImpl
@@ -48,8 +46,9 @@ public class DatalogNormalizer {
 
 	public static CQIE normalizeCQIE(CQIE query) {
 		CQIE result = normalizeANDTrees(query);
-		result = normalizeEQ(result);
+		// result = normalizeEQ(result);
 		result = normalizeJoinTrees(result);
+		result = pullUpNestedReferences(result, true);
 		if (result == null)
 			return null;
 		return result;
@@ -85,21 +84,71 @@ public class DatalogNormalizer {
 	 * @return
 	 */
 	public static CQIE normalizeJoinTrees(CQIE query) {
-		CQIE result = query.clone();
-		List<Atom> body = result.getBody();
+		return normalizeJoinTrees(query, true);
+	}
+
+	/***
+	 * This expands all Join that can be directly added as conjuncts to a
+	 * query's body. Nested Join trees inside left joins are not touched.
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public static CQIE normalizeJoinTrees(CQIE query, boolean clone) {
+		if (clone)
+			query = query.clone();
+		List body = query.getBody();
+		normalizeJoinTrees(body, true);
+		return query;
+	}
+
+	/***
+	 * This expands all Join that can be directly added as conjuncts to a
+	 * query's body. Nested Join trees inside left joins are not touched.
+	 * <p>
+	 * In addition, we will remove any Join atoms that only contain one single
+	 * data atom, i.e., the join is not a join, but a table reference with
+	 * conditions. These kind of atoms can result from the partial evaluation
+	 * process and should be eliminated. The elimination takes all the atoms in
+	 * the join (the single data atom plus possibly extra boolean conditions and
+	 * adds them to the node that is the parent of the join).
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public static void normalizeJoinTrees(List body, boolean isJoin) {
 		/* Collecting all necessary conditions */
 		for (int i = 0; i < body.size(); i++) {
-			Atom currentAtom = body.get(i);
-			if (currentAtom.getPredicate() == OBDAVocabulary.SPARQL_JOIN) {
-				body.remove(i);
-				for (int j = currentAtom.getTerms().size()-1; j >= 0; j--) {
-					NewLiteral term = currentAtom.getTerm(j);
-					body.add(i,term.asAtom());
+			Function currentAtom = (Function) body.get(i);
+			if (!currentAtom.isAlgebraFunction())
+				continue;
+			if (currentAtom.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN)
+				normalizeJoinTrees(currentAtom.getTerms(), false);
+			if (currentAtom.getFunctionSymbol() == OBDAVocabulary.SPARQL_JOIN) {
+				normalizeJoinTrees(currentAtom.getTerms(), true);
+				int dataAtoms = countDataItems(currentAtom.getTerms());
+				if (isJoin || dataAtoms == 1) {
+					body.remove(i);
+					for (int j = currentAtom.getTerms().size() - 1; j >= 0; j--) {
+						NewLiteral term = currentAtom.getTerm(j);
+						Atom asAtom = term.asAtom();
+						if (!body.contains(asAtom))
+							body.add(i, asAtom);
+					}
+					i -= 1;
 				}
-				i -= 1;
 			}
 		}
-		return result;
+	}
+
+	public static int countDataItems(List<NewLiteral> terms) {
+		int count = 0;
+		for (NewLiteral lit : terms) {
+			Function currentAtom = (Function) lit;
+			if (!currentAtom.isBooleanFunction())
+				count += 1;
+		}
+		return count;
 	}
 
 	/***
@@ -110,13 +159,17 @@ public class DatalogNormalizer {
 	 *            null if there is an unsatisfiable equality
 	 * @return
 	 */
-	public static CQIE normalizeEQ(CQIE query) {
-		CQIE result = query.clone();
-		List<Atom> body = result.getBody();
+	public static CQIE pushEqualities(CQIE result, boolean clone) {
+		if (clone)
+			result = result.clone();
+		
+		List body = result.getBody();
 		Map<Variable, NewLiteral> mgu = new HashMap<Variable, NewLiteral>();
 
+		/* collecting all equalities as substitutions */
+		
 		for (int i = 0; i < body.size(); i++) {
-			Atom atom = body.get(i);
+			Function atom = (Function)body.get(i);
 			Unifier.applyUnifier(atom, mgu);
 			if (atom.getPredicate() == OBDAVocabulary.EQ) {
 				Substitution s = Unifier.getSubstitution(atom.getTerm(0),
@@ -133,8 +186,18 @@ public class DatalogNormalizer {
 				continue;
 			}
 		}
-		result = Unifier.applyUnifier(result, mgu);
+		result = Unifier.applyUnifier(result, mgu,false);
 		return result;
+	}
+	
+	public static DatalogProgram pushEqualities(DatalogProgram dp) {
+		DatalogProgram clone = fac.getDatalogProgram();
+		clone.setQueryModifiers(dp.getQueryModifiers());
+		for (CQIE cq : dp.getRules()) {
+			pushEqualities(cq, false);
+			clone.appendRule(cq);
+		}
+		return clone;
 	}
 
 	/***
@@ -143,8 +206,10 @@ public class DatalogNormalizer {
 	 * @param query
 	 * @return
 	 */
-	public static CQIE pullUpNestedReferences(CQIE query) {
-		CQIE result = query.clone();
+	public static CQIE pullUpNestedReferences(CQIE query, boolean clone) {
+
+		if (clone)
+			query = query.clone();
 
 		List<Atom> body = query.getBody();
 		/*
@@ -185,7 +250,7 @@ public class DatalogNormalizer {
 			body.add(condition.asAtom());
 		}
 
-		return result;
+		return query;
 	}
 
 	public static void pullUpNestedReferences(
@@ -280,7 +345,7 @@ public class DatalogNormalizer {
 		 * moved forward by adding it to the booleanConditions set.
 		 */
 
-		for (int index = 0; index <= currentLevelAtoms.size(); index++) {
+		for (int index = 0; index < currentLevelAtoms.size(); index++) {
 			NewLiteral l = currentLevelAtoms.get(index);
 			Function atom = (Function) l;
 			if (!(atom.getFunctionSymbol() instanceof BooleanOperationPredicate))
