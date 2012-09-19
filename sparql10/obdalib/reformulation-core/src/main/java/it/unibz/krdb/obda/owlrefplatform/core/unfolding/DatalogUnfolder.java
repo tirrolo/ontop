@@ -185,12 +185,11 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		// LinkedHashSet<CQIE> evaluation = new LinkedHashSet<CQIE>();
 		// evaluation.addAll(inputquery.getRules());
 
-
 		List<CQIE> workingSet = new LinkedList<CQIE>();
 		workingSet.addAll(inputquery.getRules());
-//		for (CQIE query : workingSet) {
-//			unfoldNestedJoin(query);
-//		}
+		// for (CQIE query : workingSet) {
+		// unfoldNestedJoin(query);
+		// }
 
 		int failedAtempts = computePartialEvaluation(workingSet);
 
@@ -1372,89 +1371,85 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 	 */
 	private void joinEliminationPKBased(Stack<Integer> termidx,
 			int newatomcount, CQIE partialEvalution) {
-		{
-			List innerAtoms = getNestedList(termidx, partialEvalution);
 
-			Function currentAtom = getTerm(termidx, partialEvalution);
+		List innerAtoms = getNestedList(termidx, partialEvalution);
 
-			int newatomsfirstIndex = termidx.peek();
-			if (newatomsfirstIndex <= 0) {
-				return;
+		Function currentAtom = getTerm(termidx, partialEvalution);
+
+		int newatomsfirstIndex = termidx.peek();
+		if (newatomsfirstIndex <= 0) {
+			return;
+		}
+		for (int newatomidx = newatomsfirstIndex; newatomidx < newatomsfirstIndex
+				+ newatomcount; newatomidx++) {
+
+			Function newatom = (Function) innerAtoms.get(newatomidx);
+			if (!newatom.isDataFunction())
+				continue;
+
+			List<Integer> pkey = primaryKeys.get(newatom.getFunctionSymbol());
+			if (!(pkey != null && !pkey.isEmpty())) {
+				// no pkeys for this predicate
+				continue;
 			}
-			for (int newatomidx = newatomsfirstIndex; newatomidx < newatomsfirstIndex
-					+ newatomcount; newatomidx++) {
+			/*
+			 * the predicate has a primary key, looking for candidates for
+			 * unification, when we find one we can stop, since the application
+			 * of this optimization at each step of the derivation tree
+			 * guarantees there wont be any other redundant atom.
+			 */
+			Function replacement = null;
 
-				Function newatom = (Function) innerAtoms.get(newatomidx);
-				if (!newatom.isDataFunction())
-					continue;
+			Map<Variable, NewLiteral> mgu1 = null;
+			for (int idx2 = 0; idx2 < termidx.peek(); idx2++) {
+				Function tempatom = (Function) innerAtoms.get(idx2);
 
-				List<Integer> pkey = primaryKeys.get(newatom
-						.getFunctionSymbol());
-				if (!(pkey != null && !pkey.isEmpty())) {
-					// no pkeys for this predicate
-					continue;
-				}
-				/*
-				 * the predicate has a primary key, looking for candidates for
-				 * unification, when we find one we can stop, since the
-				 * application of this optimization at each step of the
-				 * derivation tree guarantees there wont be any other redundant
-				 * atom.
-				 */
-				Function replacement = null;
-
-				Map<Variable, NewLiteral> mgu1 = null;
-				for (int idx2 = 0; idx2 < termidx.peek(); idx2++) {
-					Function tempatom = (Function) innerAtoms.get(idx2);
-
-					if (!tempatom.getFunctionSymbol().equals(
-							newatom.getFunctionSymbol())) {
-						/*
-						 * predicates are different, atoms cant be unified
-						 */
-						continue;
-					}
-
-					boolean redundant = true;
-					for (Integer termidx2 : pkey) {
-						if (!newatom.getTerm(termidx2 - 1).equals(
-								tempatom.getTerm(termidx2 - 1))) {
-							redundant = false;
-							break;
-						}
-					}
-
-					if (redundant) {
-						/* found a candidate replacement atom */
-						mgu1 = Unifier.getMGU(newatom, tempatom);
-						if (mgu1 != null) {
-							replacement = tempatom;
-							break;
-						}
-					}
-
-				}
-
-				if (replacement == null)
-					continue;
-
-				if (mgu1 == null)
-					throw new RuntimeException(
-							"Unexcpected case found while performing JOIN elimination. Contact the authors for debugging.");
-
-				if (currentAtom.isAlgebraFunction()
-						&& currentAtom.getFunctionSymbol().equals(
-								OBDAVocabulary.SPARQL_LEFTJOIN)) {
+				if (!tempatom.getFunctionSymbol().equals(
+						newatom.getFunctionSymbol())) {
+					/*
+					 * predicates are different, atoms cant be unified
+					 */
 					continue;
 				}
 
-				Unifier.applyUnifier(partialEvalution, mgu1, false);
-				List innerAtoms2 = getNestedList(termidx, partialEvalution);
-				innerAtoms2.remove(newatomidx);
-				newatomidx -= 1;
-				newatomcount -= 1;
+				boolean redundant = true;
+				for (Integer termidx2 : pkey) {
+					if (!newatom.getTerm(termidx2 - 1).equals(
+							tempatom.getTerm(termidx2 - 1))) {
+						redundant = false;
+						break;
+					}
+				}
+
+				if (redundant) {
+					/* found a candidate replacement atom */
+					mgu1 = Unifier.getMGU(newatom, tempatom);
+					if (mgu1 != null) {
+						replacement = tempatom;
+						break;
+					}
+				}
 
 			}
+
+			if (replacement == null)
+				continue;
+
+			if (mgu1 == null)
+				throw new RuntimeException(
+						"Unexcpected case found while performing JOIN elimination. Contact the authors for debugging.");
+
+			if (currentAtom.isAlgebraFunction()
+					&& currentAtom.getFunctionSymbol().equals(
+							OBDAVocabulary.SPARQL_LEFTJOIN)) {
+				continue;
+			}
+
+			Unifier.applyUnifier(partialEvalution, mgu1, false);
+			innerAtoms.remove(newatomidx);
+			newatomidx -= 1;
+			newatomcount -= 1;
+
 		}
 
 		/***
@@ -1465,10 +1460,61 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		 * the normalizer.
 		 */
 
-		List innerAtoms2 = getNestedList(termidx, partialEvalution);
-		int dataAtoms = DatalogNormalizer.countDataItems(innerAtoms2);
+		int dataAtoms = DatalogNormalizer.countDataItems(innerAtoms);
 		if (dataAtoms == 1)
 			cleanJoins(partialEvalution);
+
+	}
+
+	private static void eliminateRedundantISNOTNULL(CQIE partialEvaluation) {
+	}
+
+	/***
+	 * Goes through a list of atoms (indicated by the termidx) removing any
+	 * duplicated ISNOTNULL atoms.
+	 * 
+	 * @param termidx
+	 * @param partialEvalution
+	 */
+	private static void eliminateRedundantISNOTNULL(Stack<Integer> termidx,
+			CQIE partialEvalution) {
+		{
+			List innerAtoms = getNestedList(termidx, partialEvalution);
+			Function currentAtom = getTerm(termidx, partialEvalution);
+
+			int newatomsfirstIndex = termidx.peek();
+			if (newatomsfirstIndex <= 0) {
+				return;
+			}
+			for (int newatomidx = 0; newatomidx < innerAtoms.size(); newatomidx++) {
+
+				Function newatom = (Function) innerAtoms.get(newatomidx);
+				if (!newatom.isBooleanFunction())
+					continue;
+
+				if (!newatom.getPredicate().equals(OBDAVocabulary.IS_NOT_NULL))
+					continue;
+
+				Function replacement = null;
+
+				for (int idx2 = 0; idx2 < termidx.peek(); idx2++) {
+					Function tempatom = (Function) innerAtoms.get(idx2);
+					if (!tempatom.equals(newatom))
+						continue;
+
+					replacement = tempatom;
+					break;
+
+				}
+
+				if (replacement == null)
+					continue;
+
+				innerAtoms.remove(newatomidx);
+				newatomidx -= 1;
+			}
+		}
+
 	}
 
 	/***
@@ -1503,7 +1549,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 	 * @param rule
 	 * @return
 	 */
-	private List getNestedList(Stack<Integer> termidx, CQIE rule) {
+	private static List getNestedList(Stack<Integer> termidx, CQIE rule) {
 		List innerTerms = null;
 
 		if (termidx.size() > 1) {
@@ -1530,15 +1576,14 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		return innerTerms;
 	}
 
-	private Function getTerm(Stack<Integer> termidx, CQIE rule) {
+	private static Function getTerm(Stack<Integer> termidx, CQIE rule) {
 		Function atom = null;
 		if (termidx.size() > 1) {
 			Stack stack = new Stack();
 			stack.addAll(termidx.subList(0, termidx.size() - 1));
 			List innerTerms = getNestedList(stack, rule);
 			atom = (Function) innerTerms.get((Integer) stack.peek());
-		}
-		else {
+		} else {
 			atom = (Function) rule.getBody().get((Integer) termidx.peek());
 		}
 		return atom;

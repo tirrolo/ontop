@@ -162,14 +162,14 @@ public class DatalogNormalizer {
 	public static CQIE pushEqualities(CQIE result, boolean clone) {
 		if (clone)
 			result = result.clone();
-		
+
 		List body = result.getBody();
 		Map<Variable, NewLiteral> mgu = new HashMap<Variable, NewLiteral>();
 
 		/* collecting all equalities as substitutions */
-		
+
 		for (int i = 0; i < body.size(); i++) {
-			Function atom = (Function)body.get(i);
+			Function atom = (Function) body.get(i);
 			Unifier.applyUnifier(atom, mgu);
 			if (atom.getPredicate() == OBDAVocabulary.EQ) {
 				Substitution s = Unifier.getSubstitution(atom.getTerm(0),
@@ -186,10 +186,10 @@ public class DatalogNormalizer {
 				continue;
 			}
 		}
-		result = Unifier.applyUnifier(result, mgu,false);
+		result = Unifier.applyUnifier(result, mgu, false);
 		return result;
 	}
-	
+
 	public static DatalogProgram pushEqualities(DatalogProgram dp) {
 		DatalogProgram clone = fac.getDatalogProgram();
 		clone.setQueryModifiers(dp.getQueryModifiers());
@@ -212,6 +212,8 @@ public class DatalogNormalizer {
 			query = query.clone();
 
 		List<Atom> body = query.getBody();
+
+		Atom head = query.getHead();
 		/*
 		 * This set is only for reference
 		 */
@@ -239,7 +241,7 @@ public class DatalogNormalizer {
 			Function f = atom;
 			if (!(f.getFunctionSymbol() instanceof AlgebraOperatorPredicate))
 				continue;
-			pullUpNestedReferences(f.getTerms(), currentLevelVariables,
+			pullUpNestedReferences(f.getTerms(), head, currentLevelVariables,
 					resultingBooleanConditions, freshVariableCount);
 		}
 
@@ -254,7 +256,7 @@ public class DatalogNormalizer {
 	}
 
 	public static void pullUpNestedReferences(
-			List<NewLiteral> currentLevelAtoms,
+			List<NewLiteral> currentLevelAtoms, Atom head,
 			Set<Variable> upperLevelVariables, Set<Function> booleanConditions,
 			int[] freshVariableCount) {
 
@@ -284,7 +286,7 @@ public class DatalogNormalizer {
 			if (!(atom.getFunctionSymbol() instanceof AlgebraOperatorPredicate))
 				continue;
 			List<NewLiteral> terms = atom.getTerms();
-			pullUpNestedReferences(terms, mergedVariables, booleanConditions,
+			pullUpNestedReferences(terms, head, mergedVariables, booleanConditions,
 					freshVariableCount);
 		}
 
@@ -322,7 +324,7 @@ public class DatalogNormalizer {
 		 */
 		Set<Variable> problemVariables = new HashSet<Variable>();
 		problemVariables.addAll(currentLevelVariables);
-		problemVariables.removeAll(upperLevelVariables);
+		problemVariables.retainAll(upperLevelVariables);
 		Map<Variable, NewLiteral> substitution = new HashMap<Variable, NewLiteral>();
 
 		for (Variable var : problemVariables) {
@@ -334,6 +336,7 @@ public class DatalogNormalizer {
 			booleanConditions.add(fac.getEQFunction(var, freshVar));
 		}
 		Unifier.applyUnifier(currentLevelAtoms, substitution);
+		Unifier.applyUnifier(head, substitution);
 
 		/*
 		 * Review the current boolean atoms, if the refer to upper level
