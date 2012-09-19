@@ -33,13 +33,12 @@ public class TreeWitness {
 	                                          // in the canonical model of the TBox
 	private boolean allRootsQuantified; // all the roots are quantified variables
 
-	public TreeWitness(TreeWitnessGenerator gen, Set<Term> roots, boolean allRootsQuantified, Set<Atom> rootAtoms, Set<Term> nonroots) {
+	public TreeWitness(TreeWitnessGenerator gen, Set<Term> roots, boolean allRootsQuantified, Set<Atom> rootAtoms, Set<Term> domain) {
 		this.gen = gen;
 		this.roots = roots;
 		this.allRootsQuantified = allRootsQuantified;
 		this.rootAtoms = rootAtoms;
-		this.domain = new HashSet<Term>(roots);
-		domain.addAll(nonroots);
+		this.domain = domain; // new HashSet<Term>(roots); domain.addAll(nonroots);
 	}
 
 	/**

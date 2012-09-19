@@ -432,105 +432,6 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return subtws;
 	}
 	
-	private static class QueryFolding {
-		private List<Property> properties; 
-		private Set<Atom> rootAtoms; 
-		private Set<Term> roots; 
-		private Set<Atom> internalRootAtoms; 
-		private Set<Term> internalRoots;
-		private Set<Term> internalDomain;
-		private boolean status = true;
-		
-		public QueryFolding() {
-			properties = new ArrayList<Property>(); 
-			rootAtoms = new HashSet<Atom>(); 
-			roots = new HashSet<Term>(); 
-			internalRootAtoms = new HashSet<Atom>(); 
-			internalRoots = new HashSet<Term>();
-			internalDomain = new HashSet<Term>();
-		}
-		
-		public QueryFolding(TreeWitness tw) {
-			properties = new ArrayList<Property>(); 
-			rootAtoms = new HashSet<Atom>(); 
-			roots = new HashSet<Term>(); 
-			internalRootAtoms = new HashSet<Atom>(tw.getRootAtoms()); 
-			internalRoots = new HashSet<Term>(tw.getRoots());
-			internalDomain = new HashSet<Term>(tw.getDomain());
-		}
-
-		private QueryFolding(QueryFolding qf) {
-			properties = new ArrayList<Property>(qf.properties); 
-			rootAtoms = new HashSet<Atom>(qf.rootAtoms); 
-			roots = new HashSet<Term>(qf.roots); 
-			internalRootAtoms = new HashSet<Atom>(qf.internalRootAtoms); 
-			internalRoots = new HashSet<Term>(qf.internalRoots);
-			internalDomain = new HashSet<Term>(qf.internalDomain);
-			status = qf.status;
-		}
-
-		
-		public QueryFolding extend(TreeWitness tw) {
-			QueryFolding c = new QueryFolding(this);
-			c.internalRoots.addAll(tw.getRoots());
-			c.internalDomain.addAll(tw.getDomain());
-			c.internalRootAtoms.addAll(tw.getRootAtoms());
-			return c;
-		}
-		
-		private void extend(Term root, Set<Atom> bAtoms, Set<Atom> rootLoop, Set<Atom> intRootLoop) {
-			for (Atom a: intRootLoop)
-				if (a.getArity() == 2) {
-					log.debug("        NO LOOPS ALLOWED IN INTERNAL TERMS: " + a);
-					status = false;
-					return; 
-				}
-			
-			internalRootAtoms.addAll(intRootLoop);
-			roots.add(root);
-			rootAtoms.addAll(rootLoop);
-
-			for (Atom a : bAtoms) {
-				if (a.getPredicate() instanceof BooleanOperationPredicateImpl) {
-					log.debug("        NO BOOLEAN OPERATION PREDICATES ALLOWED IN PROPERTIES: " + a);
-					status = false;
-					return;
-				}
-				// TODO: CACHE THESE
-				if (root.equals(a.getTerm(0))) // internalRoots.contains
-					properties.add(ontFactory.createProperty(a.getPredicate(), false)); 
-				else 
-					properties.add(ontFactory.createProperty(a.getPredicate(), true)); 
-			}	
-		}
-		
-		public boolean canBeFolded(Term t, QueryConnectedComponent cc) {
-			properties.clear();
-			rootAtoms.clear();
-			roots.clear();
-			internalRootAtoms.clear();
-			internalDomain = Collections.singleton(t);
-			status = true;
-			
-			for (Edge edge : cc.getEdges()) {
-				if (t.equals(edge.getTerm0()))
-					extend(edge.getTerm1(), edge.getBAtoms(),  edge.getL1Atoms(), edge.getL0Atoms());
-				else if (t.equals(edge.getTerm1()))
-					extend(edge.getTerm0(), edge.getBAtoms(),  edge.getL0Atoms(), edge.getL1Atoms());
-				
-				if (!status)
-					return false;
-			}
-
-			// TODO: EXTEND ROOT ATOMS BY ALL-ROOT EDGES
-			
-			log.debug("  PROPERTIES " + properties);
-			log.debug("  ENDTYPE " + internalRootAtoms);
-			log.debug("  ROOTTYPE " + rootAtoms);
-			
-			return true;
-		}
-	}
 	
 	private Set<TreeWitness> getTreeWitnesses(QueryConnectedComponent cc) {		
 		Set<TreeWitness> treewitnesses = new HashSet<TreeWitness>();
@@ -561,89 +462,79 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		boolean saturated = true; 
 		
 		for (QueryConnectedComponent.Edge edge : cc.getEdges()) { 
-			if ((qf.roots.contains(edge.getTerm0()) || qf.internalDomain.contains(edge.getTerm0()))
-			    && (qf.roots.contains(edge.getTerm1()) || qf.internalDomain.contains(edge.getTerm1()))) { //
-				log.debug("FOLDING " + qf + " ALREADY CONTAINS EDGE " + edge);
-				continue;
-			}
-			Term edgeRoot = null; 
-			Term edgeNonRoot = null;
-			if (qf.internalRoots.contains(edge.getTerm0()) && !qf.internalDomain.contains(edge.getTerm1())) {
-				edgeRoot = edge.getTerm0(); 
-				edgeNonRoot = edge.getTerm1(); 
-				
+			if (qf.canBeAttachedToAnInternalRoot(edge.getTerm0(), edge.getTerm1())) {
 				log.debug("EDGE " + edge + " IS ADJACENT TO THE TREE WITNESS " + qf); 
+
+				saturated = false; 
+
+				for (TreeWitness twa : completeTWs)  
+					if (twa.allRootsQuantified() && 
+							twa.getRoots().contains(edge.getTerm0()) && twa.getDomain().contains(edge.getTerm1())) {
+						log.debug("    ATTACHING A TREE WITNESS " + twa);
+						saturateTreeWitnesses(cc, completeTWs, delta, qf.extend(twa)); 
+					} 
 				
 				QueryFolding qf2 = new QueryFolding(qf);
 				qf2.extend(edge.getTerm1(), edge.getBAtoms(),  edge.getL1Atoms(), edge.getL0Atoms());
-				if (qf2.status) {
+				if (qf2.isValid()) {
 					log.debug("    ATTACHING A HANDLE " + edge);
 					saturateTreeWitnesses(cc, completeTWs, delta, qf2);  
 				}	
 			} 
-			else if (qf.internalRoots.contains(edge.getTerm1()) && !qf.internalDomain.contains(edge.getTerm0())) { 
-				edgeRoot = edge.getTerm1(); 
-				edgeNonRoot = edge.getTerm0(); 
-
+			else if (qf.canBeAttachedToAnInternalRoot(edge.getTerm1(),edge.getTerm0())) { 
 				log.debug("EDGE " + edge + " IS ADJACENT TO THE TREE WITNESS " + qf); 
+				
+				saturated = false; 
+				
+				for (TreeWitness twa : completeTWs)  
+					if (twa.allRootsQuantified() && 
+							twa.getRoots().contains(edge.getTerm1()) && twa.getDomain().contains(edge.getTerm0())) {
+						log.debug("    ATTACHING A TREE WITNESS " + twa);
+						saturateTreeWitnesses(cc, completeTWs, delta, qf.extend(twa)); 
+					} 
 
 				QueryFolding qf2 = new QueryFolding(qf);
 				qf2.extend(edge.getTerm0(), edge.getBAtoms(),  edge.getL0Atoms(), edge.getL1Atoms());
-				if (qf2.status) {
+				if (qf2.isValid()) {
 					log.debug("    ATTACHING A HANDLE " + edge);
 					saturateTreeWitnesses(cc, completeTWs, delta, qf2);  
 				}	
 			} 
-			else 
-				continue;
-				
-			saturated = false; 
-			for (TreeWitness twa : completeTWs)  
-				if (twa.allRootsQuantified() && 
-						twa.getRoots().contains(edgeRoot) && 
-						twa.getDomain().contains(edgeNonRoot)) {
-					log.debug("    ATTACHING A TREE WITNESS " + twa);
-					saturateTreeWitnesses(cc, completeTWs, delta, qf.extend(twa)); 
-				} 
 		}
 
-		// the roots of tree witnesses in merged are bound variables
-				
-		if (saturated && (qf.roots.size() != 0))  
+		if (saturated && qf.hasRoot())  
 			addAllTreeWitnesses(qf, delta, cc.getQuantifiedVariables());
 	}
 	 
 	private void addAllTreeWitnesses(QueryFolding qf, Set<TreeWitness> tws, Set<Variable> quantifiedVariables) {
 		log.debug("CHECKING WHETHER THE FOLDING " + qf + " CAN BE GENERATED: "); 
-		for (TreeWitnessGenerator g : reasoner.getGenerators()) 
-			if (isTreeWitness(g, qf.properties, qf.internalRootAtoms)) { 
-				TreeWitness tw = new TreeWitness(g, qf.roots, quantifiedVariables.containsAll(qf.roots), 
-						qf.rootAtoms, qf.internalDomain); 
-				log.debug("TREE WITNESS: " + tw);
-				tws.add(tw); 
-			} 		
+		for (TreeWitnessGenerator g : reasoner.getGenerators()) {
+			log.debug("      CHECKING " + g);		
+			// BIG TODO: CACHE PROPERTIES AND CONCEPTS FOR TREE WITNESSES
+			boolean ok = true;
+			
+			for (Property p : qf.getProperties()) {
+				if (!reasoner.getSubProperties(p).contains(g.getProperty())) {
+					log.debug("        PROPERTY TOO SPECIFIC: " + p + " OF CLASS " + p.getPredicate().getClass() + " FOR " + g.getProperty());
+					ok = false;
+					break;
+				}
+				else
+					log.debug("        PROPERTY IS FINE: " + p + " FOR " + g.getProperty());
+			}
+			if (!ok)
+				continue;
+			
+			if (!isGenerated(g, qf.getInternalRootAtoms()))
+				continue;
+			
+			log.debug("         ALL MATCHED"); 
+			TreeWitness tw = qf.getTreeWitness(g, quantifiedVariables); 
+			log.debug("TREE WITNESS: " + tw);
+			tws.add(tw); 
+		}
 	}
 	
-	 private boolean isTreeWitness(TreeWitnessGenerator g, List<Property> properties, Set<Atom> endtype) { 
-		log.debug("      CHECKING " + g);		
-
-		// BIG TODO: CACHE PROPERTIES AND CONCEPTS FOR TREE WITNESSES
-		
-		for (Property p : properties) {
-			if (!reasoner.getSubProperties(p).contains(g.getProperty())) {
-				log.debug("        PROPERTY TOO SPECIFIC: " + p + " OF CLASS " + p.getPredicate().getClass() + " FOR " + g.getProperty());
-				return false;
-			}
-			else
-				log.debug("        PROPERTY IS FINE: " + p + " FOR " + g.getProperty());
-		}
-		if (!isGenerated(g, endtype))
-			return false;
-		
-		log.debug("         ALL MATCHED"); 
-		return true; 
-	}
-
 	private boolean isGenerated(TreeWitnessGenerator g, Set<Atom> endtype) {
 		for (Atom a : endtype) {
 			 if (a.getArity() != 1)
