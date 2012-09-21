@@ -259,6 +259,33 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return generators;
 	}
 	
+	
+	class PropertiesCache {
+		private Map<Edge, Set<Property>> prop0 = new HashMap<Edge, Set<Property>>();
+		private Map<Edge, Set<Property>> prop1 = new HashMap<Edge, Set<Property>>();
+		
+		public Set<Property> getEdgeProperties(Edge edge, Term root) {
+			Map<Edge, Set<Property>> props = edge.getTerm0().equals(root) ? prop0 : prop1;
+			Set<Property> properties = props.get(edge);
+			
+			if (properties == null) {
+				properties = new HashSet<Property>();
+				for (Atom a : edge.getBAtoms()) {
+					if (a.getPredicate() instanceof BooleanOperationPredicateImpl) {
+						log.debug("        NO BOOLEAN OPERATION PREDICATES ALLOWED IN PROPERTIES: " + a);
+						properties = Collections.emptySet();
+						break;
+					}
+					log.debug(" PROPERTY FOR EDGE: " + a.getPredicate().getClass());
+					properties.add(ontFactory.createProperty(a.getPredicate(), !root.equals(a.getTerm(0)))); 
+				}				
+				props.put(edge, properties);
+			}
+
+			return properties;
+		}
+	}
+	
 	/*
 	 * rewrites a given connected CQ with the rules put into output
 	 */
@@ -439,11 +466,12 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		if (cc.isDegenerate())
 			return treewitnesses;
 
+		PropertiesCache propertiesCache = new PropertiesCache();
 		QueryFolding qf = new QueryFolding();
 		
 		for (Term v : cc.getQuantifiedVariables()) {
 			log.debug("QUANTIFIED VARIABLE " + v); 			
-			if (qf.canBeFolded(v, cc))
+			if (qf.canBeFolded(v, cc, propertiesCache))
 				addAllTreeWitnesses(new QueryFolding(qf), treewitnesses, cc.getQuantifiedVariables());
 		}
 		
@@ -452,13 +480,13 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			do {
 				for (TreeWitness tw : treewitnesses) 
 					if (tw.allRootsQuantified()) 
-						saturateTreeWitnesses(cc, treewitnesses, delta, new QueryFolding(tw)); 
+						saturateTreeWitnesses(cc, treewitnesses, delta, new QueryFolding(tw), propertiesCache); 
 			} while (treewitnesses.addAll(delta));
 		}
 		return treewitnesses;
 	}
 
-	private void saturateTreeWitnesses(QueryConnectedComponent cc, Set<TreeWitness> completeTWs, Set<TreeWitness> delta, QueryFolding qf) { 
+	private void saturateTreeWitnesses(QueryConnectedComponent cc, Set<TreeWitness> completeTWs, Set<TreeWitness> delta, QueryFolding qf, PropertiesCache propertiesCache) { 
 		boolean saturated = true; 
 		
 		for (QueryConnectedComponent.Edge edge : cc.getEdges()) { 
@@ -471,14 +499,14 @@ public class TreeWitnessRewriter implements QueryRewriter {
 					if (twa.allRootsQuantified() && 
 							twa.getRoots().contains(edge.getTerm0()) && twa.getDomain().contains(edge.getTerm1())) {
 						log.debug("    ATTACHING A TREE WITNESS " + twa);
-						saturateTreeWitnesses(cc, completeTWs, delta, qf.extend(twa)); 
+						saturateTreeWitnesses(cc, completeTWs, delta, qf.extend(twa), propertiesCache); 
 					} 
 				
 				QueryFolding qf2 = new QueryFolding(qf);
-				qf2.extend(edge.getTerm1(), edge.getBAtoms(),  edge.getL1Atoms(), edge.getL0Atoms());
+				qf2.extend(edge.getTerm1(), propertiesCache.getEdgeProperties(edge, edge.getTerm1()),  edge.getL1Atoms(), edge.getL0Atoms());
 				if (qf2.isValid()) {
 					log.debug("    ATTACHING A HANDLE " + edge);
-					saturateTreeWitnesses(cc, completeTWs, delta, qf2);  
+					saturateTreeWitnesses(cc, completeTWs, delta, qf2, propertiesCache);  
 				}	
 			} 
 			else if (qf.canBeAttachedToAnInternalRoot(edge.getTerm1(),edge.getTerm0())) { 
@@ -490,14 +518,14 @@ public class TreeWitnessRewriter implements QueryRewriter {
 					if (twa.allRootsQuantified() && 
 							twa.getRoots().contains(edge.getTerm1()) && twa.getDomain().contains(edge.getTerm0())) {
 						log.debug("    ATTACHING A TREE WITNESS " + twa);
-						saturateTreeWitnesses(cc, completeTWs, delta, qf.extend(twa)); 
+						saturateTreeWitnesses(cc, completeTWs, delta, qf.extend(twa), propertiesCache); 
 					} 
 
 				QueryFolding qf2 = new QueryFolding(qf);
-				qf2.extend(edge.getTerm0(), edge.getBAtoms(),  edge.getL0Atoms(), edge.getL1Atoms());
+				qf2.extend(edge.getTerm0(), propertiesCache.getEdgeProperties(edge, edge.getTerm0()),  edge.getL0Atoms(), edge.getL1Atoms());
 				if (qf2.isValid()) {
 					log.debug("    ATTACHING A HANDLE " + edge);
-					saturateTreeWitnesses(cc, completeTWs, delta, qf2);  
+					saturateTreeWitnesses(cc, completeTWs, delta, qf2, propertiesCache);  
 				}	
 			} 
 		}

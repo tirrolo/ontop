@@ -3,15 +3,12 @@ package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.BooleanOperationPredicateImpl;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Edge;
-import java.util.ArrayList;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessRewriter.PropertiesCache;
+
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -27,7 +24,6 @@ public class QueryFolding {
 	private boolean status = true;
 
 	private static final Logger log = LoggerFactory.getLogger(QueryFolding.class);
-	private static OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
 		
 	public QueryFolding() {
 		properties = new HashSet<Property>(); 
@@ -66,7 +62,7 @@ public class QueryFolding {
 		return c;
 	}
 	
-	public void extend(Term root, Set<Atom> bAtoms, Set<Atom> rootLoop, Set<Atom> intRootLoop) {
+	public void extend(Term root, Set<Property> props, Set<Atom> rootLoop, Set<Atom> intRootLoop) {
 		for (Atom a: intRootLoop)
 			if (a.getArity() == 2) {
 				log.debug("        NO LOOPS ALLOWED IN INTERNAL TERMS: " + a);
@@ -78,6 +74,11 @@ public class QueryFolding {
 		roots.add(root);
 		rootAtoms.addAll(rootLoop);
 
+		if (props.isEmpty()) 
+			status = false;			
+		else
+			properties.addAll(props);
+/*
 		for (Atom a : bAtoms) {
 			if (a.getPredicate() instanceof BooleanOperationPredicateImpl) {
 				log.debug("        NO BOOLEAN OPERATION PREDICATES ALLOWED IN PROPERTIES: " + a);
@@ -91,9 +92,10 @@ public class QueryFolding {
 			else 
 				properties.add(ontFactory.createProperty(a.getPredicate(), true)); 
 		}	
+*/
 	}
 	
-	public boolean canBeFolded(Term t, QueryConnectedComponent cc) {
+	public boolean canBeFolded(Term t, QueryConnectedComponent cc, PropertiesCache propertiesCache) {
 		properties.clear();
 		rootAtoms.clear();
 		roots.clear();
@@ -103,9 +105,11 @@ public class QueryFolding {
 		
 		for (Edge edge : cc.getEdges()) {
 			if (t.equals(edge.getTerm0()))
-				extend(edge.getTerm1(), edge.getBAtoms(),  edge.getL1Atoms(), edge.getL0Atoms());
+				extend(edge.getTerm1(), propertiesCache.getEdgeProperties(edge, edge.getTerm1()),  
+										edge.getL1Atoms(), edge.getL0Atoms());
 			else if (t.equals(edge.getTerm1()))
-				extend(edge.getTerm0(), edge.getBAtoms(),  edge.getL0Atoms(), edge.getL1Atoms());
+				extend(edge.getTerm0(), propertiesCache.getEdgeProperties(edge, edge.getTerm0()),  
+										edge.getL0Atoms(), edge.getL1Atoms());
 			
 			if (!status)
 				return false;
