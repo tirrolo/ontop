@@ -59,10 +59,13 @@ public class QueryFolding {
 		c.internalRoots.addAll(tw.getRoots());
 		c.internalDomain.addAll(tw.getDomain());
 		c.internalRootAtoms.addAll(tw.getRootAtoms());
+		// what about generators?
 		return c;
 	}
 	
 	public void extend(Term root, Set<Property> props, Set<Atom> rootLoop, Set<Atom> intRootLoop) {
+		assert(status);
+		
 		for (Atom a: intRootLoop)
 			if (a.getArity() == 2) {
 				log.debug("        NO LOOPS ALLOWED IN INTERNAL TERMS: " + a);
@@ -74,25 +77,13 @@ public class QueryFolding {
 		roots.add(root);
 		rootAtoms.addAll(rootLoop);
 
-		if (props.isEmpty()) 
-			status = false;			
-		else
+		if (properties.isEmpty()) // first edge
 			properties.addAll(props);
-/*
-		for (Atom a : bAtoms) {
-			if (a.getPredicate() instanceof BooleanOperationPredicateImpl) {
-				log.debug("        NO BOOLEAN OPERATION PREDICATES ALLOWED IN PROPERTIES: " + a);
-				status = false;
-				return;
-			}
-			log.debug("FOLDING PROPERTY: " + a.getPredicate().getClass());
-			// TODO: CACHE THESE
-			if (root.equals(a.getTerm(0))) // internalRoots.contains
-				properties.add(ontFactory.createProperty(a.getPredicate(), false)); 
-			else 
-				properties.add(ontFactory.createProperty(a.getPredicate(), true)); 
-		}	
-*/
+		else
+			properties.retainAll(props);
+		
+		if (properties.isEmpty()) 
+			status = false;			
 	}
 	
 	public boolean canBeFolded(Term t, QueryConnectedComponent cc, PropertiesCache propertiesCache) {
@@ -153,4 +144,23 @@ public class QueryFolding {
 		}
 		return new TreeWitness(g, roots, quantifiedVariables.containsAll(roots), rootAtoms, domain); 	
 	}
+/*	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof QueryFolding) {
+			QueryFolding other = (QueryFolding)obj;
+			assert(status && other.status);
+			return this.roots.equals(other.roots) && 
+				   this.internalDomain.equals(other.internalDomain) && 
+				   this.properties.equals(other.properties) && 
+				   this.internalRootAtoms.equals(other.internalRootAtoms);			
+		}
+		return false;	
+	}
+	
+	@Override 
+	public int hashCode() {
+		return roots.hashCode() ^ internalDomain.hashCode() ^ properties.hashCode() ^ internalRootAtoms.hashCode();
+	}
+*/
 }

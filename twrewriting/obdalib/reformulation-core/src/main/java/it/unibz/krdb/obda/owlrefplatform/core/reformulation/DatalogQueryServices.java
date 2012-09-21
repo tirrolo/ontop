@@ -41,6 +41,8 @@ public class DatalogQueryServices {
 			} 
 			});
 
+		List<CQIE> output = new LinkedList<CQIE>();
+				
 		for (CQIE cqie : dp.getRules()) {
 			// main predicate is not replaced
 			Predicate predicate = cqie.getHead().getPredicate();
@@ -48,62 +50,69 @@ public class DatalogQueryServices {
 					((fragment != null) && !predicate.getName().getFragment().contains(fragment))) {
 				queue.add(cqie);
 				log.debug("MAIN PREDICATE RULE " + cqie);
-			}
-		}
 		
-		List<CQIE> output = new LinkedList<CQIE>();
-		
-		while (!queue.isEmpty()) {
-			CQIE query = queue.poll();
-				
-			boolean found = false;
-			for (CQIE r2 : output) 
-				if (CQCUtilities.isContainedInSyntactic(query,r2)) {
-					found = true;
-					//log.debug("SUBSUMED " + r + " BY " + r2);
-					break;
-				}
-			if (found)
-				continue;
+				while (!queue.isEmpty()) {
+					CQIE query = queue.poll();
+					//log.debug("QUEUE SIZE: " + queue.size() + " QUERY " + query);
 						
-			List<Atom> body = query.getBody();
-			boolean replaced = false;
-			ListIterator<Atom> bodyIterator = body.listIterator();
-			while (bodyIterator.hasNext()) {
-				Atom toBeReplaced = bodyIterator.next(); // body.get(i);				
-				List<CQIE> definitions = dp.getRules(toBeReplaced.getPredicate());
-				if ((definitions != null) && (definitions.size() != 0)) {
-					for (CQIE rule : definitions) {
-						CQIE newquery = ResolutionEngine.resolve(rule, query, bodyIterator.previousIndex());
-						if (newquery == null)
+					List<Atom> body = query.getBody();
+					int chosenAtomIdx = 0;
+					List<CQIE> chosenDefinitions = null;
+					ListIterator<Atom> bodyIterator = body.listIterator();
+					while (bodyIterator.hasNext()) {
+						Atom currentAtom = bodyIterator.next(); // body.get(i);	
+						Predicate currentPredicate = currentAtom.getPredicate(); 
+						if (currentPredicate.equals(head) || 
+								((fragment != null) && !currentPredicate.getName().getFragment().contains(fragment))) 
 							continue;
-						queue.add(reduce(newquery));
-						replaced = true;
+
+						List<CQIE> definitions = dp.getRules(currentPredicate);
+						if ((definitions != null) && (definitions.size() != 0)) {
+							if ((chosenDefinitions == null) || (chosenDefinitions.size() < definitions.size())) {
+								chosenDefinitions = definitions;
+								chosenAtomIdx = bodyIterator.previousIndex();
+							}
+						}
 					}
-					if (replaced)
-						break;
-				}
-			}
-			if (!replaced) {
-				//log.debug("ADDING TO THE RESULT " + r);
-				
-				// prune the list				
-				ListIterator<CQIE> i = output.listIterator();
-				while (i.hasNext()) {
-					CQIE q2 = i.next();
-					if (CQCUtilities.isContainedInSyntactic(q2, query)) {
-						i.remove();				
-						//log.debug("   PRUNED " + q2 + " BY " + r);
+
+					boolean replaced = false;
+					if (chosenDefinitions != null) {
+						for (CQIE rule : chosenDefinitions) {
+							CQIE newquery = ResolutionEngine.resolve(rule, query, chosenAtomIdx);
+							if (newquery != null) {
+								queue.add(reduce(newquery));
+								replaced = true;
+							}
+						}						
+					}
+					if (!replaced) {
+						boolean found = false;
+						ListIterator<CQIE> i = output.listIterator();
+						while (i.hasNext()) {
+							CQIE q2 = i.next();
+							if (CQCUtilities.isContainedInSyntactic(query, q2)) {
+								found = true;
+								break;
+							}
+							else if (CQCUtilities.isContainedInSyntactic(q2, query)) {
+								i.remove();				
+								log.debug("   PRUNED " + q2 + " BY " + query);
+							}
+						}
+						
+						if (!found) {
+							log.debug("ADDING TO THE RESULT " + query);
+							
+							output.add(query.clone());			
+							Collections.sort(output, new Comparator<CQIE> () {
+								@Override
+								public int compare(CQIE arg1, CQIE arg0) {
+									return arg1.getBody().size() - arg0.getBody().size();
+								} 
+								});
+						}
 					}
 				}
-				
-				output.add(query.clone());			
-				Collections.sort(output, new Comparator<CQIE> () {
-					@Override
-					public int compare(CQIE arg0, CQIE arg1) {
-						return arg0.getBody().size() - arg1.getBody().size();
-					} 
-					});				
 			}
 		}
 		

@@ -134,8 +134,20 @@ public class TreeWitnessReasonerLite {
 		// TODO: SATURATE GENERATING AXIOMS
 		
 		generatorsSet = generators.values();
+		for (TreeWitnessGenerator twg0 : generatorsSet) {
+			for (TreeWitnessGenerator twg1 : generatorsSet) {
+				if (isSubsumed(twg0, twg1))
+					twg1.addAllConcepts(twg0.getConcepts()); 
+			}
+		}
 	}
 
+	public boolean isSubsumed(TreeWitnessGenerator twg0, TreeWitnessGenerator twg1) {
+		return (getSubConcepts(twg1.getFiller()).contains(twg0.getFiller()) &&
+				getSubProperties(twg1.getProperty()).contains(twg0.getProperty()));
+		
+	}
+	
 	private static <T> void graphTransitiveClosure(Map<T, Set<T>> graph) {
 		log.debug("COMPUTING TRANSITIVE CLOSURE");
 		Queue<T> useForExtension = new LinkedList<T>(graph.keySet());

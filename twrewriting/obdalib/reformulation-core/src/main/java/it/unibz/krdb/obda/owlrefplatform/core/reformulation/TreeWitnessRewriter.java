@@ -271,13 +271,20 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			if (properties == null) {
 				properties = new HashSet<Property>();
 				for (Atom a : edge.getBAtoms()) {
+					log.debug("EDGE " + edge + " HAS PROPERTY " + a);
 					if (a.getPredicate() instanceof BooleanOperationPredicateImpl) {
-						log.debug("        NO BOOLEAN OPERATION PREDICATES ALLOWED IN PROPERTIES: " + a);
-						properties = Collections.emptySet();
-						break;
+						log.debug("        NO BOOLEAN OPERATION PREDICATES ALLOWED IN PROPERTIES ");
+						properties.clear();
 					}
-					log.debug(" PROPERTY FOR EDGE: " + a.getPredicate().getClass());
-					properties.add(ontFactory.createProperty(a.getPredicate(), !root.equals(a.getTerm(0)))); 
+					else {
+						Property p = ontFactory.createProperty(a.getPredicate(), !root.equals(a.getTerm(0)));
+						if (properties.isEmpty()) // first atom
+							properties.addAll(reasoner.getSubProperties(p));
+						else
+							properties.retainAll(reasoner.getSubProperties(p));
+					}
+					if (properties.isEmpty())
+						break;
 				}				
 				props.put(edge, properties);
 			}
@@ -293,8 +300,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	private void rewriteCC(QueryConnectedComponent cc, Atom headAtom, DatalogProgram output) throws URISyntaxException {
 		Set<Predicate> exts = new HashSet<Predicate>();
 		
-		Set<TreeWitness> tws0 = getTreeWitnesses(cc);
-		Set<TreeWitness> tws = getReducedSetOfTreeWitnesses(tws0);
+		Set<TreeWitness> tws = getTreeWitnesses(cc);
 		log.debug("TREE WITNESSES FOUND: " + tws.size());
 		for (TreeWitness tw : tws) 
 			log.debug(" " + tw);
@@ -414,8 +420,9 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		log.debug("REWRITTEN PROGRAM\n" + output);			
 		if (output.getRules().size() > 1) {
 			output = DatalogQueryServices.flatten(output, queryPredicate, "Q_");
-			output = DatalogQueryServices.flatten(output, queryPredicate, "CC_");
 			log.debug("Q-FLATTENED PROGRAM\n" + output);
+			output = DatalogQueryServices.flatten(output, queryPredicate, "CC_");
+			log.debug("CC-FLATTENED PROGRAM\n" + output);
 			if (output.getRules().size() > 1) {
 				output = CQCUtilities.removeContainedQueriesSorted(output, true, sigma);
 				log.debug("PROGRAM AFTER CQC CONTAINMENT\n" + output);			
@@ -434,31 +441,28 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		
 		return output;
 	}
-
 	
-	private Set<TreeWitness> getReducedSetOfTreeWitnesses(Set<TreeWitness> treewitnesses) {
-		Set<TreeWitness> subtws = new HashSet<TreeWitness>(treewitnesses.size());
+	private boolean addTreeWitness(Set<TreeWitness> tws, TreeWitness tw0) {
+		TreeWitnessGenerator twg0 = tw0.getGenerator();
 		
-		for (TreeWitness tw : treewitnesses) {
-			boolean subsumed = false;
-			for (TreeWitness tw1 : treewitnesses)
-				if (!tw.equals(tw1) && tw.getDomain().equals(tw1.getDomain()) && tw.getRoots().equals(tw1.getRoots())) {
-					TreeWitnessGenerator twg = tw.getGenerator();
-					TreeWitnessGenerator twg1 = tw1.getGenerator();
-					if(reasoner.getSubConcepts(twg.getFiller()).contains(twg1.getFiller())) {
-						if (reasoner.getSubProperties(twg.getProperty()).contains(twg1.getProperty())) {
-							log.debug("SUBSUMED: " + tw + " BY " + tw1);
-							subsumed = true;
-							break;
-						}
+		Iterator<TreeWitness> i = tws.iterator();
+		while (i.hasNext()) {
+			TreeWitness tw = i.next();
+			if (tw.getDomain().equals(tw0.getDomain()) && tw.getRoots().equals(tw0.getRoots())) {
+				TreeWitnessGenerator twg = tw.getGenerator();
+				if (reasoner.isSubsumed(twg0, twg)) {
+						log.debug("SUBSUMED: " + tw0 + " BY " + tw);
+						return false;
 					}
-				}
-			if (!subsumed)
-				subtws.add(tw);
+				else if (reasoner.isSubsumed(twg, twg0)) {
+						log.debug("SUBSUMED: " + tw + " BY " + tw0);
+						i.remove();
+					}
+			}
 		}
-		return subtws;
+		tws.add(tw0);
+		return true;
 	}
-	
 	
 	private Set<TreeWitness> getTreeWitnesses(QueryConnectedComponent cc) {		
 		Set<TreeWitness> treewitnesses = new HashSet<TreeWitness>();
@@ -466,27 +470,38 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		if (cc.isDegenerate())
 			return treewitnesses;
 
-		PropertiesCache propertiesCache = new PropertiesCache();
-		QueryFolding qf = new QueryFolding();
-		
-		for (Term v : cc.getQuantifiedVariables()) {
-			log.debug("QUANTIFIED VARIABLE " + v); 			
-			if (qf.canBeFolded(v, cc, propertiesCache))
-				addAllTreeWitnesses(new QueryFolding(qf), treewitnesses, cc.getQuantifiedVariables());
-		}
-		
-		if (treewitnesses.size() > 0) {
-			Set<TreeWitness> delta = new HashSet<TreeWitness>(); 
-			do {
-				for (TreeWitness tw : treewitnesses) 
+		{
+			List<TreeWitness> delta = new LinkedList<TreeWitness>();
+			
+			PropertiesCache propertiesCache = new PropertiesCache();
+			QueryFolding qf = new QueryFolding();
+			
+			for (Term v : cc.getQuantifiedVariables()) {
+				log.debug("QUANTIFIED VARIABLE " + v); 			
+				if (qf.canBeFolded(v, cc, propertiesCache))
+					addAllTreeWitnesses(new QueryFolding(qf), delta, cc.getQuantifiedVariables());
+			}		
+			
+			List<TreeWitness> working = new LinkedList<TreeWitness>();
+			while (true) {
+				for (TreeWitness tw : delta)
+					if (addTreeWitness(treewitnesses, tw)) // (treewitnesses.add(tw))
+						working.add(tw);		
+
+				if (working.isEmpty()) 
+					break;
+				
+				delta.clear(); 
+				for (TreeWitness tw : working) 
 					if (tw.allRootsQuantified()) 
-						saturateTreeWitnesses(cc, treewitnesses, delta, new QueryFolding(tw), propertiesCache); 
-			} while (treewitnesses.addAll(delta));
+						saturateTreeWitnesses(cc, treewitnesses, delta, new QueryFolding(tw), propertiesCache); 					
+				working.clear();
+			}				
 		}
 		return treewitnesses;
 	}
 
-	private void saturateTreeWitnesses(QueryConnectedComponent cc, Set<TreeWitness> completeTWs, Set<TreeWitness> delta, QueryFolding qf, PropertiesCache propertiesCache) { 
+	private void saturateTreeWitnesses(QueryConnectedComponent cc, Set<TreeWitness> completeTWs, List<TreeWitness> delta, QueryFolding qf, PropertiesCache propertiesCache) { 
 		boolean saturated = true; 
 		
 		for (QueryConnectedComponent.Edge edge : cc.getEdges()) { 
@@ -534,29 +549,21 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			addAllTreeWitnesses(qf, delta, cc.getQuantifiedVariables());
 	}
 	 
-	private void addAllTreeWitnesses(QueryFolding qf, Set<TreeWitness> tws, Set<Variable> quantifiedVariables) {
+	private void addAllTreeWitnesses(QueryFolding qf, List<TreeWitness> tws, Set<Variable> quantifiedVariables) {
+
 		log.debug("CHECKING WHETHER THE FOLDING " + qf + " CAN BE GENERATED: "); 
 		for (TreeWitnessGenerator g : reasoner.getGenerators()) {
 			log.debug("      CHECKING " + g);		
-			// BIG TODO: CACHE PROPERTIES AND CONCEPTS FOR TREE WITNESSES
-			boolean ok = true;
-			
-			for (Property p : qf.getProperties()) {
-				if (!reasoner.getSubProperties(p).contains(g.getProperty())) {
-					log.debug("        PROPERTY TOO SPECIFIC: " + p + " OF CLASS " + p.getPredicate().getClass() + " FOR " + g.getProperty());
-					ok = false;
-					break;
-				}
-				else
-					log.debug("        PROPERTY IS FINE: " + p + " FOR " + g.getProperty());
-			}
-			if (!ok)
+			if (qf.getProperties().contains(g.getProperty())) 
+				log.debug("        PROPERTIES ARE FINE: " + qf.getProperties() + " FOR " + g.getProperty());
+			else {
+				log.debug("        PROPERTIES ARE TOO SPECIFIC: " + qf.getProperties() + " FOR " + g.getProperty());
 				continue;
+			}
 			
 			if (!isGenerated(g, qf.getInternalRootAtoms()))
 				continue;
 			
-			log.debug("         ALL MATCHED"); 
 			TreeWitness tw = qf.getTreeWitness(g, quantifiedVariables); 
 			log.debug("TREE WITNESS: " + tw);
 			tws.add(tw); 

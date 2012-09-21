@@ -8,12 +8,14 @@ import it.unibz.krdb.obda.ontology.PropertySomeClassRestriction;
 import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class TreeWitnessGenerator {
 	private PropertySomeClassRestriction some;
-	private List<BasicClassDescription> concepts = new LinkedList<BasicClassDescription>();
+	private Set<BasicClassDescription> concepts = new HashSet<BasicClassDescription>();
 	private PropertySomeRestriction existsRinv;
 	private Property property;
 
@@ -27,7 +29,11 @@ public class TreeWitnessGenerator {
 		concepts.add(con);
 	}
 	
-	public List<BasicClassDescription> getConcepts() {
+	public void addAllConcepts(Set<BasicClassDescription> cons) {
+		concepts.addAll(cons);
+	}
+	
+	public Set<BasicClassDescription> getConcepts() {
 		return concepts;
 	}
 	
