@@ -65,8 +65,12 @@ public class AutoSuggestComboBox extends JComboBox {
 							Object element = items.elementAt(i);
 							String value = element.toString();
 							if (value.startsWith(text)) {
-								setSelectedIndex(-1);
-								tf.setText(value);
+								if (value.contains(":") && !text.contains(":")) {
+									/* if the suggested string contains a prefix label and 
+									 * the input text doesn't contain any prefix label then
+									 * auto-complete the prefix label. */
+									tf.setText(value.substring(0, value.indexOf(":") + 1));
+								}
 								return;
 							}
 						}
