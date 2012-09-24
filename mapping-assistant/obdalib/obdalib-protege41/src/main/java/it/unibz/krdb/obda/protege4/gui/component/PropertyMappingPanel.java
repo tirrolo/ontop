@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.protege4.gui.component;
 
+import it.unibz.krdb.obda.gui.swing.utils.DialogUtils;
 import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.Predicate;
@@ -409,7 +410,11 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 					editedItem.setDataType((Predicate) cboDataTypes.getSelectedItem());
 					editedItem.setTargetMapping(txtPropertyTargetMap.getText());
 				} else if (editedItem.isRefObjectMap()) {
-					editedItem.setTargetMapping(prefixManager.getExpandForm(txtPropertyTargetMap.getText(), true));
+					try {
+						editedItem.setTargetMapping(prefixManager.getExpandForm(txtPropertyTargetMap.getText(), true));
+					} catch (StringIndexOutOfBoundsException e) {
+						DialogUtils.showQuickErrorDialog(null, new Exception("Invalid URI template string."));
+					}
 				}
 			}
 			return editedItem;

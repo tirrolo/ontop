@@ -522,8 +522,12 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 	}
 	
 	private void txtClassUriTemplateFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtClassUriTemplateFocusLost
-		String uriTemplate = prefixManager.getExpandForm(txtClassUriTemplate.getText(), true);
-		predicateSubjectMap.setTargetMapping(uriTemplate);
+		try {
+			String uriTemplate = prefixManager.getExpandForm(txtClassUriTemplate.getText(), true);
+			predicateSubjectMap.setTargetMapping(uriTemplate);
+		} catch (StringIndexOutOfBoundsException e) {
+			DialogUtils.showQuickErrorDialog(null, new Exception("Invalid URI template string."));
+		}
 	}// GEN-LAST:event_txtClassUriTemplateFocusLost
 
 	private void cboClassAutoSuggestItemStateChanged(java.awt.event.ItemEvent evt) {
