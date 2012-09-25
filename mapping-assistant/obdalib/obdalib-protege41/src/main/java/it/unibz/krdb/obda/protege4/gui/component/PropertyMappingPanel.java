@@ -73,6 +73,10 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 		}
 		return predicateObjectMapList;
 	}
+	
+	public boolean isEmpty() {
+		return getPredicateObjectMapsList().isEmpty();
+	}
 
 	public boolean isEditing() {
 		return lstProperties.isEditing();

@@ -392,7 +392,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 
 	private void cmdCreateMappingActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmdCreateMappingActionPerformed
 		// Stop any editing action and save whatever in the text field
-		if (pnlPropertyEditorList.isEditing()) {
+		if (!pnlPropertyEditorList.isEmpty() && pnlPropertyEditorList.isEditing()) {
 			pnlPropertyEditorList.stopCellEditing();
 		}
 
