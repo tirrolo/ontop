@@ -29,6 +29,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -41,8 +42,19 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 	private OBDAModel obdaModel;
 	private PrefixManager prefixManager;
 	
-	private static final Color SELECTION_BACKGROUND = UIManager.getDefaults().getColor("List.selectionBackground");
+	private static final Color SELECTION_BACKGROUND = UIManager.getDefaults().getColor("Table.selectionBackground");
 	private static final Color NORMAL_BACKGROUND = new Color(240, 245, 240);
+	
+	private static final Border SELECTION_BORDER = BorderFactory.createCompoundBorder(
+			BorderFactory.createCompoundBorder(
+					BorderFactory.createEmptyBorder(1, 3, 1, 3),
+					BorderFactory.createLineBorder(new Color(255, 102, 0), 2)),
+			BorderFactory.createEmptyBorder(4, 4, 4, 4));
+	private static final Border NORMAL_BORDER = BorderFactory.createCompoundBorder(
+			BorderFactory.createCompoundBorder(
+					BorderFactory.createEmptyBorder(1, 3, 1, 3),
+					BorderFactory.createLineBorder(new Color(192, 192, 192), 1)),
+			BorderFactory.createEmptyBorder(5, 5, 5, 5));
 	
 	public PropertyMappingPanel(OBDAModel obdaModel) {
 		this.obdaModel = obdaModel;
@@ -167,7 +179,10 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			if (editor != null) {
 				editor.stopCellEditing();
 			}
-			((DefaultTableModel) lstProperties.getModel()).removeRow(lstProperties.getSelectedRow());
+			int index = lstProperties.getSelectedRow();
+			if (index != -1) {
+				((DefaultTableModel) lstProperties.getModel()).removeRow(index);
+			}
 		}
 	}// GEN-LAST:event_lstPropertiesKeyPressed
 
@@ -244,12 +259,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 		private void initComponents() {
 			setBackground(NORMAL_BACKGROUND);
 			setLayout(new BorderLayout(0, 2));
-			setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createCompoundBorder(
-						BorderFactory.createEmptyBorder(1, 2, 1, 2), 
-						BorderFactory.createLineBorder(new Color(192, 192, 192), 1)),
-				BorderFactory.createEmptyBorder(4, 4, 4, 4))
-			);
+			setBorder(NORMAL_BORDER);
 			setFocusable(false);
 			
 			pnlPropertyName = new JPanel();
@@ -289,9 +299,16 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 
 			if (isSelected) {
 				setBackground(SELECTION_BACKGROUND);
+				if (hasFocus) {
+					setBorder(SELECTION_BORDER);
+				} else {
+					setBorder(NORMAL_BORDER);
+				}
 			} else {
 				setBackground(NORMAL_BACKGROUND);
+				setBorder(NORMAL_BORDER);
 			}
+			
 			if (value instanceof MapItem) {
 				MapItem entry = (MapItem) value;
 				lblPropertyName.setText(entry.toString());
@@ -349,12 +366,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			txtPropertyTargetMap = new JTextField();
 			
 			pnlPropertyMapCell.setLayout(new BorderLayout(0, 2));
-			pnlPropertyMapCell.setBorder(BorderFactory.createCompoundBorder(
-					BorderFactory.createCompoundBorder(
-							BorderFactory.createEmptyBorder(1, 2, 1, 2), 
-							BorderFactory.createLineBorder(new Color(192, 192, 192), 1)),
-					BorderFactory.createEmptyBorder(4, 4, 4, 4))
-			);
+			pnlPropertyMapCell.setBorder(NORMAL_BORDER);
 			pnlPropertyMapCell.setRequestFocusEnabled(true);
 			
 			lblPropertyName.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
@@ -384,6 +396,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 			if (!isSelected) {
 				pnlPropertyMapCell.setBackground(SELECTION_BACKGROUND);
+				pnlPropertyMapCell.setBorder(NORMAL_BORDER);
 			}
 			if (value instanceof MapItem) {
 				MapItem entry = (MapItem) value;
