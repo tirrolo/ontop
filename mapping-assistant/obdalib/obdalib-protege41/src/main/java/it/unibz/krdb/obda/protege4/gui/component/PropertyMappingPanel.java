@@ -96,12 +96,22 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        popMenu = new javax.swing.JPopupMenu();
+        menuDelete = new javax.swing.JMenuItem();
         pnlAddProperty = new javax.swing.JPanel();
         cmdAdd = new javax.swing.JButton();
         pnlPropertyMapping = new javax.swing.JPanel();
         scrPropertyList = new javax.swing.JScrollPane();
         lstProperties = new javax.swing.JTable();
         lblCurrentPropertyMapping = new javax.swing.JLabel();
+
+        menuDelete.setText("Delete mapping");
+        menuDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuDeleteActionPerformed(evt);
+            }
+        });
+        popMenu.add(menuDelete);
 
         setAlignmentX(5.0F);
         setAlignmentY(5.0F);
@@ -152,6 +162,14 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
         lstProperties.setRowHeight(65);
         lstProperties.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstProperties.setTableHeader(null);
+        lstProperties.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lstPropertiesMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                lstPropertiesMouseReleased(evt);
+            }
+        });
         lstProperties.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 lstPropertiesKeyPressed(evt);
@@ -172,20 +190,42 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
         add(pnlPropertyMapping, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void menuDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuDeleteActionPerformed
+    	deleteMappingItem();
+    }//GEN-LAST:event_menuDeleteActionPerformed
+
+    private void lstPropertiesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstPropertiesMousePressed
+    	showPopup(evt);
+    }//GEN-LAST:event_lstPropertiesMousePressed
+
+    private void lstPropertiesMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstPropertiesMouseReleased
+    	showPopup(evt);
+    }//GEN-LAST:event_lstPropertiesMouseReleased
+
+	private void showPopup(MouseEvent evt) {
+		if (evt.isPopupTrigger()) {
+			popMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+		}
+	}
+
 	private void lstPropertiesKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_lstPropertiesKeyPressed
 		int code = evt.getKeyCode();
 		if (code == KeyEvent.VK_DELETE) {
-			TableCellEditor editor = lstProperties.getCellEditor();
-			if (editor != null) {
-				editor.stopCellEditing();
-			}
-			int index = lstProperties.getSelectedRow();
-			if (index != -1) {
-				((DefaultTableModel) lstProperties.getModel()).removeRow(index);
-			}
+			deleteMappingItem();
 		}
 	}// GEN-LAST:event_lstPropertiesKeyPressed
 
+	private void deleteMappingItem() {
+		TableCellEditor editor = lstProperties.getCellEditor();
+		if (editor != null) {
+			editor.stopCellEditing();
+		}
+		int index = lstProperties.getSelectedRow();
+		if (index != -1) {
+			((DefaultTableModel) lstProperties.getModel()).removeRow(index);
+		}
+	}
+	
 	private void cboPropertyAutoSuggestKeyPressed(KeyEvent evt) {
 		int code = evt.getKeyCode();
 		if (code == KeyEvent.VK_ESCAPE) {
@@ -235,9 +275,11 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
     private javax.swing.JButton cmdAdd;
     private javax.swing.JLabel lblCurrentPropertyMapping;
     private javax.swing.JTable lstProperties;
+    private javax.swing.JMenuItem menuDelete;
     private javax.swing.JPanel pnlAddProperty;
     private AutoSuggestComboBox cboPropertyAutoSuggest;
     private javax.swing.JPanel pnlPropertyMapping;
+    private javax.swing.JPopupMenu popMenu;
     private javax.swing.JScrollPane scrPropertyList;
     // End of variables declaration//GEN-END:variables
 
