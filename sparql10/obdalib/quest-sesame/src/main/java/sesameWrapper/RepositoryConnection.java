@@ -31,6 +31,11 @@ import org.openrdf.query.Query;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.Update;
+import org.openrdf.query.parser.ParsedBooleanQuery;
+import org.openrdf.query.parser.ParsedGraphQuery;
+import org.openrdf.query.parser.ParsedQuery;
+import org.openrdf.query.parser.ParsedTupleQuery;
+import org.openrdf.query.parser.QueryParserUtil;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -52,12 +57,12 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
     private  RDFParser rdfParser;
 
 	
-	public RepositoryConnection(SesameAbstractRepo rep) throws OBDAException
+	public RepositoryConnection(SesameAbstractRepo rep, QuestDBConnection connection) throws OBDAException
 	{
 		this.repository = rep;
-		this.questConn = repository.getQuestConnection();
-		this.isOpen = true;
-		this.autoCommit = true;
+		this.questConn = connection;
+		this.isOpen = !connection.isClosed();
+		this.autoCommit = connection.getAutoCommit();
 	}
 
        
@@ -612,15 +617,18 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 		if (ql != QueryLanguage.SPARQL)
 			throw new MalformedQueryException("SPARQL query expected! ");
 		
+		ParsedQuery q = QueryParserUtil.parseQuery(QueryLanguage.SPARQL, queryString, baseURI);
 		
-		if (queryString.startsWith("SELECT"))
+		
+		
+		if (q instanceof ParsedTupleQuery)
 			return prepareTupleQuery(ql,queryString, baseURI);
-		else if (queryString.startsWith("ASK"))
+		else if (q instanceof ParsedBooleanQuery)
 			return prepareBooleanQuery(ql, queryString, baseURI);
-		else if (queryString.startsWith("CONSTRUCT"))
+		else if (q instanceof ParsedGraphQuery)
 			return prepareGraphQuery(ql, queryString, baseURI);
 		else 
-			throw new MalformedQueryException("Unrecognized query type!");
+			throw new MalformedQueryException("Unrecognized query type. " + queryString);
 		
 	}
 

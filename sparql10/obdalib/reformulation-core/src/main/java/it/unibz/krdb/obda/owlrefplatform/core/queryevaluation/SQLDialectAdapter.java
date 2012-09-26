@@ -5,6 +5,8 @@ import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import java.util.List;
 
 public interface SQLDialectAdapter {
+	
+	
 
 	public String strconcat(String[] strings);
 
@@ -30,4 +32,6 @@ public interface SQLDialectAdapter {
 	public String sqlSlice(long limit, long offset);
 	
 	public String sqlOrderBy(List<OrderCondition> conditions, String viewname);
+	
+	public String sqlCast(String value);
 }

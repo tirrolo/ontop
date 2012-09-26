@@ -991,7 +991,6 @@ public class OWLAPI3Translator {
 		if (datatype.isString() || datatype.getBuiltInDatatype() == OWL2Datatype.XSD_STRING) { // xsd:string
 			return Predicate.COL_TYPE.STRING;
 		} else if (datatype.isRDFPlainLiteral() || datatype.getBuiltInDatatype() == OWL2Datatype.RDF_PLAIN_LITERAL // rdf:PlainLiteral
-				|| datatype.getBuiltInDatatype() == OWL2Datatype.RDF_XML_LITERAL // rdf:XmlLiteral
 				|| datatype.getBuiltInDatatype() == OWL2Datatype.RDFS_LITERAL) { // rdfs:Literal
 			return Predicate.COL_TYPE.LITERAL;
 		} else if (datatype.isInteger()

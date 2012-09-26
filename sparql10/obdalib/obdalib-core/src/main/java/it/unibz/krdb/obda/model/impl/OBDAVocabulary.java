@@ -64,6 +64,8 @@ public class OBDAVocabulary {
 
 	public static final Predicate IS_NOT_NULL = new BooleanOperationPredicateImpl(URI.create(strIS_NOT_NULL), 1);
 
+	public static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+	
 	/* Data type predicate URIs */
 
 	public static final String RDFS_LITERAL_URI = "http://www.w3.org/2000/01/rdf-schema#Literal";

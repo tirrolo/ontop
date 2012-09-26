@@ -140,7 +140,7 @@ public class TurtleParser extends Parser {
 
 
     /** Constants */
-    private static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+    private static final String RDF_TYPE = OBDAVocabulary.RDF_TYPE;
     private static final URI RDF_TYPE_URI = URI.create(RDF_TYPE);
 
     /** Map of directives */

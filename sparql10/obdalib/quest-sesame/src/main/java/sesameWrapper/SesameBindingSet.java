@@ -2,27 +2,22 @@ package sesameWrapper;
 
 import it.unibz.krdb.obda.model.BNode;
 import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAResultSet;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.owlrefplatform.core.resultset.OWLOBDARefResultSet;
+import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestResultset;
 
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.query.Binding;
 import org.openrdf.query.BindingSet;
@@ -31,17 +26,17 @@ import org.openrdf.query.impl.BindingImpl;
 public class SesameBindingSet implements BindingSet {
 
 	private static final long serialVersionUID = -8455466574395305166L;
-	private OWLOBDARefResultSet set = null;
+	private QuestResultset set = null;
 	private int count = 0;
 	private ValueFactory fact = new ValueFactoryImpl();
 
 	public SesameBindingSet(OBDAResultSet set) {
-		this.set = (OWLOBDARefResultSet) set;
-			try {
-				this.count = set.getColumCount();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		this.set = (QuestResultset) set;
+		try {
+			this.count = set.getColumCount();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -77,28 +72,36 @@ public class SesameBindingSet implements BindingSet {
 				int column = set.getSignature().indexOf(bindingName) + 1;
 				Constant c = set.getConstant(bindingName);
 				if (c instanceof BNode)
-					value = fact.createBNode(set.getBNode(bindingName).getName());
+					value = fact.createBNode(((BNode) c).getName());
 				else if (c instanceof URIConstant)
-					value = fact.createURI(set.getURI(column).toString());
+					value = fact.createURI(((URIConstant) c).getURI().toString());
 				else if (c instanceof ValueConstant) {
 					ValueConstant literal = set.getLiteral(column);
 					URI datatype = null;
 					if (literal.getType() == COL_TYPE.BOOLEAN)
-						datatype = fact.createURI(OBDAVocabulary.XSD_BOOLEAN_URI);
-					else if	(literal.getType() == COL_TYPE.DATETIME)
-						datatype = fact.createURI(OBDAVocabulary.XSD_DATETIME_URI);
-					else if	(literal.getType() == COL_TYPE.DECIMAL)
-						datatype = fact.createURI(OBDAVocabulary.XSD_DECIMAL_URI);
-					else if	(literal.getType() == COL_TYPE.DOUBLE)
-						datatype = fact.createURI(OBDAVocabulary.XSD_DOUBLE_URI);
-					else if	(literal.getType() == COL_TYPE.INTEGER)
-						datatype = fact.createURI(OBDAVocabulary.XSD_INTEGER_URI);
-					else if	(literal.getType() == COL_TYPE.LITERAL)
-						datatype = fact.createURI(OBDAVocabulary.RDFS_LITERAL_URI);
-					else if	(literal.getType() == COL_TYPE.OBJECT)
-						datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
-					else if	(literal.getType() == COL_TYPE.STRING)
-						datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
+						datatype = fact
+								.createURI(OBDAVocabulary.XSD_BOOLEAN_URI);
+					else if (literal.getType() == COL_TYPE.DATETIME)
+						datatype = fact
+								.createURI(OBDAVocabulary.XSD_DATETIME_URI);
+					else if (literal.getType() == COL_TYPE.DECIMAL)
+						datatype = fact
+								.createURI(OBDAVocabulary.XSD_DECIMAL_URI);
+					else if (literal.getType() == COL_TYPE.DOUBLE)
+						datatype = fact
+								.createURI(OBDAVocabulary.XSD_DOUBLE_URI);
+					else if (literal.getType() == COL_TYPE.INTEGER)
+						datatype = fact
+								.createURI(OBDAVocabulary.XSD_INTEGER_URI);
+					else if (literal.getType() == COL_TYPE.LITERAL)
+						datatype = fact
+								.createURI(OBDAVocabulary.RDFS_LITERAL_URI);
+					else if (literal.getType() == COL_TYPE.OBJECT)
+						datatype = fact
+								.createURI(OBDAVocabulary.XSD_STRING_URI);
+					else if (literal.getType() == COL_TYPE.STRING)
+						datatype = fact
+								.createURI(OBDAVocabulary.XSD_STRING_URI);
 					value = fact.createLiteral(literal.getValue(), datatype);
 				}
 			}

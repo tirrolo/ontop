@@ -645,7 +645,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 						 * variable that must be obtained from a column in the
 						 * query
 						 */
-						String lang = "''";
+						String lang = null;
 						if (ov.getTerms().size() > 1) {
 							NewLiteral langTerm = ov.getTerms().get(1);
 							if (langTerm instanceof ValueConstant) {
@@ -655,8 +655,12 @@ public class SQLGenerator implements SQLQueryGenerator {
 								lang = getSQLString(langTerm, index, false);
 							}
 						}
-						sb.append(String.format(langStr, lang,
-								signature.get(hpos)));
+						if (lang != null)
+							sb.append(String.format(langStr, lang,
+									signature.get(hpos)));
+						else
+							sb.append(String.format(langStr, "NULL",
+									signature.get(hpos)));
 
 						NewLiteral term = ov.getTerms().get(0);
 						String termStr = null;

@@ -21,10 +21,12 @@ public class ValueConstantImpl extends AbstractLiteral implements ValueConstant 
 	private final String value;
 
 	private final String language;
-	
+
 	private final Predicate.COL_TYPE type;
 
 	private final int identifier;
+
+	private String string = null;
 
 	/**
 	 * The default constructor.
@@ -35,23 +37,19 @@ public class ValueConstantImpl extends AbstractLiteral implements ValueConstant 
 	 *            the constant type.
 	 */
 	protected ValueConstantImpl(String value, Predicate.COL_TYPE type) {
-		this(value, "", type);
+		this(value, null, type);
 	}
-	
-	protected ValueConstantImpl(String value, String language, Predicate.COL_TYPE type) {
-		if (language == null)
-			language = "";
-		
+
+	protected ValueConstantImpl(String value, String language,
+			Predicate.COL_TYPE type) {
+		// if (language == null)
+		// language = "";
+
 		this.value = value;
 		this.language = language;
 		this.type = type;
-		StringBuffer bf =new StringBuffer();
-		bf.append(value);
-		bf.append(" ");
-		bf.append(language);
-		bf.append(" ");
-		bf.append(type);
-		this.identifier = bf.toString().hashCode();
+		this.string = toString();
+		this.identifier = string.hashCode();
 	}
 
 	@Override
@@ -62,7 +60,7 @@ public class ValueConstantImpl extends AbstractLiteral implements ValueConstant 
 
 		if (this == OBDAVocabulary.NULL)
 			return false;
-		
+
 		ValueConstantImpl value2 = (ValueConstantImpl) obj;
 		return this.identifier == value2.identifier;
 	}
@@ -89,7 +87,7 @@ public class ValueConstantImpl extends AbstractLiteral implements ValueConstant 
 	public String getLanguage() {
 		return language;
 	}
-	
+
 	@Override
 	public Predicate.COL_TYPE getType() {
 		return type;
@@ -97,30 +95,35 @@ public class ValueConstantImpl extends AbstractLiteral implements ValueConstant 
 
 	@Override
 	public String toString() {
-		if (getType() == COL_TYPE.LITERAL) {
-			if (language == null || language.equals(""))
-				return value;
-			else
-				return value + "@" + language;
-		} else {
-			return value;
-		}
+		if (string != null)
+			return string;
 		
+		StringBuffer bf = new StringBuffer();
+		bf.append(value);
+		
+		if (getType() == COL_TYPE.LITERAL) {
+			if (language != null) {
+				bf.append("@");
+				bf.append(language);
+			}
+		} 
+		return bf.toString();
 	}
-	
+
 	@Override
 	public Set<Variable> getReferencedVariables() {
 		return new LinkedHashSet<Variable>();
 	}
-	
+
 	@Override
 	public Map<Variable, Integer> getVariableCount() {
-		return new HashMap<Variable,Integer>();
+		return new HashMap<Variable, Integer>();
 	}
-	
+
 	@Override
 	public Atom asAtom() {
-		throw new RuntimeException("Impossible to cast as atom: " + this.getClass()); 
+		throw new RuntimeException("Impossible to cast as atom: "
+				+ this.getClass());
 	}
 
 }

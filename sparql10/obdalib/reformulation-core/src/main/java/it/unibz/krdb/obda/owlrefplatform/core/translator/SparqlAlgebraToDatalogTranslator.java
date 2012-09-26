@@ -617,7 +617,7 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		if (p instanceof Node_URI
 				&& p.getURI().equals(
-						"http://www.w3.org/1999/02/22-rdf-syntax-ns#type")) {
+						OBDAVocabulary.RDF_TYPE)) {
 			// Subject node
 			if (s instanceof Var) {
 				Var subject = (Var) s;
@@ -657,7 +657,7 @@ public class SparqlAlgebraToDatalogTranslator {
 						.getFunctionalTerm(
 								ofac.getUriTemplatePredicate(1),
 								ofac.getURIConstant(URI
-										.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")));
+										.create(OBDAVocabulary.RDF_TYPE)));
 				terms.add(rdfTypeConstant);
 				terms.add(ofac.getVariable(((Var) o).getVarName()));
 

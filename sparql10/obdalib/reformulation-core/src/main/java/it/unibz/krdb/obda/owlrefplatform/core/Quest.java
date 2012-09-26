@@ -639,6 +639,20 @@ public class Quest implements Serializable {
 			for (CQIE mapping : unfoldingProgram.getRules()) {
 				Set<Variable> headvars = mapping.getHead()
 						.getReferencedVariables();
+				/*
+				 * Collecting variables that may be NULL (Lang)
+				 */
+				for (NewLiteral term: mapping.getHead().getTerms()) {
+					if (!(term instanceof Function))
+						continue;
+					Function f = (Function)term;
+					if (f.getPredicate() != OBDAVocabulary.RDFS_LITERAL)
+						continue;
+					NewLiteral langTerm = f.getTerm(1);
+					if (langTerm instanceof Variable)
+						headvars.remove(langTerm);
+				}
+				
 				for (Variable var : headvars) {
 					Atom notnull = fac.getIsNotNullAtom(var);
 					mapping.getBody().add(notnull);
@@ -754,7 +768,7 @@ public class Quest implements Serializable {
 						.getFunctionalTerm(
 								fac.getUriTemplatePredicate(1),
 								fac.getURIConstant(URI
-										.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")));
+										.create(OBDAVocabulary.RDF_TYPE)));
 				terms.add(rdfTypeConstant);
 
 				URI classname = currenthead.getPredicate().getName();

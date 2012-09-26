@@ -20,6 +20,9 @@ public class SesameTupleQueryResult implements TupleQueryResult{
 	{
 		this.result = res;
 		this.count = result.getFetchSize();
+		
+		
+		
 	}
 	
 	//tuplequeryresult intf
