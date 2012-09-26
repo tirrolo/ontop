@@ -455,8 +455,8 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 
 		@Override
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+			pnlPropertyMapCell.setBackground(SELECTION_BACKGROUND);
 			if (!isSelected) {
-				pnlPropertyMapCell.setBackground(SELECTION_BACKGROUND);
 				pnlPropertyMapCell.setBorder(NORMAL_BORDER);
 			}
 			if (value instanceof MapItem) {
@@ -505,6 +505,15 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 				return true;
 			}
 			return false;
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			try { // handling unknown array out of bound exception (?)
+				return super.stopCellEditing();
+			} catch (Exception e) {
+				return true;
+			}
 		}
 	}
 }
