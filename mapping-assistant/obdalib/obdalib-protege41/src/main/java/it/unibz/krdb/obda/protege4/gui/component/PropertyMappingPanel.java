@@ -149,6 +149,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 
         cmdAdd.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         cmdAdd.setContentAreaFilled(false);
+        cmdAdd.setFocusable(false);
         cmdAdd.setMaximumSize(new java.awt.Dimension(23, 23));
         cmdAdd.setMinimumSize(new java.awt.Dimension(23, 23));
         cmdAdd.setPreferredSize(new java.awt.Dimension(23, 23));
@@ -251,6 +252,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 				PredicateItem selectedItem = (PredicateItem) obj;
 				addRow(selectedItem);
 			}
+			cboPropertyAutoSuggest.requestFocusInWindow();
 		}
 	}
 
