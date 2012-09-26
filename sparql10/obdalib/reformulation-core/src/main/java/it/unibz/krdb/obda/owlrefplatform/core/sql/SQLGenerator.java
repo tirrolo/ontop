@@ -686,6 +686,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 				String lang = null;
 				NewLiteral langTerm = ov.getTerms().get(1);
+				if (langTerm == OBDAVocabulary.NULL)
+					lang = "NULL";
 				if (langTerm instanceof ValueConstant) {
 					lang = jdbcutil.getSQLLexicalForm((ValueConstant) langTerm);
 				} else {

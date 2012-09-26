@@ -877,25 +877,33 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 					case LITERAL:
 						setInputStatement(attributeLiteralStm, uri, value,
 								lang, idx);
+						log.debug("literal");
 						break;
 					case STRING:
 						setInputStatement(attributeStringStm, uri, value, idx);
+						log.debug("string");
 						break;
 					case INTEGER:
+						if (value.charAt(0) == '+')
+							value = value.substring(1, value.length());
 						setInputStatement(attributeIntegerStm, uri,
 								Integer.parseInt(value), idx);
+						log.debug("Int");
 						break;
 					case DECIMAL:
 						setInputStatement(attributeDecimalStm, uri,
 								parseBigDecimal(value), idx);
+						log.debug("BigDecimal");
 						break;
 					case DOUBLE:
 						setInputStatement(attributeDoubleStm, uri,
 								Double.parseDouble(value), idx);
+						log.debug("Double");
 						break;
 					case DATETIME:
 						setInputStatement(attributeDateStm, uri,
 								parseTimestamp(value), idx);
+						log.debug("Date");
 						break;
 					case BOOLEAN:
 						value = getBooleanString(value); // PostgreSQL
@@ -904,7 +912,9 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 															// 't' and 'f'
 						setInputStatement(attributeBooleanStm, uri,
 								Boolean.parseBoolean(value), idx);
+						log.debug("boolean");
 						break;
+					case UNSUPPORTED:
 					default:
 						log.warn("Ignoring assertion: {}", ax.toString());
 					}
@@ -932,7 +942,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 				roleStm.addBatch();
 
 				log.debug("inserted: {} {}", uri1, uri2);
-				log.debug("inserted: {}", roleIndex);
+				log.debug("inserted: {} object", roleIndex);
 
 				monitor.success(); // advanced the success counter
 
@@ -949,7 +959,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 				classStm.setInt(2, conceptIndex);
 				classStm.addBatch();
 
-				log.debug("inserted: {} {}", uri, conceptIndex);
+				log.debug("inserted: {} {} class", uri, conceptIndex);
 
 				monitor.success(); // advanced the success counter
 			}
@@ -1511,6 +1521,13 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 						sourceQuery, targetQuery);
 				currentMappings.add(basicmapping);
 
+				targetQuery = constructTargetQuery(role, COL_TYPE.LITERAL_LANG);
+				sourceQuery = constructSourceQuery(role, indexedNode,
+						COL_TYPE.LITERAL_LANG);
+				basicmapping = dfac.getRDBMSMappingAxiom(sourceQuery,
+						targetQuery);
+				currentMappings.add(basicmapping);
+
 				targetQuery = constructTargetQuery(role, COL_TYPE.BOOLEAN);
 				sourceQuery = constructSourceQuery(role, indexedNode,
 						COL_TYPE.BOOLEAN);
@@ -1892,6 +1909,9 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 		Predicate headPredicate, bodyPredicate = null;
 		List<NewLiteral> headTerms = new ArrayList<NewLiteral>();
 		List<NewLiteral> bodyTerms = new ArrayList<NewLiteral>();
+
+		List<Atom> bodyAtoms = new LinkedList<Atom>();
+
 		if (type == COL_TYPE.OBJECT) {
 			// If the predicate is a Object Property
 			headPredicate = dfac.getPredicate(URI.create("m"), 2,
@@ -1918,8 +1938,30 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 			bodyTerms.add(dfac.getFunctionalTerm(
 					dfac.getUriTemplatePredicate(1), dfac.getVariable("X")));
 			bodyTerms.add(dfac.getFunctionalTerm(
+					dfac.getDataTypePredicateLiteral(), dfac.getVariable("Y")));
+
+			Atom notNull = dfac.getIsNullAtom(dfac.getVariable("Z"));
+			bodyAtoms.add(notNull);
+
+		} else if (type == COL_TYPE.LITERAL_LANG) {
+			// if the property has Literal type
+			headPredicate = dfac.getPredicate(URI.create("m"), 3,
+					new COL_TYPE[] { COL_TYPE.STRING, COL_TYPE.LITERAL,
+							COL_TYPE.LITERAL });
+			headTerms.add(dfac.getVariable("X"));
+			headTerms.add(dfac.getVariable("Y"));
+			headTerms.add(dfac.getVariable("Z"));
+
+			bodyPredicate = predicate; // the body
+			bodyTerms.add(dfac.getFunctionalTerm(
+					dfac.getUriTemplatePredicate(1), dfac.getVariable("X")));
+			bodyTerms.add(dfac.getFunctionalTerm(
 					dfac.getDataTypePredicateLiteral(), dfac.getVariable("Y"),
 					dfac.getVariable("Z")));
+
+			Atom notNull = dfac.getIsNotNullAtom(dfac.getVariable("Z"));
+			bodyAtoms.add(notNull);
+
 		} else if (type == COL_TYPE.BOOLEAN) {
 			// If the property has other types.
 			headPredicate = dfac.getPredicate(URI.create("m"), 3,
@@ -2035,7 +2077,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 		}
 		Atom head = dfac.getAtom(headPredicate, headTerms);
 		Atom body = dfac.getAtom(bodyPredicate, bodyTerms);
-		return dfac.getCQIE(head, body);
+		bodyAtoms.add(0, body);
+		return dfac.getCQIE(head, bodyAtoms);
 	}
 
 	private String constructSourceQuery(Predicate predicate, DAGNode node,
@@ -2046,6 +2089,9 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 			sql.append(select_mapping_role);
 			break;
 		case LITERAL:
+			sql.append(select_mapping_attribute_literal);
+			break;
+		case LITERAL_LANG:
 			sql.append(select_mapping_attribute_literal);
 			break;
 		case STRING:

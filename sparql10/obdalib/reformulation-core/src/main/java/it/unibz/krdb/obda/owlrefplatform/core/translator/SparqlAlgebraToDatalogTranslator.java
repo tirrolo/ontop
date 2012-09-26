@@ -2,6 +2,7 @@ package it.unibz.krdb.obda.owlrefplatform.core.translator;
 
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
+import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
@@ -378,7 +379,7 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		List<Atom> atoms = new LinkedList<Atom>();
 		atoms.add(joinAtom);
-		
+
 		/* adding the conditions of the filter for the LeftJoin */
 		if (filter != null)
 			for (Expr expr : filter.getList()) {
@@ -476,12 +477,14 @@ public class SparqlAlgebraToDatalogTranslator {
 		ExprList list = op.getExprs();
 		List<Expr> exprlist = list.getList();
 		List<Atom> filterAtoms = new LinkedList<Atom>();
+		Set<Variable> filteredVariables = new LinkedHashSet<Variable>();
 		for (Expr expr : exprlist) {
 			Function a = (Function) getBooleanTerm(expr);
 			if (a != null) {
 				Atom filterAtom = ofac.getAtom(a.getFunctionSymbol(),
 						a.getTerms());
 				filterAtoms.add(filterAtom);
+				filteredVariables.addAll(filterAtom.getReferencedVariables());
 			}
 		}
 
@@ -490,8 +493,35 @@ public class SparqlAlgebraToDatalogTranslator {
 		vars.addAll(var);
 		Atom head = ofac.getAtom(predicate, vars);
 
-		Predicate pbody = ofac.getPredicate("ans" + (i * 2), vars.size());
-		Atom bodyAtom = ofac.getAtom(pbody, vars);
+		Predicate pbody;
+		Atom bodyAtom;
+
+		List<NewLiteral> innerProjection = new LinkedList<NewLiteral>();
+		innerProjection.addAll(filteredVariables);
+		Collections.sort(innerProjection, comparator);
+
+		/***
+		 * This is necessary because some filters might apply to variables that
+		 * have not been projected yet, for example:
+		 * <p>
+		 * (filter (= ?x 99) <br>
+		 * <t> (bgp (triple <http://example/x> <http://example/p> ?x)))
+		 * <p>
+		 * in this cases we must project at least the filtered variables from
+		 * the nested expressions, otherwise we endup with free variables.
+		 * 
+		 */
+
+		// TODO here we might be missing the case where there is a filter
+		// on a variable that has not been projected out of the inner
+		// expressions
+		if (vars.size() == 0 && filteredVariables.size() > 0) {
+			pbody = ofac.getPredicate("ans" + (i * 2), innerProjection.size());
+			bodyAtom = ofac.getAtom(pbody, innerProjection);
+		} else {
+			pbody = ofac.getPredicate("ans" + (i * 2), vars.size());
+			bodyAtom = ofac.getAtom(pbody, vars);
+		}
 
 		LinkedList<Atom> body = new LinkedList<Atom>();
 		body.add(bodyAtom);
@@ -502,7 +532,14 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		Op sub = op.getSubOp();
 
-		translate(var, sub, pr, (i * 2), varcount);
+		if (vars.size() == 0 && filteredVariables.size() > 0) {
+			List<Variable> newvars = new LinkedList<Variable>();
+			for (NewLiteral l : innerProjection)
+				newvars.add((Variable) l);
+			translate(newvars, sub, pr, (i * 2), varcount);
+		} else
+			translate(var, sub, pr, (i * 2), varcount);
+
 	}
 
 	public static void translate(List<Variable> vars, OpBGP op,
@@ -615,9 +652,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		Predicate predicate = null;
 		Vector<NewLiteral> terms = new Vector<NewLiteral>();
 
-		if (p instanceof Node_URI
-				&& p.getURI().equals(
-						OBDAVocabulary.RDF_TYPE)) {
+		if (p instanceof Node_URI && p.getURI().equals(OBDAVocabulary.RDF_TYPE)) {
 			// Subject node
 			if (s instanceof Var) {
 				Var subject = (Var) s;
@@ -653,11 +688,9 @@ public class SparqlAlgebraToDatalogTranslator {
 
 				predicate = OBDAVocabulary.QUEST_TRIPLE_PRED;
 
-				Function rdfTypeConstant = ofac
-						.getFunctionalTerm(
-								ofac.getUriTemplatePredicate(1),
-								ofac.getURIConstant(URI
-										.create(OBDAVocabulary.RDF_TYPE)));
+				Function rdfTypeConstant = ofac.getFunctionalTerm(ofac
+						.getUriTemplatePredicate(1), ofac.getURIConstant(URI
+						.create(OBDAVocabulary.RDF_TYPE)));
 				terms.add(rdfTypeConstant);
 				terms.add(ofac.getVariable(((Var) o).getVarName()));
 
@@ -751,14 +784,19 @@ public class SparqlAlgebraToDatalogTranslator {
 				if (objectType == COL_TYPE.LITERAL) {
 					// If the object has type LITERAL, check any language
 					// tag!
-					String lang = (object.getLiteralLanguage() == null) ? ""
-							: object.getLiteralLanguage();
+					String lang = object.getLiteralLanguage();
 					Predicate functionSymbol = ofac
 							.getDataTypePredicateLiteral();
-					ValueConstant languageConstant = ofac.getValueConstant(
-							lang, COL_TYPE.LITERAL);
+					Constant languageConstant = null;
+					if (lang != null && !lang.equals("")) {
+						languageConstant = ofac.getValueConstant(lang,
+								COL_TYPE.LITERAL);
+						dataTypeFunction = ofac.getFunctionalTerm(
+								functionSymbol, constant, languageConstant);
+					}
+
 					dataTypeFunction = ofac.getFunctionalTerm(functionSymbol,
-							constant, languageConstant);
+							constant);
 				} else {
 					// For other supported data-types
 					Predicate functionSymbol = getDataTypePredicate(objectType);

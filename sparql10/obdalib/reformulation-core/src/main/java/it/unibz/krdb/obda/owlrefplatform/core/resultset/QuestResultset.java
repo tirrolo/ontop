@@ -217,9 +217,7 @@ public class QuestResultset implements OBDAResultSet {
 				result = fac.getURIConstant(value);
 			} else if (type == COL_TYPE.BNODE) {
 				result = fac.getBNodeConstant(set.getString(name));
-			} else if (type == COL_TYPE.UNBOUND) {
-				result = null;
-			} else {
+			}  else {
 				/*
 				 * The constant is a literal, we need to find if its
 				 * rdfs:Literal or a normal literal and construct it properly.
@@ -290,9 +288,7 @@ public class QuestResultset implements OBDAResultSet {
 			return COL_TYPE.DATETIME;
 		} else if (sqltype == 9) {
 			return COL_TYPE.BOOLEAN;
-		} else if (sqltype == 0) {
-			return COL_TYPE.UNBOUND;
-		} else {
+		}  else {
 			throw new RuntimeException("COLTYPE unknown: " + sqltype);
 		}
 	}

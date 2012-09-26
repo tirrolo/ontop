@@ -109,10 +109,9 @@ public class SesameTupleQuery implements TupleQuery {
 				else if (literal.getType() == COL_TYPE.STRING)
 					datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
 
-				if (datatype == null)
+				if (datatype != null)
 					value = fact.createLiteral(literal.getValue(), datatype);
-
-				if (lang == null)
+				else if (lang == null)
 					value = fact.createLiteral(literal.getValue(), (URI) null);
 				else
 					value = fact.createLiteral(literal.getValue(), lang);

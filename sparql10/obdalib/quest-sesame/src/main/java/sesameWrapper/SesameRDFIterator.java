@@ -224,7 +224,7 @@ public class SesameRDFIterator extends RDFHandlerBase implements
 		} else if (datatype.stringValue().equals(OBDAVocabulary.XSD_BOOLEAN_URI)) {
 			return Predicate.COL_TYPE.BOOLEAN;
 		}
-		return Predicate.COL_TYPE.LITERAL;
+		return Predicate.COL_TYPE.UNSUPPORTED;
 
 	}
 

@@ -14,7 +14,7 @@ import java.net.URI;
 public interface Predicate extends Cloneable, Serializable {
 
 	public enum COL_TYPE {
-		OBJECT, BNODE, LITERAL, INTEGER, DECIMAL, DOUBLE, STRING, DATETIME, BOOLEAN, UNBOUND
+		OBJECT, BNODE, LITERAL, LITERAL_LANG, INTEGER, DECIMAL, DOUBLE, STRING, DATETIME, BOOLEAN, UNSUPPORTED
 	};
 
 	/**

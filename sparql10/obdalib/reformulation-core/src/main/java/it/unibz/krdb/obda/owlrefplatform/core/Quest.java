@@ -622,7 +622,6 @@ public class Quest implements Serializable {
 			unfoldingProgram = DatalogNormalizer
 					.pushEqualities(unfoldingProgram);
 
-			int unprsz = unfoldingProgram.getRules().size();
 			CQCUtilities.removeContainedQueriesSorted(unfoldingProgram, true);
 
 			/*
@@ -639,19 +638,6 @@ public class Quest implements Serializable {
 			for (CQIE mapping : unfoldingProgram.getRules()) {
 				Set<Variable> headvars = mapping.getHead()
 						.getReferencedVariables();
-				/*
-				 * Collecting variables that may be NULL (Lang)
-				 */
-				for (NewLiteral term: mapping.getHead().getTerms()) {
-					if (!(term instanceof Function))
-						continue;
-					Function f = (Function)term;
-					if (f.getPredicate() != OBDAVocabulary.RDFS_LITERAL)
-						continue;
-					NewLiteral langTerm = f.getTerm(1);
-					if (langTerm instanceof Variable)
-						headvars.remove(langTerm);
-				}
 				
 				for (Variable var : headvars) {
 					Atom notnull = fac.getIsNotNullAtom(var);
