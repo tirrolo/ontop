@@ -1,7 +1,5 @@
 package it.unibz.krdb.obda.protege4.gui.action;
 
-import it.unibz.krdb.obda.protege4.gui.component.PropertyMappingPanel.PropertyItemEditor;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

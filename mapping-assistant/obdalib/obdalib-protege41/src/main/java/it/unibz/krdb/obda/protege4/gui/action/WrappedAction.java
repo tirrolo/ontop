@@ -9,7 +9,7 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
-/*
+/**
  *  The WrappedAction class is a convenience class that allows you to replace
  *  an installed Action with a custom Action of your own. There are two
  *  benefits to using this class:
@@ -26,7 +26,7 @@ abstract class WrappedAction implements Action {
 	private JComponent component;
 	private Object actionKey;
 
-	/*
+	/**
 	 * Replace the default Action for the given KeyStroke with a custom Action
 	 */
 	public WrappedAction(JComponent component, KeyStroke keyStroke) {
@@ -39,7 +39,7 @@ abstract class WrappedAction implements Action {
 		setActionForKey(actionKey);
 	}
 
-	/*
+	/**
 	 * Replace the default Action with a custom Action
 	 */
 	public WrappedAction(JComponent component, Object actionKey) {
@@ -82,21 +82,21 @@ abstract class WrappedAction implements Action {
 		install();
 	}
 
-	/*
+	/**
 	 * Child classes should use this method to invoke the original Action
 	 */
 	public void invokeOriginalAction(ActionEvent e) {
 		originalAction.actionPerformed(e);
 	}
 
-	/*
+	/**
 	 * Install this class as the default Action
 	 */
 	public void install() {
 		component.getActionMap().put(actionKey, this);
 	}
 
-	/*
+	/**
 	 * Restore the original Action as the default Action
 	 */
 	public void unInstall() {

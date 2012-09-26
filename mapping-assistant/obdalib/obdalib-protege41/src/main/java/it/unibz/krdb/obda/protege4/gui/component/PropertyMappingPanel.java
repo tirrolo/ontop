@@ -56,6 +56,9 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 					BorderFactory.createLineBorder(new Color(192, 192, 192), 1)),
 			BorderFactory.createEmptyBorder(5, 5, 5, 5));
 	
+	private static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 14);
+	
+	
 	public PropertyMappingPanel(OBDAModel obdaModel) {
 		this.obdaModel = obdaModel;
 		prefixManager = obdaModel.getPrefixManager();
@@ -194,23 +197,17 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
         add(pnlPropertyMapping, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void menuDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuDeleteActionPerformed
-    	deleteMappingItem();
-    }//GEN-LAST:event_menuDeleteActionPerformed
+	private void menuDeleteActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuDeleteActionPerformed
+		deleteMappingItem();
+	}// GEN-LAST:event_menuDeleteActionPerformed
 
-    private void lstPropertiesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstPropertiesMousePressed
-    	showPopup(evt);
-    }//GEN-LAST:event_lstPropertiesMousePressed
+	private void lstPropertiesMousePressed(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_lstPropertiesMousePressed
+		showPopup(evt);
+	}// GEN-LAST:event_lstPropertiesMousePressed
 
-    private void lstPropertiesMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstPropertiesMouseReleased
-    	showPopup(evt);
-    }//GEN-LAST:event_lstPropertiesMouseReleased
-
-	private void showPopup(MouseEvent evt) {
-		if (evt.isPopupTrigger()) {
-			popMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-		}
-	}
+	private void lstPropertiesMouseReleased(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_lstPropertiesMouseReleased
+		showPopup(evt);
+	}// GEN-LAST:event_lstPropertiesMouseReleased
 
 	private void lstPropertiesKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_lstPropertiesKeyPressed
 		int code = evt.getKeyCode();
@@ -218,6 +215,20 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			deleteMappingItem();
 		}
 	}// GEN-LAST:event_lstPropertiesKeyPressed
+
+	private void cmdAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmdAddActionPerformed
+		Object obj = cboPropertyAutoSuggest.getSelectedItem();
+		if (obj instanceof PredicateItem) {
+			PredicateItem selectedItem = (PredicateItem) obj;
+			addRow(selectedItem);
+		}
+	}// GEN-LAST:event_cmdAddActionPerformed
+
+	private void showPopup(MouseEvent evt) {
+		if (evt.isPopupTrigger()) {
+			popMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+		}
+	}
 
 	private void deleteMappingItem() {
 		TableCellEditor editor = lstProperties.getCellEditor();
@@ -229,7 +240,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			((DefaultTableModel) lstProperties.getModel()).removeRow(index);
 		}
 	}
-	
+
 	private void cboPropertyAutoSuggestKeyPressed(KeyEvent evt) {
 		int code = evt.getKeyCode();
 		if (code == KeyEvent.VK_ESCAPE) {
@@ -243,14 +254,6 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 		}
 	}
 
-	private void cmdAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmdAddActionPerformed
-		Object obj = cboPropertyAutoSuggest.getSelectedItem();
-		if (obj instanceof PredicateItem) {
-			PredicateItem selectedItem = (PredicateItem) obj;
-			addRow(selectedItem);
-		}
-	}// GEN-LAST:event_cmdAddActionPerformed	
-	
 	private void addRow(PredicateItem selectedItem) {
 		MapItem predicateObjectMap = new MapItem(selectedItem);
 		if (selectedItem.isObjectPropertyPredicate()) {
@@ -287,6 +290,9 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane scrPropertyList;
     // End of variables declaration//GEN-END:variables
 
+	/**
+	 * A renderer class to draw the property mapping item in the GUI panel.
+	 */
 	class PropertyItemRenderer extends JPanel implements TableCellRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -315,7 +321,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			lblMapIcon = new JLabel();
 			txtPropertyTargetMap = new JTextField();
 			
-			lblPropertyName.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
+			lblPropertyName.setFont(DEFAULT_FONT);
 			
 			cboDataTypes.setBackground(Color.WHITE);
 			cboDataTypes.setSelectedIndex(-1);
@@ -328,7 +334,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			
 			lblMapIcon.setIcon(IconLoader.getImageIcon("images/link.png"));
 			
-			txtPropertyTargetMap.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
+			txtPropertyTargetMap.setFont(DEFAULT_FONT);
 			
 			pnlPropertyUriTemplate.setLayout(new BorderLayout(5, 0));
 			pnlPropertyUriTemplate.setOpaque(false);
@@ -339,10 +345,9 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			add(pnlPropertyName, BorderLayout.NORTH);
 			add(pnlPropertyUriTemplate, BorderLayout.SOUTH);
 		}
-		
+
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
 			if (isSelected) {
 				setBackground(SELECTION_BACKGROUND);
 				if (hasFocus) {
@@ -351,7 +356,11 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 					setBorder(NORMAL_BORDER);
 				}
 			} else {
-				setBackground(NORMAL_BACKGROUND);
+				if (hasFocus) {
+					setBackground(SELECTION_BACKGROUND);
+				} else {
+					setBackground(NORMAL_BACKGROUND);
+				}
 				setBorder(NORMAL_BORDER);
 			}
 			
@@ -372,7 +381,10 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			return this;
 		}
 	}
-	
+
+	/**
+	 * An editor renderer class to draw the property mapping item when users enter the editing mode.
+	 */
 	public class PropertyItemEditor extends AbstractCellEditor implements TableCellEditor {
 
 		private static final long serialVersionUID = 1L;
@@ -398,6 +410,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 
 		private void initComponents() {
 			pnlPropertyMapCell = new JPanel() {
+				@Override
 				public void addNotify() {
 					super.addNotify();
 					setCaretToTextField();
@@ -415,7 +428,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			pnlPropertyMapCell.setBorder(NORMAL_BORDER);
 			pnlPropertyMapCell.setRequestFocusEnabled(true);
 			
-			lblPropertyName.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
+			lblPropertyName.setFont(DEFAULT_FONT);
 			
 			cboDataTypes.setBackground(Color.WHITE);
 			cboDataTypes.setSelectedIndex(-1);
@@ -427,13 +440,13 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			
 			lblMapIcon.setIcon(IconLoader.getImageIcon("images/link.png"));
 			
-			txtPropertyTargetMap.setFont(new java.awt.Font("Dialog", Font.PLAIN, 14));
+			txtPropertyTargetMap.setFont(DEFAULT_FONT);
 			
 			pnlPropertyUriTemplate.setLayout(new BorderLayout(5, 0));
 			pnlPropertyUriTemplate.setOpaque(false);
 			pnlPropertyUriTemplate.add(lblMapIcon, BorderLayout.WEST);
 			pnlPropertyUriTemplate.add(txtPropertyTargetMap, BorderLayout.CENTER);
-
+			
 			pnlPropertyMapCell.add(pnlPropertyName, BorderLayout.NORTH);
 			pnlPropertyMapCell.add(pnlPropertyUriTemplate, BorderLayout.SOUTH);
 		}
