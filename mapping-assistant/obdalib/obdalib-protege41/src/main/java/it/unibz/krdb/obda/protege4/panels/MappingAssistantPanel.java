@@ -57,9 +57,9 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 public class MappingAssistantPanel extends javax.swing.JPanel implements DatasourceSelectorListener {
@@ -223,7 +223,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         pnlResult.setLayout(new java.awt.BorderLayout());
 
         tblQueryResult = new SQLResultTable();
-        tblQueryResult.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tblQueryResult.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         scrQueryResult.setViewportView(tblQueryResult);
         scrQueryResult.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         pnlResult.add(scrQueryResult, java.awt.BorderLayout.CENTER);
@@ -514,7 +514,9 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 	private void clearForm() {
 		cboDataSet.setSelectedIndex(-1);
 		txtQueryEditor.setText("");
-		tblQueryResult.setModel(new DefaultTableModel());
+		tblQueryResult = new SQLResultTable();
+		tblQueryResult.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		scrQueryResult.setViewportView(tblQueryResult);
 		cboClassAutoSuggest.setSelectedIndex(-1);
 		txtClassUriTemplate.setText(getDefaultNamespace(true));
 		pnlPropertyEditorList.clear();
@@ -558,6 +560,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 				write(sql);
 			}
 			executeQuery();
+			cboClassAutoSuggest.requestFocus();
 		}
 	}// GEN-LAST:event_cboDataSetActionPerformed
 	
@@ -584,6 +587,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 			DialogUtils.showQuickErrorDialog(null, new Exception("Data source has not been defined."));
 		} else {
 			executeQuery();
+			cboClassAutoSuggest.requestFocus();
 		}
 	}
 	

@@ -253,7 +253,7 @@
                       </Properties>
                       <AuxValues>
                         <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private SQLResultTable tblQueryResult;"/>
-                        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="tblQueryResult = new SQLResultTable();&#xa;tblQueryResult.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);&#xa;scrQueryResult.setViewportView(tblQueryResult);"/>
+                        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="tblQueryResult = new SQLResultTable();&#xa;tblQueryResult.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);&#xa;scrQueryResult.setViewportView(tblQueryResult);"/>
                       </AuxValues>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
