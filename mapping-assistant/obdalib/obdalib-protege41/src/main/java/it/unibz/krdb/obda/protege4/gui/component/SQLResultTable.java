@@ -53,6 +53,8 @@ public class SQLResultTable extends JTable {
 		
 		private SQLResultTable table;
 		
+		private JTextField textFieldOnFocus;
+		
 		public ColumnHeaderAdapter(SQLResultTable table) {
 			this.table = table;
 		}
@@ -70,16 +72,51 @@ public class SQLResultTable extends JTable {
 			Component compOnFocus = findFocus(parent);
 			if (compOnFocus != null) {
 				if (!(compOnFocus instanceof JComboBox) && compOnFocus instanceof JTextField) {
-					JTextField tf = (JTextField) compOnFocus;
-					String template = tf.getText();
-					if (template.isEmpty()) {
+					textFieldOnFocus = (JTextField) compOnFocus;
+					String existingText = getExistingText();
+					if (existingText.isEmpty()) {
 						String text = String.format("$%s", table.getColumnName(index));
-						tf.setText(text);
+						textFieldOnFocus.setText(text);
 					} else {
-						String text = String.format("%s{$%s}", template, table.getColumnName(index));
-						tf.setText(text);
+						if (containsPrefix(existingText) || containsIRI(existingText)) {
+							String text = String.format("%s{$%s}", existingText, table.getColumnName(index));
+							textFieldOnFocus.setText(text);
+						}
 					}
 				}
+			}
+		}
+
+		private boolean containsPrefix(String existingText) {
+			// If contains prefix string, e.g., &example;person#
+			String prefix = existingText.substring(0, existingText.indexOf(";") + 1);
+			if (!prefix.isEmpty()) {
+				return true;
+			}
+			return false;
+		}
+
+		private boolean containsIRI(String existingText) {
+			// If contains IRI ends with slash, e.g., "http://www.example.org/person/"
+			String uri = existingText.substring(0, existingText.indexOf("/") + 1);
+			if (!uri.isEmpty()) {
+				return true;
+			}
+			// If contains IRI ends with hash, e.g., "http://www.example.org/person#"
+			uri = existingText.substring(0, existingText.indexOf("#") + 1);
+			if (!uri.isEmpty()) {
+				return true;
+			}
+			return false;
+		}
+
+		private String getExistingText() {
+			String existingText = textFieldOnFocus.getText();
+			String selectedText = textFieldOnFocus.getSelectedText();
+			if (selectedText != null) {
+				return existingText.replace(selectedText, ""); // remove text on highlight
+			} else {
+				return existingText;
 			}
 		}
 		
