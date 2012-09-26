@@ -24,6 +24,7 @@ import it.unibz.krdb.sql.DataDefinition;
 import it.unibz.krdb.sql.TableDefinition;
 import it.unibz.krdb.sql.ViewDefinition;
 
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -567,182 +568,188 @@ public class SQLGenerator implements SQLQueryGenerator {
 			return sb.toString();
 		}
 
-		String typeStr = "%s AS \"%sQuestType\", ";
-
 		Iterator<NewLiteral> hit = headterms.iterator();
 		int hpos = 0;
 		while (hit.hasNext()) {
-			sb.append("\n   ");
+
 			NewLiteral ht = hit.next();
-			if (!((ht instanceof Function) || (ht instanceof Constant))) {
-				throw new IllegalArgumentException(
-						"Unexpected error. Contact the authors. Message: Imposible to generate SELECT clause. Found non-functional term \""
-								+ ht.toString() + "\"");
-			}
 
-			if (ht instanceof Function) {
-				Vector<String> vex = new Vector<String>();
-				Function ov = (Function) ht;
-				Predicate function = ov.getFunctionSymbol();
-				String functionString = function.toString();
+			String typeColumn = getTypeColumnForSELECT(ht, signature, hpos);
+			String langColumn = getLangColumnForSELECT(ht, signature, hpos,
+					index);
+			String mainColumn = getMainColumnForSELECT(ht, signature, hpos,
+					index);
 
-				/*
-				 * Adding the ColType column to the projection (used in the
-				 * result set to know the type of constant)
-				 */
-				if (functionString.equals(OBDAVocabulary.XSD_BOOLEAN.getName()
-						.toString())) {
-					sb.append(String.format(typeStr, 9, signature.get(hpos)));
-				} else if (functionString.equals(OBDAVocabulary.XSD_DATETIME
-						.getName().toString())) {
-					sb.append(String.format(typeStr, 8, signature.get(hpos)));
-				} else if (functionString.equals(OBDAVocabulary.XSD_DECIMAL
-						.getName().toString())) {
-					sb.append(String.format(typeStr, 5, signature.get(hpos)));
-				} else if (functionString.equals(OBDAVocabulary.XSD_DOUBLE
-						.getName().toString())) {
-					sb.append(String.format(typeStr, 6, signature.get(hpos)));
-				} else if (functionString.equals(OBDAVocabulary.XSD_INTEGER
-						.getName().toString())) {
-					sb.append(String.format(typeStr, 4, signature.get(hpos)));
-				} else if (functionString.equals(OBDAVocabulary.XSD_STRING
-						.getName().toString())) {
-					sb.append(String.format(typeStr, 7, signature.get(hpos)));
-				} else if (functionString.equals(OBDAVocabulary.RDFS_LITERAL
-						.getName().toString())) {
-					sb.append(String.format(typeStr, 3, signature.get(hpos)));
-				} else if (functionString.equals(OBDAVocabulary.QUEST_URI)) {
-					sb.append(String.format(typeStr, 1, signature.get(hpos)));
-				} else if (functionString.equals(OBDAVocabulary.QUEST_BNODE)) {
-					sb.append(String.format(typeStr, 2, signature.get(hpos)));
-				}
-
-				/*
-				 * Adding the column(s) with the actual value(s)
-				 */
-				if (function instanceof DataTypePredicate) {
-					/*
-					 * Case where we have a typing function in the head (this is
-					 * the case for all literal columns
-					 */
-					String langStr = "%s AS \"%sLang\", ";
-					if (function == OBDAVocabulary.RDFS_LITERAL) {
-
-						/*
-						 * Case for rdf:literal s with a language, we need to
-						 * select 2 terms from ".., rdf:literal(?x,"en"),
-						 * 
-						 * and signature "name" * we will generate a select with
-						 * the projection of 2 columns
-						 * 
-						 * , 'en' as nameqlang, view.colforx as name,
-						 */
-
-						/*
-						 * first we add the column for language, we have two
-						 * cases, where the language is already in the function
-						 * as a constant, e.g,. "en" or where the language is a
-						 * variable that must be obtained from a column in the
-						 * query
-						 */
-						String lang = null;
-						if (ov.getTerms().size() > 1) {
-							NewLiteral langTerm = ov.getTerms().get(1);
-							if (langTerm instanceof ValueConstant) {
-								lang = jdbcutil
-										.getSQLLexicalForm((ValueConstant) langTerm);
-							} else {
-								lang = getSQLString(langTerm, index, false);
-							}
-						}
-						if (lang != null)
-							sb.append(String.format(langStr, lang,
-									signature.get(hpos)));
-						else
-							sb.append(String.format(langStr, "NULL",
-									signature.get(hpos)));
-
-						NewLiteral term = ov.getTerms().get(0);
-						String termStr = null;
-						if (term instanceof ValueConstant) {
-							termStr = jdbcutil
-									.getSQLLexicalForm((ValueConstant) term);
-						} else {
-							termStr = getSQLString(term, index, false);
-						}
-						sb.append(termStr);
-
-					} else {
-						// The default value for language column: NULL
-						sb.append(String.format(langStr, "''",
-								signature.get(hpos)));
-
-						// The column name
-						NewLiteral term = ov.getTerms().get(0);
-						if (term instanceof Variable) {
-							Variable v = (Variable) term;
-							String column = getSQLString(v, index, false);
-							sb.append(column);
-						} else if (term instanceof ValueConstant) {
-							ValueConstant c = (ValueConstant) term;
-							sb.append(jdbcutil.getSQLLexicalForm(c));
-						}
-					}
-				} else if (functionString.equals(OBDAVocabulary.QUEST_URI)) {
-					/***
-					 * New template based URI building functions
-					 */
-
-					String langStr = "%s AS \"%sLang\", ";
-
-					sb.append(String.format(langStr, "NULL",
-							signature.get(hpos)));
-
-					String result = "";
-
-					result = getSQLStringForURIFunction(ov, index);
-
-					sb.append(result);
-
-				} else {
-					throw new IllegalArgumentException(
-							"Error generating SQL query. Contact the developers. Found an invalid function during translation: "
-									+ ov.toString());
-				}
-			} else if (ht instanceof URIConstant) {
-
-				sb.append(String.format(typeStr, 1, signature.get(hpos)));
-
-				String langStr = "%s AS \"%sLang\", ";
-				sb.append(String.format(langStr, "NULL", signature.get(hpos)));
-
-				URIConstant uc = (URIConstant) ht;
-				sb.append(jdbcutil.getSQLLexicalForm(uc.getURI().toString()));
-
-			} else if (ht instanceof ValueConstant) {
-				if (ht != OBDAVocabulary.NULL) {
-					throw new RuntimeException(
-							"Cannot generate SELECT for term: " + ht.toString());
-				}
-				sb.append(String.format(typeStr, 0, signature.get(hpos)));
-				//
-				String langStr = "%s AS \"%sLang\", ";
-				sb.append(String.format(langStr, "NULL", signature.get(hpos)));
-				// The default value for language column: NULL
-				sb.append("NULL");
-			} else {
-				throw new RuntimeException("Cannot generate SELECT for term: "
-						+ ht.toString());
-			}
-			sb.append(" AS ");
-			sb.append(sqladapter.sqlQuote(signature.get(hpos)));
-
+			sb.append("\n   ");
+			sb.append(typeColumn);
+			sb.append(", ");
+			sb.append(langColumn);
+			sb.append(", ");
+			sb.append(mainColumn);
 			if (hit.hasNext()) {
 				sb.append(", ");
 			}
+
 			hpos++;
 		}
 		return sb.toString();
+	}
+
+	private String getMainColumnForSELECT(NewLiteral ht,
+			List<String> signature, int hpos, QueryAliasIndex index) {
+
+		String mainColumn = null;
+
+		String mainTemplate = "%s AS %s";
+
+		if (ht instanceof URIConstant) {
+			URIConstant uc = (URIConstant) ht;
+			mainColumn = jdbcutil.getSQLLexicalForm(uc.getURI().toString());
+		} else if (ht == OBDAVocabulary.NULL) {
+			mainColumn = "NULL";
+		} else if (ht instanceof Function) {
+			/*
+			 * if it's a function we need to get the nested value if its a
+			 * datatype function or we need to do the CONCAT if its URI(....).
+			 */
+			Function ov = (Function) ht;
+			Predicate function = ov.getFunctionSymbol();
+			String functionString = function.toString();
+
+			/*
+			 * Adding the column(s) with the actual value(s)
+			 */
+			if (function instanceof DataTypePredicate) {
+				/*
+				 * Case where we have a typing function in the head (this is the
+				 * case for all literal columns
+				 */
+				NewLiteral term = ov.getTerms().get(0);
+
+				String termStr = null;
+				if (term instanceof ValueConstant) {
+					termStr = jdbcutil.getSQLLexicalForm((ValueConstant) term);
+				} else {
+					termStr = getSQLString(term, index, false);
+				}
+				mainColumn = termStr;
+
+			} else if (functionString.equals(OBDAVocabulary.QUEST_URI)) {
+				/***
+				 * New template based URI building functions
+				 */
+
+				mainColumn = getSQLStringForURIFunction(ov, index);
+
+			} else {
+				throw new IllegalArgumentException(
+						"Error generating SQL query. Contact the developers. Found an invalid function during translation: "
+								+ ov.toString());
+			}
+		} else {
+			throw new RuntimeException("Cannot generate SELECT for term: "
+					+ ht.toString());
+		}
+
+		/*
+		 * If the we have a column we need to still CAST to VARCHAR
+		 */
+		if (mainColumn.charAt(0) != '\'' && mainColumn.charAt(0) != '(')
+			mainColumn = sqladapter.sqlCast(mainColumn, Types.VARCHAR);
+
+		return String.format(mainTemplate, mainColumn,
+				sqladapter.sqlQuote(signature.get(hpos)));
+
+	}
+
+	private String getLangColumnForSELECT(NewLiteral ht,
+			List<String> signature, int hpos, QueryAliasIndex index) {
+
+		String langStr = "%s AS \"%sLang\"";
+
+		if (ht instanceof Function) {
+			Function ov = (Function) ht;
+			Predicate function = ov.getFunctionSymbol();
+
+			if (function == OBDAVocabulary.RDFS_LITERAL
+					&& ov.getTerms().size() > 1) {
+
+				/*
+				 * Case for rdf:literal s with a language, we need to select 2
+				 * terms from ".., rdf:literal(?x,"en"),
+				 * 
+				 * and signature "name" * we will generate a select with the
+				 * projection of 2 columns
+				 * 
+				 * , 'en' as nameqlang, view.colforx as name,
+				 */
+
+				String lang = null;
+				NewLiteral langTerm = ov.getTerms().get(1);
+				if (langTerm instanceof ValueConstant) {
+					lang = jdbcutil.getSQLLexicalForm((ValueConstant) langTerm);
+				} else {
+					lang = getSQLString(langTerm, index, false);
+				}
+				return (String.format(langStr, lang, signature.get(hpos)));
+
+			}
+		}
+		return (String.format(langStr, "NULL", signature.get(hpos)));
+
+	}
+
+	private String getTypeColumnForSELECT(NewLiteral ht,
+			List<String> signature, int hpos) {
+
+		String typeStr = "%s AS \"%sQuestType\"";
+
+		if (ht instanceof Function) {
+			Function ov = (Function) ht;
+			Predicate function = ov.getFunctionSymbol();
+			String functionString = function.toString();
+
+			/*
+			 * Adding the ColType column to the projection (used in the result
+			 * set to know the type of constant)
+			 */
+			if (functionString.equals(OBDAVocabulary.XSD_BOOLEAN.getName()
+					.toString())) {
+				return (String.format(typeStr, 9, signature.get(hpos)));
+			} else if (functionString.equals(OBDAVocabulary.XSD_DATETIME
+					.getName().toString())) {
+				return (String.format(typeStr, 8, signature.get(hpos)));
+			} else if (functionString.equals(OBDAVocabulary.XSD_DECIMAL
+					.getName().toString())) {
+				return (String.format(typeStr, 5, signature.get(hpos)));
+			} else if (functionString.equals(OBDAVocabulary.XSD_DOUBLE
+					.getName().toString())) {
+				return (String.format(typeStr, 6, signature.get(hpos)));
+			} else if (functionString.equals(OBDAVocabulary.XSD_INTEGER
+					.getName().toString())) {
+				return (String.format(typeStr, 4, signature.get(hpos)));
+			} else if (functionString.equals(OBDAVocabulary.XSD_STRING
+					.getName().toString())) {
+				return (String.format(typeStr, 7, signature.get(hpos)));
+			} else if (functionString.equals(OBDAVocabulary.RDFS_LITERAL
+					.getName().toString())) {
+				return (String.format(typeStr, 3, signature.get(hpos)));
+			} else if (functionString.equals(OBDAVocabulary.QUEST_URI)) {
+				return (String.format(typeStr, 1, signature.get(hpos)));
+			} else if (functionString.equals(OBDAVocabulary.QUEST_BNODE)) {
+				return (String.format(typeStr, 2, signature.get(hpos)));
+			}
+
+		} else if (ht instanceof URIConstant) {
+
+			return (String.format(typeStr, 1, signature.get(hpos)));
+
+		} else if (ht == OBDAVocabulary.NULL) {
+			return (String.format(typeStr, 0, signature.get(hpos)));
+		}
+		throw new RuntimeException("Cannot generate SELECT for term: "
+				+ ht.toString());
+
 	}
 
 	/***
