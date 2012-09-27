@@ -557,6 +557,9 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		if (obj instanceof PredicateItem) {
 			PredicateItem selectedItem = (PredicateItem) obj;
 			predicateSubjectMap = new MapItem(selectedItem);
+		} else {
+			DialogUtils.showQuickErrorDialog(null, new Exception("Unknown class predicate."));
+			cboClassAutoSuggest.requestFocus();
 		}
 	}
 	
