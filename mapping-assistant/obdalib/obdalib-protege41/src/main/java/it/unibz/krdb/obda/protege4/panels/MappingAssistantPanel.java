@@ -186,6 +186,11 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         txtQueryEditor.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         txtQueryEditor.setMinimumSize(new java.awt.Dimension(100, 20));
         txtQueryEditor.setPreferredSize(new java.awt.Dimension(100, 20));
+        txtQueryEditor.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtQueryEditorKeyPressed(evt);
+            }
+        });
         scrQueryEditor.setViewportView(txtQueryEditor);
 
         pnlQueryEditor.add(scrQueryEditor, java.awt.BorderLayout.CENTER);
@@ -371,15 +376,24 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 	private void txtRowCountFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtRowCountFocusLost
 		if (selectedSource != null && !txtQueryEditor.getText().isEmpty()) {
 			executeQuery();
+			cboClassAutoSuggest.requestFocus();
 		}
 	}// GEN-LAST:event_txtRowCountFocusLost
 
-    private void txtRowCountKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtRowCountKeyPressed
-    	int code = evt.getKeyCode();
+	private void txtRowCountKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txtRowCountKeyPressed
+		int code = evt.getKeyCode();
 		if (code == KeyEvent.VK_ENTER) {
 			txtRowCount.transferFocus();
 		}
-    }//GEN-LAST:event_txtRowCountKeyPressed
+	}// GEN-LAST:event_txtRowCountKeyPressed
+
+	private void txtQueryEditorKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txtQueryEditorKeyPressed
+		// If users typed CTRL+E
+		if ((evt.getKeyCode() == KeyEvent.VK_E) && ((evt.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+			executeQuery();
+			cboClassAutoSuggest.requestFocus();
+		}
+	}// GEN-LAST:event_txtQueryEditorKeyPressed
 
 	private void txtClassUriTemplateFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtClassUriTemplateFocusGained
 		SwingUtilities.invokeLater(new Runnable() {
