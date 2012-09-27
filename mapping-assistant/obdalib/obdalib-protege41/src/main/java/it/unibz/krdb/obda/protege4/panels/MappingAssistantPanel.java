@@ -56,7 +56,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
@@ -410,23 +409,26 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 			pnlPropertyEditorList.stopCellEditing();
 		}
 
-		// Prepare the mapping source
-		String source = txtQueryEditor.getText();
-		
-		// Prepare the mapping target
-		List<MapItem> predicateObjectMapsList = pnlPropertyEditorList.getPredicateObjectMapsList();
-		OBDAQuery target = prepareTargetQuery(predicateSubjectMap, predicateObjectMapsList);
-		
-		// Create the mapping axiom
-		OBDAMappingAxiom mappingAxiom = dfac.getRDBMSMappingAxiom(source, target);
 		try {
+			// Prepare the mapping source
+			String source = txtQueryEditor.getText();
+			
+			// Prepare the mapping target
+			List<MapItem> predicateObjectMapsList = pnlPropertyEditorList.getPredicateObjectMapsList();
+			OBDAQuery target = prepareTargetQuery(predicateSubjectMap, predicateObjectMapsList);
+			
+			// Create the mapping axiom
+			OBDAMappingAxiom mappingAxiom = dfac.getRDBMSMappingAxiom(source, target);
 			obdaModel.addMapping(selectedSource.getSourceID(), mappingAxiom);
 			clearForm();
 		} catch (DuplicateMappingException e) {
-			DialogUtils.showQuickErrorDialog(null, e, "Duplicate mapping identification: " + mappingAxiom.getId());
+			DialogUtils.showQuickErrorDialog(null, e, "Duplicate mapping identification.");
 			return;
 		} catch (NullPointerException e) {
 			DialogUtils.showQuickErrorDialog(null, new Exception("Data source has not been defined."));
+			return;
+		} catch (RuntimeException e) {
+			DialogUtils.showQuickErrorDialog(null, e, "Empty property mapping.");
 			return;
 		}
 	}// GEN-LAST:event_cmdCreateMappingActionPerformed
@@ -448,6 +450,9 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		for (MapItem predicateObjectMap : predicateObjectMapsList) {
 			if (predicateObjectMap.isObjectMap()) { // if an attribute
 				String columnName = predicateObjectMap.getTargetMapping();
+				if (columnName.isEmpty()) {
+					throw new RuntimeException("Property mapping should not be empty: " + predicateObjectMap.getName());
+				}
 				if (columnName.startsWith("$") || columnName.startsWith("?")) {
 					columnName = columnName.substring(1, columnName.length());
 				}
