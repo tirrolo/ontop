@@ -763,16 +763,18 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		public void run() {
 			thread = new Thread() {
 				public void run() {
-					// Construct the sql query
-					SQLDialectAdapter sqlDialect = SQLAdapterFactory.getSQLDialectAdapter(selectedSource.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER));
-					StringBuffer sb = new StringBuffer(txtQueryEditor.getText());
-					long rowCount = Long.parseLong(txtRowCount.getText());
-					if (rowCount != 0) { // add the limit filter
-						sb.append(" ");
-						sb.append(sqlDialect.sqlSlice(rowCount, 0));
-					}
 					// Execute the sql query
 					try {
+						// Construct the sql query
+						SQLDialectAdapter sqlDialect = SQLAdapterFactory.getSQLDialectAdapter(selectedSource.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER));
+						StringBuffer sb = new StringBuffer(txtQueryEditor.getText());
+						long rowCount = Long.parseLong(txtRowCount.getText());
+						if (rowCount > 0) { // add the limit filter
+							sb.append(" ");
+							sb.append(sqlDialect.sqlSlice(rowCount, 0));
+						} else {
+							throw new RuntimeException("Invalid limit number.");
+						}
 						TableModel oldmodel = tblQueryResult.getModel();
 						if ((oldmodel != null) && (oldmodel instanceof IncrementalResultSetTableModel)) {
 							IncrementalResultSetTableModel rstm = (IncrementalResultSetTableModel) oldmodel;
@@ -785,7 +787,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 						latch.countDown();
 					} catch (Exception e) {
 						latch.countDown();
-						JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						DialogUtils.showQuickErrorDialog(null, e);
 					}
 				}
 			};
