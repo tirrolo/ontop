@@ -5,7 +5,7 @@ import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Edge;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessRewriter.PropertiesCache;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessSet.PropertiesCache;
 
 import java.util.Collections;
 import java.util.HashSet;

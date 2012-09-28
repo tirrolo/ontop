@@ -1,6 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import it.unibz.krdb.obda.model.Atom;
@@ -32,6 +33,8 @@ public class TreeWitness {
 	private TreeWitnessGenerator gen; // the \exists R.B concept that realises the tree witness 
 	                                          // in the canonical model of the TBox
 	private boolean allRootsQuantified; // all the roots are quantified variables
+	
+	private List<List<Atom>> twfs;  // tw-formula: disjunction of conjucntions of atoms
 
 	public TreeWitness(TreeWitnessGenerator gen, Set<Term> roots, boolean allRootsQuantified, Set<Atom> rootAtoms, Set<Term> domain) {
 		this.gen = gen;
@@ -39,6 +42,14 @@ public class TreeWitness {
 		this.allRootsQuantified = allRootsQuantified;
 		this.rootAtoms = rootAtoms;
 		this.domain = domain; // new HashSet<Term>(roots); domain.addAll(nonroots);
+	}
+	
+	public void setFormula(List<List<Atom>> twfs) {
+		this.twfs = twfs;
+	}
+	
+	public List<List<Atom>> getFormula() {
+		return twfs;
 	}
 
 	/**
