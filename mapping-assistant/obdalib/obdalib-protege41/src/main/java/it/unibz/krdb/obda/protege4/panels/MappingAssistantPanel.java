@@ -109,14 +109,12 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         scrQueryResult = new javax.swing.JScrollPane();
         pnlOntologyBrowser = new javax.swing.JPanel();
         pnlConcept = new javax.swing.JPanel();
-        lblClass = new javax.swing.JLabel();
-        pnlClassMap = new javax.swing.JPanel();
-        pnlClassSearch = new javax.swing.JPanel();
-        pnlClassSeachComboBox = new javax.swing.JPanel();
-        lblClassIcon = new javax.swing.JLabel();
-        pnlClassUriTemplate = new javax.swing.JPanel();
+        pnlFocusURI = new javax.swing.JPanel();
+        lblFocusOnURI = new javax.swing.JLabel();
         txtClassUriTemplate = new javax.swing.JTextField();
-        lblMapIcon = new javax.swing.JLabel();
+        pnlClassMap = new javax.swing.JPanel();
+        pnlClassSeachComboBox = new javax.swing.JPanel();
+        lblClass = new javax.swing.JLabel();
         pnlProperties = new javax.swing.JPanel();
         pnlPropertiesLabel = new javax.swing.JPanel();
         lblProperties = new javax.swing.JLabel();
@@ -244,44 +242,12 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 
         pnlConcept.setLayout(new java.awt.BorderLayout(0, 2));
 
-        lblClass.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        lblClass.setForeground(new java.awt.Color(53, 113, 163));
-        lblClass.setText("Mapping for class:");
-        lblClass.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        lblClass.setOpaque(true);
-        pnlConcept.add(lblClass, java.awt.BorderLayout.NORTH);
+        pnlFocusURI.setLayout(new java.awt.BorderLayout());
 
-        pnlClassMap.setBackground(new Color(240, 245, 240));
-        pnlClassMap.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(192, 192, 192)), javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4)));
-        pnlClassMap.setLayout(new java.awt.BorderLayout());
-
-        pnlClassSearch.setOpaque(false);
-        pnlClassSearch.setRequestFocusEnabled(false);
-        pnlClassSearch.setLayout(new java.awt.BorderLayout(7, 0));
-
-        pnlClassSeachComboBox.setLayout(new java.awt.BorderLayout());
-        Vector<Object> v = new Vector<Object>();
-        for (Predicate pred : obdaModel.getDeclaredClasses()) {
-            v.addElement(new PredicateItem(pred, prefixManager));
-        }
-        cboClassAutoSuggest = new AutoSuggestComboBox(v);
-        cboClassAutoSuggest.setMinimumSize(new java.awt.Dimension(195, 23));
-        cboClassAutoSuggest.setPreferredSize(new java.awt.Dimension(195, 23));
-        cboClassAutoSuggest.addItemListener(new java.awt.event.ItemListener () {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cboClassAutoSuggestItemStateChanged(evt);
-            }
-        });
-        pnlClassSeachComboBox.add(cboClassAutoSuggest, java.awt.BorderLayout.CENTER);
-        pnlClassSearch.add(pnlClassSeachComboBox, java.awt.BorderLayout.CENTER);
-
-        lblClassIcon.setIcon(IconLoader.getImageIcon("images/class_primitive.png"));
-        pnlClassSearch.add(lblClassIcon, java.awt.BorderLayout.WEST);
-
-        pnlClassMap.add(pnlClassSearch, java.awt.BorderLayout.NORTH);
-
-        pnlClassUriTemplate.setOpaque(false);
-        pnlClassUriTemplate.setLayout(new java.awt.BorderLayout(6, 0));
+        lblFocusOnURI.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        lblFocusOnURI.setForeground(new java.awt.Color(53, 113, 163));
+        lblFocusOnURI.setText("Focus on URI:");
+        pnlFocusURI.add(lblFocusOnURI, java.awt.BorderLayout.NORTH);
 
         txtClassUriTemplate.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         txtClassUriTemplate.setText(getDefaultNamespace(true));
@@ -301,12 +267,34 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
                 txtClassUriTemplateKeyPressed(evt);
             }
         });
-        pnlClassUriTemplate.add(txtClassUriTemplate, java.awt.BorderLayout.CENTER);
+        pnlFocusURI.add(txtClassUriTemplate, java.awt.BorderLayout.SOUTH);
 
-        lblMapIcon.setIcon(IconLoader.getImageIcon("images/link.png"));
-        pnlClassUriTemplate.add(lblMapIcon, java.awt.BorderLayout.LINE_START);
+        pnlConcept.add(pnlFocusURI, java.awt.BorderLayout.NORTH);
 
-        pnlClassMap.add(pnlClassUriTemplate, java.awt.BorderLayout.SOUTH);
+        pnlClassMap.setBackground(new Color(240, 245, 240));
+        pnlClassMap.setLayout(new java.awt.BorderLayout());
+
+        pnlClassSeachComboBox.setLayout(new java.awt.BorderLayout());
+        Vector<Object> v = new Vector<Object>();
+        for (Predicate pred : obdaModel.getDeclaredClasses()) {
+            v.addElement(new PredicateItem(pred, prefixManager));
+        }
+        cboClassAutoSuggest = new AutoSuggestComboBox(v);
+        cboClassAutoSuggest.setMinimumSize(new java.awt.Dimension(195, 23));
+        cboClassAutoSuggest.setPreferredSize(new java.awt.Dimension(195, 23));
+        cboClassAutoSuggest.addItemListener(new java.awt.event.ItemListener () {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cboClassAutoSuggestItemStateChanged(evt);
+            }
+        });
+        pnlClassSeachComboBox.add(cboClassAutoSuggest, java.awt.BorderLayout.CENTER);
+        pnlClassMap.add(pnlClassSeachComboBox, java.awt.BorderLayout.SOUTH);
+
+        lblClass.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        lblClass.setForeground(new java.awt.Color(53, 113, 163));
+        lblClass.setText("Mapping for class (optional):");
+        lblClass.setOpaque(true);
+        pnlClassMap.add(lblClass, java.awt.BorderLayout.NORTH);
 
         pnlConcept.add(pnlClassMap, java.awt.BorderLayout.CENTER);
 
@@ -680,22 +668,20 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
     private javax.swing.JButton cmdCreateMapping;
     private javax.swing.JButton cmdExecute;
     private javax.swing.JLabel lblClass;
-    private javax.swing.JLabel lblClassIcon;
     private javax.swing.JLabel lblDataSet;
-    private javax.swing.JLabel lblMapIcon;
+    private javax.swing.JLabel lblFocusOnURI;
     private javax.swing.JLabel lblProperties;
     private javax.swing.JLabel lblRows;
     private javax.swing.JLabel lblShow;
     private javax.swing.JPanel pnlClassMap;
     private javax.swing.JPanel pnlClassSeachComboBox;
     private AutoSuggestComboBox cboClassAutoSuggest;
-    private javax.swing.JPanel pnlClassSearch;
-    private javax.swing.JPanel pnlClassUriTemplate;
     private javax.swing.JPanel pnlCommandButtons;
     private javax.swing.JPanel pnlConcept;
     private javax.swing.JPanel pnlDataBrowser;
     private javax.swing.JPanel pnlDataSet;
     private javax.swing.JPanel pnlEditor;
+    private javax.swing.JPanel pnlFocusURI;
     private javax.swing.JPanel pnlOntologyBrowser;
     private javax.swing.JPanel pnlProperties;
     private javax.swing.JPanel pnlPropertiesLabel;
