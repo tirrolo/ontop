@@ -45,10 +45,10 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 	private static final Color SELECTION_BACKGROUND = UIManager.getDefaults().getColor("Table.selectionBackground");
 	private static final Color NORMAL_BACKGROUND = new Color(240, 245, 240);
 	
-	private static final Border SELECTION_BORDER = BorderFactory.createCompoundBorder(
+	private static final Border EDIT_BORDER = BorderFactory.createCompoundBorder(
 			BorderFactory.createCompoundBorder(
 					BorderFactory.createEmptyBorder(1, 3, 1, 3),
-					BorderFactory.createLineBorder(new Color(255, 102, 0), 2)),
+					BorderFactory.createLineBorder(new Color(0, 0, 0), 2)),
 			BorderFactory.createEmptyBorder(4, 4, 4, 4));
 	private static final Border NORMAL_BORDER = BorderFactory.createCompoundBorder(
 			BorderFactory.createCompoundBorder(
@@ -352,10 +352,11 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			if (isSelected) {
 				setBackground(SELECTION_BACKGROUND);
+				// Due to the behavioral override, hasFocus means NORMAL_MODE and !hasFocus means EDIT_MODE
 				if (hasFocus) {
-					setBorder(SELECTION_BORDER);
-				} else {
 					setBorder(NORMAL_BORDER);
+				} else {
+					setBorder(EDIT_BORDER);
 				}
 			} else {
 				if (hasFocus) {
@@ -457,7 +458,8 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 			pnlPropertyMapCell.setBackground(SELECTION_BACKGROUND);
 			if (!isSelected) {
-				pnlPropertyMapCell.setBorder(NORMAL_BORDER);
+				// Due to the behavioral override, isSelected means NORMAL_MODE and !isSelected means EDIT_MODE
+				pnlPropertyMapCell.setBorder(EDIT_BORDER);
 			}
 			if (value instanceof MapItem) {
 				MapItem entry = (MapItem) value;
