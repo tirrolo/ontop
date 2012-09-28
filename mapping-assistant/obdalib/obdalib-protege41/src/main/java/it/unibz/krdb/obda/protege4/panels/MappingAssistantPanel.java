@@ -250,7 +250,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         pnlFocusURI.add(lblFocusOnURI, java.awt.BorderLayout.NORTH);
 
         txtClassUriTemplate.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        txtClassUriTemplate.setText(getDefaultNamespace(true));
+        txtClassUriTemplate.setText(String.format("<\"%s\">", getDefaultNamespace(true)));
         txtClassUriTemplate.setMargin(new java.awt.Insets(0, 0, 0, 0));
         txtClassUriTemplate.setMinimumSize(new java.awt.Dimension(240, 23));
         txtClassUriTemplate.setPreferredSize(new java.awt.Dimension(240, 23));

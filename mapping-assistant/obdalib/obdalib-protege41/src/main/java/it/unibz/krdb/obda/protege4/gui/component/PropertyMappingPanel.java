@@ -378,7 +378,8 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 				} else if (entry.isRefObjectMap()) {
 					cboDataTypes.setVisible(false);
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
-					txtPropertyTargetMap.setText(prefixManager.getShortForm(entry.getTargetMapping(), true));
+					String prefix = prefixManager.getShortForm(entry.getTargetMapping(), true);
+					txtPropertyTargetMap.setText(String.format("<\"%s\">", prefix));
 				}
 			}
 			return this;
@@ -416,6 +417,8 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 				@Override
 				public void addNotify() {
 					super.addNotify();
+					// This code overrides the behavior of table item such that the item immediately
+					// enters the EDIT_MODE when users make a single click to the item panel.
 					setCaretToTextField();
 				}
 			};
@@ -473,7 +476,8 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 				} else if (entry.isRefObjectMap()) {
 					cboDataTypes.setVisible(false);
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
-					txtPropertyTargetMap.setText(prefixManager.getShortForm(entry.getTargetMapping(), true));
+					String prefix = prefixManager.getShortForm(entry.getTargetMapping(), true);
+					txtPropertyTargetMap.setText(String.format("<\"%s\">", prefix));
 				}
 			}
 			return pnlPropertyMapCell;
