@@ -66,26 +66,32 @@ public interface OBDADataFactory extends Serializable {
 	 * Data types
 	 */
 
+	public Predicate getDataTypePredicateUnsupported(String uri);
+
+	public Predicate getDataTypePredicateUnsupported(URI uri);
+
 	public Predicate getDataTypePredicateLiteral();
-	
+
 	public Predicate getDataTypePredicateString();
-	
+
 	public Predicate getDataTypePredicateInteger();
-	
+
 	public Predicate getDataTypePredicateDecimal();
-	
+
 	public Predicate getDataTypePredicateDouble();
-	
+
 	public Predicate getDataTypePredicateDateTime();
-	
+
 	public Predicate getDataTypePredicateBoolean();
-	
+
 	/*
 	 * Built-in function predicates
 	 */
 
 	public Predicate getUriTemplatePredicate(int arity);
-	
+
+	public Predicate getBNodeTemplatePredicate(int arity);
+
 	/*
 	 * Boolean atoms
 	 */
@@ -115,13 +121,10 @@ public interface OBDADataFactory extends Serializable {
 	public Atom getORAtom(NewLiteral term1, NewLiteral term2, NewLiteral term3);
 
 	public Atom getORAtom(List<NewLiteral> terms);
-	
-	public Atom getIsNullAtom(NewLiteral term);
-	
-	public Atom getIsNotNullAtom(NewLiteral term);
-	
-	
 
+	public Atom getIsNullAtom(NewLiteral term);
+
+	public Atom getIsNotNullAtom(NewLiteral term);
 
 	/*
 	 * Boolean function terms
@@ -143,29 +146,33 @@ public interface OBDADataFactory extends Serializable {
 
 	public Function getANDFunction(NewLiteral term1, NewLiteral term2);
 
-	public Function getANDFunction(NewLiteral term1, NewLiteral term2, NewLiteral term3);
+	public Function getANDFunction(NewLiteral term1, NewLiteral term2,
+			NewLiteral term3);
 
 	public Function getANDFunction(List<NewLiteral> terms);
 
 	public Function getORFunction(NewLiteral term1, NewLiteral term2);
 
-	public Function getORFunction(NewLiteral term1, NewLiteral term2, NewLiteral term3);
+	public Function getORFunction(NewLiteral term1, NewLiteral term2,
+			NewLiteral term3);
 
 	public Function getORFunction(List<NewLiteral> terms);
-	
+
 	public Function getIsNullFunction(NewLiteral term);
-	
+
 	public Function getIsNotNullFunction(NewLiteral term);
-	
+
 	public Function getLANGMATCHESFunction(NewLiteral term1, NewLiteral term2);
-	
+
 	/*
 	 * JDBC objects
 	 */
 
-	public OBDADataSource getJDBCDataSource(String jdbcurl, String username, String password, String driverclass);
+	public OBDADataSource getJDBCDataSource(String jdbcurl, String username,
+			String password, String driverclass);
 
-	public OBDADataSource getJDBCDataSource(String sourceuri, String jdbcurl, String username, String password, String driverclass);
+	public OBDADataSource getJDBCDataSource(String sourceuri, String jdbcurl,
+			String username, String password, String driverclass);
 
 	/**
 	 * Construct a {@link URIConstant} object. This type of term is written as a
@@ -195,11 +202,11 @@ public interface OBDADataFactory extends Serializable {
 	public BNode getBNodeConstant(String name);
 
 	public Constant getNULL();
-	
+
 	public Constant getTrue();
-	
+
 	public Constant getFalse();
-	
+
 	/**
 	 * Construct a {@link ValueConstant} object.
 	 * 
@@ -226,7 +233,7 @@ public interface OBDADataFactory extends Serializable {
 	 * @return the value constant.
 	 */
 	public ValueConstant getValueConstant(String value, Predicate.COL_TYPE type);
-	
+
 	/**
 	 * Construct a {@link ValueConstant} object with a language tag.
 	 * <p>
@@ -239,7 +246,7 @@ public interface OBDADataFactory extends Serializable {
 	 * @param value
 	 *            the value of the constant.
 	 * @param language
-	 * 			  the language tag for the constant.
+	 *            the language tag for the constant.
 	 * @return the value constant.
 	 */
 	public ValueConstant getValueConstant(String value, String language);
@@ -296,13 +303,17 @@ public interface OBDADataFactory extends Serializable {
 
 	public Function getFunctionalTerm(Predicate functor, NewLiteral term1);
 
-	public Function getFunctionalTerm(Predicate functor, NewLiteral term1, NewLiteral term2);
+	public Function getFunctionalTerm(Predicate functor, NewLiteral term1,
+			NewLiteral term2);
 
-	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String id, OBDAQuery sourceQuery, OBDAQuery targetQuery);
+	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String id,
+			OBDAQuery sourceQuery, OBDAQuery targetQuery);
 
-	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String id, String sql, OBDAQuery targetQuery);
+	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String id, String sql,
+			OBDAQuery targetQuery);
 
-	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String sql, OBDAQuery targetQuery);
+	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String sql,
+			OBDAQuery targetQuery);
 
 	public OBDASQLQuery getSQLQuery(String query);
 

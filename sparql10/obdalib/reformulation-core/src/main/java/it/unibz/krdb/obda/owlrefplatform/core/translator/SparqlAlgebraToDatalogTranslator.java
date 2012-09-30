@@ -1107,40 +1107,20 @@ public class SparqlAlgebraToDatalogTranslator {
 					.getDataTypePredicateBoolean(), ofac.getValueConstant(
 					expr.getBoolean() + "", COL_TYPE.BOOLEAN));
 		} else if (expr instanceof NodeValueNode) {
-			constantFunction = ofac.getFunctionalTerm(
-					ofac.getDataTypePredicateLiteral(),
-					ofac.getValueConstant(expr.getNode()
-							.getLiteralLexicalForm() + "", COL_TYPE.LITERAL));
+			NodeValueNode nodeValue = (NodeValueNode) expr;
+			Node node = nodeValue.getNode();
+			if (!(node instanceof Node_Literal))
+				throw new RuntimeException("Unsupported node: "
+						+ expr.toString());
+
+			constantFunction = ofac.getFunctionalTerm(ofac
+					.getDataTypePredicateUnsupported(node
+							.getLiteralDatatypeURI()), ofac.getValueConstant(
+					node.getLiteralLexicalForm(), COL_TYPE.UNSUPPORTED));
 		} else {
 			throw new QueryException("Unknown data type!");
 		}
 		return constantFunction;
-	}
-
-	private static Atom getBooleanAtom(ExprFunction2 expr, NewLiteral term1,
-			NewLiteral term2) {
-		Atom atom = null;
-		// The AND and OR expression
-		if (expr instanceof E_LogicalAnd) {
-			atom = ofac.getANDAtom(term1, term2);
-		} else if (expr instanceof E_LogicalOr) {
-			atom = ofac.getORAtom(term1, term2);
-		}
-		// The Relational expression
-		if (expr instanceof E_Equals) {
-			atom = ofac.getEQAtom(term1, term2);
-		} else if (expr instanceof E_NotEquals) {
-			atom = ofac.getNEQAtom(term1, term2);
-		} else if (expr instanceof E_GreaterThan) {
-			atom = ofac.getGTAtom(term1, term2);
-		} else if (expr instanceof E_GreaterThanOrEqual) {
-			atom = ofac.getGTEAtom(term1, term2);
-		} else if (expr instanceof E_LessThan) {
-			atom = ofac.getLTAtom(term1, term2);
-		} else if (expr instanceof E_LessThanOrEqual) {
-			atom = ofac.getLTEAtom(term1, term2);
-		}
-		return atom;
 	}
 
 	private static Function getBooleanFunction(ExprFunction2 expr,

@@ -1,9 +1,9 @@
 package sesameWrapper;
 
+import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.OBDADataFactory;
+import it.unibz.krdb.obda.model.ObjectConstant;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.ontology.Assertion;
@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -134,6 +135,10 @@ public class SesameRDFIterator extends RDFHandlerBase implements
 
 	/***
 	 * Constructs an ABox assertion with the data from the current result set.
+	 * This can be a Class, Object or Data Property assertion. It is a class
+	 * assertion if the predicate is rdf:type. Its an Object property if the
+	 * predicate is not type and the object is URI or BNode. Its a data property
+	 * if the predicate is not rdf:type and the object is a Literal.
 	 * 
 	 * @return
 	 */
@@ -146,6 +151,18 @@ public class SesameRDFIterator extends RDFHandlerBase implements
 		Predicate currentPredicate = null;
 
 		Resource currSubject = st.getSubject();
+		ObjectConstant c;
+		if (currSubject instanceof URI)
+			c = obdafac.getURIConstant(java.net.URI.create(currSubject
+					.stringValue()));
+		else if (currSubject instanceof BNode) {
+			c = obdafac.getBNodeConstant(currSubject.stringValue());
+		} else {
+			throw new RuntimeException(
+					"Unsupported subject found in triple. Not URI or BNode. Statement: "
+							+ st.toString());
+		}
+
 		URI currPredicate = st.getPredicate();
 		Value currObject = st.getObject();
 
@@ -170,37 +187,33 @@ public class SesameRDFIterator extends RDFHandlerBase implements
 
 		OntologyFactory ofac = OntologyFactoryImpl.getInstance();
 		if (currentPredicate.getArity() == 1) {
-			URIConstant c = obdafac.getURIConstant(java.net.URI
-					.create(currSubject.stringValue()));
+
 			assertion = ofac.createClassAssertion(currentPredicate, c);
 
-		} else if (currentPredicate.getType(1) == Predicate.COL_TYPE.OBJECT) {
-			URIConstant c1 = obdafac.getURIConstant(java.net.URI
-					.create(currSubject.stringValue()));
-			URIConstant c2 = obdafac.getURIConstant(java.net.URI
-					.create(currObject.stringValue()));
-			assertion = ofac.createObjectPropertyAssertion(currentPredicate,
-					c1, c2);
-
-		} else if (currentPredicate.getType(1) == Predicate.COL_TYPE.LITERAL) {
-			URIConstant c1 = obdafac.getURIConstant(java.net.URI
-					.create(currSubject.stringValue()));
-
-			Literal l = (Literal) currObject;
-			Predicate.COL_TYPE type = getColumnType(l.getDatatype());
-			String lang = l.getLanguage();
-
-			ValueConstant c2 = null;
-			if (lang == null)
-				c2 = obdafac.getValueConstant(l.getLabel(), type);
-			else
-				c2 = obdafac.getValueConstant(l.getLabel(), lang);
-
-			assertion = ofac.createDataPropertyAssertion(currentPredicate, c1,
-					c2);
 		} else {
-			throw new RuntimeException("ERROR, Wrongly type predicate: "
-					+ currentPredicate.toString());
+
+			Constant c2;
+			if (currObject instanceof URI)
+				c2 = obdafac.getURIConstant(java.net.URI.create(currObject
+						.stringValue()));
+			else if (currObject instanceof BNode) {
+				c2 = obdafac.getBNodeConstant(currObject.stringValue());
+			} else if (currObject instanceof Literal) {
+				Literal l = (Literal) currObject;
+				Predicate.COL_TYPE type = getColumnType(l.getDatatype());
+				String lang = l.getLanguage();
+
+				if (lang == null)
+					c2 = obdafac.getValueConstant(l.getLabel(), type);
+				else
+					c2 = obdafac.getValueConstant(l.getLabel(), lang);
+			} else {
+				throw new RuntimeException(
+						"Unsupported object found in triple. Not URI, BNode or Literal. Statement: "
+								+ st.toString());
+			}
+
+			assertion = ofac.createPropertyAssertion(currentPredicate, c, c2);
 		}
 
 		return assertion;
@@ -211,17 +224,22 @@ public class SesameRDFIterator extends RDFHandlerBase implements
 			return Predicate.COL_TYPE.LITERAL;
 		} else if (datatype.stringValue().equals(OBDAVocabulary.XSD_STRING_URI)) {
 			return Predicate.COL_TYPE.STRING;
-		} else if (datatype.stringValue().equals(OBDAVocabulary.RDFS_LITERAL_URI)) {
+		} else if (datatype.stringValue().equals(
+				OBDAVocabulary.RDFS_LITERAL_URI)) {
 			return Predicate.COL_TYPE.LITERAL;
-		} else if (datatype.stringValue().equals(OBDAVocabulary.XSD_INTEGER_URI)) {
+		} else if (datatype.stringValue()
+				.equals(OBDAVocabulary.XSD_INTEGER_URI)) {
 			return Predicate.COL_TYPE.INTEGER;
-		} else if (datatype.stringValue().equals(OBDAVocabulary.XSD_DECIMAL_URI)) {
+		} else if (datatype.stringValue()
+				.equals(OBDAVocabulary.XSD_DECIMAL_URI)) {
 			return Predicate.COL_TYPE.DECIMAL;
 		} else if (datatype.stringValue().equals(OBDAVocabulary.XSD_DOUBLE_URI)) {
 			return Predicate.COL_TYPE.DOUBLE;
-		} else if (datatype.stringValue().equals(OBDAVocabulary.XSD_DATETIME_URI)) {
+		} else if (datatype.stringValue().equals(
+				OBDAVocabulary.XSD_DATETIME_URI)) {
 			return Predicate.COL_TYPE.DATETIME;
-		} else if (datatype.stringValue().equals(OBDAVocabulary.XSD_BOOLEAN_URI)) {
+		} else if (datatype.stringValue()
+				.equals(OBDAVocabulary.XSD_BOOLEAN_URI)) {
 			return Predicate.COL_TYPE.BOOLEAN;
 		}
 		return Predicate.COL_TYPE.UNSUPPORTED;

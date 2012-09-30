@@ -12,6 +12,7 @@ import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 
@@ -181,32 +182,92 @@ public class ExpressionEvaluator {
 
 		} else if (eval1 instanceof Function) {
 			Function f1 = (Function) eval1;
+
 			Predicate pred1 = f1.getFunctionSymbol();
+
+			if (pred1.getType(0) == COL_TYPE.UNSUPPORTED)
+				throw new RuntimeException("Unsupported type: " + pred1);
 
 			if (eval2 instanceof Function) {
 				Function f2 = (Function) eval2;
 				Predicate pred2 = f2.getFunctionSymbol();
 
-				if (pred1 instanceof DataTypePredicate)
-					if (pred1.equals(pred2)) {
-						Function neweq = null;
-						if (eq) {
-							neweq = fac.getEQFunction(f1.getTerm(0),
-									f2.getTerm(0));
-							return evalEqNeq(neweq, true);
-						} else {
-							neweq = fac.getNEQFunction(f1.getTerm(0),
-									f2.getTerm(0));
-							return evalEqNeq(neweq, false);
-						}
+				if (pred2.getType(0) == COL_TYPE.UNSUPPORTED)
+					throw new RuntimeException("Unsupported type: " + pred2);
 
-					} else {
+				if (pred1 == OBDAVocabulary.RDFS_LITERAL
+						&& pred2 == OBDAVocabulary.RDFS_LITERAL) {
+					/*
+					 * Special code to handle quality of Literals (plain, and
+					 * with language)
+					 */
+
+					if (f1.getTerms().size() != f2.getTerms().size()) {
+						// case one is with language another without
 						if (eq)
 							return fac.getFalse();
 						else
 							return fac.getTrue();
+					} else if (f1.getTerms().size() == 2) {
+						// SIZE == 2
+						// these are literals with languages, wee need to
+						// return the
+						// evaluation of the values and the languages
+						// case literals without language, its exactly as
+						// normal datatypes
+						// this is copy paste code
+						Function eqValues = null;
+						Function eqLang = null;
+						Function comparison = null;
+						if (eq) {
+							eqValues = fac.getEQFunction(f1.getTerm(0),
+									f2.getTerm(0));
+							eqLang = fac.getEQFunction(f1.getTerm(1),
+									f2.getTerm(1));
+							comparison = fac.getANDFunction(eqValues, eqLang);
+							return evalAndOr(comparison, true);
+						}
+						eqValues = fac.getNEQFunction(f1.getTerm(0),
+								f2.getTerm(0));
+						eqLang = fac.getNEQFunction(f1.getTerm(1),
+								f2.getTerm(1));
+						comparison = fac.getORFunction(eqValues, eqLang);
+						return evalAndOr(comparison, false);
+
 					}
+					// case literals without language, its exactly as normal
+					// datatypes
+					// this is copy paste code
+					Function neweq = null;
+					if (eq) {
+						neweq = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
+						return evalEqNeq(neweq, true);
+					} else {
+						neweq = fac
+								.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
+						return evalEqNeq(neweq, false);
+					}
+
+				} else if (pred1.equals(pred2)) {
+
+					Function neweq = null;
+					if (eq) {
+						neweq = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
+						return evalEqNeq(neweq, true);
+					} else {
+						neweq = fac
+								.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
+						return evalEqNeq(neweq, false);
+					}
+
+				} else {
+					if (eq)
+						return fac.getFalse();
+					else
+						return fac.getTrue();
+				}
 			}
+
 		}
 
 		/* eval2 is not a function */

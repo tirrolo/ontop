@@ -383,6 +383,11 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 	}
 
 	@Override
+	public Predicate getBNodeTemplatePredicate(int arity) {
+		return new BNodePredicateImpl(arity);
+	}
+
+	@Override
 	public Function getEQFunction(NewLiteral firstTerm, NewLiteral secondTerm) {
 		return getFunctionalTerm(OBDAVocabulary.EQ, firstTerm, secondTerm);
 	}
@@ -576,5 +581,17 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 	@Override
 	public Constant getFalse() {
 		return OBDAVocabulary.FALSE;
+	}
+
+	@Override
+	public Predicate getDataTypePredicateUnsupported(String uri) {
+		return getDataTypePredicateUnsupported(URI.create(uri));
+
+	}
+
+	@Override
+	public Predicate getDataTypePredicateUnsupported(URI uri) {
+		return new DataTypePredicateImpl(uri, COL_TYPE.UNSUPPORTED);
+
 	}
 }

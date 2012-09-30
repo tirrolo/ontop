@@ -11,6 +11,7 @@ import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
@@ -641,6 +642,13 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 				mainColumn = getSQLStringForURIFunction(ov, index);
 
+			}  else if (functionString.equals(OBDAVocabulary.QUEST_BNODE)) {
+				/***
+				 * New template based URI building functions
+				 */
+
+				mainColumn = getSQLStringForBNodeFunction(ov, index);
+
 			} else {
 				throw new IllegalArgumentException(
 						"Error generating SQL query. Contact the developers. Found an invalid function during translation: "
@@ -825,6 +833,79 @@ public class SQLGenerator implements SQLQueryGenerator {
 						+ ov.toString());
 
 	}
+	
+	
+	/***
+	 * Returns the SQL that builds a URI String out of an atom of the form
+	 * uri("htttp:...", x, y,...)
+	 * 
+	 * @param ov
+	 * @param index
+	 * @return
+	 */
+	public String getSQLStringForBNodeFunction(Function ov, QueryAliasIndex index) {
+
+		/*
+		 * The first inner term determines the form of the result
+		 */
+		NewLiteral t = ov.getTerms().get(0);
+
+		if (t instanceof ValueConstant) {
+			/*
+			 * The function is actually a template. The first parameter is a
+			 * string of the form http://.../.../ with place holders of the form
+			 * {}. The rest are variables or constants that should be put in
+			 * place of the palce holders. We need to tokenize and form the
+			 * CONCAT
+			 */
+			ValueConstant c = (ValueConstant) t;
+			StringTokenizer tokenizer = new StringTokenizer(c.toString(), "{}");
+			String functionString = jdbcutil.getSQLLexicalForm(tokenizer
+					.nextToken());
+			List<String> vex = new LinkedList<String>();
+			int termIndex = 1;
+			do {
+				NewLiteral currentTerm = ov.getTerms().get(termIndex);
+				vex.add(getSQLString(currentTerm, index, false));
+				if (tokenizer.hasMoreTokens()) {
+					vex.add(jdbcutil.getSQLLexicalForm(tokenizer.nextToken()));
+				}
+				termIndex += 1;
+			} while (tokenizer.hasMoreElements()
+					|| termIndex < ov.getTerms().size());
+			String[] params = new String[vex.size() + 1];
+			int i = 0;
+			params[i] = functionString;
+			i += 1;
+			for (String param : vex) {
+				params[i] = param;
+				i += 1;
+			}
+			return sqladapter.strconcat(params);
+		} else if (t instanceof Variable) {
+			/*
+			 * The function is of the form uri(x), we need to simply return the
+			 * value of X
+			 */
+
+			return getSQLString(((Variable) t), index, false);
+		} else if (t instanceof URIConstant) {
+			URIConstant uc = (URIConstant) t;
+			/*
+			 * The function is of the form uri("http://some.uri/"), i.e., a
+			 * concrete URI, we return the string representing that URI.
+			 */
+			return jdbcutil.getSQLLexicalForm(uc.getURI().toString());
+		}
+
+		/*
+		 * Unsupported case
+		 */
+		throw new IllegalArgumentException(
+				"Error, cannot generate URI constructor clause for a term. Contact the authors. Term: "
+						+ ov.toString());
+
+	}
 
 	/**
 	 * Determines if it is a unary function.
@@ -887,7 +968,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 		NewLiteral term1 = function.getTerms().get(0);
 
 		if (functionSymbol instanceof DataTypePredicate) {
-
+			if (functionSymbol.getType(0) == COL_TYPE.UNSUPPORTED)
+				throw new RuntimeException("Unsupported type in the query: " + function);
 			/* atoms of the form integer(x) */
 			return getSQLString(term1, index, false);
 

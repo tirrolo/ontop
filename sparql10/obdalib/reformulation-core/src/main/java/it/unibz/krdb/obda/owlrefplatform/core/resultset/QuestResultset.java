@@ -31,6 +31,11 @@ public class QuestResultset implements OBDAResultSet {
 	private Vector<String> signature;
 
 	private HashMap<String, Integer> columnMap = new HashMap<String, Integer>();
+
+	private HashMap<String, String> bnodeMap = new HashMap<String, String>();
+
+	private int bnodeCounter = 0;
+
 	// private List<Term> signatureTyping;
 
 	// private HashMap<String, Term> typingMap = new HashMap<String, Term>();
@@ -210,14 +215,22 @@ public class QuestResultset implements OBDAResultSet {
 
 			System.out.println(set.getString(name));
 			System.out.println(set.getByte(name + "QuestType"));
-			COL_TYPE type = getQuestType((byte)set.getInt(name + "QuestType"));
+			COL_TYPE type = getQuestType((byte) set.getInt(name + "QuestType"));
 
 			if (type == COL_TYPE.OBJECT || type == null) {
 				URI value = getURI(name);
 				result = fac.getURIConstant(value);
 			} else if (type == COL_TYPE.BNODE) {
-				result = fac.getBNodeConstant(set.getString(name));
-			}  else {
+				String rawLabel = set.getString(name);
+				String scopedLabel = this.bnodeMap.get(rawLabel);
+				if (scopedLabel == null) {
+					scopedLabel = "b" + bnodeCounter;
+					bnodeCounter += 1;
+					bnodeMap.put(rawLabel, scopedLabel);
+				}
+
+				result = fac.getBNodeConstant(scopedLabel);
+			} else {
 				/*
 				 * The constant is a literal, we need to find if its
 				 * rdfs:Literal or a normal literal and construct it properly.
@@ -288,7 +301,7 @@ public class QuestResultset implements OBDAResultSet {
 			return COL_TYPE.DATETIME;
 		} else if (sqltype == 9) {
 			return COL_TYPE.BOOLEAN;
-		}  else {
+		} else {
 			throw new RuntimeException("COLTYPE unknown: " + sqltype);
 		}
 	}

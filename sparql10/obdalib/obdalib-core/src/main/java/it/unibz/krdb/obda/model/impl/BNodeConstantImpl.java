@@ -7,6 +7,7 @@ import java.util.Set;
 
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.BNode;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.Variable;
 
 /**
@@ -26,6 +27,7 @@ public class BNodeConstantImpl extends AbstractLiteral implements BNode {
 
 	private final int identifier;
 
+	
 	/**
 	 * The default constructor.
 	 * 
@@ -71,14 +73,30 @@ public class BNodeConstantImpl extends AbstractLiteral implements BNode {
 	public Set<Variable> getReferencedVariables() {
 		return new LinkedHashSet<Variable>();
 	}
-	
+
 	@Override
 	public Map<Variable, Integer> getVariableCount() {
-		return new HashMap<Variable,Integer>();
+		return new HashMap<Variable, Integer>();
 	}
-	
+
 	@Override
 	public Atom asAtom() {
-		throw new RuntimeException("Impossible to cast as atom: " + this.getClass()); 
+		throw new RuntimeException("Impossible to cast as atom: "
+				+ this.getClass());
+	}
+
+	@Override
+	public COL_TYPE getType() {
+		return COL_TYPE.BNODE;
+	}
+
+	@Override
+	public String getValue() {
+		return name;
+	}
+
+	@Override
+	public String getLanguage() {
+		return null;
 	}
 }
