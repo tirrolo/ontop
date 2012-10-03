@@ -57,8 +57,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalComboBoxButton;
 import javax.swing.table.TableModel;
 
 public class MappingAssistantPanel extends javax.swing.JPanel implements DatasourceSelectorListener {
@@ -71,10 +74,19 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 	
 	private OBDADataSource selectedSource;
 	
-	private MapItem predicateSubjectMap = new MapItem();
-
+	private MapItem predicateSubjectMap;
+	
+	private List<MapItem> predicateObjectMapsList = new ArrayList<MapItem>();
+	
+	private boolean isSubjectClassValid = false;
+	
 	private static OBDADataFactory dfac = OBDADataFactoryImpl.getInstance();
 
+	private static String EMPTY_TEXT = "";
+	
+	private static Color DEFAULT_TEXTFIELD_BACKGROUND = UIManager.getDefaults().getColor("TextField.background");
+	private static Color ERROR_TEXTFIELD_BACKGROUND = new Color(255, 143, 143);
+	
 	public MappingAssistantPanel(OBDAModel model) {
 		obdaModel = model;
 		prefixManager = obdaModel.getPrefixManager();
@@ -126,14 +138,14 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         setAlignmentX(5.0F);
         setAlignmentY(5.0F);
         setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        setName("panel_master");
+        setName("panel_master"); // NOI18N
         setPreferredSize(new java.awt.Dimension(640, 480));
         setLayout(new java.awt.BorderLayout());
 
         splMainSplitter.setDividerLocation(0.75);
         splMainSplitter.setResizeWeight(0.75);
 
-        pnlDataBrowser.setName("panel_databrowser");
+        pnlDataBrowser.setName("panel_databrowser"); // NOI18N
         pnlDataBrowser.setLayout(new java.awt.BorderLayout());
 
         splSqlQuery.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
@@ -237,7 +249,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         splMainSplitter.setLeftComponent(pnlDataBrowser);
 
         pnlOntologyBrowser.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 3, 0, 3));
-        pnlOntologyBrowser.setName("panel_ontologybrowser");
+        pnlOntologyBrowser.setName("panel_ontologybrowser"); // NOI18N
         pnlOntologyBrowser.setLayout(new java.awt.BorderLayout(0, 2));
 
         pnlConcept.setLayout(new java.awt.BorderLayout(0, 2));
@@ -250,7 +262,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
         pnlFocusURI.add(lblFocusOnURI, java.awt.BorderLayout.NORTH);
 
         txtClassUriTemplate.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        txtClassUriTemplate.setText(String.format("<\"%s\">", getDefaultNamespace(true)));
+        txtClassUriTemplate.setText(defaultUriTemplate());
         txtClassUriTemplate.setMargin(new java.awt.Insets(0, 0, 0, 0));
         txtClassUriTemplate.setMinimumSize(new java.awt.Dimension(240, 23));
         txtClassUriTemplate.setPreferredSize(new java.awt.Dimension(240, 23));
@@ -396,18 +408,18 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		if (!pnlPropertyEditorList.isEmpty() && pnlPropertyEditorList.isEditing()) {
 			pnlPropertyEditorList.stopCellEditing();
 		}
-
 		try {
 			// Prepare the mapping source
 			String source = txtQueryEditor.getText();
 			
 			// Prepare the mapping target
-			List<MapItem> predicateObjectMapsList = pnlPropertyEditorList.getPredicateObjectMapsList();
+			predicateObjectMapsList = pnlPropertyEditorList.getPredicateObjectMapsList();
 			OBDAQuery target = prepareTargetQuery(predicateSubjectMap, predicateObjectMapsList);
 			
 			// Create the mapping axiom
 			OBDAMappingAxiom mappingAxiom = dfac.getRDBMSMappingAxiom(source, target);
 			obdaModel.addMapping(selectedSource.getSourceID(), mappingAxiom);
+			
 			clearForm();
 		} catch (DuplicateMappingException e) {
 			DialogUtils.showQuickErrorDialog(null, e, "Duplicate mapping identification.");
@@ -491,7 +503,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 			// extract the variable name only, e.g., "{$var1}" --> "var1"
 			try {
 				String variableName = placeHolder.substring(2, placeHolder.length() - 1);
-				if (variableName.equals("")) {
+				if (variableName.equals(EMPTY_TEXT)) {
 					throw new RuntimeException("Variable name must have at least 1 character");
 				}
 				terms.add(dfac.getVariable(variableName));
@@ -518,59 +530,67 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		return defaultNamespace;
 	}
 	
+	private String defaultUriTemplate() {
+		return String.format("<\"%s\">", getDefaultNamespace(true));
+	}
+	
 	private void clearForm() {
 		cboDataSet.setSelectedIndex(-1);
-		txtQueryEditor.setText("");
+		txtQueryEditor.setText(EMPTY_TEXT);
 		tblQueryResult = new SQLResultTable();
 		tblQueryResult.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		scrQueryResult.setViewportView(tblQueryResult);
 		cboClassAutoSuggest.setSelectedIndex(-1);
-		txtClassUriTemplate.setText(getDefaultNamespace(true));
+		txtClassUriTemplate.setText(defaultUriTemplate());
 		pnlPropertyEditorList.clear();
-		predicateSubjectMap = new MapItem();
 	}
 	
 	private void txtClassUriTemplateFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtClassUriTemplateFocusLost
-		try {
-			String uriTemplate = prefixManager.getExpandForm(txtClassUriTemplate.getText(), true);
-			predicateSubjectMap.setTargetMapping(uriTemplate);
-		} catch (StringIndexOutOfBoundsException e) {
-			DialogUtils.showQuickErrorDialog(null, new Exception("Invalid URI template string."));
+		String uriTemplate = txtClassUriTemplate.getText();
+		if (predicateSubjectMap == null) {
+			// Create a default subject map using owl:Thing as the subject
+			predicateSubjectMap = new MapItem(new PredicateItem(dfac.getClassPredicate("owl:Thing"), prefixManager));
 		}
+		predicateSubjectMap.setTargetMapping(uriTemplate);
+		validateClassUri();
 	}// GEN-LAST:event_txtClassUriTemplateFocusLost
 
-	private void cboClassAutoSuggestItemStateChanged(java.awt.event.ItemEvent evt) {
-		// Get the affected item
-		Object obj = evt.getItem();
-		if (obj instanceof PredicateItem) {
-			PredicateItem selectedItem = (PredicateItem) obj;
-			predicateSubjectMap = new MapItem(selectedItem);
-		} else {
-			DialogUtils.showQuickErrorDialog(null, new Exception("Unknown class predicate."));
-			cboClassAutoSuggest.requestFocus();
-		}
-	}
-	
 	private void txtClassUriTemplateKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_txtClassUriKeyPressed
 		int code = evt.getKeyCode();
 		if (code == KeyEvent.VK_ESCAPE) {
-			txtClassUriTemplate.setText("");
+			txtClassUriTemplate.setText(defaultUriTemplate());
 		} else if (code == KeyEvent.VK_ENTER) {
-			pnlProperties.getComponent(0).requestFocusInWindow();
+			cboClassAutoSuggest.requestFocus();
 		}
 	}// GEN-LAST:event_txtClassUriKeyPressed
-	
+
+	private void cboClassAutoSuggestItemStateChanged(java.awt.event.ItemEvent evt) {
+		Object item = evt.getItem(); // Get the affected item
+		if (item instanceof PredicateItem) {
+			PredicateItem selectedItem = (PredicateItem) item;
+			predicateSubjectMap = new MapItem(selectedItem);
+			predicateSubjectMap.setTargetMapping(txtClassUriTemplate.getText());
+			isSubjectClassValid = true;
+		} else if (item instanceof String) {
+			String className = item.toString();
+			if (!className.isEmpty()) {
+				isSubjectClassValid = false;
+			}
+		}
+		validateSubjectClass();
+	}
+
 	private void cboDataSetActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cboDataSetActionPerformed
-		write(""); // clear the text editor
+		txtQueryEditor.setText(EMPTY_TEXT); // clear the text editor
 		JComboBox cb = (JComboBox) evt.getSource();
 		if (cb.getSelectedIndex() != -1) {
 			DataDefinition dd = (DataDefinition) cb.getSelectedItem();
 			if (dd != null) {
 				String sql = generateSQLString(dd);
-				write(sql);
+				txtQueryEditor.setText(sql);
 			}
 			executeQuery();
-			cboClassAutoSuggest.requestFocus();
+			txtClassUriTemplate.requestFocus();
 		}
 	}// GEN-LAST:event_cboDataSetActionPerformed
 	
@@ -656,10 +676,6 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		}
 		cboDataSet.setModel(relationList);
 		cboDataSet.setSelectedIndex(-1);
-	}
-
-	private void write(String text) {
-		txtQueryEditor.setText(text);
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -787,5 +803,73 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 			};
 			thread.start();
 		}
+	}
+
+	//
+	// Methods for validation
+	//
+
+	private void validateClassUri() {
+		if (predicateSubjectMap.isValid()) {
+			setNormalBackground(txtClassUriTemplate);
+			enableCreateButtonIfPossible();
+		} else {
+			setErrorBackground(txtClassUriTemplate);
+			disableCreateButton();
+		}
+	}
+
+	private void validateSubjectClass() {
+		if (isSubjectClassValid) {
+			setNormalBackground(cboClassAutoSuggest);
+		} else {
+			setErrorBackground(cboClassAutoSuggest);
+		}
+	}
+
+	private void enableCreateButtonIfPossible() {
+		if (cboClassAutoSuggest.getSelectedIndex() != -1) {
+			enableCreateButton();
+		}
+	}
+
+	private void enableCreateButton() {
+		cmdCreateMapping.setEnabled(true);
+	}
+
+	private void disableCreateButton() {
+		cmdCreateMapping.setEnabled(false);
+	}
+
+	//
+	// Methods for GUI changes
+	//
+
+	private void setNormalBackground(JComboBox comboBox) {
+		JTextField text = ((JTextField) comboBox.getEditor().getEditorComponent());
+		text.setBackground(DEFAULT_TEXTFIELD_BACKGROUND);
+	}
+
+	private void setErrorBackground(JComboBox comboBox) {
+		JTextField text = ((JTextField) comboBox.getEditor().getEditorComponent());
+		text.setBackground(ERROR_TEXTFIELD_BACKGROUND);
+		Component[] comp = comboBox.getComponents();
+		for (int i = 0; i < comp.length; i++) {// hack valid only for Metal L&F
+			if (comp[i] instanceof MetalComboBoxButton) {
+				MetalComboBoxButton coloredArrowsButton = (MetalComboBoxButton) comp[i];
+				coloredArrowsButton.setBackground(null);
+				break;
+			}
+		}
+		comboBox.requestFocus();
+	}
+
+	private void setNormalBackground(JTextField textField) {
+		textField.setBackground(DEFAULT_TEXTFIELD_BACKGROUND);
+	}
+
+	private void setErrorBackground(JTextField textField) {
+		textField.setBackground(ERROR_TEXTFIELD_BACKGROUND);
+		textField.requestFocus();
 	}
 }

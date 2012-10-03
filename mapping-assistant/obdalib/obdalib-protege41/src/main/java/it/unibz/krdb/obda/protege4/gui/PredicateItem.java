@@ -54,6 +54,10 @@ public class PredicateItem {
 		return predicate.isObjectProperty();
 	}
 	
+	public PrefixManager getPrefixManager() {
+		return prefixManager;
+	}
+	
 	@Override
 	public String toString() {
 		return getQualifiedName();

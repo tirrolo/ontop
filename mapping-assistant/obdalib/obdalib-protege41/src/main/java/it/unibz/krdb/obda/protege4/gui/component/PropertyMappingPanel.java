@@ -1,6 +1,5 @@
 package it.unibz.krdb.obda.protege4.gui.component;
 
-import it.unibz.krdb.obda.gui.swing.utils.DialogUtils;
 import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.Predicate;
@@ -23,6 +22,7 @@ import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -30,6 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.plaf.metal.MetalComboBoxButton;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -41,6 +42,8 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 
 	private OBDAModel obdaModel;
 	private PrefixManager prefixManager;
+
+	private boolean isPredicatePropertyValid = false;
 	
 	private static final Color SELECTION_BACKGROUND = UIManager.getDefaults().getColor("Table.selectionBackground");
 	private static final Color NORMAL_BACKGROUND = new Color(240, 245, 240);
@@ -58,6 +61,8 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 	
 	private static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 14);
 	
+	private static Color DEFAULT_TEXTFIELD_BACKGROUND = UIManager.getDefaults().getColor("TextField.background");
+	private static Color ERROR_TEXTFIELD_BACKGROUND = new Color(255, 143, 143);
 	
 	public PropertyMappingPanel(OBDAModel obdaModel) {
 		this.obdaModel = obdaModel;
@@ -218,11 +223,9 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 	}// GEN-LAST:event_lstPropertiesKeyPressed
 
 	private void cmdAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cmdAddActionPerformed
-		Object obj = cboPropertyAutoSuggest.getSelectedItem();
-		if (obj instanceof PredicateItem) {
-			PredicateItem selectedItem = (PredicateItem) obj;
-			addRow(selectedItem);
-		}
+		Object item = cboPropertyAutoSuggest.getSelectedItem();
+		addPredicateProperty(item);
+		validatePredicateProperty();
 	}// GEN-LAST:event_cmdAddActionPerformed
 
 	private void showPopup(MouseEvent evt) {
@@ -247,20 +250,26 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 		if (code == KeyEvent.VK_ESCAPE) {
 			cboPropertyAutoSuggest.setSelectedIndex(-1);
 		} else if (code == KeyEvent.VK_ENTER) {
-			Object obj = cboPropertyAutoSuggest.getSelectedItem();
-			if (obj instanceof PredicateItem) {
-				PredicateItem selectedItem = (PredicateItem) obj;
-				addRow(selectedItem);
-			}
-			cboPropertyAutoSuggest.requestFocusInWindow();
+			Object item = cboPropertyAutoSuggest.getSelectedItem();
+			addPredicateProperty(item);
+			validatePredicateProperty();
+		}
+	}
+
+	private void addPredicateProperty(Object item) {
+		if (item instanceof PredicateItem) {
+			PredicateItem selectedItem = (PredicateItem) item;
+			addRow(selectedItem);
+			isPredicatePropertyValid  = true;
+		} else {
+			isPredicatePropertyValid = false;
 		}
 	}
 
 	private void addRow(PredicateItem selectedItem) {
 		MapItem predicateObjectMap = new MapItem(selectedItem);
 		if (selectedItem.isObjectPropertyPredicate()) {
-			String defaultNamespace = prefixManager.getDefaultPrefix();
-			predicateObjectMap.setTargetMapping(prefixManager.getShortForm(defaultNamespace, true));
+			predicateObjectMap.setTargetMapping(defaultUriTemplate());
 		}
 		
 		// Insert the selected item from the combo box to the table as a new table cell
@@ -278,6 +287,53 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 		PropertyItemEditor editor = new PropertyItemEditor();
 		editor.addCellEditorListener(lstProperties);
 		col.setCellEditor(editor);
+	}
+
+	private String defaultUriTemplate() {
+		return String.format("<\"%s\">", getDefaultNamespace(true));
+	}
+
+	private String getDefaultNamespace(boolean usePrefix) {
+		String defaultNamespace = prefixManager.getDefaultPrefix();
+		if (usePrefix) {
+			defaultNamespace = prefixManager.getShortForm(defaultNamespace, true);
+		}
+		return defaultNamespace;
+	}
+
+	//
+	// Methods for validation
+	//
+
+	private void validatePredicateProperty() {
+		if (isPredicatePropertyValid) {
+			setNormalBackground(cboPropertyAutoSuggest);
+		} else {
+			setErrorBackground(cboPropertyAutoSuggest);
+		}
+	}
+
+	//
+	// Methods for GUI changes
+	//
+
+	private void setNormalBackground(JComboBox comboBox) {
+		JTextField text = ((JTextField) comboBox.getEditor().getEditorComponent());
+		text.setBackground(DEFAULT_TEXTFIELD_BACKGROUND);
+	}
+
+	private void setErrorBackground(JComboBox comboBox) {
+		JTextField text = ((JTextField) comboBox.getEditor().getEditorComponent());
+		text.setBackground(ERROR_TEXTFIELD_BACKGROUND);
+		Component[] comp = comboBox.getComponents();
+		for (int i = 0; i < comp.length; i++) {// hack valid only for Metal L&F
+			if (comp[i] instanceof MetalComboBoxButton) {
+				MetalComboBoxButton coloredArrowsButton = (MetalComboBoxButton) comp[i];
+				coloredArrowsButton.setBackground(null);
+				break;
+			}
+		}
+		comboBox.requestFocus();
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -378,11 +434,28 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 				} else if (entry.isRefObjectMap()) {
 					cboDataTypes.setVisible(false);
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
-					String prefix = prefixManager.getShortForm(entry.getTargetMapping(), true);
-					txtPropertyTargetMap.setText(String.format("<\"%s\">", prefix));
+					txtPropertyTargetMap.setText(entry.getTargetMapping());
+				}
+				
+				if (entry.isValid()) { // Validate the entry
+					setNormalBackground(txtPropertyTargetMap);
+				} else {
+					setErrorBackground(txtPropertyTargetMap);
 				}
 			}
 			return this;
+		}
+		
+		//
+		// Methods for GUI changes
+		//
+		
+		private void setNormalBackground(JTextField textField) {
+			textField.setBackground(DEFAULT_TEXTFIELD_BACKGROUND);
+		}
+		
+		private void setErrorBackground(JTextField textField) {
+			textField.setBackground(ERROR_TEXTFIELD_BACKGROUND);
 		}
 	}
 
@@ -476,8 +549,13 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 				} else if (entry.isRefObjectMap()) {
 					cboDataTypes.setVisible(false);
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
-					String prefix = prefixManager.getShortForm(entry.getTargetMapping(), true);
-					txtPropertyTargetMap.setText(String.format("<\"%s\">", prefix));
+					txtPropertyTargetMap.setText(entry.getTargetMapping());
+				}
+				
+				if (entry.isValid()) { // Validate the entry
+					setNormalBackground(txtPropertyTargetMap);
+				} else {
+					setErrorBackground(txtPropertyTargetMap);
 				}
 			}
 			return pnlPropertyMapCell;
@@ -486,16 +564,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 		@Override
 		public Object getCellEditorValue() {
 			if (editedItem != null) {
-				if (editedItem.isObjectMap()) {
-					editedItem.setDataType((Predicate) cboDataTypes.getSelectedItem());
-					editedItem.setTargetMapping(txtPropertyTargetMap.getText());
-				} else if (editedItem.isRefObjectMap()) {
-					try {
-						editedItem.setTargetMapping(prefixManager.getExpandForm(txtPropertyTargetMap.getText(), true));
-					} catch (StringIndexOutOfBoundsException e) {
-						DialogUtils.showQuickErrorDialog(null, new Exception("Invalid URI template string."));
-					}
-				}
+				editedItem.setTargetMapping(txtPropertyTargetMap.getText());
 			}
 			return editedItem;
 		}
@@ -512,7 +581,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			}
 			return false;
 		}
-		
+
 		@Override
 		public boolean stopCellEditing() {
 			try { // handling unknown array out of bound exception (?)
@@ -520,6 +589,18 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 			} catch (Exception e) {
 				return true;
 			}
+		}
+
+		//
+		// Methods for GUI changes
+		//
+
+		private void setNormalBackground(JTextField textField) {
+			textField.setBackground(DEFAULT_TEXTFIELD_BACKGROUND);
+		}
+
+		private void setErrorBackground(JTextField textField) {
+			textField.setBackground(ERROR_TEXTFIELD_BACKGROUND);
 		}
 	}
 }
