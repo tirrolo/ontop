@@ -436,26 +436,8 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
 					txtPropertyTargetMap.setText(entry.getTargetMapping());
 				}
-				
-				if (entry.isValid()) { // Validate the entry
-					setNormalBackground(txtPropertyTargetMap);
-				} else {
-					setErrorBackground(txtPropertyTargetMap);
-				}
 			}
 			return this;
-		}
-		
-		//
-		// Methods for GUI changes
-		//
-		
-		private void setNormalBackground(JTextField textField) {
-			textField.setBackground(DEFAULT_TEXTFIELD_BACKGROUND);
-		}
-		
-		private void setErrorBackground(JTextField textField) {
-			textField.setBackground(ERROR_TEXTFIELD_BACKGROUND);
 		}
 	}
 
@@ -551,12 +533,6 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 					lblPropertyName.setIcon(IconLoader.getImageIcon("images/object_property.png"));
 					txtPropertyTargetMap.setText(entry.getTargetMapping());
 				}
-				
-				if (entry.isValid()) { // Validate the entry
-					setNormalBackground(txtPropertyTargetMap);
-				} else {
-					setErrorBackground(txtPropertyTargetMap);
-				}
 			}
 			return pnlPropertyMapCell;
 		}
@@ -585,9 +561,16 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 		@Override
 		public boolean stopCellEditing() {
 			try { // handling unknown array out of bound exception (?)
+				editedItem.setTargetMapping(txtPropertyTargetMap.getText());
+				if (editedItem.isValid()) { // Validate the entry
+					setNormalBackground(txtPropertyTargetMap);
+				} else {
+					setErrorBackground(txtPropertyTargetMap);
+					return false;
+				}
 				return super.stopCellEditing();
 			} catch (Exception e) {
-				return true;
+				return super.stopCellEditing();
 			}
 		}
 
