@@ -22,8 +22,12 @@ import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -142,6 +146,7 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
             v.addElement(new PredicateItem(op, prefixManager));
         }
         cboPropertyAutoSuggest = new AutoSuggestComboBox(v);
+        cboPropertyAutoSuggest.setRenderer(new PropertyListCellRenderer());
         cboPropertyAutoSuggest.setMinimumSize(new java.awt.Dimension(195, 23));
         cboPropertyAutoSuggest.setPreferredSize(new java.awt.Dimension(195, 23));
         JTextField txtComboBoxEditor = (JTextField) cboPropertyAutoSuggest.getEditor().getEditorComponent();
@@ -584,6 +589,30 @@ public class PropertyMappingPanel extends javax.swing.JPanel {
 
 		private void setErrorBackground(JTextField textField) {
 			textField.setBackground(ERROR_TEXTFIELD_BACKGROUND);
+		}
+	}
+
+	/**
+	 * Renderer class to present the property list.
+	 */
+	private class PropertyListCellRenderer extends DefaultListCellRenderer {
+		private static final long serialVersionUID = 1L;
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			if (value instanceof PredicateItem) {
+				PredicateItem property = (PredicateItem) value;
+				if (property.isDataPropertyPredicate()) {
+					ImageIcon icon = IconLoader.getImageIcon("images/data_property.png");
+					label.setIcon(icon);
+					label.setText(property.getQualifiedName());
+				} else if (property.isObjectPropertyPredicate()) {
+					ImageIcon icon = IconLoader.getImageIcon("images/object_property.png");
+					label.setIcon(icon);
+					label.setText(property.getQualifiedName());
+				}
+			}
+			return label;
 		}
 	}
 }

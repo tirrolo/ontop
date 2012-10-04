@@ -79,8 +79,15 @@ public class SQLResultTable extends JTable {
 						textFieldOnFocus.setText(text);
 					} else {
 						if (containsPrefix(existingText) || containsIRI(existingText)) {
-							String text = String.format("%s{$%s}", existingText, table.getColumnName(index));
+							int caretPosition = textFieldOnFocus.getCaretPosition();
+							String firstPortion = existingText.substring(0, caretPosition);
+							String secondPortion = existingText.substring(caretPosition, existingText.length());
+							String columnName = table.getColumnName(index);
+							
+							// Append all the texts
+							String text = String.format("%s{$%s}%s", firstPortion, columnName, secondPortion);
 							textFieldOnFocus.setText(text);
+							textFieldOnFocus.setCaretPosition(firstPortion.length() + columnName.length() + 3);
 						}
 					}
 				}

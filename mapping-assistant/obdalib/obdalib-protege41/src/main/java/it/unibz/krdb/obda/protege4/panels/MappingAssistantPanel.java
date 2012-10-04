@@ -52,6 +52,7 @@ import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -292,6 +293,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
             v.addElement(new PredicateItem(pred, prefixManager));
         }
         cboClassAutoSuggest = new AutoSuggestComboBox(v);
+        cboClassAutoSuggest.setRenderer(new ClassListCellRenderer());
         cboClassAutoSuggest.setMinimumSize(new java.awt.Dimension(195, 23));
         cboClassAutoSuggest.setPreferredSize(new java.awt.Dimension(195, 23));
         cboClassAutoSuggest.addItemListener(new java.awt.event.ItemListener () {
@@ -392,14 +394,14 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		// If users typed CTRL+E
 		if ((evt.getKeyCode() == KeyEvent.VK_E) && ((evt.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
 			executeQuery();
-			cboClassAutoSuggest.requestFocus();
+			txtClassUriTemplate.requestFocus();
 		}
 	}// GEN-LAST:event_txtQueryEditorKeyPressed
 
 	private void txtRowCountFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtRowCountFocusLost
 		if (selectedSource != null && !txtQueryEditor.getText().isEmpty()) {
 			executeQuery();
-			cboClassAutoSuggest.requestFocus();
+			txtClassUriTemplate.requestFocus();
 		}
 	}// GEN-LAST:event_txtRowCountFocusLost
 
@@ -415,7 +417,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 			DialogUtils.showQuickErrorDialog(null, new Exception("Data source has not been defined."));
 		} else {
 			executeQuery();
-			cboClassAutoSuggest.requestFocus();
+			txtClassUriTemplate.requestFocus();
 		}
 	}
 
@@ -423,7 +425,14 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				txtClassUriTemplate.setCaretPosition(txtClassUriTemplate.getText().length());
+				String uriTemplate = txtClassUriTemplate.getText();
+				int pos = 0;
+				if (uriTemplate.contains(";")) {
+					pos = uriTemplate.indexOf(";") + 1;
+				} else {
+					pos = uriTemplate.length();
+				}
+				txtClassUriTemplate.setCaretPosition(pos);
 			}
 		});
 	}// GEN-LAST:event_txtClassUriTemplateFocusGained
@@ -431,8 +440,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 	private void txtClassUriTemplateFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txtClassUriTemplateFocusLost
 		String uriTemplate = txtClassUriTemplate.getText();
 		if (predicateSubjectMap == null) {
-			// Create a default subject map using owl:Thing as the subject
-			predicateSubjectMap = new MapItem(new PredicateItem(dfac.getClassPredicate("owl:Thing"), prefixManager));
+			predicateSubjectMap = createPredicateSubjectMap();
 		}
 		predicateSubjectMap.setTargetMapping(uriTemplate);
 		validateClassUri();
@@ -510,9 +518,10 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		List<Atom> body = new ArrayList<Atom>();
 		
 		// Store concept in the body, if any
-		String subjectUriTemplate = predicateSubjectMap.getTargetMapping();
+		String subjectTargetString = predicateSubjectMap.getTargetMapping();
+		String subjectUriTemplate = prefixManager.getExpandForm(subjectTargetString, true);
 		Function subjectTerm = getUriFunctionTerm(subjectUriTemplate);
-		if (!predicateSubjectMap.getName().isEmpty()) {
+		if (!predicateSubjectMap.getName().equals("owl:Thing")) {
 			Atom concept = dfac.getAtom(predicateSubjectMap.getSourcePredicate(), subjectTerm);
 			body.add(concept);
 		}
@@ -539,7 +548,8 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 				Atom attribute = dfac.getAtom(predicateObjectMap.getSourcePredicate(), subjectTerm, objectTerm);
 				body.add(attribute);
 			} else if (predicateObjectMap.isRefObjectMap()) { // if a role
-				String objectUriTemplate = predicateObjectMap.getTargetMapping();
+				String predicateTargetString = predicateObjectMap.getTargetMapping();
+				String objectUriTemplate = prefixManager.getExpandForm(predicateTargetString, true);
 				Function objectTerm = getUriFunctionTerm(objectUriTemplate);
 				Atom role = dfac.getAtom(predicateObjectMap.getSourcePredicate(), subjectTerm, objectTerm);
 				body.add(role);
@@ -605,6 +615,11 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		return String.format("<\"%s\">", getDefaultNamespace(true));
 	}
 
+	private MapItem createPredicateSubjectMap() {
+		// Create a default subject map using owl:Thing as the subject
+		return new MapItem(new PredicateItem(dfac.getClassPredicate("owl:Thing"), prefixManager));
+	}
+
 	private void clearForm() {
 		cboDataSet.setSelectedIndex(-1);
 		txtQueryEditor.setText(EMPTY_TEXT);
@@ -614,6 +629,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		cboClassAutoSuggest.setSelectedIndex(-1);
 		txtClassUriTemplate.setText(defaultUriTemplate());
 		pnlPropertyEditorList.clear();
+		predicateSubjectMap = null;
 	}
 
 	private String generateSQLString(DataDefinition table) {
@@ -691,6 +707,58 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		cboDataSet.setSelectedIndex(-1);
 	}
 
+	//
+	// Methods for validation
+	//
+
+	private void validateClassUri() {
+		if (predicateSubjectMap.isValid()) {
+			setNormalBackground(txtClassUriTemplate);
+		} else {
+			setErrorBackground(txtClassUriTemplate);
+		}
+	}
+
+	private void validateSubjectClass() {
+		if (isSubjectClassValid) {
+			setNormalBackground(cboClassAutoSuggest);
+		} else {
+			setErrorBackground(cboClassAutoSuggest);
+		}
+	}
+
+	//
+	// Methods for GUI changes
+	//
+
+	private void setNormalBackground(JComboBox comboBox) {
+		JTextField text = ((JTextField) comboBox.getEditor().getEditorComponent());
+		text.setBackground(DEFAULT_TEXTFIELD_BACKGROUND);
+	}
+
+	private void setErrorBackground(JComboBox comboBox) {
+		JTextField text = ((JTextField) comboBox.getEditor().getEditorComponent());
+		text.setBackground(ERROR_TEXTFIELD_BACKGROUND);
+		Component[] comp = comboBox.getComponents();
+		for (int i = 0; i < comp.length; i++) {// hack valid only for Metal L&F
+			if (comp[i] instanceof MetalComboBoxButton) {
+				MetalComboBoxButton coloredArrowsButton = (MetalComboBoxButton) comp[i];
+				coloredArrowsButton.setBackground(null);
+				break;
+			}
+		}
+		comboBox.requestFocus();
+	}
+
+	private void setNormalBackground(JTextField textField) {
+		textField.setBackground(DEFAULT_TEXTFIELD_BACKGROUND);
+	}
+
+	private void setErrorBackground(JTextField textField) {
+		textField.setBackground(ERROR_TEXTFIELD_BACKGROUND);
+		textField.requestFocus();
+	}
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cboDataSet;
     private javax.swing.JButton cmdClearAll;
@@ -729,34 +797,58 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
     private javax.swing.JTextField txtRowCount;
     // End of variables declaration//GEN-END:variables
 
-	private class DataSetItemRenderer extends JLabel implements ListCellRenderer {
+	/**
+	 * Renderer class to present the table list.
+	 */
+	private class DataSetItemRenderer extends DefaultListCellRenderer {
 		private static final long serialVersionUID = 1L;
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			if (list.getModel().getSize() == 0) {
-				setText("<No table found>");
+				label.setText("<No table found>");
 			} else {
 				if (index == -1) {
-					setText("<Select database table>");
+					label.setText("<Select database table>");
 				}
-				
-				if (value != null) {
+				if (value instanceof DataDefinition) {
 					DataDefinition relation = (DataDefinition) value;
 					if (relation instanceof TableDefinition) {
 						ImageIcon icon = IconLoader.getImageIcon("images/db_table.png");
-						setIcon(icon);
-						setText(relation.getName());
+						label.setIcon(icon);
+						label.setText(relation.getName());
 					} else if (relation instanceof ViewDefinition) {
 						ImageIcon icon = IconLoader.getImageIcon("images/db_view.png");
-						setIcon(icon);
-						setText(relation.getName());
+						label.setIcon(icon);
+						label.setText(relation.getName());
 					}
 				}
 			}
-			return this;
+			return label;
 		}
 	}
 
+	/**
+	 * Renderer class to present the table list.
+	 */
+	private class ClassListCellRenderer extends DefaultListCellRenderer {
+		private static final long serialVersionUID = 1L;
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			if (value instanceof PredicateItem) {
+				PredicateItem predicate = (PredicateItem) value;
+				ImageIcon icon = IconLoader.getImageIcon("images/class_primitive.png");
+				label.setIcon(icon);
+				label.setText(predicate.getQualifiedName());
+			}
+			return label;
+		}
+	}
+
+	/**
+	 * Utility class to listen to the plugin progress bar
+	 */
 	private class ExecuteSQLQueryAction implements OBDAProgressListener {
 		CountDownLatch latch = null;
 		Thread thread = null;
@@ -816,57 +908,5 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 			};
 			thread.start();
 		}
-	}
-
-	//
-	// Methods for validation
-	//
-
-	private void validateClassUri() {
-		if (predicateSubjectMap.isValid()) {
-			setNormalBackground(txtClassUriTemplate);
-		} else {
-			setErrorBackground(txtClassUriTemplate);
-		}
-	}
-
-	private void validateSubjectClass() {
-		if (isSubjectClassValid) {
-			setNormalBackground(cboClassAutoSuggest);
-		} else {
-			setErrorBackground(cboClassAutoSuggest);
-		}
-	}
-
-	//
-	// Methods for GUI changes
-	//
-
-	private void setNormalBackground(JComboBox comboBox) {
-		JTextField text = ((JTextField) comboBox.getEditor().getEditorComponent());
-		text.setBackground(DEFAULT_TEXTFIELD_BACKGROUND);
-	}
-
-	private void setErrorBackground(JComboBox comboBox) {
-		JTextField text = ((JTextField) comboBox.getEditor().getEditorComponent());
-		text.setBackground(ERROR_TEXTFIELD_BACKGROUND);
-		Component[] comp = comboBox.getComponents();
-		for (int i = 0; i < comp.length; i++) {// hack valid only for Metal L&F
-			if (comp[i] instanceof MetalComboBoxButton) {
-				MetalComboBoxButton coloredArrowsButton = (MetalComboBoxButton) comp[i];
-				coloredArrowsButton.setBackground(null);
-				break;
-			}
-		}
-		comboBox.requestFocus();
-	}
-
-	private void setNormalBackground(JTextField textField) {
-		textField.setBackground(DEFAULT_TEXTFIELD_BACKGROUND);
-	}
-
-	private void setErrorBackground(JTextField textField) {
-		textField.setBackground(ERROR_TEXTFIELD_BACKGROUND);
-		textField.requestFocus();
 	}
 }
