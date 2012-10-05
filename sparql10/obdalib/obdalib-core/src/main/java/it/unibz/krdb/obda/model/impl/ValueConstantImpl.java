@@ -97,16 +97,19 @@ public class ValueConstantImpl extends AbstractLiteral implements ValueConstant 
 	public String toString() {
 		if (string != null)
 			return string;
-		
+
 		StringBuffer bf = new StringBuffer();
+		bf.append("\"");
 		bf.append(value);
-		
-		if (getType() == COL_TYPE.LITERAL) {
-			if (language != null) {
-				bf.append("@");
-				bf.append(language);
-			}
-		} 
+		bf.append("\"");
+		if (type == COL_TYPE.LITERAL_LANG) {
+			bf.append("@");
+			bf.append(language);
+
+		} else if (type != COL_TYPE.LITERAL) {
+			bf.append("^^");
+			bf.append(type);
+		}
 		return bf.toString();
 	}
 

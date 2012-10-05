@@ -44,7 +44,7 @@ public class DataPropertyAssertionImpl implements DataPropertyAssertion,
 	}
 
 	public String toString() {
-		return role.toString() + "(" + o1.toString() + ", " + o2.getValue()
+		return role.toString() + "(" + o1.toString() + ", " + o2.toString()
 				+ ")";
 	}
 

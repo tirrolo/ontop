@@ -72,6 +72,8 @@ public interface OBDADataFactory extends Serializable {
 
 	public Predicate getDataTypePredicateLiteral();
 
+	public Predicate getDataTypePredicateLiteralLang();
+
 	public Predicate getDataTypePredicateString();
 
 	public Predicate getDataTypePredicateInteger();
@@ -299,6 +301,8 @@ public interface OBDADataFactory extends Serializable {
 	 *            a list of arguments.
 	 * @return the function object.
 	 */
+	public Function getFunctionalTerm(Predicate functor, NewLiteral... terms);
+
 	public Function getFunctionalTerm(Predicate functor, List<NewLiteral> terms);
 
 	public Function getFunctionalTerm(Predicate functor, NewLiteral term1);
@@ -316,5 +320,7 @@ public interface OBDADataFactory extends Serializable {
 			OBDAQuery targetQuery);
 
 	public OBDASQLQuery getSQLQuery(String query);
+
+	public Predicate getTypePredicate(Predicate.COL_TYPE type);
 
 }

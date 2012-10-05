@@ -31,7 +31,7 @@ import com.sun.msv.datatype.xsd.XSDatatype;
 public class OBDADataFactoryImpl implements OBDADataFactory {
 
 	private static final long serialVersionUID = 1851116693137470887L;
-	private static OBDADataFactoryImpl instance = null;
+	private static OBDADataFactory instance = null;
 
 	protected OBDADataFactoryImpl() {
 		// protected constructor prevents instantiation from other classes.
@@ -93,7 +93,7 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 
 	@Override
 	public ValueConstant getValueConstant(String value, String language) {
-		return new ValueConstantImpl(value, language, COL_TYPE.LITERAL);
+		return new ValueConstantImpl(value, language.toLowerCase(), COL_TYPE.LITERAL_LANG);
 	}
 
 	@Override
@@ -111,6 +111,12 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 		return new AnonymousVariable();
 	}
 
+	@Override
+	public Function getFunctionalTerm(Predicate functor,
+			NewLiteral... arguments) {
+		return new FunctionalTermImpl(functor, arguments);
+	}
+	
 	@Override
 	public Function getFunctionalTerm(Predicate functor,
 			List<NewLiteral> arguments) {
@@ -345,6 +351,11 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 	@Override
 	public Predicate getDataTypePredicateLiteral() {
 		return OBDAVocabulary.RDFS_LITERAL;
+	}
+	
+	@Override
+	public Predicate getDataTypePredicateLiteralLang() {
+		return OBDAVocabulary.RDFS_LITERAL_LANG;
 	}
 
 	@Override
@@ -593,5 +604,33 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 	public Predicate getDataTypePredicateUnsupported(URI uri) {
 		return new DataTypePredicateImpl(uri, COL_TYPE.UNSUPPORTED);
 
+	}
+
+	@Override
+	public Predicate getTypePredicate(Predicate.COL_TYPE type) {
+		switch (type) {
+		case LITERAL:
+			return getDataTypePredicateLiteral();
+		case LITERAL_LANG:
+			return getDataTypePredicateLiteral();
+		case STRING:
+			return getDataTypePredicateString();
+		case INTEGER:
+			return getDataTypePredicateInteger();
+		case DECIMAL:
+			return getDataTypePredicateDecimal();
+		case DOUBLE:
+			return getDataTypePredicateDouble();
+		case DATETIME:
+			return getDataTypePredicateDateTime();
+		case BOOLEAN:
+			return getDataTypePredicateBoolean();
+		case OBJECT:
+			return getUriTemplatePredicate(1);
+		case BNODE:
+			return getBNodeTemplatePredicate(1);
+		default:
+			throw new RuntimeException("Cannot get URI for unsupported type: " + type);
+		}
 	}
 }

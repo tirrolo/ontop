@@ -45,11 +45,27 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 	 * @param terms
 	 *            the list of arguments.
 	 */
+	protected FunctionalTermImpl(Predicate functor, NewLiteral... terms) {
+		this.functor = functor;
+
+		EventGeneratingArrayList<NewLiteral> eventlist = new EventGeneratingArrayList<NewLiteral>(
+				terms.length * 10);
+		for (NewLiteral term : terms)
+			eventlist.add(term);
+		this.terms = eventlist;
+		eventlist.addListener(this);
+
+	}
+
 	protected FunctionalTermImpl(Predicate functor, List<NewLiteral> terms) {
 		this.functor = functor;
 
-		EventGeneratingArrayList<NewLiteral> eventlist = new EventGeneratingArrayList<NewLiteral>(terms.size() * 10);
-		eventlist.addAll(terms);
+		EventGeneratingArrayList<NewLiteral> eventlist = new EventGeneratingArrayList<NewLiteral>(
+				terms.size() * 10);
+		
+		for (NewLiteral term : terms)
+			eventlist.add(term);
+		
 		this.terms = eventlist;
 		eventlist.addListener(this);
 
