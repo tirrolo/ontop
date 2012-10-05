@@ -1045,7 +1045,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		} else if (expr instanceof ExprFunction1) {
 			// NO-OP
 			throw new RuntimeException(
-					"ExprFunction1 is not supported at the moment");
+					expr.toString() + " is not supported yet");
 		} else if (expr instanceof ExprFunction2) {
 			ExprFunction2 function = (ExprFunction2) expr;
 			Expr arg1 = function.getArg1(); // get the first argument
@@ -1070,7 +1070,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		} else if (expr instanceof ExprFunctionN) {
 			// NO-OP
 			throw new RuntimeException(
-					"ExprFunctionN is not supported at the moment");
+					expr.toString() + " is not supported yet");
 		}
 		return term;
 	}

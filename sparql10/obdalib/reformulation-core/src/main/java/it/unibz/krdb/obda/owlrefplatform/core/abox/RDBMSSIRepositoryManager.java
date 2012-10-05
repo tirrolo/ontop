@@ -15,6 +15,7 @@ import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
+import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.ontology.Assertion;
 import it.unibz.krdb.obda.ontology.BinaryAssertion;
 import it.unibz.krdb.obda.ontology.ClassAssertion;
@@ -28,6 +29,7 @@ import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
+import it.unibz.krdb.obda.ontology.UnaryAssertion;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.ontology.impl.OntologyImpl;
 import it.unibz.krdb.obda.ontology.impl.PropertySomeRestrictionImpl;
@@ -38,6 +40,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGNode;
 import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGOperations;
 import it.unibz.krdb.obda.owlrefplatform.core.dag.SemanticIndexRange;
 import it.unibz.krdb.obda.owlrefplatform.core.dag.SemanticIndexRange.Interval;
+import it.unibz.krdb.obda.owlrefplatform.core.unfolding.RuleEmptynessIndex;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -78,7 +81,8 @@ import org.slf4j.LoggerFactory;
  * Store ABox assertions in the DB
  * 
  */
-public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
+public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
+		RuleEmptynessIndex {
 
 	private static final long serialVersionUID = -6494667662327970606L;
 
@@ -419,6 +423,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 	final static int ROLE_TYPE = 2;
 
 	private static final boolean mergeUniions = false;
+
+	private HashMap<Integer, Boolean> emptynessIndexes = new HashMap<Integer, Boolean>();
 
 	public RDBMSSIRepositoryManager() throws PunningException {
 		this(null);
@@ -907,139 +913,25 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 
 		while (data.hasNext()) {
 			Assertion ax = data.next();
-			log.debug("Inserting statement: {}", ax);
-			batchCount += 1;
-			commitCount += 1;
 
-			if (ax instanceof BinaryAssertion) {
-				// Get the data property assertion
-				BinaryAssertion attributeAssertion = (BinaryAssertion) ax;
-				Predicate predicate = attributeAssertion.getPredicate();
+			try {
 
-				Constant object = attributeAssertion.getValue2();
-				Predicate.COL_TYPE attributeType = object.getType();
+//				log.debug("Inserting statement: {}", ax);
+				batchCount += 1;
+				commitCount += 1;
 
-				// Construct the database INSERT statements
-				ObjectConstant subject = (ObjectConstant) attributeAssertion
-						.getValue1();
+				addPreparedStatement(classStm, roleStm, attributeLiteralStm,
+						attributeStringStm, attributeIntegerStm,
+						attributeDecimalStm, attributeDoubleStm,
+						attributeDateStm, attributeBooleanStm, monitor, ax);
 
-				String uri = subject.getValue();
-				boolean c1isBNode = subject instanceof BNode;
+				/*
+				 * Register non emptyness
+				 */
+				assertNonEmptyness(ax);
 
-				int idx = getAttributeIndex(predicate);
-
-				// The insertion is based on the datatype from TBox
-				String value = object.getValue();
-				String lang = object.getLanguage();
-
-				switch (attributeType) {
-				case BNODE:
-				case OBJECT:
-					// Get the object property assertion
-					String uri2 = object.getValue();
-					boolean c2isBNode = object instanceof BNode;
-
-					if (isInverse(predicate)) {
-
-						/* Swapping values */
-
-						String tmp = uri;
-						uri = uri2;
-						uri2 = tmp;
-
-						boolean tmpb = c1isBNode;
-						c1isBNode = c2isBNode;
-						c2isBNode = tmpb;
-					}
-
-					// Construct the database INSERT statement
-					roleStm.setString(1, uri);
-					roleStm.setString(2, uri2);
-
-					roleStm.setInt(3, idx);
-					roleStm.setBoolean(4, c1isBNode);
-					roleStm.setBoolean(5, c2isBNode);
-					roleStm.addBatch();
-
-					log.debug("inserted: {} {}", uri, uri2);
-					log.debug("inserted: {} property", idx);
-
-					break;
-
-				case LITERAL:
-					setInputStatement(attributeLiteralStm, uri, value, lang,
-							idx, c1isBNode);
-					log.debug("literal");
-					break;
-				case STRING:
-					setInputStatement(attributeStringStm, uri, value, idx,
-							c1isBNode);
-					log.debug("string");
-					break;
-				case INTEGER:
-					if (value.charAt(0) == '+')
-						value = value.substring(1, value.length());
-					setInputStatement(attributeIntegerStm, uri,
-							Integer.parseInt(value), idx, c1isBNode);
-					log.debug("Int");
-					break;
-				case DECIMAL:
-					setInputStatement(attributeDecimalStm, uri,
-							parseBigDecimal(value), idx, c1isBNode);
-					log.debug("BigDecimal");
-					break;
-				case DOUBLE:
-					setInputStatement(attributeDoubleStm, uri,
-							Double.parseDouble(value), idx, c1isBNode);
-					log.debug("Double");
-					break;
-				case DATETIME:
-					setInputStatement(attributeDateStm, uri,
-							parseTimestamp(value), idx, c1isBNode);
-					log.debug("Date");
-					break;
-				case BOOLEAN:
-					value = getBooleanString(value); // PostgreSQL
-														// abbreviates the
-														// boolean value to
-														// 't' and 'f'
-					setInputStatement(attributeBooleanStm, uri,
-							Boolean.parseBoolean(value), idx, c1isBNode);
-					log.debug("boolean");
-					break;
-				case UNSUPPORTED:
-				default:
-					log.warn("Ignoring assertion: {}", ax.toString());
-				}
-				monitor.success(); // advanced the success counter
-
-			} else if (ax instanceof ClassAssertion) {
-				// Get the class assertion
-				ClassAssertion classAssertion = (ClassAssertion) ax;
-				Predicate concept = classAssertion.getConcept();
-
-				// Construct the database INSERT statements
-				ObjectConstant c1 = classAssertion.getObject();
-
-				String uri;
-
-				boolean c1isBNode = c1 instanceof BNode;
-
-				if (c1isBNode)
-					uri = ((BNode) c1).getName();
-				else
-					uri = ((URIConstant) c1).getURI().toString();
-
-				// Construct the database INSERT statement
-				classStm.setString(1, uri);
-				int conceptIndex = getConceptIndex(concept);
-				classStm.setInt(2, conceptIndex);
-				classStm.setBoolean(3, c1isBNode);
-				classStm.addBatch();
-
-				log.debug("inserted: {} {} class", uri, conceptIndex);
-
-				monitor.success(); // advanced the success counter
+			} catch (Exception e) {
+				monitor.fail(ax.getPredicate());
 			}
 
 			// Check if the batch count is already in the batch limit
@@ -1094,6 +986,147 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 		return monitor.getSuccessCount();
 	}
 
+	private void addPreparedStatement(PreparedStatement classStm,
+			PreparedStatement roleStm, PreparedStatement attributeLiteralStm,
+			PreparedStatement attributeStringStm,
+			PreparedStatement attributeIntegerStm,
+			PreparedStatement attributeDecimalStm,
+			PreparedStatement attributeDoubleStm,
+			PreparedStatement attributeDateStm,
+			PreparedStatement attributeBooleanStm, InsertionMonitor monitor,
+			Assertion ax) throws SQLException {
+		if (ax instanceof BinaryAssertion) {
+			// Get the data property assertion
+			BinaryAssertion attributeAssertion = (BinaryAssertion) ax;
+			Predicate predicate = attributeAssertion.getPredicate();
+
+			Constant object = attributeAssertion.getValue2();
+			Predicate.COL_TYPE attributeType = object.getType();
+
+			// Construct the database INSERT statements
+			ObjectConstant subject = (ObjectConstant) attributeAssertion
+					.getValue1();
+
+			String uri = subject.getValue();
+			boolean c1isBNode = subject instanceof BNode;
+
+			int idx = getAttributeIndex(predicate);
+
+			// The insertion is based on the datatype from TBox
+			String value = object.getValue();
+			String lang = object.getLanguage();
+
+			switch (attributeType) {
+			case BNODE:
+			case OBJECT:
+				// Get the object property assertion
+				String uri2 = object.getValue();
+				boolean c2isBNode = object instanceof BNode;
+
+				if (isInverse(predicate)) {
+
+					/* Swapping values */
+
+					String tmp = uri;
+					uri = uri2;
+					uri2 = tmp;
+
+					boolean tmpb = c1isBNode;
+					c1isBNode = c2isBNode;
+					c2isBNode = tmpb;
+				}
+
+				// Construct the database INSERT statement
+				roleStm.setString(1, uri);
+				roleStm.setString(2, uri2);
+
+				roleStm.setInt(3, idx);
+				roleStm.setBoolean(4, c1isBNode);
+				roleStm.setBoolean(5, c2isBNode);
+				roleStm.addBatch();
+
+//				log.debug("inserted: {} {}", uri, uri2);
+//				log.debug("inserted: {} property", idx);
+
+				break;
+			case LITERAL:
+			case LITERAL_LANG:
+				setInputStatement(attributeLiteralStm, uri, value, lang, idx,
+						c1isBNode);
+				log.debug("literal");
+				break;
+			case STRING:
+				setInputStatement(attributeStringStm, uri, value, idx,
+						c1isBNode);
+				log.debug("string");
+				break;
+			case INTEGER:
+				if (value.charAt(0) == '+')
+					value = value.substring(1, value.length());
+				setInputStatement(attributeIntegerStm, uri,
+						Integer.parseInt(value), idx, c1isBNode);
+				log.debug("Int");
+				break;
+			case DECIMAL:
+				setInputStatement(attributeDecimalStm, uri,
+						parseBigDecimal(value), idx, c1isBNode);
+				log.debug("BigDecimal");
+				break;
+			case DOUBLE:
+				setInputStatement(attributeDoubleStm, uri,
+						Double.parseDouble(value), idx, c1isBNode);
+				log.debug("Double");
+				break;
+			case DATETIME:
+				setInputStatement(attributeDateStm, uri, parseTimestamp(value),
+						idx, c1isBNode);
+				log.debug("Date");
+				break;
+			case BOOLEAN:
+				value = getBooleanString(value); // PostgreSQL
+													// abbreviates the
+													// boolean value to
+													// 't' and 'f'
+				setInputStatement(attributeBooleanStm, uri,
+						Boolean.parseBoolean(value), idx, c1isBNode);
+				log.debug("boolean");
+				break;
+			case UNSUPPORTED:
+			default:
+				log.warn("Ignoring assertion: {}", ax.toString());
+			}
+			monitor.success(); // advanced the success counter
+
+		} else if (ax instanceof ClassAssertion) {
+			// Get the class assertion
+			ClassAssertion classAssertion = (ClassAssertion) ax;
+			Predicate concept = classAssertion.getConcept();
+
+			// Construct the database INSERT statements
+			ObjectConstant c1 = classAssertion.getObject();
+
+			String uri;
+
+			boolean c1isBNode = c1 instanceof BNode;
+
+			if (c1isBNode)
+				uri = ((BNode) c1).getName();
+			else
+				uri = ((URIConstant) c1).getURI().toString();
+
+			// Construct the database INSERT statement
+			classStm.setString(1, uri);
+			int conceptIndex = getConceptIndex(concept);
+			classStm.setInt(2, conceptIndex);
+			classStm.setBoolean(3, c1isBNode);
+			classStm.addBatch();
+
+//			log.debug("inserted: {} {} class", uri, conceptIndex);
+
+			monitor.success(); // advanced the success counter
+		}
+	}
+
 	private void closeStatment(PreparedStatement statement) throws SQLException {
 		statement.close();
 	}
@@ -1126,6 +1159,113 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 			indexes.put(concept, idxc);
 		}
 		return idxc.intValue();
+	}
+
+	/***
+	 * We register that the mappings that store data related to this assertion
+	 * is not empty. Given any assertion there are two mappings that become
+	 * non-empty. the "DL" style mapping and the "Triple" style mapping. For
+	 * example, given the assertion Class('mariano'), where mariano is a URI,
+	 * the mappings with the following head become non-empty:
+	 * <p>
+	 * Class(uri(x))
+	 * <p>
+	 * triple(uri(x),uri(rdf:type),uri(Class))
+	 * 
+	 */
+	private void assertNonEmptyness(Assertion assertion) {
+
+
+		if (assertion instanceof BinaryAssertion) {
+			BinaryAssertion ba = (BinaryAssertion) assertion;
+
+			/*
+			 * getting the data for each term
+			 */
+			Predicate p = ba.getPredicate();
+
+			Predicate typeSubject = dfac.getTypePredicate(ba.getValue1()
+					.getType());
+			Predicate typePredicate = dfac.getUriTemplatePredicate(1);
+			Predicate typeObject = dfac.getTypePredicate(ba.getValue2()
+					.getType());
+
+			Function fsubject;
+			if (ba.getValue1().getType() != COL_TYPE.LITERAL_LANG) {
+				fsubject = dfac.getFunctionalTerm(typeSubject,
+						dfac.getVariable("x"));
+			} else {
+				fsubject = dfac.getFunctionalTerm(typeSubject,
+						dfac.getVariable("x"), dfac.getVariable("x2"));
+			}
+
+			Function fpredicate = dfac.getFunctionalTerm(typePredicate,
+					dfac.getURIConstant(p.getName()));
+			Function fobject;
+
+			if (ba.getValue2().getType() != COL_TYPE.LITERAL_LANG) {
+				fobject = dfac.getFunctionalTerm(typeObject,
+						dfac.getVariable("y"));
+			} else {
+				fobject = dfac.getFunctionalTerm(typeObject,
+						dfac.getVariable("y"), dfac.getVariable("y2"));
+			}
+
+			// DL style head
+			Function headDL = dfac.getFunctionalTerm(p, fsubject, fobject);
+
+			// Triple style head
+			Function headTriple = dfac.getFunctionalTerm(
+					OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject, fpredicate,
+					fobject);
+
+			int hash1 = getIndexHash(headDL);
+			emptynessIndexes.put(hash1, false);
+
+			int hash2 = getIndexHash(headTriple);
+			emptynessIndexes.put(hash2, false);
+
+		} else if (assertion instanceof UnaryAssertion) {
+			UnaryAssertion ua = (UnaryAssertion) assertion;
+
+			/*
+			 * getting the data for each term
+			 */
+			Predicate p = ua.getPredicate();
+
+			Predicate typeSubject = dfac.getTypePredicate(ua.getValue()
+					.getType());
+			Predicate typePredicate = dfac.getUriTemplatePredicate(1);
+			Predicate typeObject = dfac.getUriTemplatePredicate(1);
+
+			Function fsubject;
+			if (ua.getValue().getType() != COL_TYPE.LITERAL_LANG) {
+				fsubject = dfac.getFunctionalTerm(typeSubject,
+						dfac.getVariable("x"));
+			} else {
+				fsubject = dfac.getFunctionalTerm(typeSubject,
+						dfac.getVariable("x"), dfac.getVariable("x2"));
+			}
+
+			Function fpredicate = dfac.getFunctionalTerm(typeObject,
+					dfac.getURIConstant(URI.create(OBDAVocabulary.RDF_TYPE)));
+			Function fobject = dfac.getFunctionalTerm(typePredicate,
+					dfac.getURIConstant(p.getName()));
+
+			// DL style head
+			Function headDL = dfac.getFunctionalTerm(p, fsubject);
+
+			// Triple style head
+			Function headTriple = dfac.getFunctionalTerm(
+					OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject, fpredicate,
+					fobject);
+
+			int hash1 = getIndexHash(headDL);
+			emptynessIndexes.put(hash1, false);
+
+			int hash2 = getIndexHash(headTriple);
+			emptynessIndexes.put(hash2, false);
+		}
 	}
 
 	private int getRoleIndex(Predicate role) {
@@ -1175,8 +1315,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 			String value, String lang, int idx, boolean isBnode)
 			throws SQLException {
 
-		log.debug("inserted: {} {}", uri, value);
-		log.debug("inserted: {} {}", lang, idx);
+//		log.debug("inserted: {} {}", uri, value);
+//		log.debug("inserted: {} {}", lang, idx);
 		stm.setString(1, uri);
 		stm.setString(2, value);
 		stm.setString(3, lang);
@@ -1188,8 +1328,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			String value, int idx, boolean isBnode) throws SQLException {
-		log.debug("inserted: {} {}", uri, value);
-		log.debug("inserted: {}", idx);
+//		log.debug("inserted: {} {}", uri, value);
+//		log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setString(2, value);
 		stm.setInt(3, idx);
@@ -1200,8 +1340,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			int value, int idx, boolean isBnode) throws SQLException {
-		log.debug("inserted: {} {}", uri, value);
-		log.debug("inserted: {}", idx);
+//		log.debug("inserted: {} {}", uri, value);
+//		log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setInt(2, value);
 		stm.setInt(3, idx);
@@ -1212,8 +1352,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			BigDecimal value, int idx, boolean isBnode) throws SQLException {
-		log.debug("inserted: {} {}", uri, value);
-		log.debug("inserted: {}", idx);
+//		log.debug("inserted: {} {}", uri, value);
+//		log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setBigDecimal(2, value);
 		stm.setInt(3, idx);
@@ -1224,8 +1364,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			double value, int idx, boolean isBnode) throws SQLException {
-		log.debug("inserted: {} {}", uri, value);
-		log.debug("inserted: {}", idx);
+//		log.debug("inserted: {} {}", uri, value);
+//		log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setDouble(2, value);
 		stm.setInt(3, idx);
@@ -1236,8 +1376,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			Timestamp value, int idx, boolean isBnode) throws SQLException {
-		log.debug("inserted: {} {}", uri, value);
-		log.debug("inserted: {}", idx);
+//		log.debug("inserted: {} {}", uri, value);
+//		log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setTimestamp(2, value);
 		stm.setInt(3, idx);
@@ -1248,8 +1388,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			boolean value, int idx, boolean isBnode) throws SQLException {
-		log.debug("inserted: {} {}", uri, value);
-		log.debug("inserted: {}", idx);
+//		log.debug("inserted: {} {}", uri, value);
+//		log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setBoolean(2, value);
 		stm.setInt(3, idx);
@@ -1687,8 +1827,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 					COL_TYPE.OBJECT, COL_TYPE.STRING);
 			basicmapping = dfac.getRDBMSMappingAxiom(sourceQuery, targetQuery);
 			currentMappings.add(basicmapping);
-			
-			
+
 			/*
 			 * bnode, type
 			 */
@@ -1875,7 +2014,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 					dfac.getVariable("X"));
 			Atom body1 = dfac.getAtom(classuri, dfac.getFunctionalTerm(
 					dfac.getUriTemplatePredicate(1), dfac.getVariable("X")));
-			
+
 			Atom body2 = dfac.getAtom(classuri, dfac.getFunctionalTerm(
 					dfac.getBNodeTemplatePredicate(1), dfac.getVariable("X")));
 
@@ -1885,7 +2024,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 
 			/* FOR URI */
 			CQIE targetQuery1 = dfac.getCQIE(head, body1);
-			
+
 			/* FOR BNODE */
 			CQIE targetQuery2 = dfac.getCQIE(head, body2);
 
@@ -1899,20 +2038,19 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 			sql1.append(" WHERE ");
 			sql1.append(" ISBNODE = FALSE AND (");
 
-			
 			/* FOR BNODE */
-			
+
 			StringBuffer sql2 = new StringBuffer();
 			sql2.append(select_mapping_class);
 			sql2.append(" WHERE ");
 			sql2.append(" ISBNODE = TRUE AND (");
-			
+
 			/*
 			 * Getting the indexed node (from the pureIsa dag)
 			 */
 			DAGNode indexedNode = pureIsa.getClassNode((OClass) classNode
 					.getDescription());
-			
+
 			List<Interval> intervals = indexedNode.getRange().getIntervals();
 			appendIntervalString(intervals.get(0), sql1);
 
@@ -1921,14 +2059,13 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 				appendIntervalString(intervals.get(intervali), sql1);
 			}
 			sql1.append(")");
-			
-			
+
 			/* FOR BNODE */
-			
+
 			OBDAMappingAxiom basicmapping = dfac.getRDBMSMappingAxiom(
 					sql1.toString(), targetQuery1);
 			currentMappings.add(basicmapping);
-			
+
 			appendIntervalString(intervals.get(0), sql2);
 
 			for (int intervali = 1; intervali < intervals.size(); intervali++) {
@@ -1936,12 +2073,15 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 				appendIntervalString(intervals.get(intervali), sql2);
 			}
 			sql2.append(")");
-			
-			basicmapping = dfac.getRDBMSMappingAxiom(
-					sql2.toString(), targetQuery2);
+
+			basicmapping = dfac.getRDBMSMappingAxiom(sql2.toString(),
+					targetQuery2);
 			currentMappings.add(basicmapping);
-			
-			
+
+			// TODO
+			// HERE WE ARE MISSING ALL THE CASES FOR BNODES!
+			// EXISTS R REQUIRES CASES WHERE THE PROJECTED VAR IS A URI ADN
+			// A BNODE
 
 			/*
 			 * Rest mappings 1: computing mappings for all exists R children
@@ -2043,10 +2183,6 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 						sqlattribute.toString(), targetQuery1);
 				currentMappings.add(existsMapping);
 			}
-			
-			
-			
-			
 
 			/*
 			 * Generating mappings for the equivalent nodes
@@ -2313,6 +2449,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 
 		buffer.append(select_mapping_class_role_left);
 		buffer.append(" WHERE ");
+		buffer.append(" ISBNODE = FALSE AND (");
 
 		boolean multipleIntervals = false; // A flag to tell there are more than
 											// one SI intervals.
@@ -2322,6 +2459,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 			boolean isObjectProperty = property.getPredicate().getType(1) == COL_TYPE.OBJECT;
 			if (isObjectProperty) {
 				if (!property.isInverse()) {
+
 					Property role = ofac.createProperty(
 							property.getPredicate(), false);
 					DAGNode indexedNode = pureIsa.getRoleNode(role);
@@ -2340,6 +2478,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 				}
 			}
 		}
+		buffer.append(")");
 		return hasRoleNode;
 	}
 
@@ -2364,6 +2503,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 
 		buffer.append(select_mapping_class_role_right);
 		buffer.append(" WHERE ");
+		buffer.append(" ISBNODE2 = FALSE AND (");
 
 		boolean multipleIntervals = false; // A flag to tell there are more than
 											// one SI intervals.
@@ -2391,6 +2531,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 				}
 			}
 		}
+		buffer.append(")");
+
 		return hasInverseRoleNode;
 	}
 
@@ -3462,4 +3604,55 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 			}
 		}
 	}
+
+	@Override
+	public boolean isEmpty(Function atom) {
+		int index = getIndexHash(atom);
+
+		Boolean empty = emptynessIndexes.get(index);
+		if (empty == null)
+			return true;
+		return empty;
+	}
+
+	/***
+	 * A hashing for indexing functions. Implemented using String hashing code.
+	 * 
+	 * @param f
+	 * @return
+	 */
+	public static int getIndexHash(Function f) {
+		int hash = 0;
+
+		hash = f.getPredicate().hashCode() * (31 ^ f.getArity());
+		for (int i = 0; i < f.getArity(); i++) {
+			NewLiteral term = f.getTerm(i);
+			int termhash = getHash((Function) term);
+			hash += termhash * (31 ^ (f.getArity() - (i + 1)));
+		}
+
+		/*
+		 * Compensating in the hash for the arity of the function. We asume
+		 * functions of arity 3 (triple) other functions need to be padded,
+		 * hence the xtra sums.
+		 */
+		if (f.getArity() == 1) {
+			hash += 31 ^ 1;
+			hash += 31 ^ 0;
+		} else if (f.getArity() == 2) {
+			hash += 31 ^ 0;
+		}
+
+		return hash;
+	}
+
+	private static int getHash(Function f) {
+		int hash;
+		if (f.getReferencedVariables().isEmpty()) {
+			hash = f.hashCode();
+		} else
+			hash = (f.getPredicate().hashCode() + f.getTerms().size());
+		return hash;
+	}
+
 }

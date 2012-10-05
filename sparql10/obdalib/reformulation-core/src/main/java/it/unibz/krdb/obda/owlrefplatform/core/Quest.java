@@ -77,7 +77,7 @@ public class Quest implements Serializable {
 	 */
 
 	/* The active ABox repository, might be null */
-	protected RDBMSDataRepositoryManager dataRepository = null;
+	protected RDBMSSIRepositoryManager dataRepository = null;
 
 	// /* The query answering engine */
 	// private TechniqueWrapper techwrapper = null;
@@ -495,10 +495,6 @@ public class Quest implements Serializable {
 					dataRepository = new RDBMSSIRepositoryManager(
 							reformulationOntology.getVocabulary());
 
-				} else if (dbType.equals(QuestConstants.DIRECT)) {
-					dataRepository = new RDBMSDirectDataRepositoryManager(
-							reformulationOntology.getVocabulary());
-
 				} else {
 					throw new Exception(
 							dbType
@@ -587,7 +583,6 @@ public class Quest implements Serializable {
 					unfoldingOBDAModel.getMappings(sourceId), metadata);
 			unfoldingProgram = analyzer.constructDatalogProgram();
 
-			
 			unfoldingProgram = DatalogNormalizer
 					.pushEqualities(unfoldingProgram);
 
@@ -638,7 +633,7 @@ public class Quest implements Serializable {
 			for (CQIE mapping : unfoldingProgram.getRules()) {
 				Set<Variable> headvars = mapping.getHead()
 						.getReferencedVariables();
-				
+
 				for (Variable var : headvars) {
 					Atom notnull = fac.getIsNotNullAtom(var);
 					mapping.getBody().add(notnull);
@@ -658,13 +653,18 @@ public class Quest implements Serializable {
 			/*
 			 * Collecting primary key data
 			 */
-			Map<Predicate, List<Integer>> pkeys = DBMetadata.extractPKs(metadata, unfoldingProgram);
+			Map<Predicate, List<Integer>> pkeys = DBMetadata.extractPKs(
+					metadata, unfoldingProgram);
 
 			/*
 			 * Setting up the unfolder and SQL generation
 			 */
 
-			unfolder = new DatalogUnfolder(unfoldingProgram, pkeys);
+			if (dbType.equals(QuestConstants.SEMANTIC))
+				unfolder = new DatalogUnfolder(unfoldingProgram, pkeys, dataRepository);
+			else
+				unfolder = new DatalogUnfolder(unfoldingProgram, pkeys);
+
 			JDBCUtility jdbcutil = new JDBCUtility(
 					datasource
 							.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER));
@@ -751,9 +751,8 @@ public class Quest implements Serializable {
 				 */
 				terms.add(currenthead.getTerm(0));
 				Function rdfTypeConstant = fac
-						.getFunctionalTerm(
-								fac.getUriTemplatePredicate(1),
-								fac.getURIConstant(URI
+						.getFunctionalTerm(fac.getUriTemplatePredicate(1), fac
+								.getURIConstant(URI
 										.create(OBDAVocabulary.RDF_TYPE)));
 				terms.add(rdfTypeConstant);
 
