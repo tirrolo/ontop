@@ -25,6 +25,7 @@
 		<module>obdalib-protege41</module>
 		<module>quest-owlapi3</module>
 		<module>quest-distribution</module>
+		<moduel>quest-sparql-compliance</module>
 	</modules>
 
 	<profiles>
