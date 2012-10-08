@@ -253,13 +253,14 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				else //(c.getArity() == 2)
 					twf.add(getExtAtom(c.getPredicate(), r0, r0, exts));
 			}
-			List<Atom> twfbody = twf.getBody();			
-			for (Atom a : getGenConAtoms(tw.getGenerator())) {
-				List<Atom> twfa = new ArrayList<Atom>(twfbody.size() + 1); 
-				twfa.add(getExtAtom(a, r0, exts));
-				twfa.addAll(twfbody);
-				twfs.add(twfa);
-			}
+			List<Atom> twfbody = twf.getBody();		
+			for (TreeWitnessGenerator gen : tw.getGenerators())
+				for (Atom a : getGenConAtoms(gen)) {
+					List<Atom> twfa = new ArrayList<Atom>(twfbody.size() + 1); 
+					twfa.add(getExtAtom(a, r0, exts));
+					twfa.addAll(twfbody);
+					twfs.add(twfa);
+				}
 			tw.setFormula(twfs);
 		}
 		

@@ -92,6 +92,7 @@ public class QueryFolding {
 		roots.clear();
 		internalRootAtoms.clear();
 		internalDomain = Collections.singleton(t);
+		terms = null;
 		status = true;
 		
 		for (Edge edge : cc.getEdges()) {
@@ -135,32 +136,18 @@ public class QueryFolding {
 		return internalRootAtoms;
 	}
 	
-	private Set<Term> domain;
+	private TreeWitness.TermCover terms;
 	
-	public TreeWitness getTreeWitness(TreeWitnessGenerator g, Set<Variable> quantifiedVariables) {
-		if (domain == null) {
-			domain = new HashSet<Term>(internalDomain);
+	public TreeWitness.TermCover getTerms() {
+		if (terms == null) {
+			Set<Term> domain = new HashSet<Term>(internalDomain);
 			domain.addAll(roots);
+			terms = new TreeWitness.TermCover(domain, roots);
 		}
-		return new TreeWitness(g, roots, quantifiedVariables.containsAll(roots), rootAtoms, domain); 	
-	}
-/*	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof QueryFolding) {
-			QueryFolding other = (QueryFolding)obj;
-			assert(status && other.status);
-			return this.roots.equals(other.roots) && 
-				   this.internalDomain.equals(other.internalDomain) && 
-				   this.properties.equals(other.properties) && 
-				   this.internalRootAtoms.equals(other.internalRootAtoms);			
-		}
-		return false;	
+		return terms;
 	}
 	
-	@Override 
-	public int hashCode() {
-		return roots.hashCode() ^ internalDomain.hashCode() ^ properties.hashCode() ^ internalRootAtoms.hashCode();
+	public TreeWitness getTreeWitness(Set<TreeWitnessGenerator> twg, Set<Variable> quantifiedVariables) {
+		return new TreeWitness(twg, getTerms(), quantifiedVariables.containsAll(roots), rootAtoms); 	
 	}
-*/
 }
