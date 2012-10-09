@@ -31,13 +31,14 @@ public class TreeWitnessReasonerLite {
 
 	// reflexive and transitive closure of the relations
 	private Map<BasicClassDescription, Set<BasicClassDescription>> subconcepts; 
+	private Map<TreeWitnessGenerator, Set<BasicClassDescription>> twgSubconcepts; 
 	private Map<Property, Set<Property>> subproperties; 
 
 	// caching OClasses and Properties 
 	private Map<Predicate, Set<BasicClassDescription>> predicateSubconcepts;
 	private Map<Predicate, Set<Property>> predicateSubproperties;
 	
-	private Collection<TreeWitnessGenerator> generatorsSet;
+	private Collection<TreeWitnessGenerator> generators;
 
 	private static OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
 	private static final Logger log = LoggerFactory.getLogger(TreeWitnessReasonerLite.class);	
@@ -49,8 +50,9 @@ public class TreeWitnessReasonerLite {
 		this.tbox = ontology;
 		log.debug("SET ONTOLOGY " + ontology);
 
-		Map<PropertySomeClassRestriction, TreeWitnessGenerator> generators = new HashMap<PropertySomeClassRestriction, TreeWitnessGenerator>();
+		Map<PropertySomeClassRestriction, TreeWitnessGenerator> gens = new HashMap<PropertySomeClassRestriction, TreeWitnessGenerator>();
 		subconcepts = new HashMap<BasicClassDescription, Set<BasicClassDescription>>();
+		twgSubconcepts = new HashMap<TreeWitnessGenerator, Set<BasicClassDescription>>();
 		subproperties = new HashMap<Property, Set<Property>>();
 		
 		predicateSubconcepts = new HashMap<Predicate, Set<BasicClassDescription>>();
@@ -66,12 +68,12 @@ public class TreeWitnessReasonerLite {
 				BasicClassDescription subConcept = (BasicClassDescription)sax.getSub();
 				ClassDescription superConcept = sax.getSuper();
 				if (superConcept instanceof PropertySomeClassRestriction) {
-					addGeneratingConceptAxiom(generators, subConcept, (PropertySomeClassRestriction)superConcept);
+					addGeneratingConceptAxiom(gens, subConcept, (PropertySomeClassRestriction)superConcept);
 				}
 				else if (superConcept instanceof PropertySomeRestriction) {
 					PropertySomeRestriction some = (PropertySomeRestriction)superConcept;
 					PropertySomeClassRestriction genConcept = ontFactory.createPropertySomeClassRestriction(some.getPredicate(), some.isInverse(), owlThing);
-					addGeneratingConceptAxiom(generators, subConcept, genConcept);
+					addGeneratingConceptAxiom(gens, subConcept, genConcept);
 					addSubConcept(subConcept, some);
 				}
 				else 
@@ -131,7 +133,7 @@ public class TreeWitnessReasonerLite {
 				log.debug("SATURATED SUBCONCEPTS OF " +  k.getKey() + " ARE " + k.getValue());
 		}
 			
-		generatorsSet = generators.values();
+		generators = gens.values();
 		
 		/*
 		// SATURATE GENERATING AXIOMS
@@ -224,8 +226,19 @@ public class TreeWitnessReasonerLite {
 		return s;
 	}
 
+	public Set<BasicClassDescription> getSubConcepts(TreeWitnessGenerator twg) {
+		Set<BasicClassDescription> s = twgSubconcepts.get(twg);
+		if (s == null) {
+			s = new HashSet<BasicClassDescription>();
+			for (BasicClassDescription con : twg.getConcepts())
+				s.addAll(getSubConcepts(con));
+			twgSubconcepts.put(twg, s);
+		}
+		return s;
+	}
+	
 	public Collection<TreeWitnessGenerator> getGenerators() {
-		return generatorsSet;
+		return generators;
 	}
 	
 	public Collection<BasicClassDescription> getMaximalBasicConcepts(Collection<TreeWitnessGenerator> gens) {

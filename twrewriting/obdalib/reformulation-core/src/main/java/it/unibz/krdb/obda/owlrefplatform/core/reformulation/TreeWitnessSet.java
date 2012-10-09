@@ -87,7 +87,7 @@ public class TreeWitnessSet {
 		Queue<TreeWitness> working = new LinkedList<TreeWitness>();
 
 		for (TreeWitness tw : tws) 
-			if (tw.allRootsQuantified())  {
+			if (isTreeWitnessMergeable(tw))  {
 				working.add(tw);			
 				mergeable.add(tw);
 			}
@@ -104,7 +104,7 @@ public class TreeWitnessSet {
 			while (!delta.isEmpty()) {
 				TreeWitness tw = delta.poll();
 				tws.add(tw);
-				if (tw.allRootsQuantified())  {
+				if (isTreeWitnessMergeable(tw))  {
 					working.add(tw);			
 					mergeable.add(tw);
 				}
@@ -114,6 +114,27 @@ public class TreeWitnessSet {
 		log.debug("TREE WITNESSES FOUND: " + tws.size());
 		for (TreeWitness tw : tws) 
 			log.debug(" " + tw);
+	}
+	
+	private boolean isTreeWitnessMergeable(TreeWitness tw) {
+		if (!tw.allRootsQuantified())
+			return false;
+		
+		Set<BasicClassDescription> rootConcepts = null;
+		for (Term root : tw.getRoots()) {
+			Set<BasicClassDescription> subc = propertiesCache.getTermConcepts(root);
+			if (subc == null)
+				continue;
+			
+			if (rootConcepts == null)
+				rootConcepts = new HashSet<BasicClassDescription>(subc);
+			else
+				rootConcepts.retainAll(subc);
+			if (rootConcepts.isEmpty())
+				return false;
+		}
+		tw.setRootConcepts(rootConcepts);
+		return true;
 	}
 	
 	private void saturateTreeWitnesses(QueryFolding qf) { 
@@ -132,7 +153,11 @@ public class TreeWitnessSet {
 					} 
 				
 				QueryFolding qf2 = new QueryFolding(qf);
-				qf2.extend(edge.getTerm1(), propertiesCache.getEdgeProperties(edge, edge.getTerm1()),  edge.getL1Atoms(), edge.getL0Atoms());
+				propertiesCache.setLoopAtoms(edge.getTerm1(), edge.getL1Atoms());
+				propertiesCache.setLoopAtoms(edge.getTerm0(), edge.getL0Atoms());
+
+				qf2.extend(edge.getTerm1(), propertiesCache.getEdgeProperties(edge, edge.getTerm1()),  
+						edge.getL1Atoms(), propertiesCache.getTermConcepts(edge.getTerm0()));
 				if (qf2.isValid()) {
 					log.debug("    ATTACHING A HANDLE " + edge);
 					saturateTreeWitnesses(qf2);  
@@ -150,7 +175,11 @@ public class TreeWitnessSet {
 					} 
 
 				QueryFolding qf2 = new QueryFolding(qf);
-				qf2.extend(edge.getTerm0(), propertiesCache.getEdgeProperties(edge, edge.getTerm0()),  edge.getL0Atoms(), edge.getL1Atoms());
+				propertiesCache.setLoopAtoms(edge.getTerm1(), edge.getL1Atoms());
+				propertiesCache.setLoopAtoms(edge.getTerm0(), edge.getL0Atoms());
+				
+				qf2.extend(edge.getTerm0(), propertiesCache.getEdgeProperties(edge, edge.getTerm0()),  
+									edge.getL0Atoms(), propertiesCache.getTermConcepts(edge.getTerm1()));
 				if (qf2.isValid()) {
 					log.debug("    ATTACHING A HANDLE " + edge);
 					saturateTreeWitnesses(qf2);  
@@ -179,8 +208,15 @@ public class TreeWitnessSet {
 	// can return null if there are no applicable generators!
 	
 	private Collection<TreeWitnessGenerator> getTreeWitnessGenerators(QueryFolding qf) {
-		Collection<TreeWitnessGenerator> twg = null;
+		if (reasoner.getGenerators().isEmpty())
+			return null;
 		
+		Set<BasicClassDescription> subc = qf.getInternalRootConcepts();
+		if ((subc != null) && subc.isEmpty())
+			return null;
+		
+		Collection<TreeWitnessGenerator> twg = null;
+
 		log.debug("CHECKING WHETHER THE FOLDING " + qf + " CAN BE GENERATED: "); 
 		for (TreeWitnessGenerator g : reasoner.getGenerators()) {
 			log.debug("      CHECKING " + g);		
@@ -191,7 +227,7 @@ public class TreeWitnessSet {
 				continue;
 			}
 			
-			if (!isGenerated(g, qf.getInternalRootAtoms(), qf.getInteriorTreeWitnesses()))
+			if (!isGenerated(g, subc, qf.getInteriorTreeWitnesses()))
 				continue;
 			
 			if (twg == null) 
@@ -202,7 +238,14 @@ public class TreeWitnessSet {
 		return twg;
 	}
 	
-	private boolean isGenerated(TreeWitnessGenerator g, Set<Atom> endtype, Collection<TreeWitness> tws) {
+	private boolean isGenerated(TreeWitnessGenerator g, Set<BasicClassDescription> subc, Collection<TreeWitness> tws) {
+		if ((subc != null) && !subc.contains(g.getFiller()) && !subc.contains(g.getRoleEndType())) {
+			 log.debug("        ENDTYPE TOO SPECIFIC: " + subc + " FOR " + g.getFiller() + " AND " + g.getRoleEndType());
+			 return false;			
+		}
+		else
+			 log.debug("        ENDTYPE IS FINE: " + subc + " FOR " + g.getFiller());
+/*		
 		for (Atom a : endtype) {
 			 if (a.getArity() != 1)
 				 return false;        // binary predicates R(x,x) cannot be matched to the anonymous part
@@ -215,16 +258,16 @@ public class TreeWitnessSet {
 			 else
 				 log.debug("        ENDTYPE IS FINE: " + a.getPredicate() + " FOR " + g.getFiller());
 		}
-
+*/
 		for (TreeWitness tw : tws) {
 			boolean matched = false;
-			for (BasicClassDescription con : reasoner.getMaximalBasicConcepts(tw.getGenerators())) {
-				Set<BasicClassDescription> subcons = reasoner.getSubConcepts(con);
+			for (TreeWitnessGenerator twg : tw.getGenerators()) {
+				Set<BasicClassDescription> subcons = reasoner.getSubConcepts(twg);
 				if (!subcons.contains(g.getFiller()) && !subcons.contains(g.getRoleEndType())) {
-					log.debug("        ENDTYPE TOO SPECIFIC: " + con + " FOR " + g.getFiller() + " AND " + g.getRoleEndType());
+					log.debug("        ENDTYPE TOO SPECIFIC: " + twg + " FOR " + g.getFiller() + " AND " + g.getRoleEndType());
 				}
 				else {
-					log.debug("        ENDTYPE IS FINE: " + con + " FOR " + g.getFiller());
+					log.debug("        ENDTYPE IS FINE: " + twg + " FOR " + g.getFiller());
 					matched = true;
 					break;
 				}
@@ -234,16 +277,53 @@ public class TreeWitnessSet {
 		}
 		return true;
 	}
+
+	// null means no constraints
+	
+	public static Set<BasicClassDescription> getSubConcepts(TreeWitnessReasonerLite reasoner, Set<Atom> atoms) {
+		Set<BasicClassDescription> subc = null;
+		for (Atom a : atoms) {
+			 if (a.getArity() != 1)
+				 return Collections.EMPTY_SET;   // binary predicates R(x,x) cannot be matched to the anonymous part
+
+			 Set<BasicClassDescription> subcons = reasoner.getSubConcepts(a.getPredicate());
+			 if (subc == null) 
+				 subc = new HashSet<BasicClassDescription>(subcons);
+			 else 
+				 subc.retainAll(subcons);
+			 
+			 if (subc.isEmpty())
+				 return Collections.EMPTY_SET;
+		}
+		return subc;
+	}
+	
 	
 	static class PropertiesCache {
 		private Map<Edge, Set<Property>> prop0 = new HashMap<Edge, Set<Property>>();
 		private Map<Edge, Set<Property>> prop1 = new HashMap<Edge, Set<Property>>();
+		private Map<Term, Set<BasicClassDescription>> concept = new HashMap<Term, Set<BasicClassDescription>>();
+		private Map<Term, Set<Atom>> loopAtoms = new HashMap<Term, Set<Atom>> ();
 
 		private TreeWitnessReasonerLite reasoner;
 		
 		private PropertiesCache(TreeWitnessReasonerLite reasoner) {
 			this.reasoner = reasoner;
 		}
+		
+		public void setLoopAtoms(Term t, Set<Atom> loop) {
+			loopAtoms.put(t, loop);
+		}
+		
+		public Set<BasicClassDescription> getTermConcepts(Term t) {
+			if (concept.containsKey(t))
+				return concept.get(t);
+			
+			Set<BasicClassDescription> subconcepts = getSubConcepts(reasoner, loopAtoms.get(t));
+			concept.put(t, subconcepts);	
+			return subconcepts;
+		}
+		
 		
 		public Set<Property> getEdgeProperties(Edge edge, Term root) {
 			Map<Edge, Set<Property>> props = edge.getTerm0().equals(root) ? prop0 : prop1;
@@ -273,20 +353,24 @@ public class TreeWitnessSet {
 			return properties;
 		}
 	}
+	
+	
 
 	public Set<TreeWitnessGenerator> getGeneratorsOfDetachedCC() {		
 		Set<TreeWitnessGenerator> generators = new HashSet<TreeWitnessGenerator>();
 		
 		if (cc.isDegenerate()) { // do not remove the curly brackets -- dangling else otherwise
-			for (TreeWitnessGenerator some : reasoner.getGenerators())
-				if (isGenerated(some, cc.getEdges().get(0).getL0Atoms(), Collections.EMPTY_LIST)) 
-					generators.add(some);					
+			Set<BasicClassDescription> subc = getSubConcepts(reasoner, cc.getEdges().get(0).getL0Atoms());
+			for (TreeWitnessGenerator twg : reasoner.getGenerators())
+				if (isGenerated(twg, subc, Collections.EMPTY_LIST)) 
+					generators.add(twg);					
 		} else {
 			for (TreeWitness tw : tws) 
 				if (tw.getDomain().containsAll(cc.getVariables())) {
 					log.debug("TREE WITNESS " + tw + " COVERS THE QUERY");
+					Set<BasicClassDescription> subc = getSubConcepts(reasoner, tw.getRootAtoms());
 					for (TreeWitnessGenerator twg : reasoner.getGenerators())
-						if (isGenerated(twg, tw.getRootAtoms(), Collections.singleton(tw))) 
+						if (isGenerated(twg, subc, Collections.singleton(tw))) 
 							generators.add(twg);
 				}
 		}

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.ontology.BasicClassDescription;
 
 /**
  * TreeWitness: universal tree witnesses as in the KR 2012 paper
@@ -34,6 +35,8 @@ public class TreeWitness {
 	                                          // in the canonical model of the TBox
 	private boolean allRootsQuantified; // all the roots are quantified variables
 	
+	private Set<BasicClassDescription> rootConcepts;
+	
 	private List<List<Atom>> twfs;  // tw-formula: disjunction of conjunctions of atoms
 
 	public TreeWitness(Collection<TreeWitnessGenerator> gens, TermCover terms, boolean allRootsQuantified, Set<Atom> rootAtoms) {
@@ -51,7 +54,15 @@ public class TreeWitness {
 	public List<List<Atom>> getFormula() {
 		return twfs;
 	}
+	
+	public void setRootConcepts(Set<BasicClassDescription> rootConcepts) {
+		this.rootConcepts = rootConcepts;
+	}
 
+	public Set<BasicClassDescription> getRootConcepts() {
+		return rootConcepts;
+	}
+	
 	/**
 	 * Set<Term> getRoots()
 	 * 

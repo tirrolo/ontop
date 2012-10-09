@@ -269,7 +269,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	private double time = 0;
 	
 	@Override
-	public OBDAQuery rewrite(OBDAQuery input) throws OBDAException {
+	public OBDAQuery rewrite(OBDAQuery input) {
 		
 		double startime = System.currentTimeMillis();
 		
@@ -308,6 +308,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			}
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		

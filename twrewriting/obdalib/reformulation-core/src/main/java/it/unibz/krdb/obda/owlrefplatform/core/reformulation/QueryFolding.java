@@ -3,6 +3,7 @@ package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.ontology.BasicClassDescription;
 import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Edge;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessSet.PropertiesCache;
@@ -21,7 +22,8 @@ public class QueryFolding {
 	private Set<Property> properties; 
 	private Set<Atom> rootAtoms; 
 	private Set<Term> roots; 
-	private Set<Atom> internalRootAtoms; 
+	//private Set<Atom> internalRootAtoms; 
+	private Set<BasicClassDescription> internalRootConcepts;
 	private Set<Term> internalRoots;
 	private Set<Term> internalDomain;
 	private List<TreeWitness> interior;
@@ -33,7 +35,7 @@ public class QueryFolding {
 		properties = new HashSet<Property>(); 
 		rootAtoms = new HashSet<Atom>(); 
 		roots = new HashSet<Term>(); 
-		internalRootAtoms = new HashSet<Atom>(); 
+		internalRootConcepts = null; 
 		internalRoots = new HashSet<Term>();
 		internalDomain = new HashSet<Term>();
 		interior = Collections.EMPTY_LIST; // in-place QueryFolding for one-step TreeWitnesses, 
@@ -44,7 +46,8 @@ public class QueryFolding {
 		properties = new HashSet<Property>(); 
 		rootAtoms = new HashSet<Atom>(); 
 		roots = new HashSet<Term>(); 
-		internalRootAtoms = new HashSet<Atom>(tw.getRootAtoms()); 
+		internalRootConcepts = (tw.getRootConcepts() == null) ? 
+											null : new HashSet<BasicClassDescription>(tw.getRootConcepts()); 
 		internalRoots = new HashSet<Term>(tw.getRoots());
 		internalDomain = new HashSet<Term>(tw.getDomain());
 		interior = new LinkedList<TreeWitness>();
@@ -55,7 +58,8 @@ public class QueryFolding {
 		properties = new HashSet<Property>(qf.properties); 
 		rootAtoms = new HashSet<Atom>(qf.rootAtoms); 
 		roots = new HashSet<Term>(qf.roots); 
-		internalRootAtoms = new HashSet<Atom>(qf.internalRootAtoms); 
+		internalRootConcepts = (qf.internalRootConcepts == null) ?  
+												null : new HashSet<BasicClassDescription>(qf.internalRootConcepts); 
 		internalRoots = new HashSet<Term>(qf.internalRoots);
 		internalDomain = new HashSet<Term>(qf.internalDomain);
 		interior = new LinkedList<TreeWitness>(qf.interior);
@@ -67,23 +71,45 @@ public class QueryFolding {
 		QueryFolding c = new QueryFolding(this);
 		c.internalRoots.addAll(tw.getRoots());
 		c.internalDomain.addAll(tw.getDomain());
-		c.internalRootAtoms.addAll(tw.getRootAtoms());
 		c.interior.add(tw);
-		// TODO: set status=false if the generators of interior are inconsistent
+		c.addToInternalRootConcepts(tw.getRootConcepts());
 		return c;
 	}
 	
-	public void extend(Term root, Set<Property> props, Set<Atom> rootLoop, Set<Atom> intRootLoop) {
+	private boolean addToInternalRootConcepts(Set<BasicClassDescription> subc) {
+		if (subc == null)
+			return true;
+					
+		if ((subc != null) && subc.isEmpty()) {
+			status = false;
+			return false;
+		}
+		
+		if (internalRootConcepts == null)
+			internalRootConcepts = new HashSet<BasicClassDescription>(subc);
+		else
+			internalRootConcepts.retainAll(subc);
+		
+		if (internalRootConcepts.isEmpty()) 
+			status = false;
+		
+		return status;
+	}
+	
+	public void extend(Term root, Set<Property> props, Set<Atom> rootLoop, Set<BasicClassDescription> intRootLoop) {
 		assert(status);
 		
-		for (Atom a: intRootLoop)
-			if (a.getArity() == 2) {
-				log.debug("        NO LOOPS ALLOWED IN INTERNAL TERMS: " + a);
-				status = false;
-				return; 
-			}
+//		for (Atom a: intRootLoop) {
+//			if (a.getArity() == 2) {
+//				log.debug("        NO LOOPS ALLOWED IN INTERNAL TERMS: " + a);
+//				status = false;
+//				return; 
+//			}
+//		}
+		if (!addToInternalRootConcepts(intRootLoop))
+			return;
 		
-		internalRootAtoms.addAll(intRootLoop);
+		//internalRootAtoms.addAll(intRootLoop);
 		roots.add(root);
 		rootAtoms.addAll(rootLoop);
 
@@ -100,18 +126,21 @@ public class QueryFolding {
 		properties.clear();
 		rootAtoms.clear();
 		roots.clear();
-		internalRootAtoms.clear();
+		internalRootConcepts = null; 
 		internalDomain = Collections.singleton(t);
 		terms = null;
 		status = true;
 		
 		for (Edge edge : cc.getEdges()) {
+			propertiesCache.setLoopAtoms(edge.getTerm1(), edge.getL1Atoms());
+			propertiesCache.setLoopAtoms(edge.getTerm0(), edge.getL0Atoms());
+			
 			if (t.equals(edge.getTerm0()))
 				extend(edge.getTerm1(), propertiesCache.getEdgeProperties(edge, edge.getTerm1()),  
-										edge.getL1Atoms(), edge.getL0Atoms());
+										edge.getL1Atoms(), propertiesCache.getTermConcepts(edge.getTerm0()));
 			else if (t.equals(edge.getTerm1()))
 				extend(edge.getTerm0(), propertiesCache.getEdgeProperties(edge, edge.getTerm0()),  
-										edge.getL0Atoms(), edge.getL1Atoms());
+										edge.getL0Atoms(), propertiesCache.getTermConcepts(edge.getTerm1()));
 			
 			if (!status)
 				return false;
@@ -120,7 +149,7 @@ public class QueryFolding {
 		// TODO: EXTEND ROOT ATOMS BY ALL-ROOT EDGES
 		
 		log.debug("  PROPERTIES " + properties);
-		log.debug("  ENDTYPE " + internalRootAtoms);
+		log.debug("  ENDTYPE " + internalRootConcepts);
 		log.debug("  ROOTTYPE " + rootAtoms);
 		
 		return true;
@@ -142,8 +171,8 @@ public class QueryFolding {
 		return internalRoots.contains(t0) && !internalDomain.contains(t1) && !roots.contains(t1);
 	}
 	
-	public Set<Atom> getInternalRootAtoms() {
-		return internalRootAtoms;
+	public Set<BasicClassDescription> getInternalRootConcepts() {
+		return internalRootConcepts;
 	}
 	
 	public Collection<TreeWitness> getInteriorTreeWitnesses() {
