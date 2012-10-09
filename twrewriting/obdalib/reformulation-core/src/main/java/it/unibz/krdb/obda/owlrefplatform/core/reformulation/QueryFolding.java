@@ -7,8 +7,11 @@ import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Edge;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessSet.PropertiesCache;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -21,6 +24,7 @@ public class QueryFolding {
 	private Set<Atom> internalRootAtoms; 
 	private Set<Term> internalRoots;
 	private Set<Term> internalDomain;
+	private List<TreeWitness> interior;
 	private boolean status = true;
 
 	private static final Logger log = LoggerFactory.getLogger(QueryFolding.class);
@@ -32,6 +36,8 @@ public class QueryFolding {
 		internalRootAtoms = new HashSet<Atom>(); 
 		internalRoots = new HashSet<Term>();
 		internalDomain = new HashSet<Term>();
+		interior = Collections.EMPTY_LIST; // in-place QueryFolding for one-step TreeWitnesses, 
+		                                   //             which have no interior TreeWitnesses
 	}
 	
 	public QueryFolding(TreeWitness tw) {
@@ -41,6 +47,8 @@ public class QueryFolding {
 		internalRootAtoms = new HashSet<Atom>(tw.getRootAtoms()); 
 		internalRoots = new HashSet<Term>(tw.getRoots());
 		internalDomain = new HashSet<Term>(tw.getDomain());
+		interior = new LinkedList<TreeWitness>();
+		interior.add(tw);
 	}
 
 	public QueryFolding(QueryFolding qf) {
@@ -50,6 +58,7 @@ public class QueryFolding {
 		internalRootAtoms = new HashSet<Atom>(qf.internalRootAtoms); 
 		internalRoots = new HashSet<Term>(qf.internalRoots);
 		internalDomain = new HashSet<Term>(qf.internalDomain);
+		interior = new LinkedList<TreeWitness>(qf.interior);
 		status = qf.status;
 	}
 
@@ -59,7 +68,8 @@ public class QueryFolding {
 		c.internalRoots.addAll(tw.getRoots());
 		c.internalDomain.addAll(tw.getDomain());
 		c.internalRootAtoms.addAll(tw.getRootAtoms());
-		// what about generators?
+		c.interior.add(tw);
+		// TODO: set status=false if the generators of interior are inconsistent
 		return c;
 	}
 	
@@ -136,6 +146,10 @@ public class QueryFolding {
 		return internalRootAtoms;
 	}
 	
+	public Collection<TreeWitness> getInteriorTreeWitnesses() {
+		return interior;
+	}
+	
 	private TreeWitness.TermCover terms;
 	
 	public TreeWitness.TermCover getTerms() {
@@ -147,7 +161,7 @@ public class QueryFolding {
 		return terms;
 	}
 	
-	public TreeWitness getTreeWitness(Set<TreeWitnessGenerator> twg, Set<Variable> quantifiedVariables) {
+	public TreeWitness getTreeWitness(Collection<TreeWitnessGenerator> twg, Set<Variable> quantifiedVariables) {
 		return new TreeWitness(twg, getTerms(), quantifiedVariables.containsAll(roots), rootAtoms); 	
 	}
 }

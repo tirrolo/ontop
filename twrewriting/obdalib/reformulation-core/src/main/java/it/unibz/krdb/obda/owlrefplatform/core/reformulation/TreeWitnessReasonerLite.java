@@ -14,13 +14,11 @@ import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.ontology.impl.SubClassAxiomImpl;
 import it.unibz.krdb.obda.ontology.impl.SubPropertyAxiomImpl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -39,7 +37,6 @@ public class TreeWitnessReasonerLite {
 	private Map<Predicate, Set<BasicClassDescription>> predicateSubconcepts;
 	private Map<Predicate, Set<Property>> predicateSubproperties;
 	
-	private Map<PropertySomeClassRestriction, TreeWitnessGenerator> generators;
 	private Collection<TreeWitnessGenerator> generatorsSet;
 
 	private static OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
@@ -52,13 +49,15 @@ public class TreeWitnessReasonerLite {
 		this.tbox = ontology;
 		log.debug("SET ONTOLOGY " + ontology);
 
-		generators = new HashMap<PropertySomeClassRestriction, TreeWitnessGenerator>();
+		Map<PropertySomeClassRestriction, TreeWitnessGenerator> generators = new HashMap<PropertySomeClassRestriction, TreeWitnessGenerator>();
 		subconcepts = new HashMap<BasicClassDescription, Set<BasicClassDescription>>();
 		subproperties = new HashMap<Property, Set<Property>>();
 		
 		predicateSubconcepts = new HashMap<Predicate, Set<BasicClassDescription>>();
 		predicateSubproperties = new HashMap<Predicate, Set<Property>>();
 		
+		// COLLECT GENERATING CONCEPTS (together with their declared subclasses)
+		// COLLECT SUB-CONCEPT AND SUB-PROPERTY RELATIONS
 		log.debug("AXIOMS");
 		for (Axiom ax : tbox.getAssertions()) {
 			if (ax instanceof SubClassAxiomImpl) {
@@ -67,12 +66,12 @@ public class TreeWitnessReasonerLite {
 				BasicClassDescription subConcept = (BasicClassDescription)sax.getSub();
 				ClassDescription superConcept = sax.getSuper();
 				if (superConcept instanceof PropertySomeClassRestriction) {
-					addGeneratingConceptAxiom(subConcept, (PropertySomeClassRestriction)superConcept);
+					addGeneratingConceptAxiom(generators, subConcept, (PropertySomeClassRestriction)superConcept);
 				}
 				else if (superConcept instanceof PropertySomeRestriction) {
 					PropertySomeRestriction some = (PropertySomeRestriction)superConcept;
-					PropertySomeClassRestriction genConcept = ontFactory.createPropertySomeClassRestriction(some.getPredicate(), some.isInverse(), owlThing);;
-					addGeneratingConceptAxiom(subConcept, genConcept);
+					PropertySomeClassRestriction genConcept = ontFactory.createPropertySomeClassRestriction(some.getPredicate(), some.isInverse(), owlThing);
+					addGeneratingConceptAxiom(generators, subConcept, genConcept);
 					addSubConcept(subConcept, some);
 				}
 				else 
@@ -120,6 +119,7 @@ public class TreeWitnessReasonerLite {
 			for (Map.Entry<BasicClassDescription, Set<BasicClassDescription>> k : subconcepts.entrySet())
 				log.debug("DECLARED SUBCONCEPTS OF " + k.getKey() + " ARE " + k.getValue());
 	
+			// ADD INCLUSIONS BETWEEN EXISTENTIALS OF SUB-PROPERTIES
 			for (Map.Entry<Property, Set<Property>> prop : subproperties.entrySet()) 
 				for (Property subproperty : prop.getValue()) 
 					addSubConcept(ontFactory.createPropertySomeRestriction(subproperty.getPredicate(), subproperty.isInverse()), 
@@ -130,22 +130,20 @@ public class TreeWitnessReasonerLite {
 			for (Map.Entry<BasicClassDescription, Set<BasicClassDescription>> k : subconcepts.entrySet())
 				log.debug("SATURATED SUBCONCEPTS OF " +  k.getKey() + " ARE " + k.getValue());
 		}
-		
-		// TODO: SATURATE GENERATING AXIOMS
-		
+			
 		generatorsSet = generators.values();
+		
+		/*
+		// SATURATE GENERATING AXIOMS
 		for (TreeWitnessGenerator twg0 : generatorsSet) {
 			for (TreeWitnessGenerator twg1 : generatorsSet) {
-				if (isSubsumed(twg0, twg1))
+				// check whether twg1 subsumes twg0
+				if (getSubConcepts(twg1.getFiller()).contains(twg0.getFiller()) && 
+						getSubProperties(twg1.getProperty()).contains(twg0.getProperty()))
 					twg1.addAllConcepts(twg0.getConcepts()); 
 			}
 		}
-	}
-
-	public boolean isSubsumed(TreeWitnessGenerator twg0, TreeWitnessGenerator twg1) {
-		return (getSubConcepts(twg1.getFiller()).contains(twg0.getFiller()) &&
-				getSubProperties(twg1.getProperty()).contains(twg0.getProperty()));
-		
+		*/
 	}
 	
 	private static <T> void graphTransitiveClosure(Map<T, Set<T>> graph) {
@@ -169,26 +167,6 @@ public class TreeWitnessReasonerLite {
 			}
 		}		
 	}
-
-	private static <T> void graphTransitiveClosure0(Map<T, Set<T>> graph) {
-		//Set<T> sc = graph.keySet();
-		boolean changed = false;
-		do {
-			changed = false;
-			for (Map.Entry<T, Set<T>> o1 : graph.entrySet()) {
-				for (Map.Entry<T, Set<T>> o2 : graph.entrySet()) {
-					if (o2.getKey() == o1.getKey())
-						continue;
-					if (o2.getValue().contains(o1.getKey())) {
-						if (o2.getValue().addAll(o1.getValue())) {
-							log.debug("ALL " + o2.getKey() + " ARE EXTENDED WITH ALL " + o1.getKey());
-							changed = true;
-						}
-					}
-				}
-			}
-		} while (changed);		
-	}
 	
 	private void addSubConcept(BasicClassDescription subConcept, BasicClassDescription superConcept) {
 		Set<BasicClassDescription> set = subconcepts.get(superConcept);
@@ -200,7 +178,7 @@ public class TreeWitnessReasonerLite {
 		set.add(subConcept);		
 	}
 
-	private void addGeneratingConceptAxiom(BasicClassDescription subConcept, PropertySomeClassRestriction superConcept) {
+	private void addGeneratingConceptAxiom(Map<PropertySomeClassRestriction, TreeWitnessGenerator> generators, BasicClassDescription subConcept, PropertySomeClassRestriction superConcept) {
 		TreeWitnessGenerator twg = generators.get(superConcept);
 		if (twg == null) {
 			twg = new TreeWitnessGenerator(superConcept);			
@@ -248,5 +226,19 @@ public class TreeWitnessReasonerLite {
 
 	public Collection<TreeWitnessGenerator> getGenerators() {
 		return generatorsSet;
+	}
+	
+	public Collection<BasicClassDescription> getMaximalBasicConcepts(Collection<TreeWitnessGenerator> gens) {
+		Set<BasicClassDescription> cons = new HashSet<BasicClassDescription>();
+		for (TreeWitnessGenerator twg : gens) {
+			cons.addAll(twg.getConcepts());
+		}
+		
+		if (cons.size() > 1) {
+			log.debug("MORE THAN ONE GEN CON: " + cons);
+		}
+		// TODO: select only maximal ones
+		
+		return cons;
 	}
 }
