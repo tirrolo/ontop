@@ -59,6 +59,9 @@ import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_GreaterThan;
 import com.hp.hpl.jena.sparql.expr.E_GreaterThanOrEqual;
+import com.hp.hpl.jena.sparql.expr.E_IsBlank;
+import com.hp.hpl.jena.sparql.expr.E_IsLiteral;
+import com.hp.hpl.jena.sparql.expr.E_IsURI;
 import com.hp.hpl.jena.sparql.expr.E_Lang;
 import com.hp.hpl.jena.sparql.expr.E_LangMatches;
 import com.hp.hpl.jena.sparql.expr.E_LessThan;
@@ -1043,9 +1046,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		} else if (expr instanceof NodeValue) {
 			return getConstantFunctionTerm((NodeValue) expr);
 		} else if (expr instanceof ExprFunction1) {
-			// NO-OP
-			throw new RuntimeException(
-					expr.toString() + " is not supported yet");
+			return getBuiltinFunctionTerm((ExprFunction1) expr);
 		} else if (expr instanceof ExprFunction2) {
 			ExprFunction2 function = (ExprFunction2) expr;
 			Expr arg1 = function.getArg1(); // get the first argument
@@ -1121,6 +1122,36 @@ public class SparqlAlgebraToDatalogTranslator {
 			throw new QueryException("Unknown data type!");
 		}
 		return constantFunction;
+	}
+
+	private static Function getBuiltinFunctionTerm(ExprFunction1 expr) {
+		Function builtInFunction = null;
+		if (expr instanceof E_IsLiteral) {
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_IS_LITERAL,
+						getVariableTerm((ExprVar) arg));
+			}
+		} else if (expr instanceof E_IsBlank) {
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_IS_BLANK,
+						getVariableTerm((ExprVar) arg));
+			}
+		} else if (expr instanceof E_IsURI) {
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_IS_URI,
+						getVariableTerm((ExprVar) arg));
+			}
+		} else {
+			throw new RuntimeException("The builtin function "
+					+ expr.toString() + " is not supported yet!");
+		}
+		return builtInFunction;
 	}
 
 	private static Function getBooleanFunction(ExprFunction2 expr,

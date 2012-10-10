@@ -1,6 +1,8 @@
 package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
 
+import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
 import it.unibz.krdb.obda.model.Atom;
+import it.unibz.krdb.obda.model.BNodePredicate;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.Constant;
@@ -10,6 +12,7 @@ import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.model.URITemplatePredicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
@@ -81,7 +84,6 @@ public class ExpressionEvaluator {
 
 	public static NewLiteral eval(Function expr) {
 		Predicate p = expr.getFunctionSymbol();
-
 		if (p instanceof BooleanOperationPredicate) {
 			return evalBoolean(expr);
 		} else if (p == OBDAVocabulary.XSD_BOOLEAN) {
@@ -123,12 +125,68 @@ public class ExpressionEvaluator {
 			return evalEqNeq(term, false);
 		} else if (pred == OBDAVocabulary.NOT) {
 			return eval(term);
+		} else if (pred == OBDAVocabulary.SPARQL_IS_LITERAL) {
+			return evalIsLiteral(term);
+		} else if (pred == OBDAVocabulary.SPARQL_IS_BLANK) {
+			return evalIsBlank(term);
+		} else if (pred == OBDAVocabulary.SPARQL_IS_URI) {
+			return evalIsUri(term);
 		} else {
 			throw new RuntimeException(
 					"Evaluation of expression not supported: "
 							+ term.toString());
 		}
+	}
 
+	/*
+	 * Expression evaluator for isLiteral() function
+	 */
+	private static NewLiteral evalIsLiteral(Function term) {
+		NewLiteral teval = eval(term.getTerm(0));
+		if (teval instanceof Function) {
+			Function function = (Function) teval;
+			Predicate predicate = function.getFunctionSymbol();
+			if (predicate instanceof DataTypePredicate) {
+				return fac.getTrue();
+			} else {
+				return fac.getFalse();
+			}
+		}
+		return term;
+	}
+
+	/*
+	 * Expression evaluator for isBlank() function
+	 */
+	private static NewLiteral evalIsBlank(Function term) {
+		NewLiteral teval = eval(term.getTerm(0));
+		if (teval instanceof Function) {
+			Function function = (Function) teval;
+			Predicate predicate = function.getFunctionSymbol();
+			if (predicate instanceof BNodePredicate) {
+				return fac.getTrue();
+			} else {
+				return fac.getFalse();
+			}
+		}
+		return term;
+	}
+
+	/*
+	 * Expression evaluator for isURI() function
+	 */
+	private static NewLiteral evalIsUri(Function term) {
+		NewLiteral teval = eval(term.getTerm(0));
+		if (teval instanceof Function) {
+			Function function = (Function) teval;
+			Predicate predicate = function.getFunctionSymbol();
+			if (predicate instanceof URITemplatePredicate) {
+				return fac.getTrue();
+			} else {
+				return fac.getFalse();
+			}
+		}
+		return term;
 	}
 
 	public static NewLiteral evalIsNullNotNull(Function term, boolean isnull) {

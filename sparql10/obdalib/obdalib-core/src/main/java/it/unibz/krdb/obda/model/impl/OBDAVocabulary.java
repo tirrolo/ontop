@@ -175,14 +175,30 @@ public class OBDAVocabulary {
 	public static final String SPARQL_LEFTJOIN_URI = "LeftJoin";
 
 	public static final String SPARQL_LANGMATCHES_URI = "LangMatches";
+	
+	public static final String SPARQL_IS_LITERAL_URI = "isLiteral";
+	
+	public static final String SPARQL_IS_URI_URI = "isURI";
+	
+	public static final String SPARQL_IS_BLANK_URI = "isBlank";
+	
+	/* SPARQL Algebra predicate */
 
 	public static final Predicate SPARQL_JOIN = new AlgebraOperatorPredicateImpl(
 			URI.create(SPARQL_JOIN_URI), COL_TYPE.STRING);
 
 	public static final Predicate SPARQL_LEFTJOIN = new AlgebraOperatorPredicateImpl(
 			URI.create(SPARQL_LEFTJOIN_URI), COL_TYPE.STRING);
+	
+	public static final Predicate SPARQL_IS_LITERAL = new BooleanOperationPredicateImpl(
+			URI.create(SPARQL_IS_LITERAL_URI), 1);
+	
+	public static final Predicate SPARQL_IS_URI = new BooleanOperationPredicateImpl(
+			URI.create(SPARQL_IS_URI_URI), 1);
+	
+	public static final Predicate SPARQL_IS_BLANK = new BooleanOperationPredicateImpl(
+			URI.create(SPARQL_IS_BLANK_URI), 1);
 
 	public static final Predicate SPARQL_LANGMATCHES = new BooleanOperationPredicateImpl(
 			URI.create(SPARQL_LANGMATCHES_URI), 2);
-
 }
