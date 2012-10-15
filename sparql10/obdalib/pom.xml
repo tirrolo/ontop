@@ -26,6 +26,8 @@
 		<module>quest-owlapi3</module>
 		<module>quest-distribution</module>
 		<module>quest-sparql-compliance</module>
+		<module>quest-sesame</module>
+		<module>quest-db</module>
 	</modules>
 
 	<profiles>
@@ -34,9 +36,7 @@
 			<modules>
 				<module>obdalib-owlapi</module>
 				<module>obdalib-protege4</module>
-				<module>quest-sesame</module>
 				<module>quest-owlapi2</module>
-				<module>quest-db</module>
 				<module>quest-benchmarks</module>
 			</modules>
 		</profile>
