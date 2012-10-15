@@ -1,6 +1,5 @@
 package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
 
-import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.BNodePredicate;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
@@ -10,17 +9,20 @@ import it.unibz.krdb.obda.model.DataTypePredicate;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
+import it.unibz.krdb.obda.model.NonBooleanOperationPredicate;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.URITemplatePredicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import org.apache.lucene.index.Term;
 
 public class ExpressionEvaluator {
 
@@ -86,6 +88,8 @@ public class ExpressionEvaluator {
 		Predicate p = expr.getFunctionSymbol();
 		if (p instanceof BooleanOperationPredicate) {
 			return evalBoolean(expr);
+		} else if (p instanceof NonBooleanOperationPredicate) {
+			return evalNonBoolean(expr);
 		} else if (p == OBDAVocabulary.XSD_BOOLEAN) {
 			if (expr.getTerm(0) instanceof Constant) {
 				ValueConstant value = (ValueConstant) expr.getTerm(0);
@@ -102,7 +106,6 @@ public class ExpressionEvaluator {
 
 	public static NewLiteral evalBoolean(Function term) {
 		Predicate pred = term.getFunctionSymbol();
-
 		if (pred == OBDAVocabulary.AND) {
 			return evalAndOr(term, true);
 		} else if (pred == OBDAVocabulary.OR) {
@@ -131,6 +134,21 @@ public class ExpressionEvaluator {
 			return evalIsBlank(term);
 		} else if (pred == OBDAVocabulary.SPARQL_IS_URI) {
 			return evalIsUri(term);
+		} else {
+			throw new RuntimeException(
+					"Evaluation of expression not supported: "
+							+ term.toString());
+		}
+	}
+
+	private static NewLiteral evalNonBoolean(Function term) {
+		Predicate pred = term.getFunctionSymbol();
+		if (pred == OBDAVocabulary.SPARQL_STR) {
+			return evalStr(term);
+		} else if (pred == OBDAVocabulary.SPARQL_DATATYPE) {
+			return evalDatatype(term);
+		} else if (pred == OBDAVocabulary.SPARQL_LANG) {
+			return evalLang(term);
 		} else {
 			throw new RuntimeException(
 					"Evaluation of expression not supported: "
@@ -189,6 +207,95 @@ public class ExpressionEvaluator {
 		return term;
 	}
 
+	/*
+	 * Expression evaluator for str() function
+	 */
+	private static NewLiteral evalStr(Function term) {
+		NewLiteral teval = eval(term.getTerm(0));
+		if (teval instanceof Function) {
+			Function function = (Function) teval;
+			Predicate predicate = function.getFunctionSymbol();
+			NewLiteral parameter = function.getTerm(0);
+			if (predicate instanceof DataTypePredicate) {
+				String datatype = predicate.toString();
+				if (datatype.equals(OBDAVocabulary.RDFS_LITERAL_URI)) { 
+					return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+							fac.getVariable(parameter.toString()));
+				} else if (datatype.equals(OBDAVocabulary.XSD_STRING_URI)) {
+					return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+							fac.getVariable(parameter.toString()));
+				} else {
+					return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+							fac.getFunctionalTerm(OBDAVocabulary.QUEST_CAST, 
+									fac.getVariable(parameter.toString()), 
+									fac.getValueConstant(OBDAVocabulary.XSD_STRING_URI)));
+				}
+			} else if (predicate instanceof URITemplatePredicate) {
+				return fac.getFunctionalTerm(fac.getDataTypePredicateLiteral(),
+						function.clone());
+			} else if (predicate instanceof BNodePredicate) {
+				return fac.getNULL();
+			}
+		}
+		return term;
+	}
+
+	/*
+	 * Expression evaluator for datatype() function
+	 */
+	private static NewLiteral evalDatatype(Function term) {
+		NewLiteral teval = eval(term.getTerm(0));
+		if (teval instanceof Function) {
+			Function function = (Function) teval;
+			Predicate predicate = function.getFunctionSymbol();
+			if (predicate instanceof DataTypePredicate) {
+				return fac.getFunctionalTerm(fac.getDataTypePredicateLiteral(), 
+						fac.getValueConstant(predicate.toString(), COL_TYPE.UNSUPPORTED));
+			} else if (predicate instanceof BNodePredicate) {
+				return null;
+			} else if (predicate instanceof URITemplatePredicate) {
+				return null;
+			}
+		}
+		return term;
+	}
+
+	/*
+	 * Expression evaluator for lang() function
+	 */
+	private static NewLiteral evalLang(Function term) {
+		NewLiteral teval = eval(term.getTerm(0));
+		if (teval instanceof Function) {
+			Function function = (Function) teval;
+			Predicate predicate = function.getFunctionSymbol();
+			if (predicate instanceof DataTypePredicate) {
+				String datatype = predicate.toString();
+				if (datatype.equals(OBDAVocabulary.RDFS_LITERAL_URI)) { 
+					if (function.getTerms().size() == 2) { // exist lang term
+						NewLiteral parameter = function.getTerm(1);
+						if (parameter instanceof Variable) {
+							return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+									parameter.clone());
+						} else if (parameter instanceof Constant) {
+							return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+									fac.getValueConstant(parameter.toString()));
+						}
+					} else {
+						return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+								fac.getValueConstant(""));
+					}
+				} else {
+					return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+							fac.getValueConstant(""));
+				}
+			} else {
+				return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+						fac.getValueConstant(""));
+			}
+		}
+		return term;
+	}
+
 	public static NewLiteral evalIsNullNotNull(Function term, boolean isnull) {
 		NewLiteral result = eval(term.getTerms().get(0));
 		if (result == OBDAVocabulary.NULL) {
@@ -219,8 +326,21 @@ public class ExpressionEvaluator {
 	public static NewLiteral evalEqNeq(Function term, boolean eq) {
 		/* Normalizing the locatino of terms, functions first */
 
+		/*
+		 * Evaluate the first term
+		 */
 		NewLiteral teval1 = eval(term.getTerm(0));
+		if (teval1 == null) {
+			return fac.getFalse();
+		}
+		
+		/*
+		 * Evaluate the second term
+		 */
 		NewLiteral teval2 = eval(term.getTerm(1));
+		if (teval2 == null) {
+			return fac.getFalse();
+		}
 
 		NewLiteral eval1 = teval1 instanceof Function ? teval1 : teval2;
 		NewLiteral eval2 = teval1 instanceof Function ? teval2 : teval1;
@@ -394,7 +514,7 @@ public class ExpressionEvaluator {
 		 * None of the subnodes evaluated to true or false, we have functions
 		 * that need to be evaluated
 		 */
-		// TODO check if we can further oiptimize this
+		// TODO check if we can further optimize this
 		if (and)
 			return fac.getANDAtom(eval1, eval2);
 		else

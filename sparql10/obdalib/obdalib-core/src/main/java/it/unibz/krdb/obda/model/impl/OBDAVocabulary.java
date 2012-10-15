@@ -168,6 +168,11 @@ public class OBDAVocabulary {
 	public static final Predicate QUEST_TRIPLE_PRED = new PredicateImpl(
 			QUEST_TRIPLE_URI, 3, new COL_TYPE[3]);
 
+	public static final String QUEST_CAST_STR = "cast";
+
+	public static final Predicate QUEST_CAST = new PredicateImpl(
+			URI.create(QUEST_CAST_STR), 2, new COL_TYPE[2]);
+
 	/* SPARQL Algebra vocabulary */
 
 	public static final String SPARQL_JOIN_URI = "Join";
@@ -181,6 +186,12 @@ public class OBDAVocabulary {
 	public static final String SPARQL_IS_URI_URI = "isURI";
 	
 	public static final String SPARQL_IS_BLANK_URI = "isBlank";
+	
+	public static final String SPARQL_STR_URI = "str";
+	
+	public static final String SPARQL_DATATYPE_URI = "datatype";
+	
+	public static final String SPARQL_LANG_URI = "lang";
 	
 	/* SPARQL Algebra predicate */
 
@@ -201,4 +212,13 @@ public class OBDAVocabulary {
 
 	public static final Predicate SPARQL_LANGMATCHES = new BooleanOperationPredicateImpl(
 			URI.create(SPARQL_LANGMATCHES_URI), 2);
+	
+	public static final Predicate SPARQL_STR = new NonBooleanOperationPredicateImpl(
+			URI.create(SPARQL_STR_URI));
+	
+	public static final Predicate SPARQL_DATATYPE = new NonBooleanOperationPredicateImpl(
+			URI.create(SPARQL_DATATYPE_URI));
+	
+	public static final Predicate SPARQL_LANG = new NonBooleanOperationPredicateImpl(
+			URI.create(SPARQL_LANG_URI));
 }

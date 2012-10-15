@@ -56,6 +56,7 @@ import com.hp.hpl.jena.sparql.algebra.op.OpTriple;
 import com.hp.hpl.jena.sparql.algebra.op.OpUnion;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.sparql.expr.E_Datatype;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_GreaterThan;
 import com.hp.hpl.jena.sparql.expr.E_GreaterThanOrEqual;
@@ -69,6 +70,7 @@ import com.hp.hpl.jena.sparql.expr.E_LessThanOrEqual;
 import com.hp.hpl.jena.sparql.expr.E_LogicalAnd;
 import com.hp.hpl.jena.sparql.expr.E_LogicalOr;
 import com.hp.hpl.jena.sparql.expr.E_NotEquals;
+import com.hp.hpl.jena.sparql.expr.E_Str;
 import com.hp.hpl.jena.sparql.expr.Expr;
 import com.hp.hpl.jena.sparql.expr.ExprFunction1;
 import com.hp.hpl.jena.sparql.expr.ExprFunction2;
@@ -796,17 +798,19 @@ public class SparqlAlgebraToDatalogTranslator {
 								COL_TYPE.LITERAL);
 						dataTypeFunction = ofac.getFunctionalTerm(
 								functionSymbol, constant, languageConstant);
+						terms.add(dataTypeFunction);
+					} else {
+						dataTypeFunction = ofac.getFunctionalTerm(
+								functionSymbol, constant);
+						terms.add(dataTypeFunction);
 					}
-
-					dataTypeFunction = ofac.getFunctionalTerm(functionSymbol,
-							constant);
 				} else {
 					// For other supported data-types
 					Predicate functionSymbol = getDataTypePredicate(objectType);
 					dataTypeFunction = ofac.getFunctionalTerm(functionSymbol,
 							constant);
+					terms.add(dataTypeFunction);
 				}
-				terms.add(dataTypeFunction);
 			} else if (o instanceof Node_URI) {
 				Node_URI object = (Node_URI) o;
 				objectType = COL_TYPE.OBJECT;
@@ -1110,14 +1114,17 @@ public class SparqlAlgebraToDatalogTranslator {
 		} else if (expr instanceof NodeValueNode) {
 			NodeValueNode nodeValue = (NodeValueNode) expr;
 			Node node = nodeValue.getNode();
-			if (!(node instanceof Node_Literal))
-				throw new RuntimeException("Unsupported node: "
-						+ expr.toString());
-
-			constantFunction = ofac.getFunctionalTerm(ofac
-					.getDataTypePredicateUnsupported(node
-							.getLiteralDatatypeURI()), ofac.getValueConstant(
-					node.getLiteralLexicalForm(), COL_TYPE.UNSUPPORTED));
+			if (node instanceof Node_Literal) {
+				constantFunction = ofac.getFunctionalTerm(
+						ofac.getDataTypePredicateLiteral(), 
+						ofac.getValueConstant(node.getLiteralLexicalForm(), COL_TYPE.UNSUPPORTED));
+			} else if (node instanceof Node_URI) {
+				constantFunction = ofac.getFunctionalTerm(
+						ofac.getDataTypePredicateLiteral(), 
+						ofac.getValueConstant(node.toString(), COL_TYPE.UNSUPPORTED));
+			} else {
+				throw new RuntimeException("Unsupported node: " + expr.toString());
+			}
 		} else {
 			throw new QueryException("Unknown data type!");
 		}
@@ -1145,6 +1152,27 @@ public class SparqlAlgebraToDatalogTranslator {
 			if (arg instanceof ExprVar) {
 				builtInFunction = ofac.getFunctionalTerm(
 						OBDAVocabulary.SPARQL_IS_URI,
+						getVariableTerm((ExprVar) arg));
+			}
+		} else if (expr instanceof E_Str) {
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_STR,
+						getVariableTerm((ExprVar) arg));
+			}
+		}  else if (expr instanceof E_Datatype) {
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_DATATYPE,
+						getVariableTerm((ExprVar) arg));
+			}
+		}  else if (expr instanceof E_Lang) {
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_LANG,
 						getVariableTerm((ExprVar) arg));
 			}
 		} else {

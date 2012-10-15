@@ -9,6 +9,7 @@ import it.unibz.krdb.obda.model.DataTypePredicate;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
+import it.unibz.krdb.obda.model.NonBooleanOperationPredicate;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
@@ -450,12 +451,12 @@ public class SQLGenerator implements SQLQueryGenerator {
 		StringBuffer conditionsString = new StringBuffer();
 		Iterator<String> conditionsIterator = conditions.iterator();
 		if (conditionsIterator.hasNext()) {
-			conditionsString.append("   ");
+			conditionsString.append(" ");
 			conditionsString.append(conditionsIterator.next());
 			conditionsString.append("\n");
 		}
 		while (conditionsIterator.hasNext()) {
-			conditionsString.append("   AND ");
+			conditionsString.append(" AND ");
 			conditionsString.append(conditionsIterator.next());
 			conditionsString.append("\n");
 		}
@@ -837,7 +838,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 	
 	/***
 	 * Returns the SQL that builds a URI String out of an atom of the form
-	 * uri("htttp:...", x, y,...)
+	 * uri("http:...", x, y,...)
 	 * 
 	 * @param ov
 	 * @param index
@@ -950,7 +951,6 @@ public class SQLGenerator implements SQLQueryGenerator {
 		} else if (term instanceof URIConstant) {
 			URIConstant uc = (URIConstant) term;
 			return jdbcutil.getSQLLexicalForm(uc.toString());
-
 		} else if (term instanceof Variable) {
 			Variable var = (Variable) term;
 			LinkedHashSet<String> posList = index.getColumnReferences(var);
@@ -968,23 +968,19 @@ public class SQLGenerator implements SQLQueryGenerator {
 		NewLiteral term1 = function.getTerms().get(0);
 
 		if (functionSymbol instanceof DataTypePredicate) {
-			if (functionSymbol.getType(0) == COL_TYPE.UNSUPPORTED)
+			if (functionSymbol.getType(0) == COL_TYPE.UNSUPPORTED) {
 				throw new RuntimeException("Unsupported type in the query: " + function);
+			}
 			/* atoms of the form integer(x) */
 			return getSQLString(term1, index, false);
-
 		} else if (functionSymbol instanceof BooleanOperationPredicate) {
-
 			/* atoms of the form EQ(x,y) */
-
 			String expressionFormat = getBooleanOperatorString(functionSymbol);
 			if (isUnary(function)) {
-
 				// for unary functions, e.g., NOT, IS NULL, IS NOT NULL
 				String op = getSQLString(term1, index, true);
 				return String.format(expressionFormat, op);
 			} else if (isBinary(function)) {
-
 				// for binary functions, e.g., AND, OR, EQ, NEQ, GT, etc.
 				String leftOp = getSQLString(term1, index, true);
 				NewLiteral term2 = function.getTerms().get(1);
@@ -998,6 +994,17 @@ public class SQLGenerator implements SQLQueryGenerator {
 			} else {
 				throw new RuntimeException(
 						"Cannot translate boolean function: " + functionSymbol);
+			}
+		} else {
+			String functionName = functionSymbol.toString();
+			if (functionName.equals(OBDAVocabulary.QUEST_CAST_STR)) {
+				String columnName = getSQLString(function.getTerm(0), index, false);
+				String datatype = ((Constant) function.getTerm(1)).getValue();
+				int sqlDatatype = -1;
+				if (datatype.equals(OBDAVocabulary.XSD_STRING_URI)) {
+					sqlDatatype = Types.VARCHAR;
+				}
+				return sqladapter.sqlCast(columnName, sqlDatatype);
 			}
 		}
 
