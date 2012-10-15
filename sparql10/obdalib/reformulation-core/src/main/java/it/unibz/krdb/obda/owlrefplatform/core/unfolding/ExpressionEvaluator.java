@@ -12,17 +12,15 @@ import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.NonBooleanOperationPredicate;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.URITemplatePredicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import org.apache.lucene.index.Term;
 
 public class ExpressionEvaluator {
 
@@ -134,6 +132,8 @@ public class ExpressionEvaluator {
 			return evalIsBlank(term);
 		} else if (pred == OBDAVocabulary.SPARQL_IS_URI) {
 			return evalIsUri(term);
+		} else if (pred == OBDAVocabulary.SPARQL_IS_IRI) {
+			return evalIsIri(term);
 		} else {
 			throw new RuntimeException(
 					"Evaluation of expression not supported: "
@@ -194,6 +194,23 @@ public class ExpressionEvaluator {
 	 * Expression evaluator for isURI() function
 	 */
 	private static NewLiteral evalIsUri(Function term) {
+		NewLiteral teval = eval(term.getTerm(0));
+		if (teval instanceof Function) {
+			Function function = (Function) teval;
+			Predicate predicate = function.getFunctionSymbol();
+			if (predicate instanceof URITemplatePredicate) {
+				return fac.getTrue();
+			} else {
+				return fac.getFalse();
+			}
+		}
+		return term;
+	}
+	
+	/*
+	 * Expression evaluator for isIRI() function
+	 */
+	private static NewLiteral evalIsIri(Function term) {
 		NewLiteral teval = eval(term.getTerm(0));
 		if (teval instanceof Function) {
 			Function function = (Function) teval;

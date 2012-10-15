@@ -7,11 +7,11 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
@@ -61,6 +61,7 @@ import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_GreaterThan;
 import com.hp.hpl.jena.sparql.expr.E_GreaterThanOrEqual;
 import com.hp.hpl.jena.sparql.expr.E_IsBlank;
+import com.hp.hpl.jena.sparql.expr.E_IsIRI;
 import com.hp.hpl.jena.sparql.expr.E_IsLiteral;
 import com.hp.hpl.jena.sparql.expr.E_IsURI;
 import com.hp.hpl.jena.sparql.expr.E_Lang;
@@ -1152,6 +1153,13 @@ public class SparqlAlgebraToDatalogTranslator {
 			if (arg instanceof ExprVar) {
 				builtInFunction = ofac.getFunctionalTerm(
 						OBDAVocabulary.SPARQL_IS_URI,
+						getVariableTerm((ExprVar) arg));
+			}
+		} else if (expr instanceof E_IsIRI) {
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_IS_IRI,
 						getVariableTerm((ExprVar) arg));
 			}
 		} else if (expr instanceof E_Str) {
