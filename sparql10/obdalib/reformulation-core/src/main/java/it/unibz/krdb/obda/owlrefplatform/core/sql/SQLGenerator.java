@@ -9,15 +9,14 @@ import it.unibz.krdb.obda.model.DataTypePredicate;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
-import it.unibz.krdb.obda.model.NonBooleanOperationPredicate;
 import it.unibz.krdb.obda.model.NumericalOperationPredicate;
 import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.JDBCUtility;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
@@ -36,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.slf4j.LoggerFactory;
 
@@ -1070,6 +1068,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 		} else if (functionSymbol.equals(OBDAVocabulary.IS_NULL)) {
 			operator = IS_NULL_OPERATOR;
 		} else if (functionSymbol.equals(OBDAVocabulary.IS_NOT_NULL)) {
+			operator = IS_NOT_NULL_OPERATOR;
+		} else if (functionSymbol.equals(OBDAVocabulary.SPARQL_BOUND)) {
 			operator = IS_NOT_NULL_OPERATOR;
 		} else {
 			throw new RuntimeException("Unknown boolean operator: "

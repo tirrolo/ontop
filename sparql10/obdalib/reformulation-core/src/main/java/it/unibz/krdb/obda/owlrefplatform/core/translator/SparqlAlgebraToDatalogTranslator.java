@@ -57,6 +57,7 @@ import com.hp.hpl.jena.sparql.algebra.op.OpUnion;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.expr.E_Add;
+import com.hp.hpl.jena.sparql.expr.E_Bound;
 import com.hp.hpl.jena.sparql.expr.E_Datatype;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_GreaterThan;
@@ -1125,7 +1126,15 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	private static Function getBuiltinFunctionTerm(ExprFunction1 expr) {
 		Function builtInFunction = null;
-		if (expr instanceof E_IsLiteral) {
+		
+		if (expr instanceof E_Bound) {
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_BOUND,
+						getVariableTerm((ExprVar) arg));
+			}
+		} else if (expr instanceof E_IsLiteral) {
 			Expr arg = expr.getArg();
 			if (arg instanceof ExprVar) {
 				builtInFunction = ofac.getFunctionalTerm(

@@ -129,6 +129,8 @@ public class ExpressionEvaluator {
 			return evalEqNeq(term, false);
 		} else if (pred == OBDAVocabulary.NOT) {
 			return eval(term);
+		} else if (pred == OBDAVocabulary.SPARQL_BOUND) {
+			return term;
 		} else if (pred == OBDAVocabulary.SPARQL_IS_LITERAL) {
 			return evalIsLiteral(term);
 		} else if (pred == OBDAVocabulary.SPARQL_IS_BLANK) {
@@ -599,51 +601,6 @@ public class ExpressionEvaluator {
 			return fac.getANDAtom(eval1, eval2);
 		} else {
 			return fac.getORAtom(eval1, eval2);
-		}
-	}
-
-	private static NewLiteral evalAddSubstractMultiply(Function term) {
-		NewLiteral teval1 = eval(term.getTerm(0));
-		NewLiteral teval2 = eval(term.getTerm(1));
-		
-		if (teval1 instanceof Function && teval2 instanceof Function) {
-			Function f1 = (Function) teval1;
-			Function f2 = (Function) teval2;
-			Predicate p1 = f1.getFunctionSymbol();
-			Predicate p2 = f2.getFunctionSymbol();
-			if (p1 instanceof DataTypePredicate && p2 instanceof DataTypePredicate) {
-				boolean isP1Numeric = isNumerical(p1);
-				boolean isP2Numeric = isNumerical(p2);
-				return (isP1Numeric && isP2Numeric) ? fac.getTrue() : fac.getFalse();
-			} else if (p1 instanceof DataTypePredicate) {
-				boolean isP1Numeric = isNumerical(p1);
-				boolean isP2Numeric = isNumerical(evalAddSubstractMultiply(f2));
-				return (isP1Numeric && isP2Numeric) ? fac.getTrue() : fac.getFalse();
-			} else if (p2 instanceof DataTypePredicate) {
-				boolean isP1Numeric = isNumerical(evalAddSubstractMultiply(f1));
-				boolean isP2Numeric = isNumerical(p2);
-				return (isP1Numeric && isP2Numeric) ? fac.getTrue() : fac.getFalse();
-			}
-		}
-		return term;
-	}
-
-	private static boolean isNumerical(Predicate predicate) {
-		for (Predicate numerical : OBDAVocabulary.QUEST_NUMERICAL_DATATYPES) {
-			if (predicate == numerical) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static boolean isNumerical(NewLiteral booleanLiteral) {
-		if (booleanLiteral.equals(fac.getTrue())) {
-			return true;
-		} else if (booleanLiteral.equals(fac.getFalse())) {
-			return false;
-		} else {
-			throw new RuntimeException("Unexpected non-boolean constant value: " + booleanLiteral);
 		}
 	}
 }
