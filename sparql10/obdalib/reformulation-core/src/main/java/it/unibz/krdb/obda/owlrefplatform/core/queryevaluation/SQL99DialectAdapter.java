@@ -103,4 +103,9 @@ public class SQL99DialectAdapter implements SQLDialectAdapter {
 		}
 		return "CAST(" + value + " AS " + strType + ")";
 	}
+
+	@Override
+	public String sqlRegex(String columnname, String pattern) {
+		return String.format("%s REGEXP %s", columnname, pattern);
+	}
 }

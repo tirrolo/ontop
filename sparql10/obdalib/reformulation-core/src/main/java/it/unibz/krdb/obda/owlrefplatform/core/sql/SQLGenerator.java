@@ -220,27 +220,30 @@ public class SQLGenerator implements SQLQueryGenerator {
 		Predicate functionSymbol = atom.getFunctionSymbol();
 		if (isUnary(atom)) {
 			// For unary boolean operators, e.g., NOT, IS NULL, IS NOT NULL.
-			NewLiteral term = atom.getTerms().get(0);
 			String expressionFormat = getBooleanOperatorString(functionSymbol);
+			NewLiteral term = atom.getTerm(0);
 			String column = getSQLString(term, index, false);
 			return String.format(expressionFormat, column);
-
 		} else if (isBinary(atom)) {
 			// For binary boolean operators, e.g., AND, OR, EQ, GT, LT, etc. _
-			// LangMatches
-			NewLiteral left = atom.getTerms().get(0);
-			NewLiteral right = atom.getTerms().get(1);
 			String expressionFormat = getBooleanOperatorString(functionSymbol);
-
+			NewLiteral left = atom.getTerm(0);
+			NewLiteral right = atom.getTerm(1);
 			String leftOp = getSQLString(left, index, true);
 			String rightOp = getSQLString(right, index, true);
 			return String.format("(" + expressionFormat + ")", leftOp, rightOp);
-
+		} else {
+			if (functionSymbol == OBDAVocabulary.SPARQL_REGEX) {
+				NewLiteral p1 = atom.getTerm(0);
+				NewLiteral p2 = atom.getTerm(1);
+				String column = getSQLString(p1, index, false);
+				String pattern = getSQLString(p2, index, false);
+				return sqladapter.sqlRegex(column, pattern);
+			} else {
+				throw new RuntimeException("The builtin function "
+						+ functionSymbol.toString() + " is not supported yet!");
+			}
 		}
-		// SQL conditions can only be unary or binary!
-		throw new RuntimeException(
-				"No support for n-ary boolean condition predicate: "
-						+ atom.getPredicate());
 	}
 
 	/***
@@ -946,8 +949,12 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 * @param useBrackets
 	 * @return
 	 */
-	public String getSQLString(NewLiteral term, QueryAliasIndex index,
+	public String getSQLString(NewLiteral term, QueryAliasIndex index, 
 			boolean useBrackets) {
+		if (term == null) {
+			return "";
+		}
+		
 		if (term instanceof ValueConstant) {
 			ValueConstant ct = (ValueConstant) term;
 			return jdbcutil.getSQLLexicalForm(ct);

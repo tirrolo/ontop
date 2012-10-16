@@ -74,6 +74,7 @@ import com.hp.hpl.jena.sparql.expr.E_LogicalAnd;
 import com.hp.hpl.jena.sparql.expr.E_LogicalOr;
 import com.hp.hpl.jena.sparql.expr.E_Multiply;
 import com.hp.hpl.jena.sparql.expr.E_NotEquals;
+import com.hp.hpl.jena.sparql.expr.E_Regex;
 import com.hp.hpl.jena.sparql.expr.E_Str;
 import com.hp.hpl.jena.sparql.expr.E_Subtract;
 import com.hp.hpl.jena.sparql.expr.Expr;
@@ -1049,7 +1050,6 @@ public class SparqlAlgebraToDatalogTranslator {
 	}
 
 	private static NewLiteral getBooleanTerm(Expr expr) {
-		NewLiteral term = null;
 		if (expr instanceof ExprVar) {
 			return getVariableTerm((ExprVar) expr);
 		} else if (expr instanceof NodeValue) {
@@ -1064,13 +1064,13 @@ public class SparqlAlgebraToDatalogTranslator {
 			NewLiteral term2 = getBooleanTerm(arg2);
 			// Construct the boolean function
 			// TODO Change the method name because ExprFunction2 is not only for boolean functions
-			term = getBooleanFunction(function, term1, term2);
+			return getBooleanFunction(function, term1, term2);
 		} else if (expr instanceof ExprFunctionN) {
-			// NO-OP
-			throw new RuntimeException(
-					expr.toString() + " is not supported yet");
+			return getOtherFunctionTerm((ExprFunctionN) expr);
+		} else {
+			throw new RuntimeException("The builtin function "
+					+ expr.toString() + " is not supported yet!");
 		}
-		return term;
 	}
 
 	private static Variable getVariableTerm(ExprVar expr) {
@@ -1126,7 +1126,6 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	private static Function getBuiltinFunctionTerm(ExprFunction1 expr) {
 		Function builtInFunction = null;
-		
 		if (expr instanceof E_Bound) {
 			Expr arg = expr.getArg();
 			if (arg instanceof ExprVar) {
@@ -1169,14 +1168,14 @@ public class SparqlAlgebraToDatalogTranslator {
 						OBDAVocabulary.SPARQL_STR,
 						getVariableTerm((ExprVar) arg));
 			}
-		}  else if (expr instanceof E_Datatype) {
+		} else if (expr instanceof E_Datatype) {
 			Expr arg = expr.getArg();
 			if (arg instanceof ExprVar) {
 				builtInFunction = ofac.getFunctionalTerm(
 						OBDAVocabulary.SPARQL_DATATYPE,
 						getVariableTerm((ExprVar) arg));
 			}
-		}  else if (expr instanceof E_Lang) {
+		} else if (expr instanceof E_Lang) {
 			Expr arg = expr.getArg();
 			if (arg instanceof ExprVar) {
 				builtInFunction = ofac.getFunctionalTerm(
@@ -1224,6 +1223,24 @@ public class SparqlAlgebraToDatalogTranslator {
 			function = ofac.getMultiplyFunction(term1, term2);
 		}
 		return function;
+	}
+
+	private static NewLiteral getOtherFunctionTerm(ExprFunctionN expr) {
+		Function builtInFunction = null;
+		if (expr instanceof E_Regex) {
+			E_Regex function = (E_Regex) expr;
+			Expr arg1 = function.getArg(1); // get the first argument
+			Expr arg2 = function.getArg(2); // get the second argument
+			Expr arg3 = function.getArg(3); // get the third argument (optional)
+			NewLiteral term1 = getBooleanTerm(arg1);
+			NewLiteral term2 = getBooleanTerm(arg2);
+			NewLiteral term3 = (arg3 != null) ? getBooleanTerm(arg3) : ofac.getNULL();
+			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_REGEX, term1, term2, term3);
+		} else {
+			throw new RuntimeException("The builtin function "
+					+ expr.toString() + " is not supported yet!");
+		}
+		return builtInFunction;
 	}
 
 	public static List<String> getSignature(String query) {

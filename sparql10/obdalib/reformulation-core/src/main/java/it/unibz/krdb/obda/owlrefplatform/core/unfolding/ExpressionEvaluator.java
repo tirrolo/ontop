@@ -141,6 +141,8 @@ public class ExpressionEvaluator {
 			return evalIsIri(term);
 		} else if (pred == OBDAVocabulary.SPARQL_LANGMATCHES) {
 			return evalLangMatches(term);
+		} else if (pred == OBDAVocabulary.SPARQL_REGEX) {
+			return term;
 		} else {
 			throw new RuntimeException(
 					"Evaluation of expression not supported: "

@@ -216,6 +216,8 @@ public class OBDAVocabulary {
 
 	public static final String SPARQL_IS_BLANK_URI = "isBlank";
 
+	public static final String SPARQL_REGEX_URI = "regex";
+
 	public static final String SPARQL_STR_URI = "str";
 
 	public static final String SPARQL_DATATYPE_URI = "datatype";
@@ -247,6 +249,9 @@ public class OBDAVocabulary {
 
 	public static final Predicate SPARQL_LANGMATCHES = new BooleanOperationPredicateImpl(
 			URI.create(SPARQL_LANGMATCHES_URI), 2);
+
+	public static final Predicate SPARQL_REGEX = new BooleanOperationPredicateImpl(
+			URI.create(SPARQL_REGEX_URI), 3);
 
 	public static final Predicate SPARQL_STR = new NonBooleanOperationPredicateImpl(
 			URI.create(SPARQL_STR_URI));

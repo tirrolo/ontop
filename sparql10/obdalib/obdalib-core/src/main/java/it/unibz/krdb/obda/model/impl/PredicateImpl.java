@@ -114,7 +114,4 @@ public class PredicateImpl implements Predicate {
 	public boolean isAlgebraPredicate() {
 		return this instanceof AlgebraOperatorPredicate;
 	}
-	
-	
-
 }

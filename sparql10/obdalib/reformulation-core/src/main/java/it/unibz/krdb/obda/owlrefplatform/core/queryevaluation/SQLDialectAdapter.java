@@ -42,4 +42,6 @@ public interface SQLDialectAdapter {
 	 * @return
 	 */
 	public String sqlCast(String value, int type);
+	
+	public String sqlRegex(String columnname, String pattern);
 }
