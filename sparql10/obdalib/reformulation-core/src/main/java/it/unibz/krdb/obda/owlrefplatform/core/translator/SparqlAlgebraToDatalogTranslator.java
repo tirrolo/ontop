@@ -1056,23 +1056,10 @@ public class SparqlAlgebraToDatalogTranslator {
 			ExprFunction2 function = (ExprFunction2) expr;
 			Expr arg1 = function.getArg1(); // get the first argument
 			Expr arg2 = function.getArg2(); // get the second argument
-			if (expr instanceof E_LangMatches) {
-				// If we find a build-in function LANGMATCHES
-				Variable variable = getVariableTerm((ExprVar) ((E_Lang) arg1)
-						.getArg());
-				ValueConstant languageTag = ofac.getValueConstant(arg2
-						.getConstant().getString(), COL_TYPE.LITERAL);
-				// Function langMatches = ofac.getFunctionalTerm(
-				// ofac.getDataTypePredicateLiteral(), variable,
-				// languageTag);
-				term = getBooleanFunction(function, variable, languageTag);
-
-			} else {
-				NewLiteral term1 = getBooleanTerm(arg1);
-				NewLiteral term2 = getBooleanTerm(arg2);
-				// Construct the boolean function
-				term = getBooleanFunction(function, term1, term2);
-			}
+			NewLiteral term1 = getBooleanTerm(arg1);
+			NewLiteral term2 = getBooleanTerm(arg2);
+			// Construct the boolean function
+			term = getBooleanFunction(function, term1, term2);
 		} else if (expr instanceof ExprFunctionN) {
 			// NO-OP
 			throw new RuntimeException(

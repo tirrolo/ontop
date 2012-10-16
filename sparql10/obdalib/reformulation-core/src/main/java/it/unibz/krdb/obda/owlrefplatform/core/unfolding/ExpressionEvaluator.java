@@ -134,6 +134,8 @@ public class ExpressionEvaluator {
 			return evalIsUri(term);
 		} else if (pred == OBDAVocabulary.SPARQL_IS_IRI) {
 			return evalIsIri(term);
+		} else if (pred == OBDAVocabulary.SPARQL_LANGMATCHES) {
+			return evalLangMatches(term);
 		} else {
 			throw new RuntimeException(
 					"Evaluation of expression not supported: "
@@ -311,6 +313,52 @@ public class ExpressionEvaluator {
 			}
 		}
 		return term;
+	}
+
+	/*
+	 * Expression evaluator for langMatches() function
+	 */
+	private static NewLiteral evalLangMatches(Function term) {
+		/*
+		 * Evaluate the first term
+		 */
+		NewLiteral teval1 = eval(term.getTerm(0));
+		if (teval1 == null) {
+			return fac.getFalse();
+		}
+		/*
+		 * Evaluate the second term
+		 */
+		NewLiteral teval2 = eval(term.getTerm(1));
+		if (teval2 == null) {
+			return fac.getFalse();
+		}
+
+		/*
+		 * Term checks
+		 */
+		if (teval1 instanceof Constant && teval2 instanceof Constant) {
+			if (teval1.equals(teval2)) {
+				return fac.getTrue();
+			} else {
+				return fac.getFalse();
+			}
+		} else if (teval1 instanceof Variable && teval2 instanceof Constant) {
+			Variable var = (Variable) teval1;
+			Constant lang = (Constant) teval2;
+			if (lang.getValue().equals("*")) {
+				// The char * means to get all languages
+				return fac.getNEQAtom(var, fac.getNULL());
+			} else {
+				return fac.getEQFunction(var, lang);
+			}
+		} else if (teval1 instanceof Function && teval2 instanceof Function) {
+			Function f1 = (Function) teval1;
+			Function f2 = (Function) teval2;
+			return evalLangMatches(fac.getLANGMATCHESFunction(f1.getTerm(0), f2.getTerm(0)));
+		} else {
+			return term;
+		}
 	}
 
 	public static NewLiteral evalIsNullNotNull(Function term, boolean isnull) {
