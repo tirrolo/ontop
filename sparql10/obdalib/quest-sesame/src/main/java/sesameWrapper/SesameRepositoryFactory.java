@@ -3,29 +3,21 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.config.RepositoryConfigException;
 import org.openrdf.repository.config.RepositoryFactory;
 import org.openrdf.repository.config.RepositoryImplConfig;
+import org.openrdf.repository.config.RepositoryRegistry;
 
 public class SesameRepositoryFactory implements RepositoryFactory{
 
+	   public static final String REPOSITORY_TYPE = "obda:QuestRepository";
+	   
 	public String getRepositoryType() {
-		return "obda:QuestRepository";
+		return REPOSITORY_TYPE;
 	}
 
-	public RepositoryImplConfig getConfig() {
+	public SesameRepositoryConfig getConfig() {
 		return new SesameRepositoryConfig();
 	}
 	
-	public RepositoryImplConfig getConfig(String type) {
-		return new SesameRepositoryConfig(type);
-	}
 	
-	public RepositoryImplConfig getConfig(String type, String name, String owlfile) {
-		return new SesameRepositoryConfig(type, name, owlfile);
-	}
-	
-	public RepositoryImplConfig getConfig(String type, String name, String owlfile, String obdafile) {
-		return new SesameRepositoryConfig(type, name, owlfile, obdafile);
-	}
-
 	public Repository getRepository(RepositoryImplConfig config)
 			throws RepositoryConfigException {
 		// TODO Auto-generated method stub
@@ -38,15 +30,15 @@ public class SesameRepositoryFactory implements RepositoryFactory{
 					String name = ((SesameRepositoryConfig) config).getName();
 					String owlfile = ((SesameRepositoryConfig) config).getOwlFile();
 
-					if (config.getType().equals("quest-inmemory"))
+					if (((SesameRepositoryConfig) config).getQuestType().equals("quest-inmemory"))
 						return new SesameClassicInMemoryRepo(name, owlfile);
 					
 					
-					else if (config.getType().equals("quest-remote"))
+					else if (((SesameRepositoryConfig) config).getQuestType().equals("quest-remote"))
 						return new SesameClassicJDBCRepo(name, owlfile);
 					
 					
-					else if (config.getType().equals("quest-virtual")) 
+					else if (((SesameRepositoryConfig) config).getQuestType().equals("quest-virtual")) 
 					{
 						String obdafile = ((SesameRepositoryConfig) config).getObdaFile();
 						return new SesameVirtualRepo(name, owlfile, obdafile);
