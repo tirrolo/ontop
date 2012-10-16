@@ -1130,7 +1130,7 @@ public class SparqlAlgebraToDatalogTranslator {
 			Expr arg = expr.getArg();
 			if (arg instanceof ExprVar) {
 				builtInFunction = ofac.getFunctionalTerm(
-						OBDAVocabulary.SPARQL_BOUND,
+						OBDAVocabulary.IS_NOT_NULL,
 						getVariableTerm((ExprVar) arg));
 			}
 		} else if (expr instanceof E_IsLiteral) {

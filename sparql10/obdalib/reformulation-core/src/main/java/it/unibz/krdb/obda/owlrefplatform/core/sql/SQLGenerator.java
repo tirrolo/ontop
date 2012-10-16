@@ -1076,8 +1076,6 @@ public class SQLGenerator implements SQLQueryGenerator {
 			operator = IS_NULL_OPERATOR;
 		} else if (functionSymbol.equals(OBDAVocabulary.IS_NOT_NULL)) {
 			operator = IS_NOT_NULL_OPERATOR;
-		} else if (functionSymbol.equals(OBDAVocabulary.SPARQL_BOUND)) {
-			operator = IS_NOT_NULL_OPERATOR;
 		} else {
 			throw new RuntimeException("Unknown boolean operator: "
 					+ functionSymbol);

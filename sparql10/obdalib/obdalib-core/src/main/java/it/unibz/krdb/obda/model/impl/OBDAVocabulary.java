@@ -204,8 +204,6 @@ public class OBDAVocabulary {
 
 	public static final String SPARQL_LEFTJOIN_URI = "LeftJoin";
 
-	public static final String SPARQL_BOUND_URI = "bound";
-
 	public static final String SPARQL_LANGMATCHES_URI = "LangMatches";
 
 	public static final String SPARQL_IS_LITERAL_URI = "isLiteral";
@@ -216,13 +214,13 @@ public class OBDAVocabulary {
 
 	public static final String SPARQL_IS_BLANK_URI = "isBlank";
 
-	public static final String SPARQL_REGEX_URI = "regex";
-
 	public static final String SPARQL_STR_URI = "str";
 
 	public static final String SPARQL_DATATYPE_URI = "datatype";
 
 	public static final String SPARQL_LANG_URI = "lang";
+
+	public static final String SPARQL_REGEX_URI = "regex";
 
 	/* SPARQL Algebra predicate */
 
@@ -231,9 +229,6 @@ public class OBDAVocabulary {
 
 	public static final Predicate SPARQL_LEFTJOIN = new AlgebraOperatorPredicateImpl(
 			URI.create(SPARQL_LEFTJOIN_URI), COL_TYPE.STRING);
-
-	public static final Predicate SPARQL_BOUND = new BooleanOperationPredicateImpl(
-			URI.create(SPARQL_BOUND_URI));
 
 	public static final Predicate SPARQL_IS_LITERAL = new BooleanOperationPredicateImpl(
 			URI.create(SPARQL_IS_LITERAL_URI));
@@ -250,9 +245,6 @@ public class OBDAVocabulary {
 	public static final Predicate SPARQL_LANGMATCHES = new BooleanOperationPredicateImpl(
 			URI.create(SPARQL_LANGMATCHES_URI), 2);
 
-	public static final Predicate SPARQL_REGEX = new BooleanOperationPredicateImpl(
-			URI.create(SPARQL_REGEX_URI), 3);
-
 	public static final Predicate SPARQL_STR = new NonBooleanOperationPredicateImpl(
 			URI.create(SPARQL_STR_URI));
 
@@ -261,4 +253,7 @@ public class OBDAVocabulary {
 
 	public static final Predicate SPARQL_LANG = new NonBooleanOperationPredicateImpl(
 			URI.create(SPARQL_LANG_URI));
+
+	public static final Predicate SPARQL_REGEX = new BooleanOperationPredicateImpl(
+			URI.create(SPARQL_REGEX_URI), 3);
 }

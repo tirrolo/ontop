@@ -129,8 +129,6 @@ public class ExpressionEvaluator {
 			return evalEqNeq(term, false);
 		} else if (pred == OBDAVocabulary.NOT) {
 			return eval(term);
-		} else if (pred == OBDAVocabulary.SPARQL_BOUND) {
-			return term;
 		} else if (pred == OBDAVocabulary.SPARQL_IS_LITERAL) {
 			return evalIsLiteral(term);
 		} else if (pred == OBDAVocabulary.SPARQL_IS_BLANK) {
