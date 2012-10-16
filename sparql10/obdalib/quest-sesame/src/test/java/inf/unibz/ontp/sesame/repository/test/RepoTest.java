@@ -5,19 +5,26 @@ import java.io.File;
 import java.util.Set;
 
 import org.junit.Test;
+import org.openrdf.http.client.HTTPClient;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.config.RepositoryConfig;
+import org.openrdf.repository.config.RepositoryConfigUtil;
 import org.openrdf.repository.config.RepositoryFactory;
 import org.openrdf.repository.config.RepositoryImplConfig;
+import org.openrdf.repository.config.RepositoryRegistry;
 import org.openrdf.repository.http.HTTPRepository;
+import org.openrdf.repository.http.config.HTTPRepositoryConfig;
 import org.openrdf.repository.manager.LocalRepositoryManager;
 import org.openrdf.repository.manager.RemoteRepositoryManager;
 import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.repository.sail.config.SailRepositoryConfig;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.sail.config.SailImplConfig;
+import org.openrdf.sail.memory.config.MemoryStoreConfig;
 import org.openrdf.sail.nativerdf.NativeStore;
 
 import sesameWrapper.SesameRepositoryConfig;
@@ -26,11 +33,14 @@ import sesameWrapper.SesameRepositoryFactory;
 
 public class RepoTest {
 
-	@Test
+	//@Test
 	public void test() {
 	
 		System.out.println("\nTEST1....");
 		try {
+			
+			//HTTPClient client = new HTTPClient();
+			//System.out.println(client.getServerURL());
 			
 			String sesameServer = "http://localhost:8080/openrdf-sesame";
 			String repositoryID = "mytest";
@@ -66,12 +76,13 @@ public class RepoTest {
 	}
 	
 	
-	@Test
+	//@Test
 	public void test2()
 	{try{
 
 		System.out.println("\nTEST2....");
-		RemoteRepositoryManager man = new RemoteRepositoryManager("http://localhost:8080/openrdf-sesame");
+		String url = "http://localhost:8080/openrdf-sesame";
+		RemoteRepositoryManager man = new RemoteRepositoryManager(url);
 		man.initialize();
 		String s = man.getServerURL();
 		System.out.println(s);
@@ -82,6 +93,15 @@ public class RepoTest {
 		Repository mytest = man.getRepository("mytest");
 		System.out.println(mytest.getConnection().getContextIDs().asList().toString());
 
+		
+		RepositoryImplConfig implConfig = new HTTPRepositoryConfig(url);
+		RepositoryConfig config = new RepositoryConfig("testhttp", implConfig);
+		man.addRepositoryConfig(config);
+		
+		Repository rep = man.getRepository("testhttp");
+		
+		System.out.println(rep.getConnection().toString());
+		
 		man.shutDown();
 		
 		
@@ -91,46 +111,83 @@ public class RepoTest {
 	}
 	}
 	
-	@Test
+//	@Test
 	public void test3()
 	{
+		LocalRepositoryManager man = null;
 		try{
 
 			System.out.println("\nTEST3....");
 			File dataDir = new File("c:\\Project\\Timi\\");
+			man = new LocalRepositoryManager(dataDir);
+			man.initialize();
+			
+			SailImplConfig backendConfig = new MemoryStoreConfig();
+			 
+			// create a configuration for the repository implementation
+			RepositoryImplConfig repositoryTypeSpec = new SailRepositoryConfig(backendConfig);
+			
+			
+			String repositoryId = "test-db";
+			RepositoryConfig repConfig = new RepositoryConfig(repositoryId, repositoryTypeSpec);
+			man.addRepositoryConfig(repConfig);
+			 
+			Repository repository = man.getRepository(repositoryId);
+			
+			System.out.println(repository.getClass().toString());
+			
+		}catch(Exception e)
+		{	e.printStackTrace();
+		System.out.println(e.getMessage());
+		}
+		finally{
+			man.shutDown();
+		}
+	}
+	
+	
+	
+	//@Test
+	public void test4(){
+		try{
+			System.out.println("\nTEST4....");
+			File dataDir = new File("c:\\Project\\Timi\\");
+			String owlfile = "src/test/resources/onto2.owl";
+
+			
 			LocalRepositoryManager man = new LocalRepositoryManager(dataDir);
 			man.initialize();
 			
-			String owlfile = "src/test/resources/stockexchange-unittest.owl";
-			String obdafile = "src/test/resources/stockexchange-unittest.obda";
+				 
+			// create a configuration for the repository implementation
+			SesameRepositoryFactory f = new SesameRepositoryFactory();
+			RepositoryRegistry.getInstance().add(f);
+			SesameRepositoryConfig conf = new SesameRepositoryConfig();
+			conf.setName("myrepo");
+			conf.setQuestType("quest-inmemory");
+			conf.setOwlFile(owlfile);
 			
-			RepositoryImplConfig config;
-			RepositoryFactory fact = new SesameRepositoryFactory();
-			config =  fact.getConfig();
-			((SesameRepositoryConfig)config).setType("quest-virtual");
-			((SesameRepositoryConfig)config).setName("my_repo");
-			((SesameRepositoryConfig)config).setOwlFile(owlfile);
-			((SesameRepositoryConfig)config).setObdaFile(obdafile);
+		//	System.out.println(RepositoryRegistry.getInstance().get("obda:QuestRepository").getRepositoryType());
+			RepositoryImplConfig repositoryTypeSpec =  conf;
 			
-			RepositoryConfig rconfig = new RepositoryConfig("test", config);
-			man.addRepositoryConfig(rconfig);
+			String repositoryId = "testdb";
+			RepositoryConfig repConfig = new RepositoryConfig(repositoryId, repositoryTypeSpec);
+			man.addRepositoryConfig(repConfig);
+			 
 			
-			Repository rep = man.getRepository("my_repo");
+			Repository repository = man.getRepository(repositoryId);
 			
-			RepositoryConnection conn = rep.getConnection();
-			
-			System.out.println(conn.isEmpty());
+			RepositoryConfig cnf = man.getRepositoryConfig(repositoryId);
+			System.out.println(cnf.getRepositoryImplConfig().getType());
+			System.out.println(repository.getClass().toString());
 			
 			
-		/*	Repository myRepository = new SailRepository( new NativeStore(dataDir) );
-			myRepository.initialize();
-			
-			 RepositoryConnection con = myRepository.getConnection();
-			
-			 File f = new File("C:\\Project\\Obdalib\\Protege\\examples\\rdf\\MotorVehicle.rdf");
+			 RepositoryConnection con = repository.getConnection();
+				
+			 File ff = new File("src/test/resources/onto2data.rdf");
 		
 			 
-			 con.add(f, "http://protege.stanford.edu/mv#", RDFFormat.RDFXML);
+			 con.add(ff, "http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#", RDFFormat.RDFXML);
 			 
 			
 			      String queryString = "SELECT * where {?s ?p ?o} Limit 20";
@@ -140,8 +197,8 @@ public class RepoTest {
 			        System.out.println(result.next());
 			    	 
 			  con.close();
-			  myRepository.shutDown();
-			  */
+			  repository.shutDown();
+		
 			man.shutDown();
 			  
 		}catch(Exception e)
@@ -150,4 +207,69 @@ public class RepoTest {
 		}
 	}
 
+	@Test
+	public void test5()
+	{
+		try{
+			System.out.println("\nTEST5....");
+			String owlfile = "src/test/resources/onto2.owl";
+
+			
+			RemoteRepositoryManager man = new RemoteRepositoryManager("http://localhost:8080/openrdf-sesame");
+			man.initialize();
+			man.removeRepositoryConfig("testdb");
+			Set<String>ss = man.getRepositoryIDs();
+			for (String s: ss)
+				System.out.println(s);
+			
+			// create a configuration for the repository implementation
+			SesameRepositoryFactory f = new SesameRepositoryFactory();
+			RepositoryRegistry.getInstance().add(f);
+			SesameRepositoryConfig conf = new SesameRepositoryConfig();
+			conf.setName("myrepo");
+			conf.setQuestType("quest-inmemory");
+			conf.setOwlFile(owlfile);
+			
+			RepositoryImplConfig repositoryTypeSpec =  conf;
+			
+			String repositoryId = "testdb";
+			RepositoryConfig repConfig = new RepositoryConfig(repositoryId, repositoryTypeSpec);
+			man.addRepositoryConfig(repConfig);
+			
+			RepositoryConfig cnf = man.getRepositoryConfig(repositoryId);
+			System.out.println(cnf.getRepositoryImplConfig().toString());
+			
+			ss = man.getRepositoryIDs();
+			for (String s: ss)
+				{
+				System.out.println(s);
+				}
+			
+			
+			Repository repository = man.getRepository(repositoryId);
+			System.out.println(repository.getClass().toString());
+			
+			 RepositoryConnection con = repository.getConnection();
+				
+			 File ff = new File("src/test/resources/onto2data.rdf");
+		
+			 
+			 con.add(ff, "http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#", RDFFormat.RDFXML);
+			 
+			
+			      String queryString = "SELECT * where {?s ?p ?o} Limit 20";
+			      TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+			      TupleQueryResult result = tupleQuery.evaluate();
+			    	  while(result.hasNext())
+			        System.out.println(result.next());
+			    	 
+			  con.close();
+			  repository.shutDown();
+			  man.shutDown();
+			  
+		}catch(Exception e)
+		{	e.printStackTrace();
+		System.out.println(e.getMessage());
+		}
+	}
 }
