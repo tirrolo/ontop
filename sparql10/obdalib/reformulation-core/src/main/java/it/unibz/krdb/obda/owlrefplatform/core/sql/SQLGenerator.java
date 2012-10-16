@@ -1032,17 +1032,13 @@ public class SQLGenerator implements SQLQueryGenerator {
 		/*
 		 * The atom must be of the form uri("...", x, y)
 		 */
-
 		String functionName = function.getFunctionSymbol().toString();
 		if (functionName.equals(OBDAVocabulary.QUEST_URI)) {
 			return getSQLStringForURIFunction(function, index);
-
 		} else {
 			throw new RuntimeException("Unexpected function in the query: "
 					+ functionSymbol);
-
 		}
-
 	}
 
 	/***

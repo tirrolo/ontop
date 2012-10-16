@@ -140,7 +140,7 @@ public class ExpressionEvaluator {
 		} else if (pred == OBDAVocabulary.SPARQL_LANGMATCHES) {
 			return evalLangMatches(term);
 		} else if (pred == OBDAVocabulary.SPARQL_REGEX) {
-			return term;
+			return evalRegex(term);
 		} else {
 			throw new RuntimeException(
 					"Evaluation of expression not supported: "
@@ -379,6 +379,15 @@ public class ExpressionEvaluator {
 		} else {
 			return term;
 		}
+	}
+
+	private static NewLiteral evalRegex(Function term) {
+		NewLiteral teval = eval(term.getTerm(0));
+		if (teval instanceof Function) {
+			term.setTerm(0, teval);
+			return term;
+		}
+		return term;
 	}
 
 	public static NewLiteral evalIsNullNotNull(Function term, boolean isnull) {
