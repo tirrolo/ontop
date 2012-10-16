@@ -167,6 +167,18 @@ public interface OBDADataFactory extends Serializable {
 	public Function getLANGMATCHESFunction(NewLiteral term1, NewLiteral term2);
 
 	/*
+	 * Numerical operation functions
+	 */
+
+	public Function getMinusFunction(NewLiteral term1);
+
+	public Function getAddFunction(NewLiteral term1, NewLiteral term2);
+
+	public Function getSubstractFunction(NewLiteral term1, NewLiteral term2);
+
+	public Function getMultiplyFunction(NewLiteral term1, NewLiteral term2);
+
+	/*
 	 * JDBC objects
 	 */
 

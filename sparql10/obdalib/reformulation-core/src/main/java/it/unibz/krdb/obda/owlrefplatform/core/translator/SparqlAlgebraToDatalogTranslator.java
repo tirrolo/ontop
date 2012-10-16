@@ -56,6 +56,7 @@ import com.hp.hpl.jena.sparql.algebra.op.OpTriple;
 import com.hp.hpl.jena.sparql.algebra.op.OpUnion;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.sparql.expr.E_Add;
 import com.hp.hpl.jena.sparql.expr.E_Datatype;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_GreaterThan;
@@ -70,8 +71,10 @@ import com.hp.hpl.jena.sparql.expr.E_LessThan;
 import com.hp.hpl.jena.sparql.expr.E_LessThanOrEqual;
 import com.hp.hpl.jena.sparql.expr.E_LogicalAnd;
 import com.hp.hpl.jena.sparql.expr.E_LogicalOr;
+import com.hp.hpl.jena.sparql.expr.E_Multiply;
 import com.hp.hpl.jena.sparql.expr.E_NotEquals;
 import com.hp.hpl.jena.sparql.expr.E_Str;
+import com.hp.hpl.jena.sparql.expr.E_Subtract;
 import com.hp.hpl.jena.sparql.expr.Expr;
 import com.hp.hpl.jena.sparql.expr.ExprFunction1;
 import com.hp.hpl.jena.sparql.expr.ExprFunction2;
@@ -1059,6 +1062,7 @@ public class SparqlAlgebraToDatalogTranslator {
 			NewLiteral term1 = getBooleanTerm(arg1);
 			NewLiteral term2 = getBooleanTerm(arg2);
 			// Construct the boolean function
+			// TODO Change the method name because ExprFunction2 is not only for boolean functions
 			term = getBooleanFunction(function, term1, term2);
 		} else if (expr instanceof ExprFunctionN) {
 			// NO-OP
@@ -1201,6 +1205,14 @@ public class SparqlAlgebraToDatalogTranslator {
 			function = ofac.getLTEFunction(term1, term2);
 		} else if (expr instanceof E_LangMatches) {
 			function = ofac.getLANGMATCHESFunction(term1, term2);
+		}
+		// The Numerical expression
+		if (expr instanceof E_Add) {
+			function = ofac.getAddFunction(term1, term2);
+		} else if (expr instanceof E_Subtract) {
+			function = ofac.getSubstractFunction(term1, term2);
+		} else if (expr instanceof E_Multiply) {
+			function = ofac.getMultiplyFunction(term1, term2);
 		}
 		return function;
 	}

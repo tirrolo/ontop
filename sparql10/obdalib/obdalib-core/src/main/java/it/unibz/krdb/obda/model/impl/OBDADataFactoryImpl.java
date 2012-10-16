@@ -524,6 +524,26 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 	}
 
 	@Override
+	public Function getMinusFunction(NewLiteral term1) {
+		return getFunctionalTerm(OBDAVocabulary.MINUS, term1);
+	}
+
+	@Override
+	public Function getAddFunction(NewLiteral term1, NewLiteral term2) {
+		return getFunctionalTerm(OBDAVocabulary.ADD, term1, term2);
+	}
+
+	@Override
+	public Function getSubstractFunction(NewLiteral term1, NewLiteral term2) {
+		return getFunctionalTerm(OBDAVocabulary.SUBSTRACT, term1, term2);
+	}
+
+	@Override
+	public Function getMultiplyFunction(NewLiteral term1, NewLiteral term2) {
+		return getFunctionalTerm(OBDAVocabulary.MULTIPLY, term1, term2);
+	}
+
+	@Override
 	public OBDADataSource getJDBCDataSource(String jdbcurl, String username,
 			String password, String driverclass) {
 		URI id = URI.create(UUID.randomUUID().toString());

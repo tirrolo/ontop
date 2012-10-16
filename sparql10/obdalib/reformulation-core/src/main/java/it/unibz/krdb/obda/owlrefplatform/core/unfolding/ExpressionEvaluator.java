@@ -10,6 +10,7 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.NonBooleanOperationPredicate;
+import it.unibz.krdb.obda.model.NumericalOperationPredicate;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.URITemplatePredicate;
@@ -98,6 +99,8 @@ public class ExpressionEvaluator {
 				}
 			} else
 				return expr;
+		} else if (p instanceof NumericalOperationPredicate) {
+			return evalNumericalOperation(expr);
 		}
 		return expr;
 	}
@@ -151,6 +154,21 @@ public class ExpressionEvaluator {
 			return evalDatatype(term);
 		} else if (pred == OBDAVocabulary.SPARQL_LANG) {
 			return evalLang(term);
+		} else {
+			throw new RuntimeException(
+					"Evaluation of expression not supported: "
+							+ term.toString());
+		}
+	}
+
+	private static NewLiteral evalNumericalOperation(Function term) {
+		Predicate pred = term.getFunctionSymbol();
+		if (pred == OBDAVocabulary.ADD) {
+			return term;
+		} else if (pred == OBDAVocabulary.SUBSTRACT) {
+			return term;
+		} else if (pred == OBDAVocabulary.MULTIPLY) {
+			return term;
 		} else {
 			throw new RuntimeException(
 					"Evaluation of expression not supported: "
@@ -364,15 +382,17 @@ public class ExpressionEvaluator {
 	public static NewLiteral evalIsNullNotNull(Function term, boolean isnull) {
 		NewLiteral result = eval(term.getTerms().get(0));
 		if (result == OBDAVocabulary.NULL) {
-			if (isnull)
+			if (isnull) {
 				return fac.getTrue();
-			else
+			} else {
 				return fac.getFalse();
+			}
 		} else if (result instanceof Constant) {
-			if (!isnull)
+			if (!isnull) {
 				return fac.getTrue();
-			else
+			} else {
 				return fac.getFalse();
+			}
 		}
 
 		// TODO improve evaluation of is (not) null
@@ -380,17 +400,14 @@ public class ExpressionEvaluator {
 		 * This can be inproved by evaluating some of the function, e.g,. URI
 		 * and Bnodes never return null
 		 */
-
-		if (isnull)
+		if (isnull) {
 			return fac.getIsNullFunction(result);
-		else
+		} else {
 			return fac.getIsNotNullFunction(result);
-
+		}
 	}
 
 	public static NewLiteral evalEqNeq(Function term, boolean eq) {
-		/* Normalizing the locatino of terms, functions first */
-
 		/*
 		 * Evaluate the first term
 		 */
@@ -407,76 +424,77 @@ public class ExpressionEvaluator {
 			return fac.getFalse();
 		}
 
+		/* 
+		 * Normalizing the locatino of terms, functions first 
+		 */
 		NewLiteral eval1 = teval1 instanceof Function ? teval1 : teval2;
 		NewLiteral eval2 = teval1 instanceof Function ? teval2 : teval1;
 
 		if (eval1 instanceof Variable || eval2 instanceof Variable) {
 			// no - op
 		} else if (eval1 instanceof Constant && eval2 instanceof Constant) {
-			if (eval1.equals(eval2))
-				if (eq)
+			if (eval1.equals(eval2)) {
+				if (eq) {
 					return fac.getTrue();
-				else
+				} else {
 					return fac.getFalse();
-			else if (eq)
+				}
+			} else if (eq) {
 				return fac.getFalse();
-			else
+			} else {
 				return fac.getTrue();
-
+			}
 		} else if (eval1 instanceof Function) {
 			Function f1 = (Function) eval1;
-
 			Predicate pred1 = f1.getFunctionSymbol();
-
-			if (pred1.getType(0) == COL_TYPE.UNSUPPORTED)
+			if (pred1.getType(0) == COL_TYPE.UNSUPPORTED) {
 				throw new RuntimeException("Unsupported type: " + pred1);
-
+			}
+			/*
+			 * Evaluate the second term
+			 */
 			if (eval2 instanceof Function) {
 				Function f2 = (Function) eval2;
 				Predicate pred2 = f2.getFunctionSymbol();
-
-				if (pred2.getType(0) == COL_TYPE.UNSUPPORTED)
+				if (pred2.getType(0) == COL_TYPE.UNSUPPORTED) {
 					throw new RuntimeException("Unsupported type: " + pred2);
-
-				if (pred1 == OBDAVocabulary.RDFS_LITERAL
-						&& pred2 == OBDAVocabulary.RDFS_LITERAL) {
+				}
+				
+				/*
+				 * Evaluate both terms by comparing their datatypes 
+				 */
+				if (pred1 == OBDAVocabulary.RDFS_LITERAL && pred2 == OBDAVocabulary.RDFS_LITERAL) {
 					/*
 					 * Special code to handle quality of Literals (plain, and
 					 * with language)
 					 */
-
 					if (f1.getTerms().size() != f2.getTerms().size()) {
 						// case one is with language another without
-						if (eq)
-							return fac.getFalse();
-						else
+						if (eq) {
+							return fac.getFalse(); 
+						} else {
 							return fac.getTrue();
+						}
 					} else if (f1.getTerms().size() == 2) {
 						// SIZE == 2
-						// these are literals with languages, wee need to
-						// return the
-						// evaluation of the values and the languages
-						// case literals without language, its exactly as
-						// normal datatypes
-						// this is copy paste code
+						// these are literals with languages, we need to
+						// return the evaluation of the values and the 
+						// languages case literals without language, its 
+						// exactly as normal datatypes.
+						// This is copy paste code
 						Function eqValues = null;
 						Function eqLang = null;
 						Function comparison = null;
 						if (eq) {
-							eqValues = fac.getEQFunction(f1.getTerm(0),
-									f2.getTerm(0));
-							eqLang = fac.getEQFunction(f1.getTerm(1),
-									f2.getTerm(1));
+							eqValues = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
+							eqLang = fac.getEQFunction(f1.getTerm(1), f2.getTerm(1));
 							comparison = fac.getANDFunction(eqValues, eqLang);
 							return evalAndOr(comparison, true);
 						}
-						eqValues = fac.getNEQFunction(f1.getTerm(0),
-								f2.getTerm(0));
-						eqLang = fac.getNEQFunction(f1.getTerm(1),
-								f2.getTerm(1));
+						eqValues = fac.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
+						eqLang = fac.getNEQFunction(f1.getTerm(1), f2.getTerm(1));
 						comparison = fac.getORFunction(eqValues, eqLang);
 						return evalAndOr(comparison, false);
-
 					}
 					// case literals without language, its exactly as normal
 					// datatypes
@@ -486,104 +504,146 @@ public class ExpressionEvaluator {
 						neweq = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
 						return evalEqNeq(neweq, true);
 					} else {
-						neweq = fac
-								.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
+						neweq = fac.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
 						return evalEqNeq(neweq, false);
 					}
-
 				} else if (pred1.equals(pred2)) {
-
 					Function neweq = null;
 					if (eq) {
 						neweq = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
 						return evalEqNeq(neweq, true);
 					} else {
-						neweq = fac
-								.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
+						neweq = fac.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
 						return evalEqNeq(neweq, false);
 					}
-
 				} else {
-					if (eq)
-						return fac.getFalse();
-					else
-						return fac.getTrue();
+					return term;
 				}
 			}
-
 		}
 
 		/* eval2 is not a function */
-		if (eq)
+		if (eq) {
 			return fac.getEQAtom(eval1, eval2);
-		else
+		} else {
 			return fac.getNEQAtom(eval1, eval2);
-
+		}
 	}
 
 	public static NewLiteral evalAndOr(Function term, boolean and) {
-
-		/* Normalizing the locatino of terms, constants first */
-
 		NewLiteral teval1 = eval(term.getTerm(0));
 		NewLiteral teval2 = eval(term.getTerm(1));
 
+		/* 
+		 * Normalizing the location of terms, constants first 
+		 */
 		NewLiteral eval1 = teval1 instanceof Constant ? teval1 : teval2;
 		NewLiteral eval2 = teval1 instanceof Constant ? teval2 : teval1;
 
-		/* Implementing boolean logic */
-
+		/*
+		 * Implementing boolean logic 
+		 */
 		if (eval1 == fac.getTrue()) {
-			if (eval2 == fac.getTrue())
-				if (and)
+			if (eval2 == fac.getTrue()) {
+				if (and) {
 					return fac.getTrue();
-				else
+				} else {
 					return fac.getFalse();
-			else if (eval2 == fac.getFalse())
-				if (and)
+				}
+			} else if (eval2 == fac.getFalse()) {
+				if (and) {
 					return fac.getFalse();
-				else
+				} else {
 					return fac.getTrue();
-			else if (and)
+				}
+			} else if (and) {
 				/* if its an and we still need to evaluate eval2 */
 				return eval2;
-			else
+			} else {
 				/*
 				 * Its an Or, and the first was true, so it doesn't matter whats
 				 * next.
 				 */
 				return fac.getTrue();
+			}
 
 		} else if (eval1 == fac.getFalse()) {
-			if (eval2 == fac.getTrue())
-				if (and)
+			if (eval2 == fac.getTrue()) {
+				if (and) {
 					return fac.getFalse();
-				else
+				} else {
 					return fac.getTrue();
-			else if (eval2 == fac.getFalse())
-				if (and)
+				}
+			} else if (eval2 == fac.getFalse()) {
+				if (and) {
 					return fac.getFalse();
-				else
+				} else {
 					return fac.getFalse();
-			else if (and)
+				}
+			} else if (and) {
 				/*
 				 * Its an And, and the first was false, so it doesn't matter
 				 * whats next.
 				 */
 				return fac.getFalse();
-			else
+			} else {
 				return eval2;
-
+			}
 		}
 		/*
 		 * None of the subnodes evaluated to true or false, we have functions
 		 * that need to be evaluated
 		 */
 		// TODO check if we can further optimize this
-		if (and)
+		if (and) {
 			return fac.getANDAtom(eval1, eval2);
-		else
+		} else {
 			return fac.getORAtom(eval1, eval2);
+		}
+	}
 
+	private static NewLiteral evalAddSubstractMultiply(Function term) {
+		NewLiteral teval1 = eval(term.getTerm(0));
+		NewLiteral teval2 = eval(term.getTerm(1));
+		
+		if (teval1 instanceof Function && teval2 instanceof Function) {
+			Function f1 = (Function) teval1;
+			Function f2 = (Function) teval2;
+			Predicate p1 = f1.getFunctionSymbol();
+			Predicate p2 = f2.getFunctionSymbol();
+			if (p1 instanceof DataTypePredicate && p2 instanceof DataTypePredicate) {
+				boolean isP1Numeric = isNumerical(p1);
+				boolean isP2Numeric = isNumerical(p2);
+				return (isP1Numeric && isP2Numeric) ? fac.getTrue() : fac.getFalse();
+			} else if (p1 instanceof DataTypePredicate) {
+				boolean isP1Numeric = isNumerical(p1);
+				boolean isP2Numeric = isNumerical(evalAddSubstractMultiply(f2));
+				return (isP1Numeric && isP2Numeric) ? fac.getTrue() : fac.getFalse();
+			} else if (p2 instanceof DataTypePredicate) {
+				boolean isP1Numeric = isNumerical(evalAddSubstractMultiply(f1));
+				boolean isP2Numeric = isNumerical(p2);
+				return (isP1Numeric && isP2Numeric) ? fac.getTrue() : fac.getFalse();
+			}
+		}
+		return term;
+	}
+
+	private static boolean isNumerical(Predicate predicate) {
+		for (Predicate numerical : OBDAVocabulary.QUEST_NUMERICAL_DATATYPES) {
+			if (predicate == numerical) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isNumerical(NewLiteral booleanLiteral) {
+		if (booleanLiteral.equals(fac.getTrue())) {
+			return true;
+		} else if (booleanLiteral.equals(fac.getFalse())) {
+			return false;
+		} else {
+			throw new RuntimeException("Unexpected non-boolean constant value: " + booleanLiteral);
+		}
 	}
 }

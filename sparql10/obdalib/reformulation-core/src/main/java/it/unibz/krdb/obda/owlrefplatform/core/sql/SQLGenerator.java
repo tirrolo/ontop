@@ -10,6 +10,7 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.NonBooleanOperationPredicate;
+import it.unibz.krdb.obda.model.NumericalOperationPredicate;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
@@ -57,6 +58,10 @@ public class SQLGenerator implements SQLQueryGenerator {
 	private static final String NOT_OPERATOR = "NOT %s";
 	private static final String IS_NULL_OPERATOR = "%s IS NULL";
 	private static final String IS_NOT_NULL_OPERATOR = "%s IS NOT NULL";
+
+	private static final String ADD_OPERATOR = "%s + %s";
+	private static final String SUBSTRACT_OPERATOR = "%s - %s";
+	private static final String MULTIPLY_OPERATOR = "%s * %s";
 
 	/**
 	 * Formatting template
@@ -985,15 +990,26 @@ public class SQLGenerator implements SQLQueryGenerator {
 				String leftOp = getSQLString(term1, index, true);
 				NewLiteral term2 = function.getTerms().get(1);
 				String rightOp = getSQLString(term2, index, true);
-				String result = String
-						.format(expressionFormat, leftOp, rightOp);
+				String result = String.format(expressionFormat, leftOp, rightOp);
 				if (useBrackets) {
 					return String.format("(%s)", result);
+				} else {
+					return result;
 				}
-				return result;
 			} else {
 				throw new RuntimeException(
 						"Cannot translate boolean function: " + functionSymbol);
+			}
+		} else if (functionSymbol instanceof NumericalOperationPredicate) {
+			String expressionFormat = getNumericalOperatorString(functionSymbol);
+			String leftOp = getSQLString(term1, index, true);
+			NewLiteral term2 = function.getTerms().get(1);
+			String rightOp = getSQLString(term2, index, true);
+			String result = String.format(expressionFormat, leftOp, rightOp);
+			if (useBrackets) {
+				return String.format("(%s)", result);
+			} else {
+				return result;
 			}
 		} else {
 			String functionName = functionSymbol.toString();
@@ -1057,6 +1073,21 @@ public class SQLGenerator implements SQLQueryGenerator {
 			operator = IS_NOT_NULL_OPERATOR;
 		} else {
 			throw new RuntimeException("Unknown boolean operator: "
+					+ functionSymbol);
+		}
+		return operator;
+	}
+
+	private String getNumericalOperatorString(Predicate functionSymbol) {
+		String operator = null;
+		if (functionSymbol.equals(OBDAVocabulary.ADD)) {
+			operator = ADD_OPERATOR;
+		} else if (functionSymbol.equals(OBDAVocabulary.SUBSTRACT)) {
+			operator = SUBSTRACT_OPERATOR;
+		} else if (functionSymbol.equals(OBDAVocabulary.MULTIPLY)) {
+			operator = MULTIPLY_OPERATOR;
+		} else {
+			throw new RuntimeException("Unknown numerical operator: "
 					+ functionSymbol);
 		}
 		return operator;

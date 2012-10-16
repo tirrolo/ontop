@@ -10,7 +10,7 @@ public class OBDAVocabulary {
 
 	/* Constants */
 
-	public static final Constant NULL = new ValueConstantImpl("null",
+	public static final Constant NULL = new ValueConstantImpl("null", 
 			COL_TYPE.STRING);
 
 	public static final Constant TRUE = new ValueConstantImpl("t",
@@ -19,6 +19,30 @@ public class OBDAVocabulary {
 	public static final Constant FALSE = new ValueConstantImpl("f",
 			COL_TYPE.BOOLEAN);
 
+	/* Numeric operations */
+
+	public static final String MINUS_STR = "minus";
+	
+	public static final String ADD_STR = "add";
+	
+	public static final String SUBSTRACT_STR = "substract";
+	
+	public static final String MULTIPLY_STR = "multiply";
+	
+	/* Numeric operation predicates */
+	
+	public static final Predicate MINUS = new NumericalOperationPredicateImpl(
+			URI.create(MINUS_STR), 1);
+	
+	public static final Predicate ADD = new NumericalOperationPredicateImpl(
+			URI.create(ADD_STR), 2);
+	
+	public static final Predicate SUBSTRACT = new NumericalOperationPredicateImpl(
+			URI.create(SUBSTRACT_STR), 2);
+	
+	public static final Predicate MULTIPLY = new NumericalOperationPredicateImpl(
+			URI.create(MULTIPLY_STR), 2);
+	
 	/* Boolean predicate URIs */
 
 	public static final String strAND = "AND";
@@ -130,6 +154,9 @@ public class OBDAVocabulary {
 	public static final Predicate[] QUEST_DATATYPE_PREDICATES = new Predicate[] {
 			RDFS_LITERAL, XSD_STRING, XSD_INTEGER, XSD_DECIMAL, XSD_DOUBLE,
 			XSD_DATETIME, XSD_BOOLEAN };
+	
+	public static final Predicate[] QUEST_NUMERICAL_DATATYPES = new Predicate[] {
+			XSD_INTEGER, XSD_DECIMAL, XSD_DOUBLE };
 
 	/* Common namespaces and prefixes */
 
@@ -163,10 +190,8 @@ public class OBDAVocabulary {
 
 	public static final String QUEST_TRIPLE_STR = "triple";
 
-	public static final URI QUEST_TRIPLE_URI = URI.create("triple");
-
 	public static final Predicate QUEST_TRIPLE_PRED = new PredicateImpl(
-			QUEST_TRIPLE_URI, 3, new COL_TYPE[3]);
+			URI.create(QUEST_TRIPLE_STR), 3, new COL_TYPE[3]);
 
 	public static final String QUEST_CAST_STR = "cast";
 
