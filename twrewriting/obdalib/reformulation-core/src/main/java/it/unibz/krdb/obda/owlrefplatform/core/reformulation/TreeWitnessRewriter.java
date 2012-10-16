@@ -19,6 +19,7 @@ import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Loop;
 import it.unibz.krdb.obda.utils.QueryUtils;
 
 import java.net.URI;
@@ -28,7 +29,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,13 +87,13 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	 *  EXT atoms cache
 	 */
 
-	private  Atom getExtAtom(Atom a, Set<Predicate> usedExts) throws URISyntaxException {
+	private  Atom getExtAtom(Atom a, Set<Predicate> usedExts) {
 		if (a.getArity() == 1)
 			return getExtAtom(a.getPredicate(), a.getTerm(0), usedExts);
 		else
 			return getExtAtom(a.getPredicate(), a.getTerm(0), a.getTerm(1), usedExts);
 	}
-
+/*
 	private  Atom getExtAtom(Atom a, Term r0, Set<Predicate> usedExts) throws URISyntaxException {
 		if (a.getArity() == 1)
 			return getExtAtom(a.getPredicate(), r0, usedExts);
@@ -104,8 +104,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			return getExtAtom(a.getPredicate(), t0, t1, usedExts);
 		}
 	}
-
-	private Atom getExtAtom(Predicate p, Term t, Set<Predicate> usedExts) throws URISyntaxException {
+*/
+	private Atom getExtAtom(Predicate p, Term t, Set<Predicate> usedExts)  {
 		Predicate ext = extPredicateMap.get(p);
 		if (ext == null) {
 			 List<CQIE> dp = new ArrayList<CQIE>(10);
@@ -136,7 +136,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return fac.getAtom(ext, t);
 	}
 
-	private  Atom getExtAtom(Predicate p, Term t1, Term t2, Set<Predicate> usedExts) throws URISyntaxException {
+	private  Atom getExtAtom(Predicate p, Term t1, Term t2, Set<Predicate> usedExts)  {
 		if (p instanceof BooleanOperationPredicateImpl) {
 			return fac.getAtom(p, t1, t2);			
 		}
@@ -148,7 +148,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			 Term x = fac.getVariable("x");
 			 Term y = fac.getVariable("y");
 			 Atom extAtom = fac.getAtom(ext, x, y);					 
-			 for (Property sub : reasoner.getSubProperties(p))
+			 for (Property sub : reasoner.getSubProperties(p, false))
 				dp.add(fac.getCQIE(extAtom, (!sub.isInverse()) ? 
 							fac.getAtom(sub.getPredicate(), x, y) : fac.getAtom(sub.getPredicate(), y, x))); 
 			 log.debug("DP FOR " + p + " IS " + dp);
@@ -166,13 +166,20 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		return fac.getAtom(ext, t1, t2);
 	}
 
-	private static URI getEXTname(URI name) throws URISyntaxException {
-		return new URI(name.getScheme(), name.getSchemeSpecificPart(), "EXT_" + name.getFragment());
+	private static URI getEXTname(URI name)  {
+		URI extURI = null;
+		try {
+			extURI = new URI(name.getScheme(), name.getSchemeSpecificPart(), "EXT_" + name.getFragment());
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return extURI;
 	}
 
 
-	private List<Atom> getExtAtomsForBasicConcepts(Collection<BasicClassDescription> concepts, Term r0, Set<Predicate> exts) throws URISyntaxException {
-		List<Atom> atoms = new LinkedList<Atom>();
+	private List<Atom> getExtAtomsForBasicConcepts(Collection<BasicClassDescription> concepts, Term r0, Set<Predicate> exts)  {
+		List<Atom> atoms = new ArrayList<Atom>(concepts.size());
 		Term x = fac.getNondistinguishedVariable(); 
 		
 		for (BasicClassDescription con : concepts) {
@@ -193,11 +200,12 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	 * rewrites a given connected CQ with the rules put into output
 	 */
 	
-	private void rewriteCC(QueryConnectedComponent cc, Atom headAtom, DatalogProgram output, Set<Predicate> exts, DatalogProgram edgeDP) throws URISyntaxException {
+	private void rewriteCC(QueryConnectedComponent cc, Atom headAtom, DatalogProgram output, Set<Predicate> exts, DatalogProgram edgeDP) {
 		TreeWitnessSet tws = TreeWitnessSet.getTreeWitnesses(cc, reasoner);
 
 		if (cc.hasNoFreeTerms()) {  
-			Collection<BasicClassDescription> genc = reasoner.getMaximalBasicConcepts(tws.getGeneratorsOfDetachedCC());
+			Collection<BasicClassDescription> genc = 
+							TreeWitnessGenerator.getMaximalBasicConcepts(tws.getGeneratorsOfDetachedCC());
 			for (Atom a : getExtAtomsForBasicConcepts(genc, fac.getNondistinguishedVariable(), exts))
 				output.appendRule(fac.getCQIE(headAtom, a)); 
 		}
@@ -205,7 +213,6 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		// CREATE AND STORE TREE WITNESS FORMULAS
 		for (TreeWitness tw : tws.getTWs()) {
 			log.debug("TREE WITNESS: " + tw);
-			List<List<Atom>> twfs = new LinkedList<List<Atom>>();
 			
 			MinimalCQProducer twf = new MinimalCQProducer(reasoner, cc.getVariables()); 
 			Iterator<Term> i = tw.getRoots().iterator();
@@ -221,48 +228,78 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			}
 			List<Atom> twfbody = twf.getBody();		
 
-			List<Atom> genAtoms = getExtAtomsForBasicConcepts(reasoner.getMaximalBasicConcepts(tw.getGenerators()), r0, exts);
-			for (Atom a : genAtoms) {				
-				List<Atom> twfa = new ArrayList<Atom>(twfbody.size() + 1); 
-				twfa.add(getExtAtom(a, r0, exts));
-				twfa.addAll(twfbody);
-				twfs.add(twfa);
-			}
+			List<Atom> genAtoms = getExtAtomsForBasicConcepts(
+							TreeWitnessGenerator.getMaximalBasicConcepts(tw.getGenerators()), r0, exts);			
+			boolean subsumes = false;
+			for (Atom a : genAtoms) 				
+				if (twf.wouldSubsume(a)) {
+					subsumes = true;
+					log.debug("TWF " + twfbody + " SUBSUMES " + a);
+					break;
+				}
+
+			List<List<Atom>> twfs = new ArrayList<List<Atom>>(subsumes ? 1 : genAtoms.size());
+			
+			if (!subsumes) 
+				for (Atom a : genAtoms) {				
+					List<Atom> twfa = new ArrayList<Atom>(twfbody.size() + 1); 
+					twfa.add(a); // 
+					twfa.addAll(twfbody);
+					twfs.add(twfa);
+				}
+			else
+				twfs.add(twfbody);
+			
 			tw.setFormula(twfs);
 		}
 				
 		MinimalCQProducer mainbody = new MinimalCQProducer(reasoner, cc.getFreeVariables()); 
 		
-		for (QueryConnectedComponent.Edge edge : cc.getEdges()) {
-			log.debug("EDGE " + edge);
-			List<Atom> extAtoms = new ArrayList<Atom>(edge.getBAtoms().size() + edge.getL0Atoms().size() + edge.getL1Atoms().size()); 
-			for (Atom aa : edge.getBAtoms()) 
-				extAtoms.add(getExtAtom(aa, exts));
-			for (Atom aa : edge.getL0Atoms()) 
-				extAtoms.add(getExtAtom(aa, exts));
-			for (Atom aa : edge.getL1Atoms()) 
-				extAtoms.add(getExtAtom(aa, exts));
+		if (!cc.isDegenerate()) {
+			for (QueryConnectedComponent.Edge edge : cc.getEdges()) {
+				log.debug("EDGE " + edge);
+				List<Atom> extAtoms = new ArrayList<Atom>(edge.getBAtoms().size() 
+									+ edge.getAtoms0().size() + edge.getAtoms1().size()); 
+				for (Atom aa : edge.getBAtoms()) 
+					extAtoms.add(getExtAtom(aa, exts));
+				for (Atom aa : edge.getAtoms0()) 
+					extAtoms.add(getExtAtom(aa, exts));
+				for (Atom aa : edge.getAtoms1()) 
+					extAtoms.add(getExtAtom(aa, exts));
+				
+				Atom edgeAtom = null;
+				for (TreeWitness tw : tws.getTWs())
+					if (tw.getDomain().contains(edge.getTerm0()) && tw.getDomain().contains(edge.getTerm1())) {
+						if (edgeAtom == null) {
+							URI atomURI = edge.getBAtoms().iterator().next().getPredicate().getName();
+							URI edgeURI = null;
+							try {
+								edgeURI = new URI(atomURI.getScheme(), atomURI.getSchemeSpecificPart(), 
+														"E_" + (edgeDP.getRules().size() + 1) + "_" + atomURI.getFragment());
+							} catch (URISyntaxException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 			
-			Collection<TreeWitness> edgetws = tws.getTWs(edge);
-			if (edgetws.isEmpty()) {	
-				// no tree witnesses -- direct insertion into the main body
-				mainbody.addAll(extAtoms);
-			} 
-			else {
-				URI atomURI = edge.getBAtoms().iterator().next().getPredicate().getName();
-				URI edgeURI = new URI(atomURI.getScheme(), atomURI.getSchemeSpecificPart(), 
-										"E_" + (edgeDP.getRules().size() + 1) + "_" + atomURI.getFragment());
-
-				Atom edgeAtom = fac.getAtom(fac.getPredicate(edgeURI, cc.getVariables().size()), cc.getVariables());
-				mainbody.add(edgeAtom);				
-				edgeDP.appendRule(fac.getCQIE(edgeAtom, extAtoms));						
-
-				for (TreeWitness tw : edgetws) 
-					for (List<Atom> twfa : tw.getFormula())
-						edgeDP.appendRule(fac.getCQIE(edgeAtom, twfa));
+							edgeAtom = fac.getAtom(fac.getPredicate(edgeURI, cc.getVariables().size()), cc.getVariables());
+							mainbody.add(edgeAtom);				
+							edgeDP.appendRule(fac.getCQIE(edgeAtom, extAtoms));													
+						}
+						
+						for (List<Atom> twfa : tw.getFormula())
+							edgeDP.appendRule(fac.getCQIE(edgeAtom, twfa));
+					}
+				
+				if (edgeAtom == null) // no tree witnesses -- direct insertion into the main body
+					mainbody.addAll(extAtoms);
 			}
 		}
-
+		else {
+			Loop loop = cc.getLoop();
+			log.debug("LOOP " + loop);
+			for (Atom aa : loop.getAtoms()) 
+				mainbody.add(getExtAtom(aa, exts));
+		}
 		output.appendRule(fac.getCQIE(headAtom, mainbody.getBody())); 
 	}
 	
@@ -286,8 +323,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				Atom cqieAtom = cqie.getHead();
 			
 				if (ccs.size() == 1) {
-					QueryConnectedComponent cc = ccs.get(0);
-					log.debug("CONNECTED COMPONENT (" + cc.getFreeVariables() + ")" + " EXISTS " + cc.getQuantifiedVariables() + " WITH EDGES " + cc.getEdges());
+					QueryConnectedComponent cc = ccs.iterator().next();
+					log.debug("CONNECTED COMPONENT (" + cc.getFreeVariables() + ")" + " EXISTS " + cc.getQuantifiedVariables() + " WITH EDGES " + cc.getEdges() + " AND LOOP " + cc.getLoop());
 					rewriteCC(cc, cqieAtom, output, exts, edgeDP); 				
 				}
 				else {
@@ -349,6 +386,5 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		
 		return output;
 	}
-	
-	 
+		 
 }

@@ -4,11 +4,13 @@ import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.impl.BooleanOperationPredicateImpl;
 import it.unibz.krdb.obda.ontology.BasicClassDescription;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Edge;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Loop;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessReasonerLite.IntersectionOfConceptSets;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessReasonerLite.IntersectionOfProperties;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,8 +26,8 @@ import org.slf4j.LoggerFactory;
 
 public class TreeWitnessSet {
 	private List<TreeWitness> tws = new LinkedList<TreeWitness>();
-	private QueryConnectedComponent cc;
-	private TreeWitnessReasonerLite reasoner;
+	private final QueryConnectedComponent cc;
+	private final TreeWitnessReasonerLite reasoner;
 	private PropertiesCache propertiesCache; 
 	
 	// working lists (may all be nulls)
@@ -34,20 +36,10 @@ public class TreeWitnessSet {
 	private Map<TreeWitness.TermCover, TreeWitness> twsCache;
 
 	private static final Logger log = LoggerFactory.getLogger(TreeWitnessSet.class);
-	private static OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
 	
 	private TreeWitnessSet(QueryConnectedComponent cc, TreeWitnessReasonerLite reasoner) {
 		this.cc = cc;
 		this.reasoner = reasoner;
-	}
-	
-	public Collection<TreeWitness> getTWs(QueryConnectedComponent.Edge edge) {
-		Collection<TreeWitness> m = new LinkedList<TreeWitness>();
-		for (TreeWitness tw : tws)
-			if (tw.getDomain().contains(edge.getTerm0()) && tw.getDomain().contains(edge.getTerm1())) 
-				m.add(tw);
-
-		return m;
 	}
 	
 	public Collection<TreeWitness> getTWs() {
@@ -65,17 +57,30 @@ public class TreeWitnessSet {
 
 	private void computeTreeWitnesses() {		
 		propertiesCache = new PropertiesCache(reasoner);
-		QueryFolding qf = new QueryFolding(); // in-place query folding, so copying is required when creating a tree witness
+		QueryFolding qf = new QueryFolding(propertiesCache); // in-place query folding, so copying is required when creating a tree witness
 		
-		for (Term v : cc.getQuantifiedVariables()) {
-			log.debug("QUANTIFIED VARIABLE " + v); 			
-			if (qf.canBeFolded(v, cc, propertiesCache)) {
+		for (Loop loop : cc.getQuantifiedVariables()) {
+			Term v = loop.getTerm();
+			log.debug("QUANTIFIED VARIABLE " + v); 
+			qf.newOneStepFolding(v);
+			
+			for (Edge edge : cc.getEdges()) { // loop.getAdjacentEdges()
+				if (edge.getTerm0().equals(v)) {
+					if (!qf.extend(edge.getLoop1(), edge, loop))
+						break;
+				}
+				else if (edge.getTerm1().equals(v)) {
+					if (!qf.extend(edge.getLoop0(), edge, loop))
+						break;
+				}
+			}
+			
+			if (qf.isValid()) {
 				// tws cannot contain duplicates by construction, so no caching (even negative)
 				Collection<TreeWitnessGenerator> twg = getTreeWitnessGenerators(qf); 
 				if (twg != null) { 
-					// copy the query folding
-					TreeWitness tw = new QueryFolding(qf).getTreeWitness(twg, cc.getQuantifiedVariables()); 
-					tws.add(tw);
+					// no need to copy the query folding: it creates all temporary objects anyway (including terms)
+					tws.add(qf.getTreeWitness(twg));
 				}
 			}
 		}		
@@ -83,11 +88,11 @@ public class TreeWitnessSet {
 		if (tws.isEmpty())
 			return;
 		
-		mergeable = new LinkedList<TreeWitness>();
+		mergeable = new ArrayList<TreeWitness>();
 		Queue<TreeWitness> working = new LinkedList<TreeWitness>();
 
 		for (TreeWitness tw : tws) 
-			if (isTreeWitnessMergeable(tw))  {
+			if (tw.isMergeable())  {
 				working.add(tw);			
 				mergeable.add(tw);
 			}
@@ -98,13 +103,14 @@ public class TreeWitnessSet {
 		while (!working.isEmpty()) {
 			while (!working.isEmpty()) {
 				TreeWitness tw = working.poll(); 
-				saturateTreeWitnesses(new QueryFolding(tw)); 					
+				qf.newQueryFolding(tw);
+				saturateTreeWitnesses(qf); 					
 			}
 			
 			while (!delta.isEmpty()) {
 				TreeWitness tw = delta.poll();
 				tws.add(tw);
-				if (isTreeWitnessMergeable(tw))  {
+				if (tw.isMergeable())  {
 					working.add(tw);			
 					mergeable.add(tw);
 				}
@@ -116,82 +122,46 @@ public class TreeWitnessSet {
 			log.debug(" " + tw);
 	}
 	
-	private boolean isTreeWitnessMergeable(TreeWitness tw) {
-		if (!tw.allRootsQuantified())
-			return false;
-		
-		Set<BasicClassDescription> rootConcepts = null;
-		for (Term root : tw.getRoots()) {
-			Set<BasicClassDescription> subc = propertiesCache.getTermConcepts(root);
-			if (subc == null)
-				continue;
-			
-			if (rootConcepts == null)
-				rootConcepts = new HashSet<BasicClassDescription>(subc);
-			else
-				rootConcepts.retainAll(subc);
-			if (rootConcepts.isEmpty())
-				return false;
-		}
-		tw.setRootConcepts(rootConcepts);
-		return true;
-	}
-	
 	private void saturateTreeWitnesses(QueryFolding qf) { 
 		boolean saturated = true; 
 		
-		for (QueryConnectedComponent.Edge edge : cc.getEdges()) { 
-			if (qf.canBeAttachedToAnInternalRoot(edge.getTerm0(), edge.getTerm1())) {
-				log.debug("EDGE " + edge + " IS ADJACENT TO THE TREE WITNESS " + qf); 
+		for (Edge edge : cc.getEdges()) { 
+			Loop rootLoop = edge.getLoop0();
+			Loop internalLoop = edge.getLoop1();
+			if (qf.canBeAttachedToAnInternalRoot(rootLoop, internalLoop)) {
+				// ok
+			}
+			else if (qf.canBeAttachedToAnInternalRoot(internalLoop, rootLoop)) { 
+				rootLoop = internalLoop;
+				internalLoop = edge.getLoop0();
+			}
+			else
+				continue;
+			
+			log.debug("EDGE " + edge + " IS ADJACENT TO THE TREE WITNESS " + qf); 
 
-				saturated = false; 
+			saturated = false; 
 
-				for (TreeWitness tw : mergeable)  
-					if (tw.getRoots().contains(edge.getTerm0()) && tw.getDomain().contains(edge.getTerm1())) {
-						log.debug("    ATTACHING A TREE WITNESS " + tw);
-						saturateTreeWitnesses(qf.extend(tw)); 
-					} 
-				
-				QueryFolding qf2 = new QueryFolding(qf);
-				propertiesCache.setLoopAtoms(edge.getTerm1(), edge.getL1Atoms());
-				propertiesCache.setLoopAtoms(edge.getTerm0(), edge.getL0Atoms());
-
-				qf2.extend(edge.getTerm1(), propertiesCache.getEdgeProperties(edge, edge.getTerm1()),  
-						edge.getL1Atoms(), propertiesCache.getTermConcepts(edge.getTerm0()));
-				if (qf2.isValid()) {
-					log.debug("    ATTACHING A HANDLE " + edge);
-					saturateTreeWitnesses(qf2);  
-				}	
-			} 
-			else if (qf.canBeAttachedToAnInternalRoot(edge.getTerm1(),edge.getTerm0())) { 
-				log.debug("EDGE " + edge + " IS ADJACENT TO THE TREE WITNESS " + qf); 
-				
-				saturated = false; 
-				
-				for (TreeWitness tw : mergeable)  
-					if (tw.getRoots().contains(edge.getTerm1()) && tw.getDomain().contains(edge.getTerm0())) {
-						log.debug("    ATTACHING A TREE WITNESS " + tw);
-						saturateTreeWitnesses(qf.extend(tw)); 
-					} 
-
-				QueryFolding qf2 = new QueryFolding(qf);
-				propertiesCache.setLoopAtoms(edge.getTerm1(), edge.getL1Atoms());
-				propertiesCache.setLoopAtoms(edge.getTerm0(), edge.getL0Atoms());
-				
-				qf2.extend(edge.getTerm0(), propertiesCache.getEdgeProperties(edge, edge.getTerm0()),  
-									edge.getL0Atoms(), propertiesCache.getTermConcepts(edge.getTerm1()));
-				if (qf2.isValid()) {
-					log.debug("    ATTACHING A HANDLE " + edge);
-					saturateTreeWitnesses(qf2);  
-				}	
-			} 
+			Term rootTerm = rootLoop.getTerm();
+			Term internalTerm = internalLoop.getTerm();
+			for (TreeWitness tw : mergeable)  
+				if (tw.getRoots().contains(rootTerm) && tw.getDomain().contains(internalTerm)) {
+					log.debug("    ATTACHING A TREE WITNESS " + tw);
+					saturateTreeWitnesses(qf.extend(tw)); 
+				} 
+			
+			QueryFolding qf2 = new QueryFolding(qf);
+			if (qf2.extend(internalLoop, edge, rootLoop)) {
+				log.debug("    ATTACHING A HANDLE " + edge);
+				saturateTreeWitnesses(qf2);  
+			}	
 		}
 
 		if (saturated && qf.hasRoot())  {
 			if (!twsCache.containsKey(qf.getTerms())) {
 				Collection<TreeWitnessGenerator> twg = getTreeWitnessGenerators(qf); 
 				if (twg != null) {
-					TreeWitness tw = qf.getTreeWitness(twg, cc.getQuantifiedVariables()); 
+					TreeWitness tw = qf.getTreeWitness(twg); 
 					delta.add(tw);
 					twsCache.put(tw.getTerms(), tw);
 				}
@@ -200,7 +170,6 @@ public class TreeWitnessSet {
 			}
 			else {
 				log.debug("TWS CACHE HIT " + qf.getTerms());
-				//assert (tw.getGenerators().equals(tw0.getGenerators()));
 			}
 		}
 	}
@@ -208,15 +177,7 @@ public class TreeWitnessSet {
 	// can return null if there are no applicable generators!
 	
 	private Collection<TreeWitnessGenerator> getTreeWitnessGenerators(QueryFolding qf) {
-		if (reasoner.getGenerators().isEmpty())
-			return null;
-		
-		Set<BasicClassDescription> subc = qf.getInternalRootConcepts();
-		if ((subc != null) && subc.isEmpty())
-			return null;
-		
 		Collection<TreeWitnessGenerator> twg = null;
-
 		log.debug("CHECKING WHETHER THE FOLDING " + qf + " CAN BE GENERATED: "); 
 		for (TreeWitnessGenerator g : reasoner.getGenerators()) {
 			log.debug("      CHECKING " + g);		
@@ -226,170 +187,163 @@ public class TreeWitnessSet {
 				log.debug("        PROPERTIES ARE TOO SPECIFIC: " + qf.getProperties() + " FOR " + g.getProperty());
 				continue;
 			}
-			
-			if (!isGenerated(g, subc, qf.getInteriorTreeWitnesses()))
+
+			Set<BasicClassDescription> subc = qf.getInternalRootConcepts();
+			if ((subc == null) || g.endPointEntailsAnyOf(subc)) 
+				 log.debug("        ENDTYPE IS FINE: " + subc + " FOR " + g);
+			else {
+				 log.debug("        ENDTYPE TOO SPECIFIC: " + subc + " FOR " + g);
+				 continue;			
+			}
+
+			boolean failed = false;
+			for (TreeWitness tw : qf.getInteriorTreeWitnesses()) 
+				if (g.endPointEntailsAnyOf(reasoner.getSubConceptsForGenerators(tw.getGenerators()))) 
+					log.debug("        ENDTYPE IS FINE: " + tw + " FOR " + g);
+				else { 
+					log.debug("        ENDTYPE TOO SPECIFIC: " + tw + " FOR " + g);
+					failed = true;
+					break;
+				}
+			if (failed)
 				continue;
 			
 			if (twg == null) 
 				twg = new LinkedList<TreeWitnessGenerator>();
 			twg.add(g);
-			log.debug("TREE WITNESS GENERATOR: " + g);
+			log.debug("        GENERATOR: " + g);
 		}
 		return twg;
 	}
 	
-	private boolean isGenerated(TreeWitnessGenerator g, Set<BasicClassDescription> subc, Collection<TreeWitness> tws) {
-		if ((subc != null) && !subc.contains(g.getFiller()) && !subc.contains(g.getRoleEndType())) {
-			 log.debug("        ENDTYPE TOO SPECIFIC: " + subc + " FOR " + g.getFiller() + " AND " + g.getRoleEndType());
-			 return false;			
-		}
-		else
-			 log.debug("        ENDTYPE IS FINE: " + subc + " FOR " + g.getFiller());
-/*		
-		for (Atom a : endtype) {
-			 if (a.getArity() != 1)
-				 return false;        // binary predicates R(x,x) cannot be matched to the anonymous part
-			 
-			 Set<BasicClassDescription> subcons = reasoner.getSubConcepts(a.getPredicate());
-			 if (!subcons.contains(g.getFiller()) && !subcons.contains(g.getRoleEndType())) {
-				 log.debug("        ENDTYPE TOO SPECIFIC: " + a.getPredicate() + " FOR " + g.getFiller() + " AND " + g.getRoleEndType());
-				 return false;
-			 }
-			 else
-				 log.debug("        ENDTYPE IS FINE: " + a.getPredicate() + " FOR " + g.getFiller());
-		}
-*/
-		for (TreeWitness tw : tws) {
-			boolean matched = false;
-			for (TreeWitnessGenerator twg : tw.getGenerators()) {
-				Set<BasicClassDescription> subcons = reasoner.getSubConcepts(twg);
-				if (!subcons.contains(g.getFiller()) && !subcons.contains(g.getRoleEndType())) {
-					log.debug("        ENDTYPE TOO SPECIFIC: " + twg + " FOR " + g.getFiller() + " AND " + g.getRoleEndType());
-				}
-				else {
-					log.debug("        ENDTYPE IS FINE: " + twg + " FOR " + g.getFiller());
-					matched = true;
-					break;
-				}
-			}
-			if (!matched)
-				return false;
-		}
-		return true;
-	}
-
-	// null means no constraints
-	
-	public static Set<BasicClassDescription> getSubConcepts(TreeWitnessReasonerLite reasoner, Set<Atom> atoms) {
-		Set<BasicClassDescription> subc = null;
-		for (Atom a : atoms) {
-			 if (a.getArity() != 1)
-				 return Collections.EMPTY_SET;   // binary predicates R(x,x) cannot be matched to the anonymous part
-
-			 Set<BasicClassDescription> subcons = reasoner.getSubConcepts(a.getPredicate());
-			 if (subc == null) 
-				 subc = new HashSet<BasicClassDescription>(subcons);
-			 else 
-				 subc.retainAll(subcons);
-			 
-			 if (subc.isEmpty())
-				 return Collections.EMPTY_SET;
-		}
-		return subc;
-	}
-	
 	
 	static class PropertiesCache {
-		private Map<Edge, Set<Property>> prop0 = new HashMap<Edge, Set<Property>>();
-		private Map<Edge, Set<Property>> prop1 = new HashMap<Edge, Set<Property>>();
-		private Map<Term, Set<BasicClassDescription>> concept = new HashMap<Term, Set<BasicClassDescription>>();
-		private Map<Term, Set<Atom>> loopAtoms = new HashMap<Term, Set<Atom>> ();
+		private Map<TermOrderedPair, Set<Property>> propertiesCache = new HashMap<TermOrderedPair, Set<Property>>();
+		private Map<Term, IntersectionOfConceptSets> conceptsCache = new HashMap<Term, IntersectionOfConceptSets>();
 
-		private TreeWitnessReasonerLite reasoner;
+		private final TreeWitnessReasonerLite reasoner;
 		
 		private PropertiesCache(TreeWitnessReasonerLite reasoner) {
 			this.reasoner = reasoner;
 		}
 		
-		public void setLoopAtoms(Term t, Set<Atom> loop) {
-			loopAtoms.put(t, loop);
-		}
-		
-		public Set<BasicClassDescription> getTermConcepts(Term t) {
-			if (concept.containsKey(t))
-				return concept.get(t);
-			
-			Set<BasicClassDescription> subconcepts = getSubConcepts(reasoner, loopAtoms.get(t));
-			concept.put(t, subconcepts);	
+		public IntersectionOfConceptSets getLoopConcepts(Loop loop) {
+			Term t = loop.getTerm();
+			IntersectionOfConceptSets subconcepts = conceptsCache.get(t); 
+			if (subconcepts == null) {				
+				subconcepts = reasoner.getSubConcepts(loop.getAtoms());
+				conceptsCache.put(t, subconcepts);	
+			}
 			return subconcepts;
 		}
 		
 		
-		public Set<Property> getEdgeProperties(Edge edge, Term root) {
-			Map<Edge, Set<Property>> props = edge.getTerm0().equals(root) ? prop0 : prop1;
-			Set<Property> properties = props.get(edge);
-			
+		public Set<Property> getEdgeProperties(Edge edge, Term root, Term nonroot) {
+			TermOrderedPair idx = new TermOrderedPair(root, nonroot);
+			Set<Property> properties = propertiesCache.get(idx);			
 			if (properties == null) {
-				properties = new HashSet<Property>();
 				for (Atom a : edge.getBAtoms()) {
-					log.debug("EDGE " + edge + " HAS PROPERTY " + a);
 					if (a.getPredicate() instanceof BooleanOperationPredicateImpl) {
-						log.debug("        NO BOOLEAN OPERATION PREDICATES ALLOWED IN PROPERTIES ");
-						properties.clear();
-					}
-					else {
-						Property p = ontFactory.createProperty(a.getPredicate(), !root.equals(a.getTerm(0)));
-						if (properties.isEmpty()) // first atom
-							properties.addAll(reasoner.getSubProperties(p));
-						else
-							properties.retainAll(reasoner.getSubProperties(p));
-					}
-					if (properties.isEmpty())
+						log.debug("EDGE " + edge + " HAS PROPERTY " + a + " NO BOOLEAN OPERATION PREDICATES ALLOWED IN PROPERTIES ");
+						properties = Collections.EMPTY_SET;
 						break;
-				}				
-				props.put(edge, properties);
+					}
+				}
+				if (properties == null) {
+					IntersectionOfProperties set = new IntersectionOfProperties();
+					for (Atom a : edge.getBAtoms()) {
+						log.debug("EDGE " + edge + " HAS PROPERTY " + a);
+						if (!set.intersect(reasoner.getSubProperties(a.getPredicate(), !root.equals(a.getTerm(0)))))
+							break;
+					}
+					properties = set.get();
+				}	
+				propertiesCache.put(idx, properties); // edge.getTerms()
 			}
-
 			return properties;
 		}
 	}
 	
+	private static class TermOrderedPair {
+		private final Term t0, t1;
+		private final int hashCode;
+
+		public TermOrderedPair(Term t0, Term t1) {
+			this.t0 = t0;
+			this.t1 = t1;
+			this.hashCode = t0.hashCode() ^ (t1.hashCode() << 4);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof TermOrderedPair) {
+				TermOrderedPair other = (TermOrderedPair) o;
+				return (this.t0.equals(other.t0) && this.t1.equals(other.t1));
+			}
+			return false;
+		}
+
+		@Override
+		public String toString() {
+			return "term pair: (" + t0 + ", " + t1 + ")";
+		}
+		
+		@Override
+		public int hashCode() {
+			return hashCode;
+		}
+	}	
 	
 
 	public Set<TreeWitnessGenerator> getGeneratorsOfDetachedCC() {		
 		Set<TreeWitnessGenerator> generators = new HashSet<TreeWitnessGenerator>();
 		
 		if (cc.isDegenerate()) { // do not remove the curly brackets -- dangling else otherwise
-			Set<BasicClassDescription> subc = getSubConcepts(reasoner, cc.getEdges().get(0).getL0Atoms());
-			for (TreeWitnessGenerator twg : reasoner.getGenerators())
-				if (isGenerated(twg, subc, Collections.EMPTY_LIST)) 
-					generators.add(twg);					
-		} else {
+			IntersectionOfConceptSets subc = reasoner.getSubConcepts(cc.getLoop().getAtoms());
+			log.debug("DEGENERATE DETACHED COMPONENT: " + cc);
+			if (!subc.isEmpty()) // (subc == null) || 
+				for (TreeWitnessGenerator twg : reasoner.getGenerators()) {
+					if ((subc.get() == null) || twg.endPointEntailsAnyOf(subc.get())) {
+						log.debug("        ENDTYPE IS FINE: " + subc + " FOR " + twg);
+						generators.add(twg);					
+					}
+					else 
+						 log.debug("        ENDTYPE TOO SPECIFIC: " + subc + " FOR " + twg);
+				}
+		} 
+		else {
 			for (TreeWitness tw : tws) 
 				if (tw.getDomain().containsAll(cc.getVariables())) {
 					log.debug("TREE WITNESS " + tw + " COVERS THE QUERY");
-					Set<BasicClassDescription> subc = getSubConcepts(reasoner, tw.getRootAtoms());
-					for (TreeWitnessGenerator twg : reasoner.getGenerators())
-						if (isGenerated(twg, subc, Collections.singleton(tw))) 
-							generators.add(twg);
+					IntersectionOfConceptSets subc = reasoner.getSubConcepts(tw.getRootAtoms());
+					if (!subc.isEmpty())
+						for (TreeWitnessGenerator twg : reasoner.getGenerators())
+							if ((subc.get() == null) || twg.endPointEntailsAnyOf(subc.get())) {
+								log.debug("        ENDTYPE IS FINE: " + subc + " FOR " + twg);
+								if (twg.endPointEntailsAnyOf(reasoner.getSubConceptsForGenerators(tw.getGenerators()))) {
+									log.debug("        ENDTYPE IS FINE: " + tw + " FOR " + twg);
+									generators.add(twg);					
+								}
+								else  
+									log.debug("        ENDTYPE TOO SPECIFIC: " + tw + " FOR " + twg);
+							}
+							else 
+								 log.debug("        ENDTYPE TOO SPECIFIC: " + subc + " FOR " + twg);
 				}
 		}
 		
-		boolean saturated = true;
-		do {
-			List<TreeWitnessGenerator> delta = new LinkedList<TreeWitnessGenerator>();
-			for (TreeWitnessGenerator gen : generators)
-				for (BasicClassDescription g : gen.getConcepts()) {
-					for (TreeWitnessGenerator some : reasoner.getGenerators()) {
-						if (reasoner.getSubConcepts(g).contains(some.getFiller()) || 
-								reasoner.getSubConcepts(g).contains(some.getRoleEndType())) {
+		if (!generators.isEmpty()) {
+			boolean saturated = false;
+			while (!saturated) {
+				saturated = true;
+				Set<BasicClassDescription> subc = reasoner.getSubConceptsForGenerators(generators); 
+				for (TreeWitnessGenerator g : reasoner.getGenerators()) 
+					if (g.endPointEntailsAnyOf(subc)) {
+						if (generators.add(g))
 							saturated = false;
-							delta.add(some);
-						}		 		
-					}
-				}
-			saturated = !generators.addAll(delta);
-		} while (!saturated);						
+					}		 		
+			} 									
+		}
 		
 		return generators;
 	}

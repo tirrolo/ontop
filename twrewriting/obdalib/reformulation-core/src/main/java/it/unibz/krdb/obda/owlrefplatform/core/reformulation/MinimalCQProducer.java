@@ -29,7 +29,7 @@ public class MinimalCQProducer {
 		this.freeVariables = freeVariables;
 	}
 	
-	private boolean isMoreSpecific(Atom a1, Atom a2) {
+	public boolean isMoreSpecific(Atom a1, Atom a2) {
 		if (a1.equals(a2))
 			return true;
 
@@ -62,7 +62,7 @@ public class MinimalCQProducer {
 				}
 			}
 		}
-		else if ((a1.getArity() == 2) && (a2.getArity() == 1)) {
+		else if ((a1.getArity() == 2) && (a2.getArity() == 1)) { // MOST USEFUL
 			Term a2term = a2.getTerm(0);
 			if (a1.getTerm(0).equals(a2term)) {
 				PropertySomeRestriction prop = ontFactory.getPropertySomeRestriction(a1.getPredicate(), false);
@@ -92,6 +92,13 @@ public class MinimalCQProducer {
 				i.remove();
 		}
 		atoms.add(atom);
+	}
+
+	public boolean wouldSubsume(Atom atom) {
+		for (Atom a : atoms) 
+			if (isMoreSpecific(a, atom))
+				return true;
+		return false;
 	}
 	
 	public void addAll(List<Atom> atoms) {
