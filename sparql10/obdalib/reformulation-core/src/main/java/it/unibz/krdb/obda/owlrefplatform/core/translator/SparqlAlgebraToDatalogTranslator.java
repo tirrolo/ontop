@@ -71,6 +71,7 @@ import com.hp.hpl.jena.sparql.expr.E_LangMatches;
 import com.hp.hpl.jena.sparql.expr.E_LessThan;
 import com.hp.hpl.jena.sparql.expr.E_LessThanOrEqual;
 import com.hp.hpl.jena.sparql.expr.E_LogicalAnd;
+import com.hp.hpl.jena.sparql.expr.E_LogicalNot;
 import com.hp.hpl.jena.sparql.expr.E_LogicalOr;
 import com.hp.hpl.jena.sparql.expr.E_Multiply;
 import com.hp.hpl.jena.sparql.expr.E_NotEquals;
@@ -1012,15 +1013,12 @@ public class SparqlAlgebraToDatalogTranslator {
 		} else {
 			if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.RDFS_LITERAL_URI)) {
 				dataType = COL_TYPE.LITERAL;
-			} else if (dataTypeURI
-					.equalsIgnoreCase(OBDAVocabulary.XSD_STRING_URI)) {
+			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_STRING_URI)) {
 				dataType = COL_TYPE.STRING;
 			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_INT_URI)
-					|| dataTypeURI
-							.equalsIgnoreCase(OBDAVocabulary.XSD_INTEGER_URI)) {
+					|| dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_INTEGER_URI)) {
 				dataType = COL_TYPE.INTEGER;
-			} else if (dataTypeURI
-					.equalsIgnoreCase(OBDAVocabulary.XSD_DECIMAL_URI)) {
+			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_DECIMAL_URI)) {
 				// special case for decimal
 				String value = node.getLiteralValue().toString();
 				if (value.contains(".")) {
@@ -1030,16 +1028,12 @@ public class SparqlAlgebraToDatalogTranslator {
 					// Put the type as integer (decimal without fractions).
 					dataType = COL_TYPE.INTEGER;
 				}
-			} else if (dataTypeURI
-					.equalsIgnoreCase(OBDAVocabulary.XSD_FLOAT_URI)
-					|| dataTypeURI
-							.equalsIgnoreCase(OBDAVocabulary.XSD_DOUBLE_URI)) {
+			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_FLOAT_URI)
+					|| dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_DOUBLE_URI)) {
 				dataType = COL_TYPE.DOUBLE;
-			} else if (dataTypeURI
-					.equalsIgnoreCase(OBDAVocabulary.XSD_DATETIME_URI)) {
+			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_DATETIME_URI)) {
 				dataType = COL_TYPE.DATETIME;
-			} else if (dataTypeURI
-					.equalsIgnoreCase(OBDAVocabulary.XSD_BOOLEAN_URI)) {
+			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_BOOLEAN_URI)) {
 				dataType = COL_TYPE.BOOLEAN;
 			} else {
 				throw new RuntimeException("Unsupported datatype: "
@@ -1126,7 +1120,16 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	private static Function getBuiltinFunctionTerm(ExprFunction1 expr) {
 		Function builtInFunction = null;
-		if (expr instanceof E_Bound) {
+		if (expr instanceof E_LogicalNot) {
+			Expr arg = expr.getArg();
+			NewLiteral term = getBooleanTerm(arg);
+			builtInFunction = ofac.getFunctionalTerm(
+					OBDAVocabulary.NOT, term);
+		} 
+		/*
+		 * The following expressions only accept variable as the parameter
+		 */
+		else if (expr instanceof E_Bound) {
 			Expr arg = expr.getArg();
 			if (arg instanceof ExprVar) {
 				builtInFunction = ofac.getFunctionalTerm(

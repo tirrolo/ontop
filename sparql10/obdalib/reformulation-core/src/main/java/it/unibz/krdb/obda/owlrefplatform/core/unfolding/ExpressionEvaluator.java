@@ -54,25 +54,15 @@ public class ExpressionEvaluator {
 	}
 
 	public static NewLiteral eval(NewLiteral expr) {
-
 		if (expr instanceof Variable) {
-
 			return eval((Variable) expr);
-
 		} else if (expr instanceof Constant) {
-
 			return eval((Constant) expr);
-
 		} else if (expr instanceof Function) {
-
 			return eval((Function) expr);
-
 		} else {
-
 			throw new RuntimeException("Invalid expression");
-
 		}
-
 	}
 
 	public static NewLiteral eval(Variable expr) {
@@ -128,7 +118,7 @@ public class ExpressionEvaluator {
 		} else if (pred == OBDAVocabulary.NEQ) {
 			return evalEqNeq(term, false);
 		} else if (pred == OBDAVocabulary.NOT) {
-			return eval(term);
+			return evalNot(term);
 		} else if (pred == OBDAVocabulary.SPARQL_IS_LITERAL) {
 			return evalIsLiteral(term);
 		} else if (pred == OBDAVocabulary.SPARQL_IS_BLANK) {
@@ -416,6 +406,20 @@ public class ExpressionEvaluator {
 		} else {
 			return fac.getIsNotNullFunction(result);
 		}
+	}
+
+	private static NewLiteral evalNot(Function term) {
+		NewLiteral teval = eval(term.getTerm(0));
+		if (teval instanceof Function) {
+			Function f = (Function) teval;
+			Predicate predicate = f.getFunctionSymbol();
+			if (predicate == OBDAVocabulary.IS_NOT_NULL) {
+				return fac.getIsNullFunction(f.getTerm(0));
+			} else if (predicate == OBDAVocabulary.IS_NULL) {
+				return fac.getIsNotNullFunction(f.getTerm(0));
+			}
+		}
+		return term;
 	}
 
 	public static NewLiteral evalEqNeq(Function term, boolean eq) {
