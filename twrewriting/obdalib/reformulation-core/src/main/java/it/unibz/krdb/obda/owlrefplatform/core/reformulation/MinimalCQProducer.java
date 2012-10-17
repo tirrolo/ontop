@@ -17,11 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MinimalCQProducer {
-	private TreeWitnessReasonerLite reasoner;
+	private final TreeWitnessReasonerLite reasoner;
+	private final List<Term> freeVariables;
 	private List<Atom> atoms = new LinkedList<Atom>();
-	private List<Term> freeVariables;
 	
-	private static OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
+	private static final OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
 	private static final Logger log = LoggerFactory.getLogger(MinimalCQProducer.class);	
 	
 	public MinimalCQProducer(TreeWitnessReasonerLite reasoner, List<Term> freeVariables) {
@@ -101,9 +101,8 @@ public class MinimalCQProducer {
 		return false;
 	}
 	
-	public void addAll(List<Atom> atoms) {
-		for (Atom a : atoms)
-			add(a);
+	public void addNoCheck(Atom atom) {
+		atoms.add(atom);
 	}
 	
 	public List<Atom> getBody() {

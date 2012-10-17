@@ -72,8 +72,6 @@ public class TreeWitnessReasonerLite {
 		predicateSubproperties = new HashMap<Predicate, Set<Property>>();
 		predicateSubpropertiesInv = new HashMap<Predicate, Set<Property>>();
 		
-		Map<Property, PropertySomeRestriction> cacheExistsProperty = new HashMap<Property, PropertySomeRestriction>();
-		
 		// COLLECT GENERATING CONCEPTS (together with their declared subclasses)
 		// COLLECT SUB-CONCEPT AND SUB-PROPERTY RELATIONS
 		log.debug("AXIOMS");
@@ -137,21 +135,12 @@ public class TreeWitnessReasonerLite {
 					setInv.add(superPropertyInv); // keep it reflexive
 					setInv.add(subPropertyInv);
 					subproperties.put(superPropertyInv, setInv);
-					// these concepts will be required in extending concept hierarchy
-					cacheExistsProperty.put(superProperty, ontFactory.createPropertySomeRestriction(superProperty.getPredicate(), superProperty.isInverse()));
-					cacheExistsProperty.put(superPropertyInv, ontFactory.createPropertySomeRestriction(superProperty.getPredicate(), !superProperty.isInverse()));
 				}
 				else 
 					setInv = subproperties.get(superPropertyInv);
 				
 				set.add(subProperty);
 				setInv.add(subPropertyInv);
-				
-				if (!cacheExistsProperty.containsKey(subProperty)) {
-					// these concepts will be required in extending concept hierarchy
-					cacheExistsProperty.put(subProperty, ontFactory.createPropertySomeRestriction(subProperty.getPredicate(), subProperty.isInverse()));
-					cacheExistsProperty.put(subPropertyInv, ontFactory.createPropertySomeRestriction(subProperty.getPredicate(), !subProperty.isInverse()));
-				}
 			}
 			else
 				log.debug("UNKNOWN AXIOM TYPE:" + ax);
@@ -177,7 +166,7 @@ public class TreeWitnessReasonerLite {
 	
 			// ADD INCLUSIONS BETWEEN EXISTENTIALS OF SUB-PROPERTIES
 			for (Map.Entry<Property, Set<Property>> prop : subproperties.entrySet()) {
-				PropertySomeRestriction existsSuper = cacheExistsProperty.get(prop.getKey());
+				PropertySomeRestriction existsSuper =  ontFactory.createPropertySomeRestriction(prop.getKey().getPredicate(), prop.getKey().isInverse());
 				Set<BasicClassDescription> setExistsSuper = subconcepts.get(existsSuper);
 				if (setExistsSuper == null) {
 					setExistsSuper = new HashSet<BasicClassDescription>();
@@ -185,7 +174,7 @@ public class TreeWitnessReasonerLite {
 					subconcepts.put(existsSuper, setExistsSuper); 
 				}
 				for (Property subproperty : prop.getValue()) 
-					setExistsSuper.add(cacheExistsProperty.get(subproperty));	
+					setExistsSuper.add(ontFactory.createPropertySomeRestriction(subproperty.getPredicate(), subproperty.isInverse())); 	
 			}
 			graphTransitiveClosure(subconcepts);
 			
@@ -241,8 +230,6 @@ public class TreeWitnessReasonerLite {
 		return s;
 	}
 
-	// null means no constraints (i.e., \top)
-	
 	public IntersectionOfConceptSets getSubConcepts(Collection<Atom> atoms) {
 		IntersectionOfConceptSets subc = new IntersectionOfConceptSets();
 		for (Atom a : atoms) {

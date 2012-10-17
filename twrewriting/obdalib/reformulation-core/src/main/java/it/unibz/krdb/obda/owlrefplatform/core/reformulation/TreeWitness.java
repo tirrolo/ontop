@@ -6,7 +6,6 @@ import java.util.Set;
 
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.ontology.BasicClassDescription;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessReasonerLite.IntersectionOfConceptSets;
 
 /**

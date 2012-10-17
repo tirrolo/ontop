@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class QueryFolding {
-	private PropertiesCache propertiesCache;
+	private final PropertiesCache propertiesCache;
 	
 	private IntersectionOfProperties properties; 
 	private Set<Loop> roots; 
@@ -141,7 +141,7 @@ public class QueryFolding {
 		return terms;
 	}
 	
-	public TreeWitness getTreeWitness(Collection<TreeWitnessGenerator> twg) {
+	public TreeWitness getTreeWitness(Collection<TreeWitnessGenerator> twg, Collection<Edge> edges) {
 		
 		log.debug("NEW TREE WITNESS");
 		log.debug("  PROPERTIES " + properties);
@@ -158,7 +158,14 @@ public class QueryFolding {
 			}
 		}
 		
-		// TODO: EXTEND ROOT ATOMS BY ALL-ROOT EDGES
+		// EXTEND ROOT ATOMS BY ALL-ROOT EDGES
+		for (Edge edge : edges) {
+			if (roots.contains(edge.getLoop0()) && roots.contains(edge.getLoop1())) {
+				rootAtoms.addAll(edge.getBAtoms());
+				rootType = IntersectionOfConceptSets.EMPTY;
+				log.debug("  NOT MERGEABLE: " + edge + " IS WITHIN THE ROOTS");				
+			}
+		}
 		
 		log.debug("  ROOTTYPE " + rootAtoms);
 
