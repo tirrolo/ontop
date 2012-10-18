@@ -205,7 +205,8 @@ public class DBMetadata implements Serializable {
 	
 	/**
 	 * Returns the attribute full-qualified name using the table/view ALIAS name.
-	 * [ALIAS_NAME].[ATTRIBUTE_NAME]
+	 * [ALIAS_NAME].[ATTRIBUTE_NAME]. If the alias name is blank, the method will
+	 * use the table/view name: [TABLE_NAME].[ATTRIBUTE_NAME]. 
 	 * 
 	 * @param name
 	 *            Can be a table name or a view name.
@@ -216,8 +217,11 @@ public class DBMetadata implements Serializable {
 	 * @return
 	 */
 	public String getFullQualifiedAttributeName(String name, String alias, int pos) {
-		String value = String.format("%s.%s", alias, getAttributeName(name, pos));
-		return value;
+		if (alias != null && !alias.isEmpty()) {
+			return String.format("%s.%s", alias, getAttributeName(name, pos));
+		} else {
+			return getFullQualifiedAttributeName(name, pos);
+		}
 	}
 
 	public void setDriverName(String driverName) {

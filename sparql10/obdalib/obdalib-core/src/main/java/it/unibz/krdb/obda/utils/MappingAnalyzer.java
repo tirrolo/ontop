@@ -97,11 +97,10 @@ public class MappingAnalyzer {
 					int arity = dbMetaData.getDefinition(tableName).countAttribute();
 					Predicate predicate = dfac.getPredicate(predicateName, arity);
 
-					// Swap the column name with a new variable from the lookup
-					// table
+					// Swap the column name with a new variable from the lookup table
 					List<NewLiteral> terms = new ArrayList<NewLiteral>();
 					for (int i = 1; i <= arity; i++) {
-						String columnName = dbMetaData.getFullQualifiedAttributeName(tableName, i);
+						String columnName = dbMetaData.getFullQualifiedAttributeName(tableName, table.getAlias(), i);
 						String termName = lookupTable.lookup(columnName);
 						if (termName == null) {
 							throw new RuntimeException("Column '" + columnName + "'was not found in the lookup table: ");
@@ -398,8 +397,14 @@ public class MappingAnalyzer {
 				if (!tableAlias.isEmpty()) {
 					String qualifiedColumnAlias = dbMetaData.getFullQualifiedAttributeName(tableName, tableAlias, i);
 					lookupTable.add(qualifiedColumnAlias, index);
-					if (aliasMap.containsKey(columnName) || aliasMap.containsKey(qualifiedColumnName) || aliasMap.containsKey(qualifiedColumnAlias)) {
-						lookupTable.add(tableAlias + "." + aliasMap.get(columnName), columnName);
+					if (aliasMap.containsKey(columnName)) {
+						lookupTable.add(aliasMap.get(columnName), columnName);
+					}
+					if (aliasMap.containsKey(qualifiedColumnName)) {
+						lookupTable.add(aliasMap.get(qualifiedColumnName), qualifiedColumnName);
+					}
+					if (aliasMap.containsKey(qualifiedColumnAlias)) {
+						lookupTable.add(aliasMap.get(qualifiedColumnAlias), qualifiedColumnAlias);
 					}
 				}
 			}
