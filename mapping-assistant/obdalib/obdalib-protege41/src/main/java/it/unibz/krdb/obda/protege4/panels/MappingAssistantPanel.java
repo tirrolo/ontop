@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
+import java.util.regex.Pattern;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -576,14 +577,14 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 			int end = template.indexOf("}");
 
 			// extract the whole placeholder, i.e., "{$var1}"
-			String placeHolder = template.substring(start, end + 1);
+			String placeHolder = Pattern.quote(template.substring(start, end + 1));
 			
 			// change the placeholder string temporarly, i.e., http://www.example.org/person/[]/{$var2}
-			template = template.replace(placeHolder, "[]");
+			template = template.replaceFirst(placeHolder, "[]");
 
 			// extract the variable name only, e.g., "{$var1}" --> "var1"
 			try {
-				String variableName = placeHolder.substring(2, placeHolder.length() - 1);
+				String variableName = placeHolder.substring(4, placeHolder.length() - 3);
 				if (variableName.equals(EMPTY_TEXT)) {
 					throw new RuntimeException("Variable name must have at least 1 character");
 				}
@@ -594,7 +595,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 			// and repeat!
 		}
 		// replace the temporal placeholder to the original, i.e., http://www.example.org/person/{}/{}
-		template = template.replaceAll("\\[\\]", "{}");
+		template = template.replace("[]", "{}");
 		ValueConstant uriTemplate = dfac.getValueConstant(template);
 
 		// the URI template is always on the first position in the term list

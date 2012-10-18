@@ -3,6 +3,8 @@ package it.unibz.krdb.obda.protege4.gui;
 import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.model.Predicate;
 
+import java.util.regex.Pattern;
+
 public class MapItem {
 
 	private PredicateItem predicateItem;
@@ -111,11 +113,11 @@ public class MapItem {
 				end = input.indexOf("}");
 
 				// Extract the whole placeholder, e.g., "{?var}"
-				String placeHolder = input.substring(start, end + 1);
-				input = input.replace(placeHolder, "[]");
+				String placeHolder = Pattern.quote(input.substring(start, end+1));
+				input = input.replaceFirst(placeHolder, "[]");
 				
 				// Validate 5 : extract the variable name only, e.g., "{?var}" --> "var"
-				String variableName = placeHolder.substring(2, placeHolder.length() - 1);
+				String variableName = placeHolder.substring(4, placeHolder.length()-3);
 				if (variableName.equals("")) {
 					throw new Exception("Variable name must have at least 1 character");
 				}
