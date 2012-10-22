@@ -55,7 +55,7 @@ public abstract class SesameAbstractRepo implements
 	}
 	
 	public boolean isInitialized() {
-		return isInitialized();
+		return isinitialized;
 	}
 
 	public abstract QuestDBConnection getQuestConnection() throws OBDAException;

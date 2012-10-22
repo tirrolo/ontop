@@ -1,4 +1,5 @@
 package sesameWrapper;
+import info.aduna.iteration.CloseableIteratorIteration;
 import info.aduna.iteration.Iteration;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
@@ -14,8 +15,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.openrdf.OpenRDFUtil;
 import org.openrdf.model.Namespace;
@@ -47,6 +50,7 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.UnsupportedRDFormatException;
+import org.openrdf.sail.rdbms.iteration.NamespaceIteration;
 
 public class RepositoryConnection implements org.openrdf.repository.RepositoryConnection {
 
@@ -497,7 +501,9 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 		// TODO Auto-generated method stub
 		//Gets all declared namespaces as a RepositoryResult of Namespace objects. 
 		//Each Namespace object consists of a prefix and a namespace name. 
-		throw new RepositoryException("getNamespaces() not supported");
+		Set<Namespace> emptyset = new HashSet<Namespace>();
+		return new RepositoryResult<Namespace>(new CloseableIteratorIteration<Namespace, RepositoryException>(
+                emptyset.iterator()));
 	}
 
 	public ParserConfig getParserConfig() {

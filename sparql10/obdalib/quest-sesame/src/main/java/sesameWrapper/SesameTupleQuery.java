@@ -44,7 +44,7 @@ public class SesameTupleQuery implements TupleQuery {
 
 	public SesameTupleQuery(String queryString, String baseURI,
 			QuestDBStatement statement) throws MalformedQueryException {
-		if (queryString.contains("SELECT")) {
+		if (queryString.toLowerCase().contains("select")) {
 			this.queryString = queryString;
 			this.baseURI = baseURI;
 			this.stm = statement;

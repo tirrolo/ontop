@@ -6,6 +6,8 @@ package sesameWrapper;
  */
 
 
+import java.io.File;
+
 import org.openrdf.model.BNode;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Literal;
@@ -46,7 +48,7 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
     static {
         ValueFactory factory = ValueFactoryImpl.getInstance();
         QUEST_TYPE = factory.createURI(NAMESPACE, "quest_type");
-        NAME = factory.createURI(NAMESPACE, "name");
+        NAME = factory.createURI(NAMESPACE, "repo_name");
         OWLFILE = factory.createURI(NAMESPACE, "owlfile");
         OBDAFILE = factory.createURI(NAMESPACE, "obdafile");
     }
@@ -109,11 +111,14 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
     public void validate()
         throws RepositoryConfigException
     {
-        if (quest_type == null) {
+        if (quest_type == null || quest_type.isEmpty()) {
             throw new RepositoryConfigException("No type specified for repository implementation");
         }
-        if (owlfile == null){
+        if (owlfile == null || owlfile.isEmpty()){
         	throw new RepositoryConfigException("No Owl file specified for repository creation!");
+        }
+        if (obdafile ==null || obdafile.contentEquals("obdafile") ){
+        	throw new RepositoryConfigException("No OBDA file specified for repository creation!");
         }
     }
 
