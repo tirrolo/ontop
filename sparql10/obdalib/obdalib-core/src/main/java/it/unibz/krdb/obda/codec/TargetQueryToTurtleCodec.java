@@ -120,7 +120,7 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 		if (!containsQUESTPrefix) {
 			prefManClone.addPrefix(OBDAVocabulary.PREFIX_QUEST, OBDAVocabulary.NS_QUEST);
 		}
-
+		
 		String shortForm = prefManClone.getShortForm(uri, insideQuotes);
 
 		return shortForm;
@@ -161,13 +161,11 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 					sb.append(fname);
 				}
 			} else {
-				if (functionSymbol.getName().toString().equals(OBDAVocabulary.QUEST_URI)) { // TODO: Make this as a
-													// BuildinPredicate
-					String uriTemplate = function.getTerms().get(0).toString();
-
+				if (functionSymbol.getName().toString().equals(OBDAVocabulary.QUEST_URI)) {
+					String uriTemplate = ((ValueConstant) function.getTerms().get(0)).getValue();
 					// Shorten the URI if possible
 					uriTemplate = getAbbreviatedName(uriTemplate, true);
-
+						
 					sb.append("<");
 					sb.append("\"");
 					StringTokenizer st = new StringTokenizer(uriTemplate, "}", true);
