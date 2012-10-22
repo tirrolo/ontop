@@ -1,6 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.questdb;
 
 import it.unibz.krdb.obda.io.DataManager;
+import it.unibz.krdb.obda.io.ModelIOManager;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
@@ -67,10 +68,12 @@ public class QuestDBVirtualStore extends QuestDBAbstractStore {
 		OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
 
 		OBDAModel obdaModel = fac.getOBDAModel();
-		QueryController qcontroller = new QueryController();
-		DataManager ioManager = new DataManager(obdaModel, qcontroller);
-		ioManager.loadOBDADataFromURI(obdaModelURI, owlontology.getOntologyID()
-				.getOntologyIRI().toURI(), obdaModel.getPrefixManager());
+//		QueryController qcontroller = new QueryController();
+		ModelIOManager modelIO = new ModelIOManager(obdaModel);
+		modelIO.load(new File(obdaModelURI));
+//		DataManager ioManager = new DataManager(obdaModel, qcontroller);
+//		ioManager.loadOBDADataFromURI(obdaModelURI, owlontology.getOntologyID()
+//				.getOntologyIRI().toURI(), obdaModel.getPrefixManager());
 
 		questInstance = new Quest();
 		questInstance.setPreferences(config);
