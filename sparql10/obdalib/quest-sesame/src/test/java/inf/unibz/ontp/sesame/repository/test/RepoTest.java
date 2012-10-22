@@ -2,15 +2,19 @@ package inf.unibz.ontp.sesame.repository.test;
 
 
 import java.io.File;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.Set;
 
 import org.junit.Test;
 import org.openrdf.http.client.HTTPClient;
+import org.openrdf.model.Statement;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.config.RepositoryConfig;
 import org.openrdf.repository.config.RepositoryConfigUtil;
 import org.openrdf.repository.config.RepositoryFactory;
@@ -22,13 +26,17 @@ import org.openrdf.repository.manager.LocalRepositoryManager;
 import org.openrdf.repository.manager.RemoteRepositoryManager;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.repository.sail.config.SailRepositoryConfig;
+import org.openrdf.repository.sparql.SPARQLRepository;
+import org.openrdf.rio.ParserConfig;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFParser.DatatypeHandling;
 import org.openrdf.sail.config.SailImplConfig;
 import org.openrdf.sail.memory.config.MemoryStoreConfig;
 import org.openrdf.sail.nativerdf.NativeStore;
 
 import sesameWrapper.SesameRepositoryConfig;
 import sesameWrapper.SesameRepositoryFactory;
+import sesameWrapper.StartJetty;
 
 
 public class RepoTest {
@@ -152,7 +160,8 @@ public class RepoTest {
 		try{
 			System.out.println("\nTEST4....");
 			File dataDir = new File("c:\\Project\\Timi\\");
-			String owlfile = "src/test/resources/onto2.owl";
+			String owlfile = "C:\\Users\\TiBagosi\\Downloads\\openrdf-sesame-2.6.9-sdk\\openrdf-sesame-2.6.9\\bin\\onto2.owl";
+			//"src/test/resources/onto2.owl";
 
 			
 			LocalRepositoryManager man = new LocalRepositoryManager(dataDir);
@@ -183,8 +192,9 @@ public class RepoTest {
 			
 			
 			 RepositoryConnection con = repository.getConnection();
-				
-			 File ff = new File("src/test/resources/onto2data.rdf");
+			
+			 File ff = new File("C:\\Users\\TiBagosi\\Downloads\\openrdf-sesame-2.6.9-sdk\\openrdf-sesame-2.6.9\\bin\\onto2plus.rdf");
+			 //"src/test/resources/onto2plus.owl");
 		
 			 
 			 con.add(ff, "http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#", RDFFormat.RDFXML);
@@ -199,6 +209,7 @@ public class RepoTest {
 			  con.close();
 			  repository.shutDown();
 		
+			 man.removeRepositoryConfig(repositoryId);
 			man.shutDown();
 			  
 		}catch(Exception e)
@@ -212,12 +223,17 @@ public class RepoTest {
 	{
 		try{
 			System.out.println("\nTEST5....");
-			String owlfile = "src/test/resources/onto2.owl";
+			String owlfile = "onto2.owl";
+					//"C:\\Users\\TiBagosi\\Downloads\\openrdf-sesame-2.6.9-sdk\\openrdf-sesame-2.6.9\\bin\\onto2.owl";
+			//"src/test/resources/onto2.owl";
 
+			Thread t = new Thread(new StartJetty());
+			//t.start();
+			//t.join();
 			
+		
 			RemoteRepositoryManager man = new RemoteRepositoryManager("http://localhost:8080/openrdf-sesame");
 			man.initialize();
-			man.removeRepositoryConfig("testdb");
 			Set<String>ss = man.getRepositoryIDs();
 			for (String s: ss)
 				System.out.println(s);
@@ -230,7 +246,9 @@ public class RepoTest {
 			conf.setQuestType("quest-inmemory");
 			conf.setOwlFile(owlfile);
 			
-			RepositoryImplConfig repositoryTypeSpec =  conf;
+			//SailImplConfig backendConfig = new MemoryStoreConfig();
+			
+			RepositoryImplConfig repositoryTypeSpec =  conf;// new SailRepositoryConfig(backendConfig);
 			
 			String repositoryId = "testdb";
 			RepositoryConfig repConfig = new RepositoryConfig(repositoryId, repositoryTypeSpec);
@@ -238,33 +256,37 @@ public class RepoTest {
 			
 			RepositoryConfig cnf = man.getRepositoryConfig(repositoryId);
 			System.out.println(cnf.getRepositoryImplConfig().toString());
-			
+			 
 			ss = man.getRepositoryIDs();
 			for (String s: ss)
 				{
 				System.out.println(s);
 				}
 			
-			
 			Repository repository = man.getRepository(repositoryId);
-			System.out.println(repository.getClass().toString());
 			
 			 RepositoryConnection con = repository.getConnection();
 				
-			 File ff = new File("src/test/resources/onto2data.rdf");
+			 System.out.println(con.getClass().getName());
+			 File ff = new File("src/test/resources/onto2plus.owl");
+					 //"C:\\Users\\TiBagosi\\Downloads\\openrdf-sesame-2.6.9-sdk\\openrdf-sesame-2.6.9\\bin\\onto2plus.rdf");
+			 //"src/test/resources/onto2plus.owl");
 		
 			 
 			 con.add(ff, "http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#", RDFFormat.RDFXML);
+		
 			 
-			
-			      String queryString = "SELECT * where {?s ?p ?o} Limit 20";
+			System.out.println("Conn empty: "+con.isEmpty());
+			      String queryString = "SELECT * WHERE {?s ?p ?o} Limit 20";
 			      TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 			      TupleQueryResult result = tupleQuery.evaluate();
+			      System.out.println("RESULT hasdata: "+result.hasNext());
 			    	  while(result.hasNext())
 			        System.out.println(result.next());
 			    	 
 			  con.close();
 			  repository.shutDown();
+			  man.removeRepositoryConfig("testdb");
 			  man.shutDown();
 			  
 		}catch(Exception e)
