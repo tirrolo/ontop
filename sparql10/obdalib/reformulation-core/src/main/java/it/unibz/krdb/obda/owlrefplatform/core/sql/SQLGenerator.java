@@ -793,7 +793,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 			 * CONCAT
 			 */
 			ValueConstant c = (ValueConstant) t;
-			StringTokenizer tokenizer = new StringTokenizer(c.toString(), "{}");
+			StringTokenizer tokenizer = new StringTokenizer(c.getValue(), "{}");
 			String functionString = jdbcutil.getSQLLexicalForm(tokenizer
 					.nextToken());
 			List<String> vex = new LinkedList<String>();
