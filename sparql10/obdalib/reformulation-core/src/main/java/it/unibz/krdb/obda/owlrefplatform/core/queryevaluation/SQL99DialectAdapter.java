@@ -106,6 +106,6 @@ public class SQL99DialectAdapter implements SQLDialectAdapter {
 
 	@Override
 	public String sqlRegex(String columnname, String pattern) {
-		return String.format("%s REGEXP %s", columnname, pattern);
+		return String.format("%s LIKE %s", columnname, pattern);
 	}
 }
