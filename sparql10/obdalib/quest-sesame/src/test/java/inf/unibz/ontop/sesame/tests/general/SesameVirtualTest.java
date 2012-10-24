@@ -47,15 +47,15 @@ public class SesameVirtualTest extends TestCase {
 	private OBDAModel obdaModel;
 	private OWLOntology ontology;
 
-	final String owlfile = "../quest-owlapi3/src/test/resources/test/stockexchange-unittest.owl";
-	final String obdafile = "../quest-owlapi3/src/test/resources/test/stockexchange-h2-unittest.obda";
+	final String owlfile = "../quest-owlapi3/src/test/resources/test/bsbm.owl";
+	final String obdafile = "../quest-owlapi3/src/test/resources/test/bsbm.obda";
 	
 	public void setup() throws Exception
 	{
 		/* * Initializing and H2 database with the stock exchange data
 		 */
 		// String driver = "org.h2.Driver";
-		String url = "jdbc:h2:mem:questjunitdb";
+		String url = "jdbc:h2:tcp://localhost/quest";
 		String username = "sa";
 		String password = "";
 
@@ -64,7 +64,7 @@ public class SesameVirtualTest extends TestCase {
 		conn = DriverManager.getConnection(url, username, password);
 		Statement st = conn.createStatement();
 
-		FileReader reader = new FileReader("../quest-owlapi3/src/test/resources/test/stockexchange-create-h2.sql");
+		/*FileReader reader = new FileReader("../quest-owlapi3/src/test/resources/test/stockexchange-create-h2.sql");
 		BufferedReader in = new BufferedReader(reader);
 		StringBuilder bf = new StringBuilder();
 		String line = in.readLine();
@@ -75,7 +75,7 @@ public class SesameVirtualTest extends TestCase {
 
 		st.executeUpdate(bf.toString());
 		conn.commit();
-
+*/
 		// Loading the OWL file
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		ontology = manager.loadOntologyFromOntologyDocument((new File(owlfile)));
@@ -92,7 +92,7 @@ public class SesameVirtualTest extends TestCase {
 	
 	public void test() throws Exception
 	{	
-		setup();
+//		setup();
 		//create a sesame virtual repository
 		RepositoryConnection con = null;
 		Repository repo = null;
@@ -106,8 +106,8 @@ public class SesameVirtualTest extends TestCase {
 			con = repo.getConnection();
 			
 		///query repo
-		      String queryString = "PREFIX :<http://www.owl-ontologies.com/Ontology1207768242.owl#>\n" +
-		      		"SELECT ?x ?y WHERE {?x :belongsToCompany ?y}";
+		      String queryString = 
+		      		"SELECT * WHERE {?x ?p ?y} limit 10";
 		      TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
 		      TupleQueryResult result = tupleQuery.evaluate();
 		      try {
@@ -121,7 +121,7 @@ public class SesameVirtualTest extends TestCase {
 		      finally {
 		         result.close();
 		      }
-			  System.out.println("Closing..,");
+			  System.out.println("Closing...");
 		      con.close();
 		   }
 		 catch(Exception e)

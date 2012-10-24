@@ -9,6 +9,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.IntegerLiteralImpl;
@@ -34,55 +35,37 @@ public class SesameClassicTest extends TestCase {
 	
 	public void setupInMemory() throws Exception 
 	{
-	
-			//create a sesame in-memory H2 repository	
-			String owlfile = "src/test/resources/onto2.owl";
-				//"/home/timi/ontologies/helloworld/helloworld.owl";
-			
-			repo = new SesameClassicInMemoryRepo("my_name", owlfile);
-	
-			repo.initialize();
-			
-			con = (RepositoryConnection) repo.getConnection();
-		
+		// create a sesame in-memory repository
+		String owlfile = "src/test/resources/onto2.owl";
+
+		repo = new SesameClassicInMemoryRepo("my_name", owlfile);
+		repo.initialize();
+		con = (RepositoryConnection) repo.getConnection();
 	}
 	
 	public void setupJDBC() throws Exception
 	{
-	
-		//create a sesame JDBC repository	
-			
-			String owlfile = "src/test/resources/onto2.owl";
-				//"/home/timi/ontologies/helloworld/helloworld.owl";
-			
-			repo = new SesameClassicJDBCRepo("my_name", owlfile);
-	
-			repo.initialize();
-			
-			con = (RepositoryConnection) repo.getConnection();
-		
+		// create a sesame JDBC repository
+		String owlfile = "src/test/resources/onto2.owl";
+
+		repo = new SesameClassicJDBCRepo("my_name", owlfile);
+		repo.initialize();
+		con = (RepositoryConnection) repo.getConnection();
 	}
 	
 	
 	public void addFromFile() throws RDFParseException, RepositoryException, IOException
 	{
-	
-	///add data to repo
+		// /add data to repo
 		File file = new File("src/test/resources/onto2plus.owl");
-				
-		  if (file==null)
-			  System.out.println("FiLE not FOUND!");
-		  else
-		  {
-			  System.out.println("Add from file.");
-		      con.add(file, baseURI, RDFFormat.RDFXML);
-		  }	
-		   
+
+		System.out.println("Add from file.");
+		con.add(file, baseURI, RDFFormat.RDFXML);
 	}
+	
 	
 	public void addFromURI() throws RepositoryException
 	{
-		
 		ValueFactory f = repo.getValueFactory();
 
 		// create some resources and literals to make statements out of
@@ -93,59 +76,78 @@ public class SesameClassicTest extends TestCase {
 		Literal bobsAge = f.createLiteral(5);
 		Literal alicesAge = f.createLiteral(14);
 
-		
-		      // alice is a person
-		      con.add(alice, RDF.TYPE, person);
-		      // alice's name is "Alice"
-		      con.add(alice, age, alicesAge);
+		// alice is a person
+		con.add(alice, RDF.TYPE, person);
+		// alice's name is "Alice"
+		con.add(alice, age, alicesAge);
 
-		      // bob is a person
-		      con.add(bob, RDF.TYPE, person);
-		      // bob's name is "Bob"
-		      con.add(bob, age, bobsAge);
-		 
+		// bob is a person
+		con.add(bob, RDF.TYPE, person);
+		// bob's name is "Bob"
+		con.add(bob, age, bobsAge);
 	}
 	
 	
 	public void tupleQuery() throws QueryEvaluationException, RepositoryException, MalformedQueryException
 	{	
-		
-		///query repo
-		      String queryString = "PREFIX : \n<http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#>\n " +
-		      		"SELECT ?x ?y WHERE { ?x a :Person. ?x :age ?y } ";
-		      TupleQuery tupleQuery = (con).prepareTupleQuery(QueryLanguage.SPARQL, queryString);
-		      TupleQueryResult result = tupleQuery.evaluate();
-		     
-		      System.out.println(result.getBindingNames());
-		      
-		    	  while (result.hasNext()) {
-		    		   BindingSet bindingSet = result.next();
-		    		   Value valueOfX =  bindingSet.getValue("x");
-		    		   Literal valueOfY = (Literal) bindingSet.getValue("y");
-		    		   System.out.println(valueOfX.stringValue()
-		    				   +", "+valueOfY.floatValue());
-		    	  }
-		         result.close();
+
+		// /query repo
+		// con.setNamespace("onto",
+		// "<http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#>");
+		// System.out.println(con.getNamespaces().next().toString());
+		String queryString = "PREFIX : \n<http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#>\n "
+				+ "SELECT ?x ?y WHERE { ?x a :Person. ?x :age ?y } ";
+		// String queryString =
+		// "SELECT ?x ?y WHERE { ?x a onto:Person. ?x onto:age ?y } ";
+		TupleQuery tupleQuery = (con).prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+		TupleQueryResult result = tupleQuery.evaluate();
+
+		System.out.println(result.getBindingNames());
+
+		while (result.hasNext()) {
+			BindingSet bindingSet = result.next();
+			Value valueOfX = bindingSet.getValue("x");
+			Literal valueOfY = (Literal) bindingSet.getValue("y");
+			System.out.println(valueOfX.stringValue() + ", "+ valueOfY.floatValue());
+		}
+		result.close();
+	}
+	
+	public void graphQuery() throws RepositoryException, MalformedQueryException, QueryEvaluationException
+	{
+		String queryString = "PREFIX : \n<http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#>\n "
+				+ "CONSTRUCT {?x :eta ?y} WHERE { ?x :age ?y} ";
+		// String queryString =
+		// "SELECT ?x ?y WHERE { ?x a onto:Person. ?x onto:age ?y } ";
+		GraphQuery graphQuery = (con).prepareGraphQuery(QueryLanguage.SPARQL, queryString);
+		GraphQueryResult result = graphQuery.evaluate();
+
+		while (result.hasNext()) {
+			Statement st = result.next();
+			System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
+		}
+		result.close();
 	}
 	
 	
 	public void booleanQuery() throws QueryEvaluationException, RepositoryException, MalformedQueryException
 	{	
 		
-		///query repo
-		      String queryString = "PREFIX : \n<http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#>\n " +
-		      		"ASK { :3 a :Person} ";
-		      BooleanQuery boolQuery = (con).prepareBooleanQuery(QueryLanguage.SPARQL, queryString);
-		      boolean result = boolQuery.evaluate();
-		     
-		      System.out.println(result);
+		// /query repo
+		String queryString = "PREFIX : \n<http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#>\n "
+				+ "ASK { :Lisa a :Person} ";
+		BooleanQuery boolQuery = (con).prepareBooleanQuery(
+				QueryLanguage.SPARQL, queryString);
+		boolean result = boolQuery.evaluate();
+
+		System.out.println(result);
 	}
 	
 	public void close() throws RepositoryException
 	{
-		 System.out.println("Closing...");
-		 con.close();
-	      System.out.println("Done.");	
+		System.out.println("Closing...");
+		con.close();
+		System.out.println("Done.");
 	}
 	
 	
@@ -157,6 +159,7 @@ public class SesameClassicTest extends TestCase {
 		addFromFile();
 		tupleQuery();
 		//booleanQuery();
+		graphQuery();
 		close();
 		}
 		catch(Exception e)
