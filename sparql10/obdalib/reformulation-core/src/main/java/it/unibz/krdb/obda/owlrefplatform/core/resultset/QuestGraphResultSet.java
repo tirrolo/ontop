@@ -45,11 +45,11 @@ public class QuestGraphResultSet implements GraphResultSet {
 	}
 
 	@Override
-	public boolean next() throws OBDAException {
+	public boolean hasNext() throws OBDAException {
 		return tupleResultSet.nextRow();
 	}
 
-	public List<Assertion> getAssertions() throws OBDAException {
+	public List<Assertion> next() throws OBDAException {
 		List<Assertion> tripleAssertions = new ArrayList<Assertion>();
 		for (Triple triple : constructTemplate.getTriples()) {
 			Constant subjectConstant = getConstant(triple.getSubject());
