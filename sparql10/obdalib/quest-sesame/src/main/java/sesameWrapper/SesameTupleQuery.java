@@ -78,58 +78,16 @@ public class SesameTupleQuery implements TupleQuery {
 	}
 
 	private Binding createBinding(String bindingName, OBDAResultSet set) {
-		Value value = null;
-		try {
-
-			int column = set.getSignature().indexOf(bindingName) + 1;
-			Constant c = set.getConstant(bindingName);
-			if (c instanceof BNode)
-				value = fact.createBNode(((BNode) c).getName());
-			else if (c instanceof URIConstant)
-				value = fact.createURI(((URIConstant) c).getURI().toString());
-			else if (c instanceof ValueConstant) {
-				ValueConstant literal = set.getLiteral(column);
-				String lang = literal.getLanguage();
-
-				URI datatype = null;
-				if (literal.getType() == COL_TYPE.BOOLEAN)
-					datatype = fact.createURI(OBDAVocabulary.XSD_BOOLEAN_URI);
-				else if (literal.getType() == COL_TYPE.DATETIME)
-					datatype = fact.createURI(OBDAVocabulary.XSD_DATETIME_URI);
-				else if (literal.getType() == COL_TYPE.DECIMAL)
-					datatype = fact.createURI(OBDAVocabulary.XSD_DECIMAL_URI);
-				else if (literal.getType() == COL_TYPE.DOUBLE)
-					datatype = fact.createURI(OBDAVocabulary.XSD_DOUBLE_URI);
-				else if (literal.getType() == COL_TYPE.INTEGER)
-					datatype = fact.createURI(OBDAVocabulary.XSD_INTEGER_URI);
-				else if (literal.getType() == COL_TYPE.LITERAL)
-					datatype = null;
-				else if (literal.getType() == COL_TYPE.OBJECT)
-					datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
-				else if (literal.getType() == COL_TYPE.STRING)
-					datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
-
-				if (datatype != null)
-					value = fact.createLiteral(literal.getValue(), datatype);
-				else if (lang == null)
-					value = fact.createLiteral(literal.getValue(), (URI) null);
-				else
-					value = fact.createLiteral(literal.getValue(), lang);
-
-			}
-
-			return new BindingImpl(bindingName, value);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		
+		SesameBindingSet bset = new SesameBindingSet(set);
+		return bset.getBinding(bindingName);
 	}
 
 	// needed by TupleQuery interface
 	public void evaluate(TupleQueryResultHandler handler)
 			throws QueryEvaluationException, TupleQueryResultHandlerException {
 
-		SesameTupleQueryResult result = (SesameTupleQueryResult) evaluate();
+		TupleQueryResult result = evaluate();
 		handler.startQueryResult(result.getBindingNames());
 		while (result.hasNext())
 			handler.handleSolution(result.next());

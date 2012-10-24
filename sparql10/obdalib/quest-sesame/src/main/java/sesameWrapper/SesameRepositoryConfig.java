@@ -117,7 +117,8 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
         if (owlfile == null || owlfile.isEmpty()){
         	throw new RepositoryConfigException("No Owl file specified for repository creation!");
         }
-        if (obdafile ==null || obdafile.contentEquals("obdafile") ){
+        if (quest_type.contentEquals("quest-virtual"))
+        		if (obdafile ==null || obdafile.contentEquals("obdafile") ){
         	throw new RepositoryConfigException("No OBDA file specified for repository creation!");
         }
     }

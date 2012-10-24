@@ -5,6 +5,8 @@ import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
 import it.unibz.krdb.obda.owlrefplatform.questdb.QuestDB;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
@@ -14,11 +16,11 @@ public abstract class SesameAbstractRepo implements
 		org.openrdf.repository.Repository {
 
 	private RepositoryConnection repoConnection;
-
+	private Map<String, String> namespaces;
 	boolean isinitialized = false;
 	
 	public SesameAbstractRepo() {
-
+		namespaces = new HashMap<String, String>();
 	}
 
 	public RepositoryConnection getConnection() throws RepositoryException {
@@ -88,5 +90,30 @@ public abstract class SesameAbstractRepo implements
 	
 
 	public abstract String getType();
+	
+	public void setNamespace(String key, String value)
+	{
+		namespaces.put(key, value);
+	}
+	
+	public String getNamespace(String key)
+	{
+		return namespaces.get(key);
+	}
+	
+	public Map<String, String> getNamespaces()
+	{
+		return namespaces;
+	}
+	
+	public void setNamespaces(Map<String, String> nsp)
+	{
+		this.namespaces = nsp;
+	}
+
+	public void removeNamespace(String key) 
+	{
+		namespaces.remove(key);
+	}
 
 }

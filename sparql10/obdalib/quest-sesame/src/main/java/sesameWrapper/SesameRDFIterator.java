@@ -68,13 +68,13 @@ public class SesameRDFIterator extends RDFHandlerBase implements
 	public void handleStatement(Statement st) throws RDFHandlerException {
 
 		// add to buffer
-		System.out.print("Handle statement: "
-				+ st.getSubject().toString().split("#")[1] + " "
-				+ st.getPredicate().getLocalName() + " ");
-		if (st.getObject().toString().split("#").length > 1)
-			System.out.println(st.getObject().toString().split("#")[1]);
-		else
-			System.out.println(st.getObject().toString().split("#")[0]);
+		System.out.println("Handle statement: "+st.toString());
+//				+ st.getSubject().toString().split("#")[1] + " "
+//				+ st.getPredicate().getLocalName() + " ");
+//		if (st.getObject().toString().split("#").length > 1)
+//			System.out.println(st.getObject().toString().split("#")[1]);
+//		else
+//			System.out.println(st.getObject().toString().split("#")[0]);
 		// add statement to buffer
 		try {
 			// add to the tail of the queue
