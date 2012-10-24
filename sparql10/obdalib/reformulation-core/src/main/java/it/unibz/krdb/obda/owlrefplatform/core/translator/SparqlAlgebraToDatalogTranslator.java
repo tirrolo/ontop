@@ -17,6 +17,7 @@ import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -93,6 +94,7 @@ import com.hp.hpl.jena.sparql.expr.nodevalue.NodeValueFloat;
 import com.hp.hpl.jena.sparql.expr.nodevalue.NodeValueInteger;
 import com.hp.hpl.jena.sparql.expr.nodevalue.NodeValueNode;
 import com.hp.hpl.jena.sparql.expr.nodevalue.NodeValueString;
+import com.hp.hpl.jena.sparql.syntax.Template;
 
 /***
  * Translate a SPARQL algebra expression into a Datalog program that has the
@@ -103,7 +105,6 @@ import com.hp.hpl.jena.sparql.expr.nodevalue.NodeValueString;
  * This programs needs to be flattened by another procedure later.
  * 
  * @author mariano
- * 
  */
 public class SparqlAlgebraToDatalogTranslator {
 
@@ -111,38 +112,46 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	private static NewLiteralComparator comparator = new NewLiteralComparator();
 
-	protected static org.slf4j.Logger log = LoggerFactory
-			.getLogger(SparqlAlgebraToDatalogTranslator.class);
+	protected static org.slf4j.Logger log = 
+			LoggerFactory.getLogger(SparqlAlgebraToDatalogTranslator.class);
 
+	/**
+	 * Translate a given SPARQL query string to datalog program.
+	 * 
+	 * @param query
+	 * 			The SPARQL query string.
+	 * @return Datalog program that represents the construction of the SPARQL query.
+	 */
 	public static DatalogProgram translate(String query) {
 		Query arqQuery = QueryFactory.create(query);
 		return translate(arqQuery);
 	}
 
+	/**
+	 * Translate a given SPARQL query object to datalog program.
+	 * 
+	 * @param query
+	 * 			The Query object.
+	 * @return Datalog program that represents the construction of the SPARQL query.
+	 */
 	public static DatalogProgram translate(Query arqQuery) {
-		// Query arqQuery = QueryFactory.create(strquery);
-		if (arqQuery.isConstructType() || arqQuery.isDescribeType()) {
-			throw new QueryException(
-					"Only SELECT and ASK queries are supported.");
-		}
+		
 		Op op = Algebra.compile(arqQuery);
 
 		log.debug("SPARQL algebra: \n{}", op.toString());
 
 		DatalogProgram result = ofac.getDatalogProgram();
 
+		// Render the variable names in the signature into Variable object
 		List<Variable> vars = new LinkedList<Variable>();
-		if (arqQuery.isSelectType()) {
-			for (String vs : arqQuery.getResultVars()) {
-				vars.add(ofac.getVariable(vs));
-			}
+		for (String vs : getSignature(arqQuery)) {
+			vars.add(ofac.getVariable(vs));
 		}
 
 		int[] freshvarcount = { 1 };
 
 		translate(vars, op, result, 1, freshvarcount);
 		return result;
-
 	}
 
 	public static void translate(List<Variable> vars, Op op, DatalogProgram pr,
@@ -573,13 +582,9 @@ public class SparqlAlgebraToDatalogTranslator {
 			DatalogProgram pr, int i, int[] varcount) {
 
 		if (triples.size() == 1) {
-			// Set<Variable> leftVars = getVariables(triples.get(0));
-			// List<Variable> leftList = new LinkedList<Variable>();
-			// leftList.addAll(leftVars);
-			// Collections.sort(leftList, comparator);
 			translate(vars, triples.get(0), pr, i, varcount);
-		} else if (triples.size() >= 2) {
 
+		} else if (triples.size() >= 2) {
 			/* Preparing the head of the Join rule */
 			List<NewLiteral> headVars = new LinkedList<NewLiteral>();
 			for (Variable var : vars) {
@@ -589,22 +594,18 @@ public class SparqlAlgebraToDatalogTranslator {
 			Atom head = ofac.getAtom(answerPred, headVars);
 
 			/* Preparing the two atoms */
-
 			Set<Variable> atom1VarsSet = getVariables(triples.get(0));
 			List<NewLiteral> atom1VarsList = new LinkedList<NewLiteral>();
 			atom1VarsList.addAll(atom1VarsSet);
 			Collections.sort(atom1VarsList, comparator);
-			Predicate leftAtomPred = ofac.getPredicate("ans" + (2 * i),
-					atom1VarsList.size());
+			Predicate leftAtomPred = ofac.getPredicate("ans" + (2 * i), atom1VarsList.size());
 			Atom leftAtom = ofac.getAtom(leftAtomPred, atom1VarsList);
 
-			Set<Variable> atom2VarsSet = getVariables(triples.subList(1,
-					triples.size()));
+			Set<Variable> atom2VarsSet = getVariables(triples.subList(1, triples.size()));
 			List<NewLiteral> atom2VarsList = new LinkedList<NewLiteral>();
 			atom2VarsList.addAll(atom2VarsSet);
 			Collections.sort(atom2VarsList, comparator);
-			Predicate rightAtomPred = ofac.getPredicate("ans" + ((2 * i) + 1),
-					atom2VarsList.size());
+			Predicate rightAtomPred = ofac.getPredicate("ans" + ((2 * i) + 1), atom2VarsList.size());
 			Atom rightAtom = ofac.getAtom(rightAtomPred, atom2VarsList);
 
 			/* The join */
@@ -614,16 +615,16 @@ public class SparqlAlgebraToDatalogTranslator {
 			CQIE newrule = ofac.getCQIE(head, joinAtom);
 			pr.appendRule(newrule);
 
-			// triples_i = Join(triples(
 			List<Variable> newvars = new LinkedList<Variable>();
-			for (NewLiteral var : atom1VarsList)
+			for (NewLiteral var : atom1VarsList) {
 				newvars.add((Variable) var);
+			}
 			translate(newvars, triples.get(0), pr, 2 * i, varcount);
 			newvars.clear();
-			for (NewLiteral var : atom2VarsList)
+			for (NewLiteral var : atom2VarsList) {
 				newvars.add((Variable) var);
-			translate(newvars, triples.subList(1, triples.size()), pr,
-					(2 * i) + 1, varcount);
+			}
+			translate(newvars, triples.subList(1, triples.size()), pr, (2 * i) + 1, varcount);
 
 		} else {
 			throw new RuntimeException("Error tranlsating a BGP, size was 0.");
@@ -1240,17 +1241,42 @@ public class SparqlAlgebraToDatalogTranslator {
 			NewLiteral term3 = (arg3 != null) ? getBooleanTerm(arg3) : ofac.getNULL();
 			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_REGEX, term1, term2, term3);
 		} else {
-			throw new RuntimeException("The builtin function "
-					+ expr.toString() + " is not supported yet!");
+			throw new RuntimeException("The builtin function " + expr.toString() + " is not supported yet!");
 		}
 		return builtInFunction;
 	}
-
-	public static List<String> getSignature(String query) {
-		Query q = QueryFactory.create(query);
-		return q.getResultVars();
+	
+	public static List<String> getSignature(Query query) {
+		List<String> vars = new ArrayList<String>();
+		if (query.isSelectType()) {
+			vars = query.getResultVars();
+			
+		} else if (query.isConstructType()) {
+			Template constructTemplate = query.getConstructTemplate();
+			for (Triple triple : constructTemplate.getTriples()) {
+				/* 
+				 * Check if the subject, predicate, object is a variable.
+				 */
+				Node subject = triple.getSubject();  // subject
+				if (subject instanceof Var) {
+					String vs = ((Var) subject).getName();
+					vars.add(vs);
+				}
+				Node predicate = triple.getPredicate();  // predicate
+				if (predicate instanceof Var) {
+					String vs = ((Var) predicate).getName();
+					vars.add(vs);
+				}
+				Node object = triple.getObject();  // object
+				if (object instanceof Var) {
+					String vs = ((Var) object).getName();
+					vars.add(vs);
+				}
+			}
+		}
+		return vars;
 	}
-
+	
 	public static boolean isBoolean(String query) {
 		Query q = QueryFactory.create(query);
 		return q.isAskType();

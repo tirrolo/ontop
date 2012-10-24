@@ -1,6 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core;
 
 import it.unibz.krdb.obda.io.DataManager;
+import it.unibz.krdb.obda.model.GraphResultSet;
 import it.unibz.krdb.obda.model.OBDAConnection;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAModel;
@@ -157,18 +158,21 @@ public class QuestDBStatement implements OBDAStatement {
 	@Override
 	public void cancel() throws OBDAException {
 		st.cancel();
-
 	}
 
 	@Override
 	public void close() throws OBDAException {
 		st.close();
-
 	}
 
 	@Override
 	public OBDAResultSet execute(String query) throws OBDAException {
 		return st.execute(query);
+	}
+	
+	@Override
+	public GraphResultSet executeConstruct(String query) throws OBDAException {
+		return st.executeConstruct(query);
 	}
 
 	@Override
@@ -268,5 +272,4 @@ public class QuestDBStatement implements OBDAStatement {
 	public String getRewriting(String query) throws Exception {
 		return st.getRewriting(query);
 	}
-
 }

@@ -22,7 +22,7 @@ import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.ABoxToFactConverter;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSDataRepositoryManager;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSDirectDataRepositoryManager;
+//import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSDirectDataRepositoryManager;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSSIRepositoryManager;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
@@ -176,6 +176,8 @@ public class Quest implements Serializable {
 
 	Map<String, Boolean> isbooleancache = new HashMap<String, Boolean>();
 
+	Map<String, Boolean> isconstructcache = new HashMap<String, Boolean>();
+	
 	protected Map<String, String> getSQLCache() {
 		return querycache;
 	}
@@ -186,6 +188,10 @@ public class Quest implements Serializable {
 
 	protected Map<String, Boolean> getIsBooleanCache() {
 		return isbooleancache;
+	}
+	
+	protected Map<String, Boolean> getIsConstructCache() {
+		return isconstructcache;
 	}
 
 	public void loadOBDAModel(OBDAModel model) {
