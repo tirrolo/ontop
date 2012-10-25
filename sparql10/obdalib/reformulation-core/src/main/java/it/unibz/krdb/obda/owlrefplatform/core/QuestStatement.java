@@ -19,8 +19,9 @@ import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.QueryVocabularyValidator;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.BooleanOWLOBDARefResultSet;
+import it.unibz.krdb.obda.owlrefplatform.core.resultset.ConstructGraphResultSet;
+import it.unibz.krdb.obda.owlrefplatform.core.resultset.DescribeGraphResultSet;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.EmptyQueryResultSet;
-import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestGraphResultSet;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestResultset;
 import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
 import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.syntax.Template;
 
 /**
@@ -90,6 +92,8 @@ public class QuestStatement implements OBDAStatement {
 	final Map<String, Boolean> isbooleancache;
 	
 	final Map<String, Boolean> isconstructcache;
+	
+	final Map<String, Boolean> isdescribecache;
 
 	public QuestStatement(Quest questinstance, QuestConnection conn, Statement st) {
 
@@ -99,19 +103,17 @@ public class QuestStatement implements OBDAStatement {
 		this.signaturecache = questinstance.getSignatureCache();
 		this.isbooleancache = questinstance.getIsBooleanCache();
 		this.isconstructcache = questinstance.getIsConstructCache();
+		this.isdescribecache = questinstance.getIsDescribeCache();
 
 		this.repository = questinstance.dataRepository;
 		this.conn = conn;
 		this.rewriter = questinstance.rewriter;
 		this.unfoldingmechanism = questinstance.unfolder;
 		this.querygenerator = questinstance.datasourceQueryGenerator;
-		// this.engine = eng;
 
 		this.sqlstatement = st;
 		this.validator = questinstance.vocabularyValidator;
-		// this.query = query;
 		this.unfoldingOBDAModel = questinstance.unfoldingOBDAModel;
-
 	}
 
 	private class QueryExecutionThread extends Thread {
@@ -160,6 +162,7 @@ public class QuestStatement implements OBDAStatement {
 				String sql = "";
 				boolean isBoolean = false;
 				boolean isConstruct = false;
+				boolean isDescribe = false;
 				List<String> signature = null;
 				
 				Query query = QueryFactory.create(strquery);
@@ -169,6 +172,7 @@ public class QuestStatement implements OBDAStatement {
 					signature = signaturecache.get(strquery);
 					isBoolean = isbooleancache.get(strquery);
 					isConstruct = isconstructcache.get(strquery);
+					isDescribe = isdescribecache.get(strquery);
 				} else {
 					sql = getUnfolding(strquery);
 					
@@ -180,6 +184,9 @@ public class QuestStatement implements OBDAStatement {
 					
 					isConstruct = isConstruct(query);
 					isconstructcache.put(strquery, isConstruct);
+					
+					isDescribe = isDescribe(query);
+					isdescribecache.put(strquery, isDescribe);
 				}
 
 				log.debug("Executing the query and get the result...");
@@ -189,6 +196,10 @@ public class QuestStatement implements OBDAStatement {
 					tupleResult = new BooleanOWLOBDARefResultSet(false, QuestStatement.this);
 				} else {
 					try {
+						// Check pre-condition for DESCRIBE
+						if (isDescribe && signature.size() > 1) {
+							throw new OBDAException("Only support query with one variable in DESCRIBE");
+						}
 						// Execute the SQL query string
 						executingSQL = true;
 						ResultSet set = sqlstatement.executeQuery(sql);
@@ -199,7 +210,11 @@ public class QuestStatement implements OBDAStatement {
 						} else if (isConstruct){
 							Template template = query.getConstructTemplate();
 							OBDAResultSet tuples = new QuestResultset(set, signature, QuestStatement.this);
-							graphResult = new QuestGraphResultSet(tuples, template);
+							graphResult = new ConstructGraphResultSet(tuples, template);
+						} else if (isDescribe) {
+							PrefixMapping pm = query.getPrefixMapping();
+							OBDAResultSet tuples = new QuestResultset(set, signature, QuestStatement.this);
+							graphResult = new DescribeGraphResultSet(tuples, pm);
 						} else { // is tuple-based results
 							tupleResult = new QuestResultset(set, signature, QuestStatement.this);
 						}
@@ -234,6 +249,14 @@ public class QuestStatement implements OBDAStatement {
 			throw new OBDAException("Cannot execute an empty query");
 		}
 		return executeConstructQuery(strquery);
+	}
+
+	@Override
+	public GraphResultSet executeDescribe(String strquery) throws OBDAException {
+		if (strquery.isEmpty()) {
+			throw new OBDAException("Cannot execute an empty query");
+		}
+		return executeDescribeQuery(strquery);
 	}
 	
 	/**
@@ -340,6 +363,28 @@ public class QuestStatement implements OBDAStatement {
 	}
 	
 	private GraphResultSet executeConstructQuery(String strquery) throws OBDAException {
+		CountDownLatch monitor = new CountDownLatch(1);
+		executionthread = new QueryExecutionThread(strquery, monitor);
+		executionthread.start();
+		try {
+			monitor.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		if (executionthread.errorStatus()) {
+			OBDAException ex = new OBDAException(executionthread.getException().getMessage());
+			ex.setStackTrace(executionthread.getStackTrace());
+			throw ex;
+		}
+
+		if (canceled == true) {
+			canceled = false;
+			throw new OBDAException("Query execution was cancelled");
+		}
+		return executionthread.getGraphResult();
+	}
+	
+	private GraphResultSet executeDescribeQuery(String strquery) throws OBDAException {
 		CountDownLatch monitor = new CountDownLatch(1);
 		executionthread = new QueryExecutionThread(strquery, monitor);
 		executionthread.start();
@@ -567,6 +612,10 @@ public class QuestStatement implements OBDAStatement {
 	
 	private boolean isConstruct(Query query) {
 		return query.isConstructType();
+	}
+
+	public boolean isDescribe(Query query) {
+		return query.isDescribeType();
 	}
 
 	@Override

@@ -176,6 +176,11 @@ public class QuestDBStatement implements OBDAStatement {
 	}
 
 	@Override
+	public GraphResultSet executeDescribe(String query) throws OBDAException {
+		return st.executeDescribe(query);
+	}
+
+	@Override
 	public int executeUpdate(String query) throws OBDAException {
 		return st.executeUpdate(query);
 	}

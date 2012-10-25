@@ -11,7 +11,9 @@ public interface OBDAStatement {
 	public OBDAResultSet execute(String query) throws OBDAException;
 
 	public GraphResultSet executeConstruct(String query) throws OBDAException;
-	
+
+	public GraphResultSet executeDescribe(String query) throws OBDAException;
+
 	public int executeUpdate(String query) throws OBDAException;
 
 	public OBDAConnection getConnection() throws OBDAException;

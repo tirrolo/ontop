@@ -1248,7 +1248,7 @@ public class SparqlAlgebraToDatalogTranslator {
 	
 	public static List<String> getSignature(Query query) {
 		List<String> vars = new ArrayList<String>();
-		if (query.isSelectType()) {
+		if (query.isSelectType() || query.isDescribeType()) {
 			vars = query.getResultVars();
 			
 		} else if (query.isConstructType()) {

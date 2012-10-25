@@ -177,7 +177,9 @@ public class Quest implements Serializable {
 	Map<String, Boolean> isbooleancache = new HashMap<String, Boolean>();
 
 	Map<String, Boolean> isconstructcache = new HashMap<String, Boolean>();
-	
+
+	Map<String, Boolean> isdescribecache = new HashMap<String, Boolean>();
+
 	protected Map<String, String> getSQLCache() {
 		return querycache;
 	}
@@ -194,6 +196,10 @@ public class Quest implements Serializable {
 		return isconstructcache;
 	}
 
+	public Map<String, Boolean> getIsDescribeCache() {
+		return isdescribecache;
+	}
+	
 	public void loadOBDAModel(OBDAModel model) {
 		isClassified = false;
 		inputOBDAModel = (OBDAModel) model.clone();
