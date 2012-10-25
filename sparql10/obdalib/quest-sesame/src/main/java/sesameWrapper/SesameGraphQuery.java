@@ -111,8 +111,8 @@ public class SesameGraphQuery implements GraphQuery {
 			Map<String, String> namespaces = new HashMap<String, String>();
 
 			List<Statement> results = new LinkedList<Statement>();
-			while (res.next()) {
-				List<Assertion> chunk = res.getAssertions();
+			while (res.hasNext()) {
+				List<Assertion> chunk = res.next();
 				for (Assertion as : chunk) {
 					Statement st = createStatement(as);
 					results.add(st);
