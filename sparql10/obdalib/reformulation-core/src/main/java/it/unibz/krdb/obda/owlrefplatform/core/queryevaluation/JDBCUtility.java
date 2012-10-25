@@ -146,7 +146,7 @@ public class JDBCUtility implements Serializable {
 		int minuslocation = datetime.indexOf('-');
 		int pluslocation = datetime.indexOf('+');
 		StringBuffer bf = new StringBuffer(datetime);
-		if (zlocation != 1) {
+		if (zlocation != -1) {
 			/*
 			 * replacing Z by +00:00
 			 */

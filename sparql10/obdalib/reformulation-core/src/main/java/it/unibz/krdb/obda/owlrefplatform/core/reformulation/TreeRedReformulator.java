@@ -89,6 +89,7 @@ public class TreeRedReformulator implements QueryRewriter {
 		/* Query preprocessing */
 
 		DatalogProgram anonymizedProgram = anonymizer.anonymize(prog);
+		
 
 		// log.debug("Removing redundant atoms by query containment");
 		/* Simpliying the query by removing redundant atoms w.r.t. to CQC */
@@ -138,6 +139,7 @@ public class TreeRedReformulator implements QueryRewriter {
 
 				for (CQIE newcq : piApplicator.apply(oldquery, relevantInclusions)) {
 					newqueriesbyPI.add(anonymizer.anonymize(newcq));
+					
 				}
 
 			}

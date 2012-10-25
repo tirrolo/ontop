@@ -129,7 +129,7 @@ public class Unifier {
 		/* applying the unifier to every term in the head */
 		Atom head = newq.getHead();
 		applyUnifier(head, unifier);
-		for (Atom bodyatom : newq.getBody()) {
+		for (Function bodyatom : newq.getBody()) {
 			applyUnifier(bodyatom, unifier);
 		}
 		return newq;

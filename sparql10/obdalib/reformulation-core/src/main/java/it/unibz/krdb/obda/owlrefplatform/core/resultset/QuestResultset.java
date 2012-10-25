@@ -216,8 +216,12 @@ public class QuestResultset implements OBDAResultSet {
 			System.out.println(set.getString(name));
 			System.out.println(set.getByte(name + "QuestType"));
 			COL_TYPE type = getQuestType((byte) set.getInt(name + "QuestType"));
-
-			if (type == COL_TYPE.OBJECT || type == null) {
+			Object realValue = set.getString(name);
+			
+			if (type == null || realValue == null)
+				return null;
+			
+			if (type == COL_TYPE.OBJECT) {
 				URI value = getURI(name);
 				result = fac.getURIConstant(value);
 			} else if (type == COL_TYPE.BNODE) {
@@ -301,6 +305,8 @@ public class QuestResultset implements OBDAResultSet {
 			return COL_TYPE.DATETIME;
 		} else if (sqltype == 9) {
 			return COL_TYPE.BOOLEAN;
+		}else if (sqltype == 0) {
+			return null;
 		} else {
 			throw new RuntimeException("COLTYPE unknown: " + sqltype);
 		}
@@ -311,6 +317,7 @@ public class QuestResultset implements OBDAResultSet {
 		String result = "";
 		try {
 			result = set.getString(name);
+			
 			String encoded = URIref.encode(result);
 			return URI.create(encoded);
 		} catch (SQLException e) {

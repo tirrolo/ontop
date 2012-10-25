@@ -2,6 +2,7 @@ package it.unibz.krdb.obda.model.impl;
 
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
+import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDAQueryModifiers;
 import it.unibz.krdb.obda.model.Variable;
@@ -55,7 +56,11 @@ public class CQIEImpl implements CQIE, ListListener {
 
 			this.body = eventbody;
 
-			eventbody.addListener(this);
+			registerListeners(eventbody);
+			
+			// TODO possible memory leak!!! we should also de-register when objects are removed
+			
+			
 		}
 
 		// The syntax for CQ may also contain no head, thus, this condition
@@ -65,6 +70,23 @@ public class CQIEImpl implements CQIE, ListListener {
 
 			EventGeneratingArrayList<NewLiteral> headterms = (EventGeneratingArrayList<NewLiteral>) head.getTerms();
 			headterms.addListener(this);
+		}
+	}
+
+	private void registerListeners(EventGeneratingArrayList functions) {
+
+		functions.addListener(this);
+
+		for (Object o : functions) {
+			if (!(o instanceof Function))
+				continue;
+			Function f = (Function) o;
+			EventGeneratingArrayList list = (EventGeneratingArrayList) f
+					.getTerms();
+
+			list.addListener(this);
+
+			registerListeners(list);
 		}
 	}
 
@@ -78,11 +100,12 @@ public class CQIEImpl implements CQIE, ListListener {
 
 	public void updateHead(Atom head) {
 
-		EventGeneratingArrayList<NewLiteral> headterms = (EventGeneratingArrayList<NewLiteral>) head.getTerms();
+		EventGeneratingArrayList<NewLiteral> headterms = (EventGeneratingArrayList<NewLiteral>) head
+				.getTerms();
 		headterms.removeListener(this);
 
 		this.head = head;
-		((EventGeneratingArrayList)head.getTerms()).addListener(this);
+		((EventGeneratingArrayList) head.getTerms()).addListener(this);
 
 		rehash = true;
 		string = null;
@@ -186,7 +209,7 @@ public class CQIEImpl implements CQIE, ListListener {
 		Map<Variable, Integer> vars = new HashMap<Variable, Integer>();
 		for (Atom atom : body) {
 			Map<Variable, Integer> atomCount = atom.getVariableCount();
-			for (Variable var: atomCount.keySet()) {
+			for (Variable var : atomCount.keySet()) {
 				Integer count = vars.get(var);
 				if (count != null) {
 					vars.put(var, count + atomCount.get(var));
@@ -194,11 +217,11 @@ public class CQIEImpl implements CQIE, ListListener {
 					vars.put(var, new Integer(atomCount.get(var)));
 				}
 			}
-			
+
 		}
-		
+
 		Map<Variable, Integer> atomCount = head.getVariableCount();
-		for (Variable var: atomCount.keySet()) {
+		for (Variable var : atomCount.keySet()) {
 			Integer count = vars.get(var);
 			if (count != null) {
 				vars.put(var, count + atomCount.get(var));

@@ -310,7 +310,7 @@ public class QuestStatement implements OBDAStatement {
 		}
 		log.debug("Producing the SQL string...");
 
-		query = DatalogNormalizer.normalizeDatalogProgram(query);
+//		query = DatalogNormalizer.normalizeDatalogProgram(query);
 		String sql = querygenerator.generateSourceQuery((DatalogProgram) query, signature);
 
 		log.debug("Resulting sql: \n{}", sql);
@@ -430,7 +430,6 @@ public class QuestStatement implements OBDAStatement {
 				throw obdaException;
 			}
 
-			
 
 			log.debug("Start the rewriting process...");
 			// DatalogProgram rewriting = program;

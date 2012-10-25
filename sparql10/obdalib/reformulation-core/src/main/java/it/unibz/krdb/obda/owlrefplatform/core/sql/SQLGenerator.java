@@ -11,13 +11,14 @@ import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.NumericalOperationPredicate;
 import it.unibz.krdb.obda.model.OBDAException;
+import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.JDBCUtility;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
 import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
@@ -28,6 +29,7 @@ import it.unibz.krdb.sql.ViewDefinition;
 
 import java.sql.Types;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -140,6 +142,19 @@ public class SQLGenerator implements SQLQueryGenerator {
 		/* Main loop, constructing the SPJ query for each CQ */
 		for (CQIE cq : query.getRules()) {
 
+			/*
+			 * Here we normalize so that the form of the CQ is as close to the
+			 * form of a normal SQL algebra as possible, particularly, no shared
+			 * variables, only joins by means of equality. Also, equalities in
+			 * nested expressions (JOINS) are kept at their respective levels to
+			 * generate correct ON and wHERE clauses.
+			 */
+			DatalogNormalizer.pushEqualities(cq, false);
+			DatalogNormalizer.pullOutEqualities(cq);
+			DatalogNormalizer.pullUpNestedReferences(cq, false);
+
+			log.debug("Normalized CQ: \n{}", cq);
+			
 			Predicate headPredicate = cq.getHead().getFunctionSymbol();
 			if (!headPredicate.getName().toString().equals("ans1")) {
 				// not a target query, skip it.
@@ -324,11 +339,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 			 */
 			String JOIN_KEYWORD = null;
 			if (isLeftJoin) {
-				JOIN_KEYWORD = "LEFT JOIN";
+				JOIN_KEYWORD = "LEFT OUTER JOIN";
 			} else {
 				JOIN_KEYWORD = "JOIN";
 			}
-			String JOIN = "(%s " + JOIN_KEYWORD + " %s)";
+			String JOIN = "( %s \n" + JOIN_KEYWORD + "\n %s )";
 
 			if (size == 0) {
 				throw new RuntimeException(
@@ -364,12 +379,12 @@ public class SQLGenerator implements SQLQueryGenerator {
 			 * last parenthesis ')' and replace it with ' ON %s)' where %s are
 			 * all the conditions
 			 */
-			String conditions = getConditionsString(inneratoms, index);
+			String conditions = getConditionsString(inneratoms, index, true);
 
 			if (conditions.length() > 0) {
 				tableDefinitionsString.deleteCharAt(tableDefinitionsString
 						.length() - 1);
-				String ON_CLAUSE = String.format(" ON %s\n)", conditions);
+				String ON_CLAUSE = String.format(" ON %s\n )", conditions);
 				tableDefinitionsString.append(ON_CLAUSE);
 			}
 		}
@@ -417,7 +432,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 	private String getFROM(CQIE query, QueryAliasIndex index) {
 		List<Function> atoms = new LinkedList<Function>();
-		for (Atom atom : query.getBody())
+		for (Function atom : query.getBody())
 			atoms.add((Function) atom);
 
 		String tableDefinitions = getTableDefinitions(atoms, index, true, false);
@@ -439,10 +454,13 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 * @return
 	 */
 	private String getConditionsString(List<Function> atoms,
-			QueryAliasIndex index) {
+			QueryAliasIndex index, boolean processShared) {
 
-		LinkedHashSet<String> equalityConditions = getConditionsSharedVariablesAndConstants(
-				atoms, index);
+		LinkedHashSet<String> equalityConditions = new LinkedHashSet<String>();
+
+		if (processShared)
+			equalityConditions.addAll(getConditionsSharedVariablesAndConstants(
+					atoms, index, processShared));
 		LinkedHashSet<String> booleanConditions = getBooleanConditionsString(
 				atoms, index);
 
@@ -470,6 +488,53 @@ public class SQLGenerator implements SQLQueryGenerator {
 	}
 
 	/***
+	 * Returns the set of variables that participate data atoms (either in this
+	 * atom directly or in nested ones). This will recursively collect the
+	 * variables references in in this atom, exlcuding those on the right side
+	 * of left joins.
+	 * 
+	 * @param atom
+	 * @return
+	 */
+	private Set<Variable> getVariableReferencesWithLeftJoin(Function atom) {
+		if (atom.isDataFunction())
+			return atom.getVariables();
+		if (atom.isBooleanFunction())
+			return new HashSet<Variable>();
+
+		/*
+		 * we have an alebra opertaor (join or left join) if its a join, we need
+		 * to collect all the varaibles of each nested atom., if its a left
+		 * join, only of the first data/algebra atom (the left atom).
+		 */
+		boolean isLeftJoin = false;
+		boolean foundFirstDataAtom = false;
+
+		if (atom.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN)
+			isLeftJoin = true;
+
+		LinkedHashSet<Variable> innerVariables = new LinkedHashSet<Variable>();
+		for (NewLiteral t : atom.getTerms()) {
+
+			if (isLeftJoin && foundFirstDataAtom)
+				break;
+
+			Function asFunction = (Function) t;
+
+			if (asFunction.isBooleanFunction())
+				continue;
+
+			innerVariables.addAll(getVariableReferencesWithLeftJoin(asFunction
+					.asAtom()));
+
+			foundFirstDataAtom = true;
+
+		}
+		return innerVariables;
+
+	}
+
+	/***
 	 * Returns a list of equality conditions that reflect the semantics of the
 	 * shared variables in the list of atoms.
 	 * <p>
@@ -484,16 +549,23 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 * 
 	 */
 	private LinkedHashSet<String> getConditionsSharedVariablesAndConstants(
-			List<Function> atoms, QueryAliasIndex index) {
+			List<Function> atoms, QueryAliasIndex index, boolean processShared) {
 		LinkedHashSet<String> equalities = new LinkedHashSet<String>();
 
 		Set<Variable> currentLevelVariables = new LinkedHashSet<Variable>();
-		for (Function atom : atoms) {
-			if (!atom.isDataFunction())
-				continue;
-			currentLevelVariables.addAll(atom.getReferencedVariables());
+		if (processShared)
+			for (Function atom : atoms) {
 
-		}
+				currentLevelVariables
+						.addAll(getVariableReferencesWithLeftJoin(atom));
+
+				// if (atom.isDataFunction()) {
+				// currentLevelVariables.addAll(atom.getReferencedVariables());
+				// } else if (atom.isAlgebraFunction()) {
+				// currentLevelVariables.addAll(atom.getReferencedVariables());
+				// }
+
+			}
 
 		/*
 		 * For each variable we collect all the columns that shold be equated
@@ -538,12 +610,32 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 	}
 
+	// private Set<Variable> getMandatoryColumnsOnJoinsAndLeftJoinsRecursively(
+	// Atom atom) {
+	// if (atom.isDataFunction()) {
+	// return atom.getReferencedVariables();
+	// } else if (atom.isBooleanFunction())
+	// return new HashSet<Variable>();
+	// /* atom is an alebra function */
+	// Predicate pred = atom.getFunctionSymbol();
+	// boolean isLeftJoin = true;
+	// if (pred == OBDAVocabulary.SPARQL_JOIN) {
+	// isLeftJoin = false;
+	// }
+	//
+	// /* If its a normal join, all nexted variables are required variables, if
+	// its
+	// *
+	// */
+	//
+	// }
+
 	private String getWHERE(CQIE query, QueryAliasIndex index) {
 		List<Function> atoms = new LinkedList<Function>();
-		for (Atom atom : query.getBody())
+		for (Function atom : query.getBody())
 			atoms.add((Function) atom);
 
-		String conditions = getConditionsString(atoms, index);
+		String conditions = getConditionsString(atoms, index, false);
 		if (conditions.length() == 0)
 			return "";
 
@@ -649,7 +741,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 				mainColumn = getSQLStringForURIFunction(ov, index);
 
-			}  else if (functionString.equals(OBDAVocabulary.QUEST_BNODE)) {
+			} else if (functionString.equals(OBDAVocabulary.QUEST_BNODE)) {
 				/***
 				 * New template based URI building functions
 				 */
@@ -840,8 +932,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 						+ ov.toString());
 
 	}
-	
-	
+
 	/***
 	 * Returns the SQL that builds a URI String out of an atom of the form
 	 * uri("http:...", x, y,...)
@@ -850,7 +941,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 * @param index
 	 * @return
 	 */
-	public String getSQLStringForBNodeFunction(Function ov, QueryAliasIndex index) {
+	public String getSQLStringForBNodeFunction(Function ov,
+			QueryAliasIndex index) {
 
 		/*
 		 * The first inner term determines the form of the result
@@ -949,12 +1041,12 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 * @param useBrackets
 	 * @return
 	 */
-	public String getSQLString(NewLiteral term, QueryAliasIndex index, 
+	public String getSQLString(NewLiteral term, QueryAliasIndex index,
 			boolean useBrackets) {
 		if (term == null) {
 			return "";
 		}
-		
+
 		if (term instanceof ValueConstant) {
 			ValueConstant ct = (ValueConstant) term;
 			return jdbcutil.getSQLLexicalForm(ct);
@@ -979,7 +1071,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 		if (functionSymbol instanceof DataTypePredicate) {
 			if (functionSymbol.getType(0) == COL_TYPE.UNSUPPORTED) {
-				throw new RuntimeException("Unsupported type in the query: " + function);
+				throw new RuntimeException("Unsupported type in the query: "
+						+ function);
 			}
 			/* atoms of the form integer(x) */
 			return getSQLString(term1, index, false);
@@ -995,7 +1088,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 				String leftOp = getSQLString(term1, index, true);
 				NewLiteral term2 = function.getTerms().get(1);
 				String rightOp = getSQLString(term2, index, true);
-				String result = String.format(expressionFormat, leftOp, rightOp);
+				String result = String
+						.format(expressionFormat, leftOp, rightOp);
 				if (useBrackets) {
 					return String.format("(%s)", result);
 				} else {
@@ -1019,7 +1113,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 		} else {
 			String functionName = functionSymbol.toString();
 			if (functionName.equals(OBDAVocabulary.QUEST_CAST_STR)) {
-				String columnName = getSQLString(function.getTerm(0), index, false);
+				String columnName = getSQLString(function.getTerm(0), index,
+						false);
 				String datatype = ((Constant) function.getTerm(1)).getValue();
 				int sqlDatatype = -1;
 				if (datatype.equals(OBDAVocabulary.XSD_STRING_URI)) {
@@ -1119,7 +1214,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 		}
 
 		private void generateViews(List<Atom> atoms) {
-			for (Atom atom : atoms) {
+			for (Function atom : atoms) {
 				/*
 				 * Thios wil call recursively if necessary
 				 */

@@ -201,6 +201,139 @@ public class DatalogNormalizer {
 	}
 
 	/***
+	 * This method introduces new variable names in each data atom and
+	 * equalities to account for JOIN operations. This method is called before
+	 * generating SQL queries and allows to avoid cross refrences in nested
+	 * JOINs, which generate wrong ON or WHERE conditions.
+	 * 
+	 * 
+	 * @param currentTerms
+	 * @param substitutions
+	 */
+	public static void pullOutEqualities(CQIE query) {
+		Map<Variable, NewLiteral> substitutions = new HashMap<Variable, NewLiteral>();
+		int[] newVarCounter = { 1 };
+		Set<Function> booleanAtoms = new HashSet<Function>();
+		pullOutEqualities(query.getBody(), substitutions, booleanAtoms,
+				newVarCounter);
+
+		/*
+		 * All new variables have been generates, the substitutions also, we
+		 * need to apply them to the equality atoms and to the head of the
+		 * query.
+		 */
+
+		Unifier.applyUnifier(query, substitutions, false);
+
+	}
+
+	/***
+	 * This method introduces new variable names in each data atom and
+	 * equalities to account for JOIN operations. This method is called before
+	 * generating SQL queries and allows to avoid cross refrences in nested
+	 * JOINs, which generate wrong ON or WHERE conditions.
+	 * 
+	 * 
+	 * @param currentTerms
+	 * @param substitutions
+	 */
+	private static void pullOutEqualities(List currentTerms,
+			Map<Variable, NewLiteral> substitutions,
+			Set<Function> booleanAtoms, int[] newVarCounter) {
+		for (int i = 0; i < currentTerms.size(); i++) {
+
+			NewLiteral term = (NewLiteral) currentTerms.get(i);
+
+			/*
+			 * We don't expect any functions as terms, data atoms will only have
+			 * variables or constants at this level. This method is only called
+			 * exactly before generating the SQL query.
+			 */
+			if (!(term instanceof Function))
+				throw new RuntimeException(
+						"Unexpected term found while normalizing (pulling out equalities) the query.");
+
+			Function atom = (Function) term;
+			if (atom.isBooleanFunction()) {
+				/*
+				 * boolean atoms are collected to apply the resulting
+				 * substitutions to them in a last step
+				 */
+				booleanAtoms.add(atom);
+				continue;
+			}
+
+			List<NewLiteral> subterms = atom.getTerms();
+
+			if (atom.isAlgebraFunction()) {
+				pullOutEqualities(subterms, substitutions, booleanAtoms,
+						newVarCounter);
+				continue;
+			}
+
+			/*
+			 * This is a data atom, we need to change ALL variables that appear
+			 * in it
+			 */
+			if (!(atom.isDataFunction()))
+				throw new RuntimeException(
+						"Unpexpected kind of function found while pulling out equalities. Exected data atom");
+
+			for (int j = 0; j < subterms.size(); j++) {
+				NewLiteral subTerm = subterms.get(j);
+				if (!(subTerm instanceof Variable))
+					continue;
+				Variable var1 = (Variable) subTerm;
+
+				Variable var2 = (Variable) substitutions.get(var1);
+
+				if (var2 == null) {
+					/*
+					 * No substitution exists, hence, no action but genrate a
+					 * new variable and register in the substitutions, and
+					 * replace the current value with a fresh one.
+					 */
+					var2 = fac.getVariable(var1.getName() + "f" +newVarCounter[0]);
+
+					substitutions.put(var1, var2);
+					subterms.set(j, var2);
+
+				} else {
+
+					/*
+					 * There already exists one, so we generate a fresh, replace
+					 * the current value, and add an equalility between the
+					 * substitution and the new value.
+					 */
+
+					Variable newVariable = fac.getVariable(var1.getName()
+							+ newVarCounter[0]);
+
+					subterms.set(j, newVariable);
+					currentTerms.add(fac.getEQFunction(var2, newVariable));
+
+				}
+				newVarCounter[0] += 1;
+			}
+		}
+	}
+
+	private static Set<Variable> getCurrentLevelVariables(List atoms) {
+		Set<Variable> currentLevelVariables = new HashSet<Variable>();
+		for (Object l : atoms) {
+			Function atom = (Function) l;
+			Predicate functionSymbol = atom.getFunctionSymbol();
+			if (functionSymbol instanceof BooleanOperationPredicate)
+				continue;
+			else if (functionSymbol instanceof AlgebraOperatorPredicate) {
+				currentLevelVariables.addAll(getCurrentLevelVariables(atom.getTerms()));
+			} else
+				currentLevelVariables.addAll(atom.getReferencedVariables());
+		}
+		return currentLevelVariables;
+	}
+
+	/***
 	 * This will
 	 * 
 	 * @param query
@@ -217,16 +350,7 @@ public class DatalogNormalizer {
 		/*
 		 * This set is only for reference
 		 */
-		Set<Variable> currentLevelVariables = new HashSet<Variable>();
-		for (Atom l : body) {
-			Function atom = (Function) l;
-			Predicate functionSymbol = atom.getFunctionSymbol();
-			if (functionSymbol instanceof AlgebraOperatorPredicate
-					|| functionSymbol instanceof BooleanOperationPredicate)
-				continue;
-			currentLevelVariables.addAll(atom.getReferencedVariables());
-		}
-
+		Set<Variable> currentLevelVariables = getCurrentLevelVariables(body);
 		/*
 		 * This set will be modified in the process
 		 */
@@ -255,7 +379,7 @@ public class DatalogNormalizer {
 		return query;
 	}
 
-	public static void pullUpNestedReferences(
+	private static void pullUpNestedReferences(
 			List<NewLiteral> currentLevelAtoms, Atom head,
 			Set<Variable> upperLevelVariables, Set<Function> booleanConditions,
 			int[] freshVariableCount) {
@@ -264,18 +388,9 @@ public class DatalogNormalizer {
 		 * Collecting the variables mentioned in data atoms in the current
 		 * level.
 		 */
-		Set<Variable> currentLevelVariables = new HashSet<Variable>();
-		for (NewLiteral l : currentLevelAtoms) {
-			Function atom = (Function) l;
-			Predicate functionSymbol = atom.getFunctionSymbol();
-			if (functionSymbol instanceof AlgebraOperatorPredicate
-					|| functionSymbol instanceof BooleanOperationPredicate)
-				continue;
-			currentLevelVariables.addAll(atom.getReferencedVariables());
-		}
+		Set<Variable> currentLevelVariables = getCurrentLevelVariables(currentLevelAtoms);
+		
 		Set<Variable> mergedVariables = new HashSet<Variable>();
-		mergedVariables.addAll(upperLevelVariables);
-		mergedVariables.addAll(currentLevelVariables);
 
 		/*
 		 * Call recursively on each atom that is a Join or a LeftJoin passing
@@ -286,9 +401,14 @@ public class DatalogNormalizer {
 			if (!(atom.getFunctionSymbol() instanceof AlgebraOperatorPredicate))
 				continue;
 			List<NewLiteral> terms = atom.getTerms();
-			pullUpNestedReferences(terms, head, mergedVariables, booleanConditions,
-					freshVariableCount);
+			pullUpNestedReferences(terms, head, mergedVariables,
+					booleanConditions, freshVariableCount);
 		}
+		
+		Set<Variable> problemVariables = new HashSet<Variable>();
+		
+		problemVariables.addAll(upperLevelVariables);
+		problemVariables.removeAll(currentLevelVariables);
 
 		/*
 		 * Add the resulting equalities that belong to the current level. An
@@ -300,8 +420,7 @@ public class DatalogNormalizer {
 			Set<Variable> atomVariables = equality.getVariables();
 			boolean belongsToThisLevel = true;
 			for (Variable var : atomVariables) {
-				if (currentLevelVariables.contains(var)
-						&& !upperLevelVariables.contains(var))
+				if (problemVariables.contains(var))
 					continue;
 				belongsToThisLevel = false;
 			}
@@ -314,7 +433,7 @@ public class DatalogNormalizer {
 
 		/*
 		 * Review the atoms of the current level and generate any variables,
-		 * equalities needed at this level (no further recursivity calls).
+		 * equalities needed at this level (no further recursive calls).
 		 * Generate new variables for each variable that appears at this level,
 		 * and also appears at a top level. We do this only for data atoms.
 		 * 
@@ -322,21 +441,9 @@ public class DatalogNormalizer {
 		 * applying the substitution. We also add an equality for each
 		 * substitution we created.
 		 */
-		Set<Variable> problemVariables = new HashSet<Variable>();
-		problemVariables.addAll(currentLevelVariables);
-		problemVariables.retainAll(upperLevelVariables);
-		Map<Variable, NewLiteral> substitution = new HashMap<Variable, NewLiteral>();
 
-		for (Variable var : problemVariables) {
-			freshVariableCount[0] += 1;
-			Variable freshVar = fac.getVariable(var.getName() + "_FRESH"
-					+ freshVariableCount[0]);
-			substitution.put(var, freshVar);
+		
 
-			booleanConditions.add(fac.getEQFunction(var, freshVar));
-		}
-		Unifier.applyUnifier(currentLevelAtoms, substitution);
-		Unifier.applyUnifier(head, substitution);
 
 		/*
 		 * Review the current boolean atoms, if the refer to upper level
@@ -356,7 +463,7 @@ public class DatalogNormalizer {
 			Set<Variable> variables = atom.getReferencedVariables();
 			boolean belongsUp = false;
 			for (Variable var : variables) {
-				if (upperLevelVariables.contains(var)) {
+				if (problemVariables.contains(var)) {
 					belongsUp = true;
 					break;
 				}

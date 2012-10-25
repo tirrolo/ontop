@@ -3,8 +3,10 @@ package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.OBDADataFactory;
+import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
+import it.unibz.krdb.obda.model.OBDADataFactory;
+import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.AnonymousVariable;
 import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
@@ -17,13 +19,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.lucene.index.TermFreqVector;
-
 // TODO This class needs to be restructured
 
 public class QueryAnonymizer {
 
-	private static final OBDADataFactory	termFactory	= OBDADataFactoryImpl.getInstance();
+	private static final OBDADataFactory termFactory = OBDADataFactoryImpl
+			.getInstance();
 
 	public DatalogProgram anonymize(DatalogProgram prog) {
 
@@ -76,8 +77,13 @@ public class QueryAnonymizer {
 						 * compare to check if they are equal, if they are equal
 						 * then isShared will be set to true
 						 */
-						if ((comparisonTerm instanceof VariableImpl) && ((atomindex != focusatomIndex) || (i != termidx))) {
+						if ((comparisonTerm instanceof VariableImpl)
+								&& ((atomindex != focusatomIndex) || (i != termidx))) {
 							isSharedTerm = term.equals(comparisonTerm);
+
+						} else if (comparisonTerm instanceof Function) {
+							isSharedTerm = comparisonTerm
+									.getReferencedVariables().contains(term);
 						}
 						if (isSharedTerm) {
 							break;
@@ -91,7 +97,8 @@ public class QueryAnonymizer {
 				 * anonymize it
 				 */
 				if (!isSharedTerm) {
-					atom.getTerms().set(i, termFactory.getNondistinguishedVariable());
+					atom.getTerms().set(i,
+							termFactory.getNondistinguishedVariable());
 				}
 			}
 		}
@@ -144,16 +151,18 @@ public class QueryAnonymizer {
 					vex.add(t);
 				}
 			}
-			Atom newatom = termFactory.getAtom(atom.getPredicate().clone(), vex);
+			Atom newatom = termFactory
+					.getAtom(atom.getPredicate().clone(), vex);
 			newBody.add(newatom);
 		}
 		CQIE query = termFactory.getCQIE(q.getHead(), newBody);
 		return query;
 	}
 
-	private void collectAuxiliaries(NewLiteral term, Atom atom, int pos, HashMap<String, List<Object[]>> auxmap) {
-		if (term instanceof VariableImpl) {
-			VariableImpl var = (VariableImpl) term;
+	private void collectAuxiliaries(NewLiteral term, Atom atom, int pos,
+			HashMap<String, List<Object[]>> auxmap) {
+		if (term instanceof Variable) {
+			Variable var = (Variable) term;
 			Object[] obj = new Object[2];
 			obj[0] = atom;
 			obj[1] = pos;
@@ -163,8 +172,8 @@ public class QueryAnonymizer {
 			}
 			list.add(obj);
 			auxmap.put(var.getName(), list);
-		} else if (term instanceof FunctionalTermImpl) {
-			FunctionalTermImpl funct = (FunctionalTermImpl) term;
+		} else if (term instanceof Function) {
+			Function funct = (Function) term;
 			for (NewLiteral t : funct.getTerms()) {
 				collectAuxiliaries(t, atom, pos, auxmap);
 			}
@@ -173,7 +182,7 @@ public class QueryAnonymizer {
 			// Ignore constants
 		}
 	}
-	
+
 	private boolean isVariableInHead(CQIE q, NewLiteral t) {
 		if (t instanceof AnonymousVariable)
 			return false;
@@ -212,7 +221,7 @@ public class QueryAnonymizer {
 	}
 
 	public static CQIE deAnonymize(CQIE query) {
-//		query = query.clone();
+		// query = query.clone();
 		Atom head = query.getHead();
 		Iterator<NewLiteral> hit = head.getTerms().iterator();
 		OBDADataFactory factory = OBDADataFactoryImpl.getInstance();
