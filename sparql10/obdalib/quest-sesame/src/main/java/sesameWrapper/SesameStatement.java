@@ -45,7 +45,7 @@ public class SesameStatement implements Statement {
 			else if (subj instanceof URIConstant)
 				subject = fact.createURI(subj.getValue());
 			else if (subj instanceof ValueConstant)
-				subject = fact.createURI(subj.getValue()); 
+				throw new RuntimeException("Invalid ValueConstant as subject!");
 			
 			predicate = fact.createURI(pred.getName().toString()); // URI
 			
@@ -70,10 +70,10 @@ public class SesameStatement implements Statement {
 			else if (subj instanceof URIConstant)
 				subject = fact.createURI(subj.getValue());
 			else if (subj instanceof ValueConstant)
-				subject = fact.createURI(subj.getValue());
+				throw new RuntimeException("Invalid ValueConstant as subject!");
 			
 			predicate = fact.createURI(pred); // URI
-			
+		
 			object = fact.createURI(obj.getName().toString());
 			
 		}
