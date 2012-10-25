@@ -126,7 +126,7 @@ public class MappingDataTypeRepair {
 
 		Attribute attribute = tableMetadata.getAttribute(pos);
 
-		switch (attribute.type) {
+		switch (attribute.getType()) {
 		case Types.VARCHAR:
 			return dfac.getDataTypePredicateString();
 		case Types.INTEGER:
