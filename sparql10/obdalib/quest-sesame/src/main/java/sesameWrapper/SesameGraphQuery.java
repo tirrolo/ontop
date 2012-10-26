@@ -107,9 +107,16 @@ public class SesameGraphQuery implements GraphQuery {
 
 		try {
 			// execute query and return new type of result
-			GraphResultSet res = stm.executeConstruct(queryString);
+			GraphResultSet res = null;
+			if (isConstruct()) {
+				res = stm.executeConstruct(queryString);
+			} else if (isDescribe()) {
+				res = stm.executeDescribe(queryString);
+			} else {
+				throw new QueryEvaluationException("Invalid query string!");
+			}
+			
 			Map<String, String> namespaces = new HashMap<String, String>();
-
 			List<Statement> results = new LinkedList<Statement>();
 			while (res.hasNext()) {
 				List<Assertion> chunk = res.next();
@@ -120,7 +127,7 @@ public class SesameGraphQuery implements GraphQuery {
 			}
 
 			return new GraphQueryResultImpl(namespaces, results.iterator());
-
+			
 		} catch (OBDAException e) {
 			e.printStackTrace();
 			throw new QueryEvaluationException(e.getMessage());
@@ -136,5 +143,12 @@ public class SesameGraphQuery implements GraphQuery {
 		handler.endRDF();
 
 	}
-
+	
+	private boolean isConstruct() {
+		return queryString.toLowerCase().contains("construct");
+	}
+	
+	private boolean isDescribe() {
+		return queryString.toLowerCase().contains("describe");
+	}
 }
