@@ -53,7 +53,7 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 		for (NewLiteral term : terms)
 			eventlist.add(term);
 		this.terms = eventlist;
-		eventlist.addListener(this);
+		registerListeners(eventlist);
 
 	}
 
@@ -67,7 +67,9 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 			eventlist.add(term);
 		
 		this.terms = eventlist;
-		eventlist.addListener(this);
+		
+		registerListeners(eventlist);
+		
 
 	}
 
@@ -75,8 +77,24 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 			EventGeneratingArrayList<NewLiteral> terms) {
 		this.functor = functor;
 		this.terms = terms;
-		terms.addListener(this);
+		registerListeners(terms);
+	}
+	
+	private void registerListeners(EventGeneratingArrayList functions) {
 
+		functions.addListener(this);
+
+		for (Object o : functions) {
+			if (!(o instanceof Function))
+				continue;
+			Function f = (Function) o;
+			EventGeneratingArrayList list = (EventGeneratingArrayList) f
+					.getTerms();
+
+			list.addListener(this);
+
+			registerListeners(list);
+		}
 	}
 
 	@Override

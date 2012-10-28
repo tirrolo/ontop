@@ -1519,7 +1519,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 	 * not really JOINs
 	 */
 	private void cleanJoins(CQIE query) {
-		DatalogNormalizer.normalizeJoinTrees(query, false);
+		DatalogNormalizer.unfoldJoinTrees(query, false);
 	}
 
 	/***

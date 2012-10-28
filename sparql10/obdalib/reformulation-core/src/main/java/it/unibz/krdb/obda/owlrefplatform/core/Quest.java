@@ -191,7 +191,7 @@ public class Quest implements Serializable {
 	protected Map<String, Boolean> getIsBooleanCache() {
 		return isbooleancache;
 	}
-	
+
 	protected Map<String, Boolean> getIsConstructCache() {
 		return isconstructcache;
 	}
@@ -642,7 +642,8 @@ public class Quest implements Serializable {
 			 * Adding NOT NULL conditions to the variables used in the head of
 			 * all mappings to preserve SQL-RDF semantics
 			 */
-			for (CQIE mapping : unfoldingProgram.getRules()) {
+			List<CQIE> currentMappingRules = unfoldingProgram.getRules();
+			for (CQIE mapping : currentMappingRules) {
 				Set<Variable> headvars = mapping.getHead()
 						.getReferencedVariables();
 
@@ -651,6 +652,45 @@ public class Quest implements Serializable {
 					mapping.getBody().add(notnull);
 				}
 			}
+
+			/*
+			 * Collecting primary key data
+			 */
+			Map<Predicate, List<Integer>> pkeys = DBMetadata.extractPKs(
+					metadata, unfoldingProgram);
+			
+//			/*
+//			 * Transforming body of mappings with 2 atoms into JOINs
+//			 */
+//			for (int i = 0; i < unfoldingProgram.getRules().size(); i++) {
+//				/* Looking for mappings with exactly 2 data atoms */
+//				CQIE mapping = currentMappingRules.get(i);
+//				int dataAtoms = 0;
+//				for (Atom subAtom : mapping.getBody()) {
+//					if (subAtom.isDataFunction()) {
+//						dataAtoms += 1;
+//
+//					}
+//				}
+//				if (dataAtoms != 2) {
+//					continue;
+//				}
+//
+//				/*
+//				 * This mapping can be transformed into a normal join with ON
+//				 * conditions. Doing so.
+//				 */
+//				List<NewLiteral> oldbody = new LinkedList<NewLiteral>();
+//				oldbody.addAll(mapping.getBody());
+//				Atom joinAtom = fac.getFunctionalTerm(
+//						OBDAVocabulary.SPARQL_JOIN, oldbody).asAtom();
+//				CQIE newmapping = fac.getCQIE(mapping.getHead(), joinAtom);
+//
+//				unfoldingProgram.removeRule(mapping);
+//				unfoldingProgram.appendRule(newmapping);
+//				i -= 1;
+//
+//			}
 
 			/*
 			 * Adding "triple(x,y,z)" mappings for support of unbounded
@@ -662,18 +702,15 @@ public class Quest implements Serializable {
 			generateTripleMappings(fac, newmappings);
 			unfoldingProgram.appendRule(newmappings);
 
-			/*
-			 * Collecting primary key data
-			 */
-			Map<Predicate, List<Integer>> pkeys = DBMetadata.extractPKs(
-					metadata, unfoldingProgram);
+			
 
 			/*
 			 * Setting up the unfolder and SQL generation
 			 */
 
 			if (dbType.equals(QuestConstants.SEMANTIC))
-				unfolder = new DatalogUnfolder(unfoldingProgram, pkeys, dataRepository);
+				unfolder = new DatalogUnfolder(unfoldingProgram, pkeys,
+						dataRepository);
 			else
 				unfolder = new DatalogUnfolder(unfoldingProgram, pkeys);
 

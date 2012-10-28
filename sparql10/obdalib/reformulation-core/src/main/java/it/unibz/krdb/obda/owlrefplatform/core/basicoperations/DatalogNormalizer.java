@@ -14,6 +14,8 @@ import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 
 import java.security.InvalidParameterException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -45,9 +47,9 @@ public class DatalogNormalizer {
 	}
 
 	public static CQIE normalizeCQIE(CQIE query) {
-		CQIE result = normalizeANDTrees(query);
+		CQIE result = unfoldANDTrees(query);
 		// result = normalizeEQ(result);
-		result = normalizeJoinTrees(result);
+		result = unfoldJoinTrees(result);
 		result = pullUpNestedReferences(result, true);
 		if (result == null)
 			return null;
@@ -62,7 +64,7 @@ public class DatalogNormalizer {
 	 * @param query
 	 * @return
 	 */
-	public static CQIE normalizeANDTrees(CQIE query) {
+	public static CQIE unfoldANDTrees(CQIE query) {
 		CQIE result = query.clone();
 		List<Atom> body = result.getBody();
 		/* Collecting all necessary conditions */
@@ -83,8 +85,8 @@ public class DatalogNormalizer {
 	 * @param query
 	 * @return
 	 */
-	public static CQIE normalizeJoinTrees(CQIE query) {
-		return normalizeJoinTrees(query, true);
+	public static CQIE unfoldJoinTrees(CQIE query) {
+		return unfoldJoinTrees(query, true);
 	}
 
 	/***
@@ -94,11 +96,11 @@ public class DatalogNormalizer {
 	 * @param query
 	 * @return
 	 */
-	public static CQIE normalizeJoinTrees(CQIE query, boolean clone) {
+	public static CQIE unfoldJoinTrees(CQIE query, boolean clone) {
 		if (clone)
 			query = query.clone();
 		List body = query.getBody();
-		normalizeJoinTrees(body, true);
+		unfoldJoinTrees(body, true);
 		return query;
 	}
 
@@ -116,16 +118,16 @@ public class DatalogNormalizer {
 	 * @param query
 	 * @return
 	 */
-	public static void normalizeJoinTrees(List body, boolean isJoin) {
+	public static void unfoldJoinTrees(List body, boolean isJoin) {
 		/* Collecting all necessary conditions */
 		for (int i = 0; i < body.size(); i++) {
 			Function currentAtom = (Function) body.get(i);
 			if (!currentAtom.isAlgebraFunction())
 				continue;
 			if (currentAtom.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN)
-				normalizeJoinTrees(currentAtom.getTerms(), false);
+				unfoldJoinTrees(currentAtom.getTerms(), false);
 			if (currentAtom.getFunctionSymbol() == OBDAVocabulary.SPARQL_JOIN) {
-				normalizeJoinTrees(currentAtom.getTerms(), true);
+				unfoldJoinTrees(currentAtom.getTerms(), true);
 				int dataAtoms = countDataItems(currentAtom.getTerms());
 				if (isJoin || dataAtoms == 1) {
 					body.remove(i);
@@ -141,6 +143,65 @@ public class DatalogNormalizer {
 		}
 	}
 
+	public static CQIE foldJoinTrees(CQIE query, boolean clone) {
+		if (clone)
+			query = query.clone();
+		List body = query.getBody();
+		foldJoinTrees(body, false);
+		return query;
+	}
+
+	public static void foldJoinTrees(List atoms, boolean isJoin) {
+		List<Function> dataAtoms = new LinkedList<Function>();
+		List<Function> booleanAtoms = new LinkedList<Function>();
+
+		/*
+		 * Collecting all data and boolean atoms for later processing. Calling
+		 * recursively fold Join trees on any algebra function.
+		 */
+		for (Object o : atoms) {
+			Function atom = (Function) o;
+			if (atom.isBooleanFunction()) {
+				booleanAtoms.add(atom);
+			} else {
+				dataAtoms.add(atom);
+				if (atom.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN)
+					foldJoinTrees(atom.getTerms(), false);
+				if (atom.getFunctionSymbol() == OBDAVocabulary.SPARQL_JOIN)
+					foldJoinTrees(atom.getTerms(), true);
+			}
+
+		}
+
+		if (!isJoin || dataAtoms.size() <= 2)
+			return;
+
+		/*
+		 * We process all atoms in dataAtoms to make only BINARY joins. Taking
+		 * two at a time and replacing them for JOINs, until only two are left.
+		 * All boolean conditions of the original join go into the first join
+		 * generated. It always merges from the left to the right.
+		 */
+		while (dataAtoms.size() > 2) {
+			Function joinAtom = fac.getFunctionalTerm(
+					OBDAVocabulary.SPARQL_JOIN, dataAtoms.remove(0),
+					dataAtoms.remove(0));
+			joinAtom.getTerms().addAll(booleanAtoms);
+			booleanAtoms.clear();
+
+			dataAtoms.add(0, joinAtom);
+		}
+		atoms.clear();
+		atoms.addAll(dataAtoms);
+
+	}
+
+	/***
+	 * Counts the number of data atoms in this list of terms. Not recursive.
+	 * 
+	 * @param terms
+	 * @return
+	 */
 	public static int countDataItems(List<NewLiteral> terms) {
 		int count = 0;
 		for (NewLiteral lit : terms) {
@@ -227,6 +288,43 @@ public class DatalogNormalizer {
 
 	}
 
+	private static BranchDepthSorter sorter = new BranchDepthSorter();
+
+	/***
+	 * Compares two atoms by the depth of their JOIN/LEFT JOIN branches. This is
+	 * used to sort atoms in a query bodybased on the depth, to assure the
+	 * depesth branches are visited first.
+	 * 
+	 * @author mariano
+	 * 
+	 */
+	private static class BranchDepthSorter implements Comparator<Function> {
+
+		public int getDepth(Function term) {
+			int max = 0;
+			if (term.isDataFunction() || term.isBooleanFunction()) {
+				return 0;
+			} else {
+				List<NewLiteral> innerTerms = term.getTerms();
+
+				for (NewLiteral innerTerm : innerTerms) {
+					int depth = getDepth((Function) innerTerm);
+					max = Math.max(max, depth);
+				}
+				max += 1;
+			}
+
+			System.out.println("MAX: " + max);
+			return max;
+		}
+
+		@Override
+		public int compare(Function arg0, Function arg1) {
+			return getDepth(arg1) - getDepth(arg0);
+		}
+
+	}
+
 	/***
 	 * This method introduces new variable names in each data atom and
 	 * equalities to account for JOIN operations. This method is called before
@@ -240,9 +338,14 @@ public class DatalogNormalizer {
 	private static void pullOutEqualities(List currentTerms,
 			Map<Variable, NewLiteral> substitutions,
 			Set<Function> booleanAtoms, int[] newVarCounter) {
-		for (int i = 0; i < currentTerms.size(); i++) {
 
-			NewLiteral term = (NewLiteral) currentTerms.get(i);
+		List orderedList = new LinkedList();
+		orderedList.addAll(currentTerms);
+		Collections.sort(orderedList, sorter);
+		System.out.println("sorted");
+		for (int i = 0; i < orderedList.size(); i++) {
+
+			NewLiteral term = (NewLiteral) orderedList.get(i);
 
 			/*
 			 * We don't expect any functions as terms, data atoms will only have
@@ -293,7 +396,8 @@ public class DatalogNormalizer {
 					 * new variable and register in the substitutions, and
 					 * replace the current value with a fresh one.
 					 */
-					var2 = fac.getVariable(var1.getName() + "f" +newVarCounter[0]);
+					var2 = fac.getVariable(var1.getName() + "f"
+							+ newVarCounter[0]);
 
 					substitutions.put(var1, var2);
 					subterms.set(j, var2);
@@ -318,17 +422,60 @@ public class DatalogNormalizer {
 		}
 	}
 
-	private static Set<Variable> getCurrentLevelVariables(List atoms) {
+	/****
+	 * Gets all the variables that are defined in this list of atoms, except in
+	 * atom i
+	 * 
+	 * @param atoms
+	 * @return
+	 */
+	private static Set<Variable> getDefinedVariables(List atoms) {
 		Set<Variable> currentLevelVariables = new HashSet<Variable>();
 		for (Object l : atoms) {
 			Function atom = (Function) l;
-			Predicate functionSymbol = atom.getFunctionSymbol();
-			if (functionSymbol instanceof BooleanOperationPredicate)
+			if (atom.isBooleanFunction()) {
 				continue;
-			else if (functionSymbol instanceof AlgebraOperatorPredicate) {
-				currentLevelVariables.addAll(getCurrentLevelVariables(atom.getTerms()));
-			} else
+			} else if (atom.isAlgebraFunction()) {
+				currentLevelVariables.addAll(getDefinedVariables(atom
+						.getTerms()));
+			} else {
 				currentLevelVariables.addAll(atom.getReferencedVariables());
+			}
+		}
+		return currentLevelVariables;
+	}
+
+	/***
+	 * Collects all the variables that appear in all other branches (these are
+	 * atoms in the list of atoms) except in focusBranch.
+	 * <p>
+	 * Variables are considered problematic because they are out of the scope of
+	 * focusBranch. There are not visible in an SQL algebra tree.
+	 * <p>
+	 * Note that this method should only be called after callin pushEqualities
+	 * and pullOutEqualities on the CQIE. This is to assure that there are no
+	 * transitive equalities to take care of and that each variable in a data
+	 * atom is unique.
+	 * 
+	 * @param atoms
+	 * @param branch
+	 * @return
+	 */
+	private static Set<Variable> getProblemVariablesForBranchN(List atoms,
+			int focusBranch) {
+		Set<Variable> currentLevelVariables = new HashSet<Variable>();
+		for (int i = 0; i < atoms.size(); i++) {
+			if (i == focusBranch)
+				continue;
+			Function atom = (Function) atoms.get(i);
+			if (atom.isDataFunction()) {
+				currentLevelVariables.addAll(atom.getReferencedVariables());
+			} else if (atom.isAlgebraFunction()) {
+				currentLevelVariables.addAll(getDefinedVariables(atom
+						.getTerms()));
+			} else {
+				// noop
+			}
 		}
 		return currentLevelVariables;
 	}
@@ -350,7 +497,7 @@ public class DatalogNormalizer {
 		/*
 		 * This set is only for reference
 		 */
-		Set<Variable> currentLevelVariables = getCurrentLevelVariables(body);
+		Set<Variable> currentLevelVariables = new HashSet<Variable>();
 		/*
 		 * This set will be modified in the process
 		 */
@@ -361,13 +508,8 @@ public class DatalogNormalizer {
 		 * replace everything needed.
 		 */
 		int[] freshVariableCount = { 0 };
-		for (Atom atom : body) {
-			Function f = atom;
-			if (!(f.getFunctionSymbol() instanceof AlgebraOperatorPredicate))
-				continue;
-			pullUpNestedReferences(f.getTerms(), head, currentLevelVariables,
-					resultingBooleanConditions, freshVariableCount);
-		}
+		pullUpNestedReferences(body, head, currentLevelVariables,
+				resultingBooleanConditions, freshVariableCount);
 
 		/*
 		 * Adding any remiding boolean conditions to the top level.
@@ -379,36 +521,34 @@ public class DatalogNormalizer {
 		return query;
 	}
 
-	private static void pullUpNestedReferences(
-			List<NewLiteral> currentLevelAtoms, Atom head,
-			Set<Variable> upperLevelVariables, Set<Function> booleanConditions,
-			int[] freshVariableCount) {
-
-		/*
-		 * Collecting the variables mentioned in data atoms in the current
-		 * level.
-		 */
-		Set<Variable> currentLevelVariables = getCurrentLevelVariables(currentLevelAtoms);
-		
-		Set<Variable> mergedVariables = new HashSet<Variable>();
+	private static void pullUpNestedReferences(List currentLevelAtoms,
+			Atom head, Set<Variable> problemVariables,
+			Set<Function> booleanConditions, int[] freshVariableCount) {
 
 		/*
 		 * Call recursively on each atom that is a Join or a LeftJoin passing
 		 * the variables of this level
 		 */
-		for (NewLiteral l : currentLevelAtoms) {
+		for (int focusBranch = 0; focusBranch < currentLevelAtoms.size(); focusBranch++) {
+			Object l = currentLevelAtoms.get(focusBranch);
+
 			Function atom = (Function) l;
 			if (!(atom.getFunctionSymbol() instanceof AlgebraOperatorPredicate))
 				continue;
+			System.out
+					.println("======================== INTO ALGEBRA =====================");
+
 			List<NewLiteral> terms = atom.getTerms();
-			pullUpNestedReferences(terms, head, mergedVariables,
+
+			Set<Variable> nestedProblemVariables = new HashSet<Variable>();
+
+			nestedProblemVariables.addAll(problemVariables);
+			nestedProblemVariables.addAll(getProblemVariablesForBranchN(
+					currentLevelAtoms, focusBranch));
+
+			pullUpNestedReferences(terms, head, nestedProblemVariables,
 					booleanConditions, freshVariableCount);
 		}
-		
-		Set<Variable> problemVariables = new HashSet<Variable>();
-		
-		problemVariables.addAll(upperLevelVariables);
-		problemVariables.removeAll(currentLevelVariables);
 
 		/*
 		 * Add the resulting equalities that belong to the current level. An
@@ -416,16 +556,23 @@ public class DatalogNormalizer {
 		 * the current level and not at the upper levels.
 		 */
 		Set<Function> removedBooleanConditions = new HashSet<Function>();
+		System.out.println("Checking boolean conditions: "
+				+ booleanConditions.size());
 		for (Function equality : booleanConditions) {
-			Set<Variable> atomVariables = equality.getVariables();
+			Set<Variable> atomVariables = equality.getReferencedVariables();
+
 			boolean belongsToThisLevel = true;
 			for (Variable var : atomVariables) {
-				if (problemVariables.contains(var))
+				if (!problemVariables.contains(var))
 					continue;
 				belongsToThisLevel = false;
 			}
 			if (!belongsToThisLevel)
 				continue;
+
+			System.out.println("EQUALITYEQUALITYEQUALITYEQUALITYEQUALITY"
+					+ equality.getFunctionSymbol().getClass() + " " + equality);
+			System.out.println("BELONGS!!!!");
 			currentLevelAtoms.add(equality);
 			removedBooleanConditions.add(equality);
 		}
@@ -442,9 +589,6 @@ public class DatalogNormalizer {
 		 * substitution we created.
 		 */
 
-		
-
-
 		/*
 		 * Review the current boolean atoms, if the refer to upper level
 		 * variables then remove them from the current level and add them to the
@@ -456,22 +600,70 @@ public class DatalogNormalizer {
 		 */
 
 		for (int index = 0; index < currentLevelAtoms.size(); index++) {
-			NewLiteral l = currentLevelAtoms.get(index);
+			System.out.println(index);
+			System.out.println(currentLevelAtoms.size());
+			NewLiteral l = (NewLiteral) currentLevelAtoms.get(index);
 			Function atom = (Function) l;
+			System.out
+					.println(atom.getFunctionSymbol().getClass() + " " + atom);
 			if (!(atom.getFunctionSymbol() instanceof BooleanOperationPredicate))
 				continue;
 			Set<Variable> variables = atom.getReferencedVariables();
 			boolean belongsUp = false;
-			for (Variable var : variables) {
+
+			search: for (Variable var : variables) {
 				if (problemVariables.contains(var)) {
+
+					// /*
+					// * looking for an equality that might indicate that in
+					// fact,
+					// * the atom doesn't belong up because there is an equality
+					// * at this level that mentiones the "unsafe variable" and
+					// a
+					// * "safe variable" at the same time. (this pattern happens
+					// * due to the call to
+					// DatalogNormalizer.pullOutEqualities()
+					// * that happens before pullingUp
+					// */
+					// for (int idx2 = 0; idx2 < currentLevelAtoms.size();
+					// idx2++) {
+					// NewLiteral l2 = (NewLiteral) currentLevelAtoms
+					// .get(idx2);
+					// if (!(l2 instanceof Function))
+					// continue;
+					// Function f2 = (Function) l2;
+					// if (f2.getPredicate() != OBDAVocabulary.EQ)
+					// continue;
+					// List<NewLiteral> equalityVariables = f2.getTerms();
+					// if (equalityVariables.contains(var)) {
+					// // NewLiteral var2 = equalityVariables.get(0);
+					// // if (!(var2 instanceof Variable))
+					// // continue;
+					// if (!(problemVariables
+					// .containsAll(equalityVariables))) {
+					// /*
+					// * we found that var is acutally safe, there is
+					// * an equality that bounds it to a data atom in
+					// * the current level
+					// */
+					// continue search;
+					// }
+					// }
+					//
+					// }
+
 					belongsUp = true;
 					break;
 				}
 			}
+
 			if (!belongsUp)
 				continue;
 
 			// Belongs up, removing and pushing up
+
+			System.out.println("REMOVED!!!!");
+
 			currentLevelAtoms.remove(index);
 			index -= 1;
 			booleanConditions.add(atom);

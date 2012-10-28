@@ -63,6 +63,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 	private static final String SUBSTRACT_OPERATOR = "%s - %s";
 	private static final String MULTIPLY_OPERATOR = "%s * %s";
 
+	private static final String INDENT = "    ";
+
 	/**
 	 * Formatting template
 	 */
@@ -149,12 +151,24 @@ public class SQLGenerator implements SQLQueryGenerator {
 			 * nested expressions (JOINS) are kept at their respective levels to
 			 * generate correct ON and wHERE clauses.
 			 */
+			log.debug("Before pushing equalities: \n{}", cq);
+
 			DatalogNormalizer.pushEqualities(cq, false);
+			
+			log.debug("Before folding Joins: \n{}", cq);
+			
+			DatalogNormalizer.foldJoinTrees(cq, false);
+
+			log.debug("Before pulling out equalities: \n{}", cq);
+
 			DatalogNormalizer.pullOutEqualities(cq);
+
+			log.debug("Before pulling up nested references: \n{}", cq);
+
 			DatalogNormalizer.pullUpNestedReferences(cq, false);
 
 			log.debug("Normalized CQ: \n{}", cq);
-			
+
 			Predicate headPredicate = cq.getHead().getFunctionSymbol();
 			if (!headPredicate.getName().toString().equals("ans1")) {
 				// not a target query, skip it.
@@ -285,7 +299,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 * @return
 	 */
 	private String getTableDefinitions(List<Function> inneratoms,
-			QueryAliasIndex index, boolean isTopLevel, boolean isLeftJoin) {
+			QueryAliasIndex index, boolean isTopLevel, boolean isLeftJoin,
+			String indent) {
 
 		/*
 		 * We now collect the view definitions for each data atom each
@@ -300,7 +315,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 			if (!innerAtomAsFunction.isBooleanFunction()) {
 				String definition = getTableDefinition(innerAtomAsFunction,
-						index);
+						index, indent + INDENT);
 				tableDefinitions.add(definition);
 			}
 
@@ -323,11 +338,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 			Iterator<String> tableDefinitionsIterator = tableDefinitions
 					.iterator();
-			tableDefinitionsString.append("   ");
+			tableDefinitionsString.append(indent);
 			tableDefinitionsString.append(tableDefinitionsIterator.next());
 			while (tableDefinitionsIterator.hasNext()) {
 				tableDefinitionsString.append(",\n");
-				tableDefinitionsString.append("   ");
+				tableDefinitionsString.append(indent);
 				tableDefinitionsString.append(tableDefinitionsIterator.next());
 			}
 
@@ -343,7 +358,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 			} else {
 				JOIN_KEYWORD = "JOIN";
 			}
-			String JOIN = "( %s \n" + JOIN_KEYWORD + "\n %s )";
+			String JOIN = "\n" + indent +"(\n" + indent + "%s\n" + indent
+					+ JOIN_KEYWORD + "\n" + indent + "%s\n" + indent + ")";
 
 			if (size == 0) {
 				throw new RuntimeException(
@@ -379,12 +395,14 @@ public class SQLGenerator implements SQLQueryGenerator {
 			 * last parenthesis ')' and replace it with ' ON %s)' where %s are
 			 * all the conditions
 			 */
-			String conditions = getConditionsString(inneratoms, index, true);
+			String conditions = getConditionsString(inneratoms, index, true, indent);
 
-			if (conditions.length() > 0) {
-				tableDefinitionsString.deleteCharAt(tableDefinitionsString
-						.length() - 1);
-				String ON_CLAUSE = String.format(" ON %s\n )", conditions);
+			if (conditions.length() > 0 && tableDefinitionsString.lastIndexOf(")") != -1) {
+				int lastidx = tableDefinitionsString.lastIndexOf(")");
+				tableDefinitionsString.delete(lastidx, tableDefinitionsString.length());
+//				tableDefinitionsString.deleteCharAt(tableDefinitionsString
+//						.length() - 1);
+				String ON_CLAUSE = String.format("ON\n%s\n "+ indent+")", conditions);
 				tableDefinitionsString.append(ON_CLAUSE);
 			}
 		}
@@ -402,7 +420,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 * @param index
 	 * @return
 	 */
-	private String getTableDefinition(Function atom, QueryAliasIndex index) {
+	private String getTableDefinition(Function atom, QueryAliasIndex index,
+			String indent) {
 
 		Predicate predicate = atom.getPredicate();
 
@@ -417,9 +436,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 			for (NewLiteral innerTerm : atom.getTerms())
 				innerTerms.add((Function) innerTerm);
 			if (predicate == OBDAVocabulary.SPARQL_JOIN) {
-				return getTableDefinitions(innerTerms, index, false, false);
+				return getTableDefinitions(innerTerms, index, false, false,
+						indent + INDENT);
 			} else if (predicate == OBDAVocabulary.SPARQL_LEFTJOIN) {
-				return getTableDefinitions(innerTerms, index, false, true);
+				return getTableDefinitions(innerTerms, index, false, true,
+						indent + INDENT);
 			}
 		}
 
@@ -435,7 +456,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 		for (Function atom : query.getBody())
 			atoms.add((Function) atom);
 
-		String tableDefinitions = getTableDefinitions(atoms, index, true, false);
+		String tableDefinitions = getTableDefinitions(atoms, index, true,
+				false, "");
 		return "\n FROM \n" + tableDefinitions;
 
 	}
@@ -454,7 +476,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 * @return
 	 */
 	private String getConditionsString(List<Function> atoms,
-			QueryAliasIndex index, boolean processShared) {
+			QueryAliasIndex index, boolean processShared, String indent) {
 
 		LinkedHashSet<String> equalityConditions = new LinkedHashSet<String>();
 
@@ -475,14 +497,15 @@ public class SQLGenerator implements SQLQueryGenerator {
 		StringBuffer conditionsString = new StringBuffer();
 		Iterator<String> conditionsIterator = conditions.iterator();
 		if (conditionsIterator.hasNext()) {
-			conditionsString.append(" ");
+			conditionsString.append(indent);
 			conditionsString.append(conditionsIterator.next());
-			conditionsString.append("\n");
+			
 		}
 		while (conditionsIterator.hasNext()) {
-			conditionsString.append(" AND ");
+			conditionsString.append(" AND\n");
+			conditionsString.append(indent);
 			conditionsString.append(conditionsIterator.next());
-			conditionsString.append("\n");
+			
 		}
 		return conditionsString.toString();
 	}
@@ -635,11 +658,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 		for (Function atom : query.getBody())
 			atoms.add((Function) atom);
 
-		String conditions = getConditionsString(atoms, index, false);
+		String conditions = getConditionsString(atoms, index, false, "");
 		if (conditions.length() == 0)
 			return "";
 
-		return "\n WHERE \n" + conditions;
+		return "\nWHERE \n" + conditions;
 	}
 
 	/**
