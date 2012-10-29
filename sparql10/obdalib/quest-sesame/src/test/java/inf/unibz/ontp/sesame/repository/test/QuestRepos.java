@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.util.Set;
 
 import org.junit.Test;
+import org.openrdf.model.Resource;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryLanguage;
@@ -262,6 +263,18 @@ public class QuestRepos {
 			while (result.hasNext())
 				System.out.println(result.next());
 
+			 queryString = "PREFIX :<http://www.owl-ontologies.com/Ontology1207768242.owl#>\n" +
+			 		"CONSTRUCT {?s :worksFor ?o } WHERE {?s :belongsToCompany ?o} Limit 20";
+			GraphQuery graphQuery = con.prepareGraphQuery(QueryLanguage.SPARQL,	queryString);
+			GraphQueryResult resultg = graphQuery.evaluate();
+			System.out.println("RESULT hasdata: " + resultg.hasNext());
+			while (resultg.hasNext())
+			{
+				org.openrdf.model.Statement st = resultg.next();
+				System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
+			}
+			
+
 			con.close();
 			repo.shutDown();
 
@@ -294,7 +307,7 @@ public class QuestRepos {
 			Set<String> ss = man.getRepositoryIDs();
 			for (String s : ss)
 				System.out.println(s);
-
+					
 			// create a configuration for the repository implementation
 			SesameRepositoryFactory f = new SesameRepositoryFactory();
 			RepositoryRegistry.getInstance().add(f);
@@ -314,12 +327,13 @@ public class QuestRepos {
 
 			org.openrdf.repository.RepositoryConnection con = repository.getConnection();
 
-			String queryString = "select * WHERE {?s ?p ?o} Limit 20";
+			String queryString = "select * where { ?s ?p ?o} Limit 20";
 			TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString);
 			TupleQueryResult result = tupleQuery.evaluate();
 			System.out.println("RESULT hasdata: " + result.hasNext());
 			while (result.hasNext())
 				System.out.println(result.next());
+			
 			
 			 queryString = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
 			 		"PREFIX rev: <http://purl.org/stuff/rev#>\n" +
@@ -348,13 +362,25 @@ public class QuestRepos {
 			 		"    <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromVendor1/Offer196> bsbm:validTo ?validTo }";
 			 GraphQuery graphQuery = con.prepareGraphQuery(QueryLanguage.SPARQL,	queryString);
 			GraphQueryResult qresult = graphQuery.evaluate();
-			System.out.println("RESULT hasdata: " + result.hasNext());
+			System.out.println("RESULT hasdata: " + qresult.hasNext());
 			while (qresult.hasNext())
 			{
 				org.openrdf.model.Statement st = qresult.next();
 				System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
 			}
 			
+			
+			 queryString = "PREFIX rev: <http://purl.org/stuff/rev#>\n" +
+					"DESCRIBE ?x" +
+					" WHERE { <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromRatingSite20/Review204048> rev:reviewer ?x }";
+			 graphQuery = con.prepareGraphQuery(QueryLanguage.SPARQL,	queryString);
+				 qresult = graphQuery.evaluate();
+				System.out.println("RESULT hasdata: " + qresult.hasNext());
+				while (qresult.hasNext())
+				{
+					org.openrdf.model.Statement st = qresult.next();
+					System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
+				}
 			con.close();
 			repository.shutDown();
 			man.removeRepositoryConfig("testdb");

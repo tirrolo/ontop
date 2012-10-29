@@ -1,3 +1,4 @@
+package inf.unibz.ontop.sesame.tests.general;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -39,16 +40,6 @@ public class SesameClassicTest extends TestCase {
 		String owlfile = "src/test/resources/onto2.owl";
 
 		repo = new SesameClassicInMemoryRepo("my_name", owlfile);
-		repo.initialize();
-		con = (RepositoryConnection) repo.getConnection();
-	}
-	
-	public void setupJDBC() throws Exception
-	{
-		// create a sesame JDBC repository
-		String owlfile = "src/test/resources/onto2.owl";
-
-		repo = new SesameClassicJDBCRepo("my_name", owlfile);
 		repo.initialize();
 		con = (RepositoryConnection) repo.getConnection();
 	}
@@ -130,6 +121,8 @@ public class SesameClassicTest extends TestCase {
 	}
 	
 	
+	
+	
 	public void booleanQuery() throws QueryEvaluationException, RepositoryException, MalformedQueryException
 	{	
 		
@@ -168,10 +161,5 @@ public class SesameClassicTest extends TestCase {
 		
 	}
 	
-//	public void test2() throws Exception
-//	{
-//		setupJDBC();
-//		close();
-//	}
 
 }
