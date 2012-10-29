@@ -16,6 +16,7 @@ import it.unibz.krdb.obda.model.URIConstant;
  */
 public interface ClassAssertion extends Assertion {
 
+	// TODO: Change the method name to getSubject() because it gets the subject of the class assertion.
 	public ObjectConstant getObject();
 
 	/***

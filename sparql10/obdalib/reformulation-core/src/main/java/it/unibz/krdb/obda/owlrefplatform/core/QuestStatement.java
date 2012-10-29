@@ -492,7 +492,6 @@ public class QuestStatement implements OBDAStatement {
 				program = translateAndPreProcess(query);
 				for (CQIE q : program.getRules()) {
 					DatalogNormalizer.unfoldJoinTrees(q, false);
-					System.out.println(q);
 				}
 
 				log.debug("Normalized program: \n{}", program);
