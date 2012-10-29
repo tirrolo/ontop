@@ -34,6 +34,8 @@ public class DescribeGraphResultSet implements GraphResultSet {
 	private OBDADataFactory dfac = OBDADataFactoryImpl.getInstance();
 	private OntologyFactory ofac = OntologyFactoryImpl.getInstance();
 	
+	private List<Constant> tupleResults = new ArrayList<Constant>();
+	
 	private static final String VAR1 = "x";
 	private static final String VAR2 = "y";
 	private static final String VAR3 = "z";
@@ -41,25 +43,36 @@ public class DescribeGraphResultSet implements GraphResultSet {
 	public DescribeGraphResultSet(OBDAResultSet results, PrefixMapping pm) {
 		tupleResultSet = results;
 		prefixMapping = pm;
+		storeResultsToLocalList();
+	}
+
+	private void storeResultsToLocalList() {
+		try {
+			while(tupleResultSet.nextRow()) {
+				tupleResults.add(tupleResultSet.getConstant(1));
+			}
+		} catch (OBDAException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public boolean hasNext() throws OBDAException {
-		return tupleResultSet.nextRow();
+		return tupleResults.size() != 0;
 	}
 
 	@Override
 	public List<Assertion> next() throws OBDAException {
-		Constant originalConstant = tupleResultSet.getConstant(1);
+		Constant originalConstant = tupleResults.remove(0);
 		String selectQuery = getSelectQuery(originalConstant);
 		OBDAStatement stmt = tupleResultSet.getStatement();
 		OBDAResultSet rs = stmt.execute(selectQuery);
 
 		List<Assertion> tripleAssertions = new ArrayList<Assertion>();
 		while (rs.nextRow()) {
-			Constant subjectConstant = (rs.getConstant(1).equals(OBDAVocabulary.NULL)) ? originalConstant : rs.getConstant(1);
-			Constant predicateConstant = (rs.getConstant(2).equals(OBDAVocabulary.NULL)) ? originalConstant : rs.getConstant(2);
-			Constant objectConstant = (rs.getConstant(3).equals(OBDAVocabulary.NULL)) ? originalConstant : rs.getConstant(3);
+			Constant subjectConstant = (rs.getConstant(1) == null) ? originalConstant : rs.getConstant(1);
+			Constant predicateConstant = (rs.getConstant(2) == null) ? originalConstant : rs.getConstant(2);
+			Constant objectConstant = (rs.getConstant(3) == null) ? originalConstant : rs.getConstant(3);
 			
 			// Determines the type of assertion
 			String predicateName = predicateConstant.getValue();
@@ -87,6 +100,7 @@ public class DescribeGraphResultSet implements GraphResultSet {
 				}
 			}
 		}
+		rs.close();
 		return tripleAssertions;
 	}
 
@@ -99,16 +113,16 @@ public class DescribeGraphResultSet implements GraphResultSet {
 		StringBuffer sb = new StringBuffer();
 		Map<String, String> prefixMap = prefixMapping.getNsPrefixMap();
 		for (String prefix : prefixMap.keySet()) {
-			sb.append(String.format("PREFIX %s: <%s> .\n", prefix, prefixMap
+			sb.append(String.format("PREFIX %s: <%s>\n", prefix, prefixMap
 					.get(prefix)));
 		}
 		sb.append(String.format("SELECT ?%s ?%s ?%s\n", VAR1, VAR2, VAR3));
 		sb.append("WHERE {\n");
-		sb.append(String.format("   { ?%s ?%s ?%s . } UNION\n", VAR1, VAR2, constant
+		sb.append(String.format("   { ?%s ?%s <%s> } UNION\n", VAR1, VAR2, constant
 				.toString()));
-		sb.append(String.format("   { ?%s ?%s ?%s . } UNION\n", VAR1,
+		sb.append(String.format("   { ?%s <%s> ?%s } UNION\n", VAR1,
 				constant.toString(), VAR3));
-		sb.append(String.format("   { ?%s ?%s ?%s . }\n", constant.toString(),
+		sb.append(String.format("   { <%s> ?%s ?%s }\n", constant.toString(),
 				VAR2, VAR3));
 		sb.append("}\n");
 		return sb.toString();
