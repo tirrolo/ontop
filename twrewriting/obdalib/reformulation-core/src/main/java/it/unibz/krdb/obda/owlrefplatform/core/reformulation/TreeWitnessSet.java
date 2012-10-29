@@ -31,6 +31,7 @@ public class TreeWitnessSet {
 	private final QueryConnectedComponent cc;
 	private final TreeWitnessReasonerLite reasoner;
 	private PropertiesCache propertiesCache; 
+	private boolean hasConflicts = false;
 	
 	// working lists (may all be nulls)
 	private List<TreeWitness> mergeable;
@@ -46,6 +47,10 @@ public class TreeWitnessSet {
 	
 	public Collection<TreeWitness> getTWs() {
 		return tws;
+	}
+	
+	public boolean hasConflicts() {
+		return hasConflicts;
 	}
 	
 	public static TreeWitnessSet getTreeWitnesses(QueryConnectedComponent cc, TreeWitnessReasonerLite reasoner) {		
@@ -82,7 +87,7 @@ public class TreeWitnessSet {
 				Collection<TreeWitnessGenerator> twg = getTreeWitnessGenerators(qf); 
 				if (twg != null) { 
 					// no need to copy the query folding: it creates all temporary objects anyway (including terms)
-					tws.add(qf.getTreeWitness(twg, cc.getEdges()));
+					addTWS(qf.getTreeWitness(twg, cc.getEdges()));
 				}
 			}
 		}		
@@ -111,7 +116,7 @@ public class TreeWitnessSet {
 			
 			while (!delta.isEmpty()) {
 				TreeWitness tw = delta.poll();
-				tws.add(tw);
+				addTWS(tw);
 				if (tw.isMergeable())  {
 					working.add(tw);			
 					mergeable.add(tw);
@@ -120,6 +125,17 @@ public class TreeWitnessSet {
 		}				
 
 		log.debug("TREE WITNESSES FOUND: " + tws.size());
+	}
+	
+	private void addTWS(TreeWitness tw1) {
+		for (TreeWitness tw0 : tws)
+			if (!tw0.getDomain().containsAll(tw1.getDomain()) && !tw1.getDomain().containsAll(tw0.getDomain())) {
+				if (!tw0.isCompatibleWith(tw1)) {
+					hasConflicts = true;
+					log.debug("CONFLICT: " + tw0 + " AND " + tw1);
+				}
+			}
+		tws.add(tw1);
 	}
 	
 	private void saturateTreeWitnesses(QueryFolding qf) { 
@@ -217,60 +233,99 @@ public class TreeWitnessSet {
 		return twg;
 	}
 	
-	public class TreeWitnessPowerSetIterator implements Iterator<Collection<TreeWitness>>
-	{
-		private boolean isIn[];
+	public CompatibleTreeWitnessSetIterator getIterator() {
+		return new CompatibleTreeWitnessSetIterator(tws.size());
+	}
+	
+	public class CompatibleTreeWitnessSetIterator implements Iterator<Collection<TreeWitness>> {
+		private boolean isInNext[];
+		private boolean atNextPosition = true;
+		private boolean finished = false;
+		private Collection<TreeWitness> nextSet = new LinkedList<TreeWitness>();
 
+		private CompatibleTreeWitnessSetIterator(int len) {
+			isInNext = new boolean[len];
+		}
 
-	  /**
+		/**
 	     * Returns the next subset of tree witnesses
 	     *
 	     * @return the next subset of tree witnesses
 	     * @exception NoSuchElementException has no more subsets.
 	     */
 		@Override
-		public Collection<TreeWitness> next()
-		{
-			if(!hasNext())
-				throw new NoSuchElementException("The next method was called when no more objects remained.");
-
-		    boolean carry = true;
-			for (int i = 0; i < isIn.length; i++)
-				if(!carry)
-					break;
-				else {
-			        carry = isIn[i];
-					isIn[i] = !isIn[i];
-				}
+		public Collection<TreeWitness> next() {
+			if (atNextPosition) {
+				atNextPosition = false;
+				return nextSet;
+			}
 			
-			Collection<TreeWitness> subset = new LinkedList<TreeWitness>();
-			int i = 0;
-	      	for (TreeWitness tw : tws)
-	      		if (isIn[i++])
-	      			subset.add(tw);
-
-	      	return subset;
+			while (!isLast()) 
+				if (moveToNext()) {
+					atNextPosition = false;
+					return nextSet;
+				}
+			finished = true;
+			
+			throw new NoSuchElementException("The next method was called when no more objects remained.");
 	    }
 
 	  	/**
 	     * @return <tt>true</tt> if the PowerSet has more subsets.
 	     */
 		@Override
-	  	public boolean hasNext()
-	  	{
-	  		for (int i=0; i < isIn.length; i++)
-	  			if(!isIn[i])
-	  				return true;
-	  		return false;
+	  	public boolean hasNext() {
+			if (atNextPosition)
+				return !finished;
+			
+			while (!isLast()) 
+				if (moveToNext()) {
+					atNextPosition = true;
+					return true;
+				}
+			
+			return false;
 	  	}
+		
+		private boolean isLast() {
+	  		for (int i = 0; i < isInNext.length; i++)
+	  			if (!isInNext[i])
+	  				return false;
+	  		return true;
+			
+		}
+		
+		// return true if the next is compatible
+		
+		private boolean moveToNext() {
+		    boolean carry = true;
+			for (int i = 0; i < isInNext.length; i++)
+				if(!carry)
+					break;
+				else {
+			        carry = isInNext[i];
+			        isInNext[i] = !isInNext[i];
+				}			
+
+			nextSet.clear();
+			int i = 0;
+	      	for (TreeWitness tw : tws)
+	      		if (isInNext[i++]) {
+	      			for (TreeWitness tw0 : nextSet)
+	      				if (!tw0.isCompatibleWith(tw)) 
+	      					return false;
+	      					
+	      			nextSet.add(tw);
+	      		}
+	      	return true;
+		}
 		
 		/**
 	     * @exception UnsupportedOperationException because the <tt>remove</tt>
 	     *		  operation is not supported by this Iterator.
 	     */
 		@Override
-		public void remove()
-		{
+		public void remove() {
 			throw new UnsupportedOperationException("The PowerSet class does not support the remove method.");
 		}
 	}

@@ -15,7 +15,9 @@ import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Edge;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Loop;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessSet.CompatibleTreeWitnessSetIterator;
 import it.unibz.krdb.obda.utils.QueryUtils;
 
 import java.net.URI;
@@ -74,17 +76,35 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	public void initialize() {
 		// TODO Auto-generated method stub
 	}
-	
-	/*
-	 *  EXT atoms cache
-	 */
 
+	/*
+	 * adds the Ext_E atoms for all atoms E in a given collection of atoms; saves used Ext_E predicates in usedExts
+	 */
+	
 	private  void addExtAtoms(Collection<Atom> extAtoms, Collection<Atom> atoms, Set<Predicate> usedExts) {
 		for (Atom a : atoms) {
 			Predicate ext = cache.getCheckedExtPredicate(a.getPredicate(), usedExts);
 			extAtoms.add((ext == null) ? a: fac.getAtom(ext, a.getTerms()));
 		}
 	}
+
+	/*
+	 * returns the Ext_E atoms for all atoms E in a given edge; saves used Ext_E predicates in usedExts
+	 */
+		
+	private List<Atom> getExtAtoms(Edge edge, Set<Predicate> usedExts) {
+		List<Atom> extAtoms = new ArrayList<Atom>(edge.size());
+		addExtAtoms(extAtoms, edge.getBAtoms(), usedExts);
+		addExtAtoms(extAtoms, edge.getAtoms0(), usedExts);
+		addExtAtoms(extAtoms, edge.getAtoms1(), usedExts);	
+		return extAtoms;
+	}
+	
+	/*
+	 * returns the Ext_E atoms for all atoms E of a given collection of tree witness generators; 
+	 * the `free' variable of the generators is replaced by the term r0;
+	 * saves used Ext_E predicates in usedExts
+	 */
 
 	private List<Atom> getExtAtomsForGenerators(Collection<TreeWitnessGenerator> gens, Term r0, Set<Predicate> usedExts)  {
 		Collection<BasicClassDescription> concepts = TreeWitnessGenerator.getMaximalBasicConcepts(gens);		
@@ -105,6 +125,10 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		}
 		return extAtoms;
 	}
+	
+	/*
+	 * returns an atom with given arguments and the predicate name formed by the given URI basis and string fragment
+	 */
 	
 	private static Atom getHeadAtom(URI basis, String fragment, List<Term> arguments) {
 		URI uri = null;
@@ -171,54 +195,72 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			tw.setFormula(twfs);
 		}
 				
-		MinimalCQProducer mainbody = new MinimalCQProducer(reasoner, cc.getFreeVariables()); 
-		
-		if (!cc.isDegenerate()) {
-			boolean conflicts = false;
-			for (TreeWitness tw0 : tws.getTWs())
-				for (TreeWitness tw1: tws.getTWs())
-					if ((tw0 != tw1) && !tw0.getDomain().containsAll(tw1.getDomain()) && !tw1.getDomain().containsAll(tw0.getDomain())) {
-						Set<Term> terms = new HashSet<Term>(tw0.getDomain());
-						terms.retainAll(tw1.getDomain());
-						if (!terms.isEmpty()) {
-							Set<Term> roots = new HashSet<Term>(tw0.getRoots());
-							roots.retainAll(tw1.getRoots());
-							if (!roots.containsAll(terms)) {
-								conflicts = true;
-								log.debug("CONFLICT: " + tw0 + " AND " + tw1 + "(roots " + roots + " domains " + terms + ")");
+		if (!cc.isDegenerate()) {			
+			if (tws.hasConflicts()) { 
+				// there are conflicting tree witnesses
+				// use compact exponential rewriting by enumerating all compatible subsets of tree witnesses
+				URI atomURI = headAtom.getPredicate().getName();
+				CompatibleTreeWitnessSetIterator iterator = tws.getIterator();
+				while (iterator.hasNext()) {
+					Collection<TreeWitness> compatibleTWs = iterator.next();
+					log.debug("COMPATIBLE: " + compatibleTWs);
+					MinimalCQProducer mainbody = new MinimalCQProducer(reasoner, cc.getFreeVariables()); 
+					
+					for (Edge edge : cc.getEdges()) {
+						boolean contained = false;
+						for (TreeWitness tw : compatibleTWs)
+							if (tw.getDomain().contains(edge.getTerm0()) && tw.getDomain().contains(edge.getTerm1())) {
+								contained = true;
+								log.debug("EDGE " + edge + " COVERED BY " + tw);
+								break;
 							}
+						if (!contained) {
+							log.debug("EDGE " + edge + " NOT COVERED BY ANY TW");
+							for (Atom a : getExtAtoms(edge, usedExts))
+								mainbody.add(a);
 						}
 					}
-			
-			for (QueryConnectedComponent.Edge edge : cc.getEdges()) {
-				log.debug("EDGE " + edge);
-				List<Atom> extAtoms = new ArrayList<Atom>(edge.size());
-				addExtAtoms(extAtoms, edge.getBAtoms(), usedExts);
-				addExtAtoms(extAtoms, edge.getAtoms0(), usedExts);
-				addExtAtoms(extAtoms, edge.getAtoms1(), usedExts);
-				
-				Atom edgeAtom = null;
-				for (TreeWitness tw : tws.getTWs())
-					if (tw.getDomain().contains(edge.getTerm0()) && tw.getDomain().contains(edge.getTerm1())) {
-						if (edgeAtom == null) {
-							URI atomURI = edge.getBAtoms().iterator().next().getPredicate().getName();
-							edgeAtom = getHeadAtom(atomURI, 
-									"E_" + (edgeDP.getRules().size() + 1) + "_" + atomURI.getFragment(), cc.getVariables());
-							mainbody.addNoCheck(edgeAtom);				
-							edgeDP.appendRule(fac.getCQIE(edgeAtom, extAtoms));													
-						}
-						
+					for (TreeWitness tw : compatibleTWs) {
+						Atom twAtom = getHeadAtom(atomURI, "TW_" + (edgeDP.getRules().size() + 1), cc.getVariables());
+						mainbody.addNoCheck(twAtom);				
 						for (List<Atom> twfa : tw.getFormula())
-							edgeDP.appendRule(fac.getCQIE(edgeAtom, twfa));
-					}
-				
-				if (edgeAtom == null) // no tree witnesses -- direct insertion into the main body
-					for (Atom a : extAtoms)
-						mainbody.add(a);
+							edgeDP.appendRule(fac.getCQIE(twAtom, twfa));
+					}	
+					output.appendRule(fac.getCQIE(headAtom, mainbody.getBody())); 
+				}
 			}
-			output.appendRule(fac.getCQIE(headAtom, mainbody.getBody())); 
+			else {
+				// no conflicting tree witnesses
+				// use polynomial tree witness rewriting by treating each edge independently 
+				MinimalCQProducer mainbody = new MinimalCQProducer(reasoner, cc.getFreeVariables()); 		
+				for (Edge edge : cc.getEdges()) {
+					log.debug("EDGE " + edge);
+					List<Atom> extAtoms = getExtAtoms(edge, usedExts);
+					
+					Atom edgeAtom = null;
+					for (TreeWitness tw : tws.getTWs())
+						if (tw.getDomain().contains(edge.getTerm0()) && tw.getDomain().contains(edge.getTerm1())) {
+							if (edgeAtom == null) {
+								URI atomURI = edge.getBAtoms().iterator().next().getPredicate().getName();
+								edgeAtom = getHeadAtom(atomURI, 
+										"E_" + (edgeDP.getRules().size() + 1) + "_" + atomURI.getFragment(), cc.getVariables());
+								mainbody.addNoCheck(edgeAtom);				
+								edgeDP.appendRule(fac.getCQIE(edgeAtom, extAtoms));													
+							}
+							
+							for (List<Atom> twfa : tw.getFormula())
+								edgeDP.appendRule(fac.getCQIE(edgeAtom, twfa));
+						}
+					
+					if (edgeAtom == null) // no tree witnesses -- direct insertion into the main body
+						for (Atom a : extAtoms)
+							mainbody.add(a);
+				}
+				output.appendRule(fac.getCQIE(headAtom, mainbody.getBody())); 
+			}
 		}
 		else {
+			// degenerate connected component -- a single loop
 			Loop loop = cc.getLoop();
 			log.debug("LOOP " + loop);
 			List<Atom> extAtoms = new ArrayList<Atom>(loop.getAtoms().size());			
@@ -292,6 +334,15 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	}
 	
 
+	/**
+	 * Ext predicates cache entry
+	 * 		ext: the Ext_E predicate for a query predicate E
+	 * 		dp:  list of CQs to represent the Datalog program for this ext
+	 * note that both dp and ext can be null (at the same time) meaning that the definition of Ext_E is trivial
+	 *  
+	 * @author Roman Kontchakov
+	 *
+	 */
 	
 	private static class ExtPredicateCacheEntry {
 		private final Predicate ext;
@@ -303,13 +354,30 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		}
 	}
 	
+	/**
+	 * cache for the Ext_E predicates and Datalog programs they are defined by
+	 * 
+	 * @author Roman Kontchakov
+	 *
+	 */
 	
 	private class ExtPredicateCache {
 		private Map<Predicate, ExtPredicateCacheEntry> extPredicateMap = new HashMap<Predicate, ExtPredicateCacheEntry>();
 		
+		/**
+		 * clears the cache (called when a new CBox is set)
+		 */
+		
 		public void clear() {
 			extPredicateMap.clear();
 		}
+		
+		/**
+		 * 
+		 * @param p: a query predicate E
+		 * @param usedExts: a collection of Ext_E predicates that have been used in the rewriting so far
+		 * @return the Ext_E predicate or null if Ext_E is trivially defined (i.e., with a single rule Ext_E :- E)
+		 */
 		
 		public Predicate getCheckedExtPredicate(Predicate p, Set<Predicate> usedExts)  {
 			ExtPredicateCacheEntry e = getEntryFor(p);
@@ -317,6 +385,13 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				usedExts.add(p);
 			return e.ext;
 		}
+		
+		/**
+		 * 
+		 * @param p: a query predicate E
+		 * @param usedExts: a collection of Ext_E predicates that have been used in the rewriting so far
+		 * @return the Ext_E predicate or E if Ext_E is trivially defined (i.e., with a single rule Ext_E :- E)
+		 */
 		
 		public Predicate getExtPredicate(Predicate p, Set<Predicate> usedExts)  {
 			ExtPredicateCacheEntry e = getEntryFor(p);
@@ -328,12 +403,18 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				return p;
 		}
 		
-		public DatalogProgram getExtDP(Set<Predicate> exts) {
-			if (exts.isEmpty())
+		/**
+		 * 
+		 * @param usedExts: a collection of Ext_E predicates that have been used in the rewriting so far
+		 * @return Datalog program containing definitions for all Ext_E in usedExts
+		 */
+		
+		public DatalogProgram getExtDP(Set<Predicate> usedExts) {
+			if (usedExts.isEmpty())
 				return null;
 			
 			DatalogProgram extDP = fac.getDatalogProgram();		
-			for (Predicate pred : exts) { 
+			for (Predicate pred : usedExts) { 
 				List<CQIE> extDef = extPredicateMap.get(pred).dp;			 
 				extDP.appendRule(extDef); // NEED TO CLONE?				 
 			}
@@ -395,6 +476,14 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		}
 	
 	}
+	
+	/**
+	 * class for Datalog program definitions of the Ext_E
+	 * implements simplified CQ containment checks
+	 * 
+	 * @author Roman Kontchakov
+	 *
+	 */
 	
 	private class ExtDatalogProgramDef {
 		private final Atom extAtom;
