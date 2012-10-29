@@ -480,7 +480,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 		LinkedHashSet<String> equalityConditions = new LinkedHashSet<String>();
 
-		if (processShared)
+//		if (processShared)
 			equalityConditions.addAll(getConditionsSharedVariablesAndConstants(
 					atoms, index, processShared));
 		LinkedHashSet<String> booleanConditions = getBooleanConditionsString(

@@ -11,6 +11,7 @@ import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
@@ -21,8 +22,6 @@ import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.ABoxToFactConverter;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSDataRepositoryManager;
-//import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSDirectDataRepositoryManager;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSSIRepositoryManager;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
@@ -55,12 +54,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,6 +122,14 @@ public class Quest implements Serializable {
 	 * The equivalence map for the classes/properties that have been simplified
 	 */
 	protected Map<Predicate, Description> equivalenceMaps = null;
+
+	/*
+	 * These are pattern matchers that will help transforming the URI's in
+	 * queries into Functions, used by the SPARQL translator.
+	 */
+	private final HashMap<Pattern, Function> uriMatcherFunctions = new HashMap<Pattern, Function>();
+
+	final HashSet<String> templateStrings = new HashSet<String>();
 
 	// private ReformulationPlatformPreferences preferences = null;
 
@@ -199,7 +208,7 @@ public class Quest implements Serializable {
 	public Map<String, Boolean> getIsDescribeCache() {
 		return isdescribecache;
 	}
-	
+
 	public void loadOBDAModel(OBDAModel model) {
 		isClassified = false;
 		inputOBDAModel = (OBDAModel) model.clone();
@@ -658,39 +667,101 @@ public class Quest implements Serializable {
 			 */
 			Map<Predicate, List<Integer>> pkeys = DBMetadata.extractPKs(
 					metadata, unfoldingProgram);
-			
-//			/*
-//			 * Transforming body of mappings with 2 atoms into JOINs
-//			 */
-//			for (int i = 0; i < unfoldingProgram.getRules().size(); i++) {
-//				/* Looking for mappings with exactly 2 data atoms */
-//				CQIE mapping = currentMappingRules.get(i);
-//				int dataAtoms = 0;
-//				for (Atom subAtom : mapping.getBody()) {
-//					if (subAtom.isDataFunction()) {
-//						dataAtoms += 1;
-//
-//					}
-//				}
-//				if (dataAtoms != 2) {
-//					continue;
-//				}
-//
-//				/*
-//				 * This mapping can be transformed into a normal join with ON
-//				 * conditions. Doing so.
-//				 */
-//				List<NewLiteral> oldbody = new LinkedList<NewLiteral>();
-//				oldbody.addAll(mapping.getBody());
-//				Atom joinAtom = fac.getFunctionalTerm(
-//						OBDAVocabulary.SPARQL_JOIN, oldbody).asAtom();
-//				CQIE newmapping = fac.getCQIE(mapping.getHead(), joinAtom);
-//
-//				unfoldingProgram.removeRule(mapping);
-//				unfoldingProgram.appendRule(newmapping);
-//				i -= 1;
-//
-//			}
+
+			/*
+			 * Collecting URI templates
+			 */
+
+			for (int i = 0; i < unfoldingProgram.getRules().size(); i++) {
+				/* Looking for mappings with exactly 2 data atoms */
+				CQIE mapping = currentMappingRules.get(i);
+				Atom head = mapping.getHead();
+				/*
+				 * Collecting URI templates and making pattern matchers for
+				 * them.
+				 */
+
+				for (NewLiteral term : head.getTerms()) {
+					if (!(term instanceof Function))
+						continue;
+					Function fun = (Function) term;
+					if (!(fun.getFunctionSymbol().toString()
+							.equals(OBDAVocabulary.QUEST_URI)))
+						continue;
+					/*
+					 * This is a URI function, so it can generate pattern
+					 * matchers for the URIS. We have two cases, one where the
+					 * arity is 1, and there is a constant/variable. <p> The
+					 * second case is where the first element is a string
+					 * template of the URI, and the rest of the terms are
+					 * variables/constants
+					 */
+					if (fun.getTerms().size() == 1) {
+						/*
+						 * URI without tempalte, we get it direclty from the
+						 * column of the table, and the function is only f(x)
+						 */
+						if (templateStrings.contains(".+"))
+							continue;
+						Function templateFunction = fac
+								.getFunctionalTerm(
+										fac.getUriTemplatePredicate(1),
+										fac.getVariable("x"));
+						Pattern matcher = Pattern.compile(".+");
+						getUriMatcherFunctions().put(matcher, templateFunction);
+						templateStrings.add(".+");
+					} else {
+						ValueConstant template = (ValueConstant) fun.getTerms()
+								.get(0);
+						String templateString = template.getValue();
+						templateString = templateString.replace("{}", "(.+)");
+
+						if (templateStrings.contains(templateString))
+							continue;
+
+						Pattern mattcher = Pattern.compile(templateString);
+						getUriMatcherFunctions().put(mattcher, fun);
+
+						templateStrings.add(templateString);
+
+					}
+
+				}
+
+			}
+
+			// /*
+			// * Transforming body of mappings with 2 atoms into JOINs
+			// */
+			// for (int i = 0; i < unfoldingProgram.getRules().size(); i++) {
+			// /* Looking for mappings with exactly 2 data atoms */
+			// CQIE mapping = currentMappingRules.get(i);
+			// int dataAtoms = 0;
+			// for (Atom subAtom : mapping.getBody()) {
+			// if (subAtom.isDataFunction()) {
+			// dataAtoms += 1;
+			//
+			// }
+			// }
+			// if (dataAtoms != 2) {
+			// continue;
+			// }
+			//
+			// /*
+			// * This mapping can be transformed into a normal join with ON
+			// * conditions. Doing so.
+			// */
+			// List<NewLiteral> oldbody = new LinkedList<NewLiteral>();
+			// oldbody.addAll(mapping.getBody());
+			// Atom joinAtom = fac.getFunctionalTerm(
+			// OBDAVocabulary.SPARQL_JOIN, oldbody).asAtom();
+			// CQIE newmapping = fac.getCQIE(mapping.getHead(), joinAtom);
+			//
+			// unfoldingProgram.removeRule(mapping);
+			// unfoldingProgram.appendRule(newmapping);
+			// i -= 1;
+			//
+			// }
 
 			/*
 			 * Adding "triple(x,y,z)" mappings for support of unbounded
@@ -701,8 +772,6 @@ public class Quest implements Serializable {
 			List<CQIE> newmappings = new LinkedList<CQIE>();
 			generateTripleMappings(fac, newmappings);
 			unfoldingProgram.appendRule(newmappings);
-
-			
 
 			/*
 			 * Setting up the unfolder and SQL generation
@@ -869,5 +938,9 @@ public class Quest implements Serializable {
 	public void setABox(Iterator<Assertion> owlapi3aBoxIterator) {
 		this.aboxIterator = owlapi3aBoxIterator;
 
+	}
+
+	public HashMap<Pattern, Function> getUriMatcherFunctions() {
+		return uriMatcherFunctions;
 	}
 }

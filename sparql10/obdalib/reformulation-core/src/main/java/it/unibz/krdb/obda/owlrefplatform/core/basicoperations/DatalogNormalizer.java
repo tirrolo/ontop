@@ -8,7 +8,6 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
@@ -22,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class DatalogNormalizer {
 
@@ -150,7 +150,7 @@ public class DatalogNormalizer {
 		foldJoinTrees(body, false);
 		return query;
 	}
-
+	
 	public static void foldJoinTrees(List atoms, boolean isJoin) {
 		List<Function> dataAtoms = new LinkedList<Function>();
 		List<Function> booleanAtoms = new LinkedList<Function>();

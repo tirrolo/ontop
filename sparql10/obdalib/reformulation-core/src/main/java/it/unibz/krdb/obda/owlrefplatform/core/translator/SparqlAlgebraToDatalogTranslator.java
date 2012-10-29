@@ -7,11 +7,11 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
+import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.LoggerFactory;
 
@@ -108,21 +110,29 @@ import com.hp.hpl.jena.sparql.syntax.Template;
  */
 public class SparqlAlgebraToDatalogTranslator {
 
-	private static OBDADataFactory ofac = OBDADataFactoryImpl.getInstance();
+	private OBDADataFactory ofac = OBDADataFactoryImpl.getInstance();
 
-	private static NewLiteralComparator comparator = new NewLiteralComparator();
+	private NewLiteralComparator comparator = new NewLiteralComparator();
 
-	protected static org.slf4j.Logger log = 
-			LoggerFactory.getLogger(SparqlAlgebraToDatalogTranslator.class);
+	private final Map<Pattern, Function> uriTemplateMatcher;
+
+	public SparqlAlgebraToDatalogTranslator(
+			Map<Pattern, Function> templateMatcher) {
+		this.uriTemplateMatcher = templateMatcher;
+	}
+
+	protected static org.slf4j.Logger log = LoggerFactory
+			.getLogger(SparqlAlgebraToDatalogTranslator.class);
 
 	/**
 	 * Translate a given SPARQL query string to datalog program.
 	 * 
 	 * @param query
-	 * 			The SPARQL query string.
-	 * @return Datalog program that represents the construction of the SPARQL query.
+	 *            The SPARQL query string.
+	 * @return Datalog program that represents the construction of the SPARQL
+	 *         query.
 	 */
-	public static DatalogProgram translate(String query) {
+	public DatalogProgram translate(String query) {
 		Query arqQuery = QueryFactory.create(query);
 		return translate(arqQuery);
 	}
@@ -131,11 +141,12 @@ public class SparqlAlgebraToDatalogTranslator {
 	 * Translate a given SPARQL query object to datalog program.
 	 * 
 	 * @param query
-	 * 			The Query object.
-	 * @return Datalog program that represents the construction of the SPARQL query.
+	 *            The Query object.
+	 * @return Datalog program that represents the construction of the SPARQL
+	 *         query.
 	 */
-	public static DatalogProgram translate(Query arqQuery) {
-		
+	public DatalogProgram translate(Query arqQuery) {
+
 		Op op = Algebra.compile(arqQuery);
 
 		log.debug("SPARQL algebra: \n{}", op.toString());
@@ -154,8 +165,8 @@ public class SparqlAlgebraToDatalogTranslator {
 		return result;
 	}
 
-	public static void translate(List<Variable> vars, Op op, DatalogProgram pr,
-			int i, int[] varcount) {
+	public void translate(List<Variable> vars, Op op, DatalogProgram pr, int i,
+			int[] varcount) {
 
 		if (op instanceof OpSlice) {
 
@@ -207,7 +218,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 	}
 
-	private static void translate(List<Variable> vars, OpUnion union,
+	private void translate(List<Variable> vars, OpUnion union,
 			DatalogProgram pr, int i, int[] varcount) {
 		Op left = union.getLeft();
 		Op right = union.getRight();
@@ -297,8 +308,8 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	}
 
-	private static void translate(List<Variable> vars, OpJoin join,
-			DatalogProgram pr, int i, int[] varcount) {
+	private void translate(List<Variable> vars, OpJoin join, DatalogProgram pr,
+			int i, int[] varcount) {
 		Op left = join.getLeft();
 		Op right = join.getRight();
 
@@ -357,7 +368,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 	}
 
-	private static void translate(List<Variable> vars, OpLeftJoin join,
+	private void translate(List<Variable> vars, OpLeftJoin join,
 			DatalogProgram pr, int i, int[] varcount) {
 		Op left = join.getLeft();
 		Op right = join.getRight();
@@ -427,7 +438,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 	}
 
-	private static void translate(List<Variable> vars, OpProject projectOp,
+	private void translate(List<Variable> vars, OpProject projectOp,
 			DatalogProgram pr, int i, int[] varcount) {
 
 		Op op = projectOp.getSubOp();
@@ -463,7 +474,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		translate(vars, op, pr, i + 1, varcount);
 	}
 
-	private static void translate(List<Variable> vars, OpSlice sliceOp,
+	private void translate(List<Variable> vars, OpSlice sliceOp,
 			DatalogProgram pr, int i, int[] varcount) {
 		Op op;
 		pr.getQueryModifiers().setOffset(sliceOp.getStart());
@@ -472,7 +483,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		translate(vars, op, pr, i, varcount);
 	}
 
-	private static void translate(List<Variable> vars, OpDistinct distinctOp,
+	private void translate(List<Variable> vars, OpDistinct distinctOp,
 			DatalogProgram pr, int i, int[] varcount) {
 		Op op;
 		pr.getQueryModifiers().setDistinct();
@@ -480,7 +491,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		translate(vars, op, pr, i, varcount);
 	}
 
-	private static void translate(List<Variable> vars, OpOrder orderOp,
+	private void translate(List<Variable> vars, OpOrder orderOp,
 			DatalogProgram pr, int i, int[] varcount) {
 		Op op;
 		for (SortCondition c : orderOp.getConditions()) {
@@ -493,8 +504,8 @@ public class SparqlAlgebraToDatalogTranslator {
 		translate(vars, op, pr, i, varcount);
 	}
 
-	public static void translate(List<Variable> var, OpFilter op,
-			DatalogProgram pr, int i, int varcount[]) {
+	public void translate(List<Variable> var, OpFilter op, DatalogProgram pr,
+			int i, int varcount[]) {
 		ExprList list = op.getExprs();
 		List<Expr> exprlist = list.getList();
 		List<Atom> filterAtoms = new LinkedList<Atom>();
@@ -563,8 +574,8 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	}
 
-	public static void translate(List<Variable> vars, OpBGP op,
-			DatalogProgram pr, int i, int[] varcount) {
+	public void translate(List<Variable> vars, OpBGP op, DatalogProgram pr,
+			int i, int[] varcount) {
 		translate(vars, op.getPattern(), pr, i, varcount);
 	}
 
@@ -573,12 +584,12 @@ public class SparqlAlgebraToDatalogTranslator {
 	 * binary operation. This is required to maintain the numbering of each
 	 * level of the program.
 	 */
-	public static void translate(List<Variable> vars, BasicPattern bp,
+	public void translate(List<Variable> vars, BasicPattern bp,
 			DatalogProgram pr, int i, int[] varcount) {
 		translate(vars, bp.getList(), pr, i, varcount);
 	}
 
-	public static void translate(List<Variable> vars, List<Triple> triples,
+	public void translate(List<Variable> vars, List<Triple> triples,
 			DatalogProgram pr, int i, int[] varcount) {
 
 		if (triples.size() == 1) {
@@ -598,14 +609,17 @@ public class SparqlAlgebraToDatalogTranslator {
 			List<NewLiteral> atom1VarsList = new LinkedList<NewLiteral>();
 			atom1VarsList.addAll(atom1VarsSet);
 			Collections.sort(atom1VarsList, comparator);
-			Predicate leftAtomPred = ofac.getPredicate("ans" + (2 * i), atom1VarsList.size());
+			Predicate leftAtomPred = ofac.getPredicate("ans" + (2 * i),
+					atom1VarsList.size());
 			Atom leftAtom = ofac.getAtom(leftAtomPred, atom1VarsList);
 
-			Set<Variable> atom2VarsSet = getVariables(triples.subList(1, triples.size()));
+			Set<Variable> atom2VarsSet = getVariables(triples.subList(1,
+					triples.size()));
 			List<NewLiteral> atom2VarsList = new LinkedList<NewLiteral>();
 			atom2VarsList.addAll(atom2VarsSet);
 			Collections.sort(atom2VarsList, comparator);
-			Predicate rightAtomPred = ofac.getPredicate("ans" + ((2 * i) + 1), atom2VarsList.size());
+			Predicate rightAtomPred = ofac.getPredicate("ans" + ((2 * i) + 1),
+					atom2VarsList.size());
 			Atom rightAtom = ofac.getAtom(rightAtomPred, atom2VarsList);
 
 			/* The join */
@@ -624,7 +638,8 @@ public class SparqlAlgebraToDatalogTranslator {
 			for (NewLiteral var : atom2VarsList) {
 				newvars.add((Variable) var);
 			}
-			translate(newvars, triples.subList(1, triples.size()), pr, (2 * i) + 1, varcount);
+			translate(newvars, triples.subList(1, triples.size()), pr,
+					(2 * i) + 1, varcount);
 
 		} else {
 			throw new RuntimeException("Error tranlsating a BGP, size was 0.");
@@ -639,7 +654,7 @@ public class SparqlAlgebraToDatalogTranslator {
 	 * @param triple
 	 * @return
 	 */
-	public static void translate(List<Variable> vars, Triple triple,
+	public void translate(List<Variable> vars, Triple triple,
 			DatalogProgram pr, int i, int[] varcount) {
 		Node o = triple.getObject();
 		Node p = triple.getPredicate();
@@ -685,14 +700,13 @@ public class SparqlAlgebraToDatalogTranslator {
 				subjectType = COL_TYPE.OBJECT;
 				subjectUri = URI.create(subject.getURI());
 
-				Function functionURI = ofac.getFunctionalTerm(
-						ofac.getUriTemplatePredicate(1),
-						ofac.getURIConstant(subjectUri));
-				Variable freshVariable = getFreshVariable(varcount);
-				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-				result.add(eqAtom);
+				Function functionURI = generateURIFunction(subjectUri);
+//				Variable freshVariable = getFreshVariable(varcount);
+//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+//				result.add(eqAtom);
 
-				terms.add(freshVariable);
+//				terms.add(freshVaria
+				terms.add(functionURI);
 
 			}
 
@@ -770,14 +784,13 @@ public class SparqlAlgebraToDatalogTranslator {
 				subjectType = COL_TYPE.OBJECT;
 				subjectUri = URI.create(subject.getURI());
 
-				Function functionURI = ofac.getFunctionalTerm(
-						ofac.getUriTemplatePredicate(1),
-						ofac.getURIConstant(subjectUri));
-				Variable freshVariable = getFreshVariable(varcount);
-				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-				result.add(eqAtom);
+				Function functionURI = generateURIFunction(subjectUri);
+//				Variable freshVariable = getFreshVariable(varcount);
+//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+//				result.add(eqAtom);
 
-				terms.add(freshVariable);
+//				terms.add(freshVariable);
+				terms.add(functionURI);
 			}
 
 			// Object node
@@ -824,15 +837,13 @@ public class SparqlAlgebraToDatalogTranslator {
 				objectType = COL_TYPE.OBJECT;
 				objectUri = URI.create(object.getURI());
 
-				Function functionURI = ofac.getFunctionalTerm(
-						ofac.getUriTemplatePredicate(1),
-						ofac.getURIConstant(objectUri));
-				Variable freshVariable = getFreshVariable(varcount);
-				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-				result.add(eqAtom);
-
-				terms.add(freshVariable);
-
+				Function functionURI = generateURIFunction(objectUri);
+//				Variable freshVariable = getFreshVariable(varcount);
+//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+//				result.add(eqAtom);
+//
+//				terms.add(freshVariable);
+				terms.add(functionURI);
 			}
 			// Construct the predicate
 
@@ -863,7 +874,45 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	}
 
-	// private static class VariableComparator implements Comparator<Variable> {
+	/***
+	 * We will try to match the URI to one of our patterns, if this happens, we
+	 * have a corresponding function, and the paramters for this function. The
+	 * parameters are the values for the groups of the pattern,.
+	 */
+	private Function generateURIFunction(URI subjectUri) {
+		Function functionURI = null;
+		String uriString = subjectUri.toString();
+		for (Pattern pattern : this.uriTemplateMatcher.keySet()) {
+
+			Matcher matcher = pattern.matcher(uriString);
+			boolean match = matcher.matches();
+			if (!match)
+				continue;
+
+			Function matchingFunction = uriTemplateMatcher.get(pattern);
+
+			int valueCount = matcher.groupCount();
+
+			List<NewLiteral> values = new LinkedList<NewLiteral>();
+			values.add(matchingFunction.getTerms().get(0));
+
+			for (int i = 0; i < matcher.groupCount(); i++) {
+				String value = matcher.group(i+1);
+				values.add(ofac.getValueConstant(value));
+			}
+			
+			System.out.println("VALUES!!!" + values);
+
+			functionURI = ofac.getFunctionalTerm(
+					ofac.getUriTemplatePredicate(values.size()), values);
+			break;
+
+		}
+
+		return functionURI;
+	}
+
+	// private class VariableComparator implements Comparator<Variable> {
 	//
 	// @Override
 	// public int compare(Variable arg0, Variable arg1) {
@@ -872,7 +921,7 @@ public class SparqlAlgebraToDatalogTranslator {
 	//
 	// }
 
-	private static class NewLiteralComparator implements Comparator<NewLiteral> {
+	private class NewLiteralComparator implements Comparator<NewLiteral> {
 
 		@Override
 		public int compare(NewLiteral arg0, NewLiteral arg1) {
@@ -881,7 +930,7 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	}
 
-	public static Set<Variable> getVariables(List<Triple> triples) {
+	public Set<Variable> getVariables(List<Triple> triples) {
 		Set<Variable> vars = new HashSet<Variable>();
 		for (Triple triple : triples) {
 			vars.addAll(getVariables(triple));
@@ -889,7 +938,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		return vars;
 	}
 
-	public static Set<Variable> getVariables(Triple triple) {
+	public Set<Variable> getVariables(Triple triple) {
 		Set<Variable> vars = new HashSet<Variable>();
 		Node o = triple.getObject();
 		Node p = triple.getPredicate();
@@ -914,7 +963,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		return vars;
 	}
 
-	public static Set<Variable> getVariables(Op op) {
+	public Set<Variable> getVariables(Op op) {
 		Set<Variable> result = new LinkedHashSet<Variable>();
 		if (op instanceof OpBGP) {
 			result.addAll(getVariables(((OpBGP) op).getPattern().getList()));
@@ -931,12 +980,12 @@ public class SparqlAlgebraToDatalogTranslator {
 		return result;
 	}
 
-	private static Variable getFreshVariable(int[] count) {
+	private Variable getFreshVariable(int[] count) {
 		count[0] += 1;
 		return ofac.getVariable("VAR" + count[0]);
 	}
 
-	public static ValueConstant getConstant(Node_Literal literal) {
+	public ValueConstant getConstant(Node_Literal literal) {
 		RDFDatatype type = literal.getLiteralDatatype();
 
 		COL_TYPE objectType = getDataType(literal);
@@ -985,7 +1034,7 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	}
 
-	private static Predicate getDataTypePredicate(COL_TYPE dataType)
+	private Predicate getDataTypePredicate(COL_TYPE dataType)
 			throws QueryException {
 		switch (dataType) {
 		case STRING:
@@ -1005,7 +1054,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 	}
 
-	private static COL_TYPE getDataType(Node_Literal node) {
+	private COL_TYPE getDataType(Node_Literal node) {
 		COL_TYPE dataType = null;
 
 		final String dataTypeURI = node.getLiteralDatatypeURI();
@@ -1014,12 +1063,15 @@ public class SparqlAlgebraToDatalogTranslator {
 		} else {
 			if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.RDFS_LITERAL_URI)) {
 				dataType = COL_TYPE.LITERAL;
-			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_STRING_URI)) {
+			} else if (dataTypeURI
+					.equalsIgnoreCase(OBDAVocabulary.XSD_STRING_URI)) {
 				dataType = COL_TYPE.STRING;
 			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_INT_URI)
-					|| dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_INTEGER_URI)) {
+					|| dataTypeURI
+							.equalsIgnoreCase(OBDAVocabulary.XSD_INTEGER_URI)) {
 				dataType = COL_TYPE.INTEGER;
-			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_DECIMAL_URI)) {
+			} else if (dataTypeURI
+					.equalsIgnoreCase(OBDAVocabulary.XSD_DECIMAL_URI)) {
 				// special case for decimal
 				String value = node.getLiteralValue().toString();
 				if (value.contains(".")) {
@@ -1029,12 +1081,16 @@ public class SparqlAlgebraToDatalogTranslator {
 					// Put the type as integer (decimal without fractions).
 					dataType = COL_TYPE.INTEGER;
 				}
-			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_FLOAT_URI)
-					|| dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_DOUBLE_URI)) {
+			} else if (dataTypeURI
+					.equalsIgnoreCase(OBDAVocabulary.XSD_FLOAT_URI)
+					|| dataTypeURI
+							.equalsIgnoreCase(OBDAVocabulary.XSD_DOUBLE_URI)) {
 				dataType = COL_TYPE.DOUBLE;
-			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_DATETIME_URI)) {
+			} else if (dataTypeURI
+					.equalsIgnoreCase(OBDAVocabulary.XSD_DATETIME_URI)) {
 				dataType = COL_TYPE.DATETIME;
-			} else if (dataTypeURI.equalsIgnoreCase(OBDAVocabulary.XSD_BOOLEAN_URI)) {
+			} else if (dataTypeURI
+					.equalsIgnoreCase(OBDAVocabulary.XSD_BOOLEAN_URI)) {
 				dataType = COL_TYPE.BOOLEAN;
 			} else {
 				throw new RuntimeException("Unsupported datatype: "
@@ -1044,7 +1100,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		return dataType;
 	}
 
-	private static NewLiteral getBooleanTerm(Expr expr) {
+	private NewLiteral getBooleanTerm(Expr expr) {
 		if (expr instanceof ExprVar) {
 			return getVariableTerm((ExprVar) expr);
 		} else if (expr instanceof NodeValue) {
@@ -1058,7 +1114,8 @@ public class SparqlAlgebraToDatalogTranslator {
 			NewLiteral term1 = getBooleanTerm(arg1);
 			NewLiteral term2 = getBooleanTerm(arg2);
 			// Construct the boolean function
-			// TODO Change the method name because ExprFunction2 is not only for boolean functions
+			// TODO Change the method name because ExprFunction2 is not only for
+			// boolean functions
 			return getBooleanFunction(function, term1, term2);
 		} else if (expr instanceof ExprFunctionN) {
 			return getOtherFunctionTerm((ExprFunctionN) expr);
@@ -1068,11 +1125,11 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 	}
 
-	private static Variable getVariableTerm(ExprVar expr) {
+	private Variable getVariableTerm(ExprVar expr) {
 		return ofac.getVariable(expr.getVarName());
 	}
 
-	private static Function getConstantFunctionTerm(NodeValue expr) {
+	private Function getConstantFunctionTerm(NodeValue expr) {
 		Function constantFunction = null;
 		if (expr instanceof NodeValueString) {
 			constantFunction = ofac.getFunctionalTerm(
@@ -1103,15 +1160,16 @@ public class SparqlAlgebraToDatalogTranslator {
 			NodeValueNode nodeValue = (NodeValueNode) expr;
 			Node node = nodeValue.getNode();
 			if (node instanceof Node_Literal) {
-				constantFunction = ofac.getFunctionalTerm(
-						ofac.getDataTypePredicateLiteral(), 
-						ofac.getValueConstant(node.getLiteralLexicalForm(), COL_TYPE.UNSUPPORTED));
+				constantFunction = ofac.getFunctionalTerm(ofac
+						.getDataTypePredicateLiteral(), ofac.getValueConstant(
+						node.getLiteralLexicalForm(), COL_TYPE.UNSUPPORTED));
 			} else if (node instanceof Node_URI) {
-				constantFunction = ofac.getFunctionalTerm(
-						ofac.getDataTypePredicateLiteral(), 
-						ofac.getValueConstant(node.toString(), COL_TYPE.UNSUPPORTED));
+				constantFunction = ofac.getFunctionalTerm(ofac
+						.getDataTypePredicateLiteral(), ofac.getValueConstant(
+						node.toString(), COL_TYPE.UNSUPPORTED));
 			} else {
-				throw new RuntimeException("Unsupported node: " + expr.toString());
+				throw new RuntimeException("Unsupported node: "
+						+ expr.toString());
 			}
 		} else {
 			throw new QueryException("Unknown data type!");
@@ -1119,14 +1177,13 @@ public class SparqlAlgebraToDatalogTranslator {
 		return constantFunction;
 	}
 
-	private static Function getBuiltinFunctionTerm(ExprFunction1 expr) {
+	private Function getBuiltinFunctionTerm(ExprFunction1 expr) {
 		Function builtInFunction = null;
 		if (expr instanceof E_LogicalNot) {
 			Expr arg = expr.getArg();
 			NewLiteral term = getBooleanTerm(arg);
-			builtInFunction = ofac.getFunctionalTerm(
-					OBDAVocabulary.NOT, term);
-		} 
+			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.NOT, term);
+		}
 		/*
 		 * The following expressions only accept variable as the parameter
 		 */
@@ -1193,8 +1250,8 @@ public class SparqlAlgebraToDatalogTranslator {
 		return builtInFunction;
 	}
 
-	private static Function getBooleanFunction(ExprFunction2 expr,
-			NewLiteral term1, NewLiteral term2) {
+	private Function getBooleanFunction(ExprFunction2 expr, NewLiteral term1,
+			NewLiteral term2) {
 		Function function = null;
 		// The AND and OR expression
 		if (expr instanceof E_LogicalAnd) {
@@ -1229,7 +1286,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		return function;
 	}
 
-	private static NewLiteral getOtherFunctionTerm(ExprFunctionN expr) {
+	private NewLiteral getOtherFunctionTerm(ExprFunctionN expr) {
 		Function builtInFunction = null;
 		if (expr instanceof E_Regex) {
 			E_Regex function = (E_Regex) expr;
@@ -1238,36 +1295,39 @@ public class SparqlAlgebraToDatalogTranslator {
 			Expr arg3 = function.getArg(3); // get the third argument (optional)
 			NewLiteral term1 = getBooleanTerm(arg1);
 			NewLiteral term2 = getBooleanTerm(arg2);
-			NewLiteral term3 = (arg3 != null) ? getBooleanTerm(arg3) : ofac.getNULL();
-			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_REGEX, term1, term2, term3);
+			NewLiteral term3 = (arg3 != null) ? getBooleanTerm(arg3) : ofac
+					.getNULL();
+			builtInFunction = ofac.getFunctionalTerm(
+					OBDAVocabulary.SPARQL_REGEX, term1, term2, term3);
 		} else {
-			throw new RuntimeException("The builtin function " + expr.toString() + " is not supported yet!");
+			throw new RuntimeException("The builtin function "
+					+ expr.toString() + " is not supported yet!");
 		}
 		return builtInFunction;
 	}
-	
-	public static List<String> getSignature(Query query) {
+
+	public List<String> getSignature(Query query) {
 		List<String> vars = new ArrayList<String>();
 		if (query.isSelectType() || query.isDescribeType()) {
 			vars = query.getResultVars();
-			
+
 		} else if (query.isConstructType()) {
 			Template constructTemplate = query.getConstructTemplate();
 			for (Triple triple : constructTemplate.getTriples()) {
-				/* 
+				/*
 				 * Check if the subject, predicate, object is a variable.
 				 */
-				Node subject = triple.getSubject();  // subject
+				Node subject = triple.getSubject(); // subject
 				if (subject instanceof Var) {
 					String vs = ((Var) subject).getName();
 					vars.add(vs);
 				}
-				Node predicate = triple.getPredicate();  // predicate
+				Node predicate = triple.getPredicate(); // predicate
 				if (predicate instanceof Var) {
 					String vs = ((Var) predicate).getName();
 					vars.add(vs);
 				}
-				Node object = triple.getObject();  // object
+				Node object = triple.getObject(); // object
 				if (object instanceof Var) {
 					String vs = ((Var) object).getName();
 					vars.add(vs);
@@ -1276,8 +1336,8 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 		return vars;
 	}
-	
-	public static boolean isBoolean(String query) {
+
+	public boolean isBoolean(String query) {
 		Query q = QueryFactory.create(query);
 		return q.isAskType();
 	}

@@ -140,7 +140,7 @@ public class CQIEImpl implements CQIE, ListListener {
 
 			Iterator<Atom> bit = body.iterator();
 			while (bit.hasNext()) {
-				Atom atom = bit.next();
+				Function atom = bit.next();
 				sb.append(atom.toString());
 
 				if (bit.hasNext()) { // if there is a next atom.
