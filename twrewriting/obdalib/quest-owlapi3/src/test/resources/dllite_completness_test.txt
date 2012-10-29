@@ -917,6 +917,7 @@ The following are hard cases, they involve reasoning with respect to existential
 || 502 || a || B ISA ER, C ISA ES || B(a) || q(x) :- R(x,y),S(y,z) || { } || || 
 || 503 || a || B ISA ER, ER^^-^^ ISA ES || B(a) R(b,c) T(c,c) || q(x) :- R(x,y),S(y,z),S(w,z),T(y,w) || { b } || || 
 || 504 || a || A ISA ER, A ISA ER^^-^^ || A(a)  || q(x,w) :- R(x,y),R(z,y),R(z,w) || { } || || 
+|| 505 || a || A ISA ESC, SC RISA S, ESC^^-^^ ISA C, C ISA ET^^-^^, ES^^-^^ ISA ER, R RISA RP, B ISA ETP, TP RISA T, TP RISA S || A(a)  || q(x) :- S(x,y),RP(y,z),R(w,z),T(u,w) || { a } || || 
 
 #END# Correct tests end here, ignore the ones bellow
 
