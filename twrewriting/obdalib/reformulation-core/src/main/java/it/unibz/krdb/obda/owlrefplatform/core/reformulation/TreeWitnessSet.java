@@ -15,9 +15,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Set;
 
@@ -118,8 +120,6 @@ public class TreeWitnessSet {
 		}				
 
 		log.debug("TREE WITNESSES FOUND: " + tws.size());
-		
-		// TODO: CHECK FOR CONFLICTS
 	}
 	
 	private void saturateTreeWitnesses(QueryFolding qf) { 
@@ -215,6 +215,64 @@ public class TreeWitnessSet {
 			log.debug("        OK");
 		}
 		return twg;
+	}
+	
+	public class TreeWitnessPowerSetIterator implements Iterator<Collection<TreeWitness>>
+	{
+		private boolean isIn[];
+
+
+	  /**
+	     * Returns the next subset of tree witnesses
+	     *
+	     * @return the next subset of tree witnesses
+	     * @exception NoSuchElementException has no more subsets.
+	     */
+		@Override
+		public Collection<TreeWitness> next()
+		{
+			if(!hasNext())
+				throw new NoSuchElementException("The next method was called when no more objects remained.");
+
+		    boolean carry = true;
+			for (int i = 0; i < isIn.length; i++)
+				if(!carry)
+					break;
+				else {
+			        carry = isIn[i];
+					isIn[i] = !isIn[i];
+				}
+			
+			Collection<TreeWitness> subset = new LinkedList<TreeWitness>();
+			int i = 0;
+	      	for (TreeWitness tw : tws)
+	      		if (isIn[i++])
+	      			subset.add(tw);
+
+	      	return subset;
+	    }
+
+	  	/**
+	     * @return <tt>true</tt> if the PowerSet has more subsets.
+	     */
+		@Override
+	  	public boolean hasNext()
+	  	{
+	  		for (int i=0; i < isIn.length; i++)
+	  			if(!isIn[i])
+	  				return true;
+	  		return false;
+	  	}
+		
+		/**
+	     * @exception UnsupportedOperationException because the <tt>remove</tt>
+	     *		  operation is not supported by this Iterator.
+	     */
+		@Override
+		public void remove()
+		{
+			throw new UnsupportedOperationException("The PowerSet class does not support the remove method.");
+		}
 	}
 	
 	

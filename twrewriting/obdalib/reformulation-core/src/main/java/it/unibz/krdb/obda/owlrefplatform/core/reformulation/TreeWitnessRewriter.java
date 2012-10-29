@@ -174,6 +174,22 @@ public class TreeWitnessRewriter implements QueryRewriter {
 		MinimalCQProducer mainbody = new MinimalCQProducer(reasoner, cc.getFreeVariables()); 
 		
 		if (!cc.isDegenerate()) {
+			boolean conflicts = false;
+			for (TreeWitness tw0 : tws.getTWs())
+				for (TreeWitness tw1: tws.getTWs())
+					if ((tw0 != tw1) && !tw0.getDomain().containsAll(tw1.getDomain()) && !tw1.getDomain().containsAll(tw0.getDomain())) {
+						Set<Term> terms = new HashSet<Term>(tw0.getDomain());
+						terms.retainAll(tw1.getDomain());
+						if (!terms.isEmpty()) {
+							Set<Term> roots = new HashSet<Term>(tw0.getRoots());
+							roots.retainAll(tw1.getRoots());
+							if (!roots.containsAll(terms)) {
+								conflicts = true;
+								log.debug("CONFLICT: " + tw0 + " AND " + tw1 + "(roots " + roots + " domains " + terms + ")");
+							}
+						}
+					}
+			
 			for (QueryConnectedComponent.Edge edge : cc.getEdges()) {
 				log.debug("EDGE " + edge);
 				List<Atom> extAtoms = new ArrayList<Atom>(edge.size());
