@@ -162,41 +162,16 @@ public class QuestStatement implements OBDAStatement {
 
 		@Override
 		public void run() {
-
 			try {
-				String sql = "";
-				error = false;
-				graphResult = null;
-				tupleResult = null;
-				exception = null;
-				boolean isBoolean = false;
-				boolean isConstruct = false;
-				boolean isDescribe = false;
-				List<String> signature = null;
-
-				Query query = QueryFactory.create(strquery);
-
-				if (querycache.containsKey(strquery)) {
-					sql = querycache.get(strquery);
-					signature = signaturecache.get(strquery);
-					isBoolean = isbooleancache.get(strquery);
-					isConstruct = isconstructcache.get(strquery);
-					isDescribe = isdescribecache.get(strquery);
-				} else {
-					sql = getUnfolding(strquery);
-
-					signature = getSignature(query);
-					signaturecache.put(strquery, signature);
-
-					isBoolean = isBoolean(query);
-					isbooleancache.put(strquery, isBoolean);
-
-					isConstruct = isConstruct(query);
-					isconstructcache.put(strquery, isConstruct);
-
-					isDescribe = isDescribe(query);
-					isdescribecache.put(strquery, isDescribe);
+				if (!querycache.containsKey(strquery)) {
+					String sqlQuery = getUnfolding(strquery);
+					cacheQueryAndProperties(strquery, sqlQuery);
 				}
+				String sql = querycache.get(strquery);
+				List<String> signature = signaturecache.get(strquery);
+				boolean isBoolean = isbooleancache.get(strquery);
+				boolean isConstruct = isconstructcache.get(strquery);
+				boolean isDescribe = isdescribecache.get(strquery);
 
 				log.debug("Executing the query and get the result...");
 				if (sql.equals("") && !isBoolean) {
@@ -221,12 +196,14 @@ public class QuestStatement implements OBDAStatement {
 							tupleResult = new BooleanOWLOBDARefResultSet(set,
 									QuestStatement.this);
 						} else if (isConstruct) {
+							Query query = QueryFactory.create(strquery);
 							Template template = query.getConstructTemplate();
 							OBDAResultSet tuples = new QuestResultset(set,
 									signature, QuestStatement.this);
 							graphResult = new ConstructGraphResultSet(tuples,
 									template);
 						} else if (isDescribe) {
+							Query query = QueryFactory.create(strquery);
 							PrefixMapping pm = query.getPrefixMapping();
 							OBDAResultSet tuples = new QuestResultset(set,
 									signature, QuestStatement.this);
@@ -475,21 +452,18 @@ public class QuestStatement implements OBDAStatement {
 		String sql = "";
 		List<String> signature;
 
+		// Check the cache first if the system has processed the query string before
 		if (querycache.containsKey(strquery)) {
+			// Obtain immediately the SQL string from cache
 			sql = querycache.get(strquery);
 
 		} else {
-			DatalogProgram program;
-
+			Query query = QueryFactory.create(strquery);
+			DatalogProgram program = translateAndPreProcess(query);
 			try {
 				log.debug("Input user query:\n" + strquery);
 
-				Query query = QueryFactory.create(strquery);
-
-				signature = getSignature(query);
-				signaturecache.put(strquery, signature);
-
-				program = translateAndPreProcess(query);
+				
 				for (CQIE q : program.getRules()) {
 					DatalogNormalizer.unfoldJoinTrees(q, false);
 				}
@@ -502,9 +476,6 @@ public class QuestStatement implements OBDAStatement {
 				if (program.getRules().size() < 1) {
 					throw new OBDAException("Error, invalid query");
 				}
-
-				boolean isBoolean = isBoolean(query);
-				isbooleancache.put(strquery, isBoolean);
 
 			} catch (Exception e1) {
 				log.debug(e1.getMessage(), e1);
@@ -541,8 +512,9 @@ public class QuestStatement implements OBDAStatement {
 			}
 
 			try {
+				signature = getSignature(query);
 				sql = getSQL(unfolding, signature);
-				querycache.put(strquery, sql);
+				cacheQueryAndProperties(strquery, sql);
 			} catch (Exception e1) {
 				log.debug(e1.getMessage(), e1);
 
@@ -552,8 +524,27 @@ public class QuestStatement implements OBDAStatement {
 				throw obdaException;
 			}
 		}
-
 		return sql;
+	}
+
+	private void cacheQueryAndProperties(String sparqlQuery, String sqlQuery) {
+		// Store the query
+		querycache.put(sparqlQuery, sqlQuery);
+
+		// Store the query properties
+		Query query = QueryFactory.create(sparqlQuery);
+		
+		List<String> signature = getSignature(query);
+		signaturecache.put(sparqlQuery, signature);
+
+		boolean isBoolean = isBoolean(query);
+		isbooleancache.put(sparqlQuery, isBoolean);
+		
+		boolean isConstruct = isConstruct(query);
+		isconstructcache.put(sparqlQuery, isConstruct);
+
+		boolean isDescribe = isDescribe(query);
+		isdescribecache.put(sparqlQuery, isDescribe);
 	}
 
 	/**
