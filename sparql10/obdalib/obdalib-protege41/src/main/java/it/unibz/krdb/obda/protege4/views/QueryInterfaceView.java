@@ -303,7 +303,7 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 	}
 
 	private void showGraphResultInTextPanel(List<OWLAxiom> result) {
-		if (result.isEmpty()) {
+		if (result == null) {
 			return;
 		}
 		TextMessageFrame panel = new TextMessageFrame("Query Result");
@@ -320,7 +320,7 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 	}
 	
 	private void showGraphResultInImportTextPanel(List<OWLAxiom> result) {
-		if (result.isEmpty()) {
+		if (result == null) {
 			return;
 		}
 		TextMessageFrame panel = new TextMessageFrame("Query Result");
