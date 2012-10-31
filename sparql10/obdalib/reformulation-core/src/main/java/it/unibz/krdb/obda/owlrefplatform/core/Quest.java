@@ -34,8 +34,10 @@ import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.JDBCUtility;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLAdapterFactory;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.DLRPerfectReformulator;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.DummyReformulator;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeRedReformulator;
+import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.sql.SQLGenerator;
 import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
 import it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.EquivalenceTBoxOptimizer;
@@ -147,6 +149,8 @@ public class Quest implements Serializable {
 
 	// private boolean optimizeEquivalences = true;
 
+	private boolean reformulate = false;
+
 	private boolean optimizeSigma = false;
 
 	private String reformulationTechnique = QuestConstants.UCQBASED;
@@ -185,6 +189,7 @@ public class Quest implements Serializable {
 
 	Map<String, Boolean> isbooleancache = new HashMap<String, Boolean>();
 
+
 	Map<String, Boolean> isconstructcache = new HashMap<String, Boolean>();
 
 	Map<String, Boolean> isdescribecache = new HashMap<String, Boolean>();
@@ -201,6 +206,7 @@ public class Quest implements Serializable {
 		return isbooleancache;
 	}
 
+
 	protected Map<String, Boolean> getIsConstructCache() {
 		return isconstructcache;
 	}
@@ -208,6 +214,7 @@ public class Quest implements Serializable {
 	public Map<String, Boolean> getIsDescribeCache() {
 		return isdescribecache;
 	}
+
 
 	public void loadOBDAModel(OBDAModel model) {
 		isClassified = false;
@@ -298,16 +305,13 @@ public class Quest implements Serializable {
 	public void setPreferences(Properties preferences) {
 		this.preferences = preferences;
 
-		reformulationTechnique = (String) preferences
-				.get(QuestPreferences.REFORMULATION_TECHNIQUE);
-		bOptimizeEquivalences = Boolean.valueOf((String) preferences
-				.get(QuestPreferences.OPTIMIZE_EQUIVALENCES));
-		bOptimizeTBoxSigma = Boolean.valueOf((String) preferences
-				.get(QuestPreferences.OPTIMIZE_TBOX_SIGMA));
-		bObtainFromOntology = Boolean.valueOf((String) preferences
-				.get(QuestPreferences.OBTAIN_FROM_ONTOLOGY));
-		bObtainFromMappings = Boolean.valueOf((String) preferences
-				.get(QuestPreferences.OBTAIN_FROM_MAPPINGS));
+
+		reformulate = Boolean.valueOf((String) preferences.get(QuestPreferences.REWRITE));
+		reformulationTechnique = (String) preferences.get(QuestPreferences.REFORMULATION_TECHNIQUE);
+		bOptimizeEquivalences = Boolean.valueOf((String) preferences.get(QuestPreferences.OPTIMIZE_EQUIVALENCES));
+		bOptimizeTBoxSigma = Boolean.valueOf((String) preferences.get(QuestPreferences.OPTIMIZE_TBOX_SIGMA));
+		bObtainFromOntology = Boolean.valueOf((String) preferences.get(QuestPreferences.OBTAIN_FROM_ONTOLOGY));
+		bObtainFromMappings = Boolean.valueOf((String) preferences.get(QuestPreferences.OBTAIN_FROM_MAPPINGS));
 		unfoldingMode = (String) preferences.get(QuestPreferences.ABOX_MODE);
 		dbType = (String) preferences.get(QuestPreferences.DBTYPE);
 		inmemory = preferences.getProperty(QuestPreferences.STORAGE_LOCATION)
@@ -804,16 +808,19 @@ public class Quest implements Serializable {
 			/*
 			 * Setting up the reformulation engine
 			 */
-			if (QuestConstants.PERFECTREFORMULATION
-					.equals(reformulationTechnique)) {
-				rewriter = new DLRPerfectReformulator();
-			} else if (QuestConstants.UCQBASED.equals(reformulationTechnique)) {
-				rewriter = new TreeRedReformulator();
-			} else {
-				throw new IllegalArgumentException(
-						"Invalid value for argument: "
-								+ QuestPreferences.REFORMULATION_TECHNIQUE);
-			}
+
+
+//			if (reformulate == false) {
+				rewriter = new DummyReformulator();
+//			} else if (QuestConstants.PERFECTREFORMULATION.equals(reformulationTechnique)) {
+//				rewriter = new DLRPerfectReformulator();
+//			} else if (QuestConstants.UCQBASED.equals(reformulationTechnique)) {
+//				rewriter = new TreeRedReformulator();
+//			} else if (QuestConstants.TW.equals(reformulationTechnique)) {
+//				rewriter = new TreeWitnessRewriter();
+//			} else {
+//				throw new IllegalArgumentException("Invalid value for argument: " + QuestPreferences.REFORMULATION_TECHNIQUE);
+//			}
 
 			rewriter.setTBox(reformulationOntology);
 			rewriter.setCBox(sigma);

@@ -112,6 +112,7 @@ public class Tester {
 
         // fac.setOBDAController(apic);
         fac.setPreferenceHolder(pref);
+        pref.setProperty("rewrite", "true");
 
         reasoner = (QuestOWL) fac.createReasoner(ontology);
 

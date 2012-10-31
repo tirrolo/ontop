@@ -11,7 +11,6 @@ import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
@@ -21,6 +20,8 @@ import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.QueryAnonymizer;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 import it.unibz.krdb.obda.utils.QueryUtils;
+import it.unibz.krdb.sql.DataDefinition;
+import it.unibz.krdb.sql.api.Attribute;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,9 +137,26 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		leafPredicates.addAll(allPredicates);
 	}
 
-	private void generateURITemplateMatchers() {
+//	private void generateURITemplateMatchers() {
+//}
 
-	}
+//	private void collectPrimaryKeyData() {
+//		for (CQIE mapping : unfoldingProgram.getRules()) {
+//			for (Atom newatom : mapping.getBody()) {
+//				Predicate newAtomPredicate = newatom.getPredicate();
+//				if (newAtomPredicate instanceof BooleanOperationPredicate) {
+//					continue;
+//				}
+//				String newAtomName = newAtomPredicate.toString();
+//				DataDefinition def = metadata.getDefinition(newAtomName);
+//				List<Integer> pkeyIdx = new LinkedList<Integer>();
+//				for (int columnidx = 1; columnidx <= def.countAttribute(); columnidx++) {
+//					Attribute column = def.getAttribute(columnidx);
+//					if (column.isPrimaryKey()) {
+//						pkeyIdx.add(columnidx);
+//					}
+//
+//	}
 
 	private Set<Predicate> getPredicates(Function atom) {
 		Set<Predicate> predicates = new HashSet<Predicate>();
