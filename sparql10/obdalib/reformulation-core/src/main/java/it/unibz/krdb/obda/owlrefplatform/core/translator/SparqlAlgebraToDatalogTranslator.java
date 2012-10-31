@@ -700,13 +700,17 @@ public class SparqlAlgebraToDatalogTranslator {
 				subjectType = COL_TYPE.OBJECT;
 				subjectUri = URI.create(subject.getURI());
 
-				Function functionURI = generateURIFunction(subjectUri);
-//				Variable freshVariable = getFreshVariable(varcount);
-//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-//				result.add(eqAtom);
+//				Function functionURI = generateURIFunction(subjectUri);
+//				terms.add(functionURI);
+				
+				Function functionURI = ofac.getFunctionalTerm(
+						ofac.getUriTemplatePredicate(1),
+						ofac.getURIConstant(subjectUri));
+				Variable freshVariable = getFreshVariable(varcount);
+				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+				result.add(eqAtom);
 
-//				terms.add(freshVaria
-				terms.add(functionURI);
+				terms.add(freshVariable);
 
 			}
 
@@ -784,13 +788,17 @@ public class SparqlAlgebraToDatalogTranslator {
 				subjectType = COL_TYPE.OBJECT;
 				subjectUri = URI.create(subject.getURI());
 
-				Function functionURI = generateURIFunction(subjectUri);
-//				Variable freshVariable = getFreshVariable(varcount);
-//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-//				result.add(eqAtom);
+//				Function functionURI = generateURIFunction(subjectUri);
+//				terms.add(functionURI);
+				
+				Function functionURI = ofac.getFunctionalTerm(
+						ofac.getUriTemplatePredicate(1),
+						ofac.getURIConstant(subjectUri));
+				Variable freshVariable = getFreshVariable(varcount);
+				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+				result.add(eqAtom);
 
-//				terms.add(freshVariable);
-				terms.add(functionURI);
+				terms.add(freshVariable);
 			}
 
 			// Object node
@@ -837,13 +845,18 @@ public class SparqlAlgebraToDatalogTranslator {
 				objectType = COL_TYPE.OBJECT;
 				objectUri = URI.create(object.getURI());
 
-				Function functionURI = generateURIFunction(objectUri);
-//				Variable freshVariable = getFreshVariable(varcount);
-//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-//				result.add(eqAtom);
-//
-//				terms.add(freshVariable);
-				terms.add(functionURI);
+//				Function functionURI = generateURIFunction(objectUri);
+//				terms.add(functionURI);
+				
+				Function functionURI = ofac.getFunctionalTerm(
+						ofac.getUriTemplatePredicate(1),
+						ofac.getURIConstant(objectUri));
+				Variable freshVariable = getFreshVariable(varcount);
+				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+				result.add(eqAtom);
+
+				terms.add(freshVariable);
+				
 			}
 			// Construct the predicate
 
@@ -878,6 +891,8 @@ public class SparqlAlgebraToDatalogTranslator {
 	 * We will try to match the URI to one of our patterns, if this happens, we
 	 * have a corresponding function, and the paramters for this function. The
 	 * parameters are the values for the groups of the pattern,.
+	 * <P>
+	 * THIS METHOD IS INCORRECT!!! IT DOESNT GENERATE ALL POSSIBLE FUNCTIONS!!!
 	 */
 	private Function generateURIFunction(URI subjectUri) {
 		Function functionURI = null;

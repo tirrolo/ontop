@@ -226,6 +226,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		List<CQIE> workingSet = new LinkedList<CQIE>();
 		workingSet.addAll(inputquery.getRules());
 		
+		log.debug("Unfolding started. Intial CQs: {}", workingSet.size());
 		log.debug("Pusing URI constants before unfolding: ");
 		 for (CQIE query : workingSet) {
 			DatalogNormalizer.pushEqualities(query, false);
@@ -1329,15 +1330,15 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		 * Eliminating any candidate rule that is known not to produce any data
 		 * (its empty) to reduce the number of candidate solutions
 		 */
-		if (emptynessIndex != null) {
-			Iterator<CQIE> candiateIterator = candidateMatches.iterator();
-			while (candiateIterator.hasNext()) {
-				CQIE candidate = candiateIterator.next();
-				Atom head = candidate.getHead();
-				if (emptynessIndex.isEmpty(head))
-					candiateIterator.remove();
-			}
-		}
+//		if (emptynessIndex != null) {
+//			Iterator<CQIE> candiateIterator = candidateMatches.iterator();
+//			while (candiateIterator.hasNext()) {
+//				CQIE candidate = candiateIterator.next();
+//				Atom head = candidate.getHead();
+//				if (emptynessIndex.isEmpty(head))
+//					candiateIterator.remove();
+//			}
+//		}
 
 		for (CQIE candidateRule : candidateMatches) {
 
