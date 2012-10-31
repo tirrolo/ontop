@@ -8,7 +8,6 @@ import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.model.impl.PredicateAtomImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 
@@ -31,7 +30,7 @@ public class DatalogQueryServices {
 	
 	private static final Logger log = LoggerFactory.getLogger(DatalogQueryServices.class);
 	
-	public static DatalogProgram plugInDefinitions0(DatalogProgram dp, DatalogProgram defs) {
+	public static DatalogProgram plugInDefinitions(DatalogProgram dp, DatalogProgram defs) {
 		
 		PriorityQueue<CQIE> queue = new PriorityQueue<CQIE>(dp.getRules().size(), new Comparator<CQIE> () {
 			@Override
@@ -67,11 +66,20 @@ public class DatalogQueryServices {
 			boolean replaced = false;
 			if (chosenDefinitions != null) {
 				for (CQIE rule : chosenDefinitions) {
-					CQIE newquery = ResolutionEngine.resolve(rule, query, chosenAtomIdx);
-					if (newquery != null) {
+					//CQIE newquery = ResolutionEngine.resolve(rule, query, chosenAtomIdx);					
+					Map<Variable, NewLiteral> mgu = Unifier.getMGU(rule.getHead(), query.getBody().get(chosenAtomIdx));
+					if (mgu != null) {
+						CQIE newquery = query.clone();
+						List<Atom> newbody = newquery.getBody();
+						newbody.remove(chosenAtomIdx);
+						newbody.addAll(rule.clone().getBody()); 
+
+						// newquery contains only cloned atoms, so it is safe to unify "in-place"
+						Unifier.applyUnifier(newquery, mgu, false);
 						queue.add(reduce(newquery));
 						replaced = true;
 					}
+
 				}						
 			}
 			if (!replaced) {
