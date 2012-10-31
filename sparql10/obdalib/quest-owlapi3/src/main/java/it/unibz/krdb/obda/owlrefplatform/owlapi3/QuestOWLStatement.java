@@ -262,8 +262,8 @@ public class QuestOWLStatement implements OWLStatement {
 		while (resultSet.hasNext()) {
 			for (Assertion assertion : resultSet.next()) {
 				if (assertion instanceof ClassAssertion) {
-					String classIRI = ((ClassAssertion) assertion).getPredicate().toString();
-					String subjectIRI = ((ClassAssertion) assertion).getObject().getValue();
+					String subjectIRI = ((ClassAssertion) assertion).getPredicate().toString();
+					String classIRI = ((ClassAssertion) assertion).getObject().getValue();
 					OWLAxiom classAxiom = createOWLClassAssertion(classIRI, subjectIRI, factory);
 					axiomList.add(classAxiom);
 				} else if (assertion instanceof ObjectPropertyAssertion) {
@@ -293,7 +293,7 @@ public class QuestOWLStatement implements OWLStatement {
 	private OWLObjectPropertyAssertionAxiom createOWLObjectPropertyAssertion(String propertyIRI, String subjectIRI, String objectIRI, OWLDataFactory factory) {
 		OWLObjectProperty propertyExpression = factory.getOWLObjectProperty(IRI.create(propertyIRI));
 		OWLIndividual individual1 = factory.getOWLNamedIndividual(IRI.create(subjectIRI));
-		OWLIndividual individual2 = factory.getOWLNamedIndividual(IRI.create(subjectIRI));
+		OWLIndividual individual2 = factory.getOWLNamedIndividual(IRI.create(objectIRI));
 		return factory.getOWLObjectPropertyAssertionAxiom(propertyExpression, individual1, individual2);
 	}
 	
