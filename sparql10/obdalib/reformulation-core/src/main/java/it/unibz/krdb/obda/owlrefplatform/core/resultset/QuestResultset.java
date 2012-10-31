@@ -213,8 +213,8 @@ public class QuestResultset implements OBDAResultSet {
 
 		try {
 
-			System.out.println(set.getString(name));
-			System.out.println(set.getByte(name + "QuestType"));
+			//System.out.println(set.getString(name));
+			//System.out.println(set.getByte(name + "QuestType"));
 			COL_TYPE type = getQuestType((byte) set.getInt(name + "QuestType"));
 			Object realValue = set.getString(name);
 			

@@ -901,7 +901,7 @@ public class SparqlAlgebraToDatalogTranslator {
 				values.add(ofac.getValueConstant(value));
 			}
 			
-			System.out.println("VALUES!!!" + values);
+			//System.out.println("VALUES!!!" + values);
 
 			functionURI = ofac.getFunctionalTerm(
 					ofac.getUriTemplatePredicate(values.size()), values);

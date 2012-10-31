@@ -314,7 +314,7 @@ public class DatalogNormalizer {
 				max += 1;
 			}
 
-			System.out.println("MAX: " + max);
+			//System.out.println("MAX: " + max);
 			return max;
 		}
 
@@ -342,7 +342,7 @@ public class DatalogNormalizer {
 		List orderedList = new LinkedList();
 		orderedList.addAll(currentTerms);
 		Collections.sort(orderedList, sorter);
-		System.out.println("sorted");
+	//	System.out.println("sorted");
 		for (int i = 0; i < orderedList.size(); i++) {
 
 			NewLiteral term = (NewLiteral) orderedList.get(i);
@@ -556,8 +556,8 @@ public class DatalogNormalizer {
 		 * the current level and not at the upper levels.
 		 */
 		Set<Function> removedBooleanConditions = new HashSet<Function>();
-		System.out.println("Checking boolean conditions: "
-				+ booleanConditions.size());
+	//	System.out.println("Checking boolean conditions: "
+		//		+ booleanConditions.size());
 		for (Function equality : booleanConditions) {
 			Set<Variable> atomVariables = equality.getReferencedVariables();
 
@@ -570,9 +570,9 @@ public class DatalogNormalizer {
 			if (!belongsToThisLevel)
 				continue;
 
-			System.out.println("EQUALITYEQUALITYEQUALITYEQUALITYEQUALITY"
-					+ equality.getFunctionSymbol().getClass() + " " + equality);
-			System.out.println("BELONGS!!!!");
+		//	System.out.println("EQUALITYEQUALITYEQUALITYEQUALITYEQUALITY"
+		//			+ equality.getFunctionSymbol().getClass() + " " + equality);
+		//	System.out.println("BELONGS!!!!");
 			currentLevelAtoms.add(equality);
 			removedBooleanConditions.add(equality);
 		}
@@ -600,8 +600,8 @@ public class DatalogNormalizer {
 		 */
 
 		for (int index = 0; index < currentLevelAtoms.size(); index++) {
-			System.out.println(index);
-			System.out.println(currentLevelAtoms.size());
+		//	System.out.println(index);
+		//	System.out.println(currentLevelAtoms.size());
 			NewLiteral l = (NewLiteral) currentLevelAtoms.get(index);
 			Function atom = (Function) l;
 			System.out
@@ -662,7 +662,7 @@ public class DatalogNormalizer {
 
 			// Belongs up, removing and pushing up
 
-			System.out.println("REMOVED!!!!");
+		//	System.out.println("REMOVED!!!!");
 
 			currentLevelAtoms.remove(index);
 			index -= 1;

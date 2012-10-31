@@ -331,7 +331,7 @@ public abstract class SPARQLQueryTest extends TestCase {
 				}
 				message.append(" =======================\n");
 
-				System.out.print(message.toString());
+			//	System.out.print(message.toString());
 			}
 
 			logger.error(message.toString());

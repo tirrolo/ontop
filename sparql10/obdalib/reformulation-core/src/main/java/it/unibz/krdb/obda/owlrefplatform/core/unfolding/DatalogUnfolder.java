@@ -248,7 +248,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		log.debug("Resulting unfolding size: {} cqs", resultdp.getRules()
 				.size());
 		log.debug("Failed resolution attempts: {}", failedAtempts);
-		System.out.println(failedAtempts);
+		//System.out.println(failedAtempts);
 
 		log.debug(resultdp.toString());
 
@@ -1350,8 +1350,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			if (mgu == null) {
 				/* Failed attempt */
 				resolutionCount[1] += 1;
-				if (resolutionCount[1] % 1000 == 0)
-					System.out.println(resolutionCount[1]);
+			//	if (resolutionCount[1] % 1000 == 0)
+				//	System.out.println(resolutionCount[1]);
 				continue;
 			}
 
