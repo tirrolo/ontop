@@ -4,11 +4,13 @@ import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.CQIE;
+import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 
@@ -21,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 public class DatalogNormalizer {
 
@@ -150,7 +151,7 @@ public class DatalogNormalizer {
 		foldJoinTrees(body, false);
 		return query;
 	}
-	
+
 	public static void foldJoinTrees(List atoms, boolean isJoin) {
 		List<Function> dataAtoms = new LinkedList<Function>();
 		List<Function> booleanAtoms = new LinkedList<Function>();
@@ -274,9 +275,24 @@ public class DatalogNormalizer {
 	public static void pullOutEqualities(CQIE query) {
 		Map<Variable, NewLiteral> substitutions = new HashMap<Variable, NewLiteral>();
 		int[] newVarCounter = { 1 };
+
+		/*
+		 * Here we collect boolean atoms that have conditions of atoms on the
+		 * left of left joins. These cannot be put in the conditions of
+		 * LeftJoin(...) atoms as inside terms, since these conditions have to
+		 * be applied no matter what. Keeping them there makes them "optional",
+		 * i.e., or else return NULL. Hence these conditions have to be pulled
+		 * up to the nearest JOIN in the upper levels in the branches. The
+		 * pulloutEqualities method iwll do this, however if there are still
+		 * remaiing some by the time it finish, we must add them to the body of
+		 * the CQIE as normal conditions to the query (WHERE clauses)
+		 */
 		Set<Function> booleanAtoms = new HashSet<Function>();
+
 		pullOutEqualities(query.getBody(), substitutions, booleanAtoms,
-				newVarCounter);
+				newVarCounter, false);
+		List body = query.getBody();
+		body.addAll(booleanAtoms);
 
 		/*
 		 * All new variables have been generates, the substitutions also, we
@@ -322,9 +338,39 @@ public class DatalogNormalizer {
 		public int compare(Function arg0, Function arg1) {
 			return getDepth(arg1) - getDepth(arg0);
 		}
-
 	}
 
+	/***
+	 * Adds a trivial equality to a LeftJoin in case the left join doesn't have
+	 * at least one boolean condition. This is necessary to have syntactically
+	 * correct LeftJoins in SQL.
+	 * 
+	 * @param leftJoin
+	 */
+	private static void addMinimalEqualityToLeftJoin(Function leftJoin) {
+		int booleanAtoms = 0;
+		boolean isLeftJoin = leftJoin.isAlgebraFunction() && (leftJoin.getPredicate() == OBDAVocabulary.SPARQL_LEFTJOIN);
+		for (NewLiteral term: leftJoin.getTerms()) {
+			Function f = (Function)term;
+			if (f.isAlgebraFunction()) {
+				addMinimalEqualityToLeftJoin(f);
+			}
+			if (f.isBooleanFunction())
+				booleanAtoms += 1;
+		}
+		if (isLeftJoin && booleanAtoms == 0) {
+			Function trivialEquality = fac.getEQFunction(fac.getValueConstant("1", COL_TYPE.INTEGER), fac.getValueConstant("1", COL_TYPE.INTEGER));
+			leftJoin.getTerms().add(trivialEquality);
+		}
+	}
+	
+	public static void addMinimalEqualityToLeftJoin(CQIE query) {
+		for (Function f: query.getBody()) {
+			if (f.isAlgebraFunction()) {
+				addMinimalEqualityToLeftJoin(f);
+			}
+		}	
+	}
 	/***
 	 * This method introduces new variable names in each data atom and
 	 * equalities to account for JOIN operations. This method is called before
@@ -337,7 +383,8 @@ public class DatalogNormalizer {
 	 */
 	private static void pullOutEqualities(List currentTerms,
 			Map<Variable, NewLiteral> substitutions,
-			Set<Function> booleanAtoms, int[] newVarCounter) {
+			Set<Function> leftConditionBooleans, int[] newVarCounter,
+			boolean isLeftJoin) {
 
 		List orderedList = new LinkedList();
 		orderedList.addAll(currentTerms);
@@ -358,19 +405,31 @@ public class DatalogNormalizer {
 
 			Function atom = (Function) term;
 			if (atom.isBooleanFunction()) {
-				/*
-				 * boolean atoms are collected to apply the resulting
-				 * substitutions to them in a last step
-				 */
-				booleanAtoms.add(atom);
+				// NO-OP
 				continue;
 			}
 
 			List<NewLiteral> subterms = atom.getTerms();
 
 			if (atom.isAlgebraFunction()) {
-				pullOutEqualities(subterms, substitutions, booleanAtoms,
-						newVarCounter);
+				if (atom.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN)
+					pullOutEqualities(subterms, substitutions,
+							leftConditionBooleans, newVarCounter, true);
+				else
+					pullOutEqualities(subterms, substitutions,
+							leftConditionBooleans, newVarCounter, false);
+
+				if (!isLeftJoin) {
+					/*
+					 * Collecting any conditions that had to be pulled up to an
+					 * upper level JOIN from a lower lever leftJoin. These are
+					 * genearted when there are constants in left side data
+					 * atoms in a left join
+					 */
+					currentTerms.addAll(leftConditionBooleans);
+					leftConditionBooleans.clear();
+				}
+
 				continue;
 			}
 
@@ -384,40 +443,60 @@ public class DatalogNormalizer {
 
 			for (int j = 0; j < subterms.size(); j++) {
 				NewLiteral subTerm = subterms.get(j);
-				if (!(subTerm instanceof Variable))
-					continue;
-				Variable var1 = (Variable) subTerm;
+				if (subTerm instanceof Variable) {
 
-				Variable var2 = (Variable) substitutions.get(var1);
+					Variable var1 = (Variable) subTerm;
+					Variable var2 = (Variable) substitutions.get(var1);
 
-				if (var2 == null) {
+					if (var2 == null) {
+						/*
+						 * No substitution exists, hence, no action but genrate
+						 * a new variable and register in the substitutions, and
+						 * replace the current value with a fresh one.
+						 */
+						var2 = fac.getVariable(var1.getName() + "f"
+								+ newVarCounter[0]);
+
+						substitutions.put(var1, var2);
+						subterms.set(j, var2);
+
+					} else {
+
+						/*
+						 * There already exists one, so we generate a fresh,
+						 * replace the current value, and add an equalility
+						 * between the substitution and the new value.
+						 */
+
+						Variable newVariable = fac.getVariable(var1.getName()
+								+ newVarCounter[0]);
+
+						subterms.set(j, newVariable);
+						Function equality = fac
+								.getEQFunction(var2, newVariable);
+						currentTerms.add(equality);
+
+					}
+					newVarCounter[0] += 1;
+				} else if (subTerm instanceof Constant) {
 					/*
-					 * No substitution exists, hence, no action but genrate a
-					 * new variable and register in the substitutions, and
-					 * replace the current value with a fresh one.
+					 * This case was necessary for query 7 in BSBM
 					 */
-					var2 = fac.getVariable(var1.getName() + "f"
-							+ newVarCounter[0]);
-
-					substitutions.put(var1, var2);
-					subterms.set(j, var2);
-
-				} else {
-
-					/*
-					 * There already exists one, so we generate a fresh, replace
-					 * the current value, and add an equalility between the
-					 * substitution and the new value.
+					/**
+					 * A('c') Replacing the constant with a fresh variable x and
+					 * adding an quality atom ,e.g., A(x), x = 'c'
 					 */
-
-					Variable newVariable = fac.getVariable(var1.getName()
-							+ newVarCounter[0]);
-
-					subterms.set(j, newVariable);
-					currentTerms.add(fac.getEQFunction(var2, newVariable));
+					Variable var = fac.getVariable("f" + newVarCounter[0]);
+					newVarCounter[0] += 1;
+					Function equality = fac.getEQFunction(var, subTerm);
+					subterms.set(j, var);
+					if (isLeftJoin && currentTerms.indexOf(atom) == 0) {
+						leftConditionBooleans.add(equality);
+					} else {
+						currentTerms.add(equality);
+					}
 
 				}
-				newVarCounter[0] += 1;
 			}
 		}
 	}

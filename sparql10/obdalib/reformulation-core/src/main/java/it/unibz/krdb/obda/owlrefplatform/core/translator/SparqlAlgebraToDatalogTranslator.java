@@ -394,7 +394,18 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		/* The join */
 		Predicate joinp = OBDAVocabulary.SPARQL_LEFTJOIN;
+		
+		
 		Atom joinAtom = ofac.getAtom(joinp, leftAtom, rightAtom);
+		
+		/* adding the conditions of the filter for the LeftJoin */
+		if (filter != null) {
+			List joinTerms = joinAtom.getTerms();
+			for (Expr expr : filter.getList()) {
+				joinTerms.add(((Function) getBooleanTerm(expr)).asAtom());
+			}
+		}
+		
 
 		/* Preparing the head of the LeftJoin rule */
 		// Collections.sort(vars, comparator);
@@ -412,11 +423,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		List<Atom> atoms = new LinkedList<Atom>();
 		atoms.add(joinAtom);
 
-		/* adding the conditions of the filter for the LeftJoin */
-		if (filter != null)
-			for (Expr expr : filter.getList()) {
-				atoms.add(((Function) getBooleanTerm(expr)).asAtom());
-			}
+		
 
 		CQIE newrule = ofac.getCQIE(head, atoms);
 		pr.appendRule(newrule);
@@ -700,17 +707,17 @@ public class SparqlAlgebraToDatalogTranslator {
 				subjectType = COL_TYPE.OBJECT;
 				subjectUri = URI.create(subject.getURI());
 
-//				Function functionURI = generateURIFunction(subjectUri);
-//				terms.add(functionURI);
+				Function functionURI = generateURIFunction(subjectUri);
+				terms.add(functionURI);
 				
-				Function functionURI = ofac.getFunctionalTerm(
-						ofac.getUriTemplatePredicate(1),
-						ofac.getURIConstant(subjectUri));
-				Variable freshVariable = getFreshVariable(varcount);
-				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-				result.add(eqAtom);
-
-				terms.add(freshVariable);
+//				Function functionURI = ofac.getFunctionalTerm(
+//						ofac.getUriTemplatePredicate(1),
+//						ofac.getURIConstant(subjectUri));
+//				Variable freshVariable = getFreshVariable(varcount);
+//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+//				result.add(eqAtom);
+//
+//				terms.add(freshVariable);
 
 			}
 
@@ -788,17 +795,17 @@ public class SparqlAlgebraToDatalogTranslator {
 				subjectType = COL_TYPE.OBJECT;
 				subjectUri = URI.create(subject.getURI());
 
-//				Function functionURI = generateURIFunction(subjectUri);
-//				terms.add(functionURI);
+				Function functionURI = generateURIFunction(subjectUri);
+				terms.add(functionURI);
 				
-				Function functionURI = ofac.getFunctionalTerm(
-						ofac.getUriTemplatePredicate(1),
-						ofac.getURIConstant(subjectUri));
-				Variable freshVariable = getFreshVariable(varcount);
-				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-				result.add(eqAtom);
-
-				terms.add(freshVariable);
+//				Function functionURI = ofac.getFunctionalTerm(
+//						ofac.getUriTemplatePredicate(1),
+//						ofac.getURIConstant(subjectUri));
+//				Variable freshVariable = getFreshVariable(varcount);
+//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+//				result.add(eqAtom);
+//
+//				terms.add(freshVariable);
 			}
 
 			// Object node
@@ -845,17 +852,17 @@ public class SparqlAlgebraToDatalogTranslator {
 				objectType = COL_TYPE.OBJECT;
 				objectUri = URI.create(object.getURI());
 
-//				Function functionURI = generateURIFunction(objectUri);
-//				terms.add(functionURI);
+				Function functionURI = generateURIFunction(objectUri);
+				terms.add(functionURI);
 				
-				Function functionURI = ofac.getFunctionalTerm(
-						ofac.getUriTemplatePredicate(1),
-						ofac.getURIConstant(objectUri));
-				Variable freshVariable = getFreshVariable(varcount);
-				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-				result.add(eqAtom);
-
-				terms.add(freshVariable);
+//				Function functionURI = ofac.getFunctionalTerm(
+//						ofac.getUriTemplatePredicate(1),
+//						ofac.getURIConstant(objectUri));
+//				Variable freshVariable = getFreshVariable(varcount);
+//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+//				result.add(eqAtom);
+//
+//				terms.add(freshVariable);
 				
 			}
 			// Construct the predicate

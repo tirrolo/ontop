@@ -166,6 +166,10 @@ public class SQLGenerator implements SQLQueryGenerator {
 			log.debug("Before pulling up nested references: \n{}", cq);
 
 			DatalogNormalizer.pullUpNestedReferences(cq, false);
+			
+			log.debug("Before adding trivial equalities: \n{}, cq);", cq);
+
+			DatalogNormalizer.addMinimalEqualityToLeftJoin(cq);
 
 			log.debug("Normalized CQ: \n{}", cq);
 
