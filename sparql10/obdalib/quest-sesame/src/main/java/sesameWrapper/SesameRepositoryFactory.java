@@ -30,10 +30,7 @@ public class SesameRepositoryFactory implements RepositoryFactory{
 				config.validate();
 					String name = ((SesameRepositoryConfig) config).getName();
 					String owlfile = ((SesameRepositoryConfig) config).getOwlFile();
-					String sesame = "C:\\Program Files\\Apache Software Foundation\\Tomcat 6.0\\webapps\\Quest\\stockexchange\\";
-//							"C:\\Users\\TiBagosi\\Downloads\\openrdf-sesame-2.6.9-sdk\\openrdf-sesame-2.6.9\\bin\\";
-							//
-				owlfile = sesame + owlfile;
+					
 					if (((SesameRepositoryConfig) config).getQuestType().equals("quest-inmemory"))
 						return new SesameClassicInMemoryRepo(name, owlfile);
 					
@@ -45,8 +42,7 @@ public class SesameRepositoryFactory implements RepositoryFactory{
 					else if (((SesameRepositoryConfig) config).getQuestType().equals("quest-virtual")) 
 					{
 						String obdafile = ((SesameRepositoryConfig) config).getObdaFile();
-						obdafile = sesame+obdafile;
-						System.out.println("OBDAFILE: "+obdafile);
+					//	System.out.println("OBDAFILE: "+obdafile);
 						return new SesameVirtualRepo(name, owlfile, obdafile);
 					}
 			}}

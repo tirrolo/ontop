@@ -287,7 +287,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
                                 + inputStreamOrReader.getClass());
             }
             
-            System.out.println("Parsing... ");
+           // System.out.println("Parsing... ");
                     
             Thread insert = new Thread(new Insert(rdfParser, (InputStream)inputStreamOrReader, baseURI));
             Thread process = new Thread(new Process(rdfHandler));
@@ -301,7 +301,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
                      
      
         } catch (RuntimeException e) {
-        	System.out.println("exception, rolling back!");
+        	//System.out.println("exception, rolling back!");
         	e.printStackTrace();
         	
             if (autoCommit) {
@@ -544,7 +544,6 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 		queryString+= s+p+o+"} WHERE {"+s+p+o+"}";
 			
 		//execute construct query
-	
 		try {
 			GraphQuery query = prepareGraphQuery(QueryLanguage.SPARQL,
 					queryString);

@@ -61,14 +61,14 @@ public class SesameRDFIterator extends RDFHandlerBase implements
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("End rdf");
+		//System.out.println("End rdf");
 	}
 
 	@Override
 	public void handleStatement(Statement st) throws RDFHandlerException {
 
 		// add to buffer
-		System.out.println("Handle statement: "+st.toString());
+	//	System.out.println("Handle statement: "+st.toString());
 //				+ st.getSubject().toString().split("#")[1] + " "
 //				+ st.getPredicate().getLocalName() + " ");
 //		if (st.getObject().toString().split("#").length > 1)

@@ -274,7 +274,18 @@ public class QuestRepos {
 				System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
 			}
 			
-
+			 queryString = "PREFIX  rev: <http://purl.org/stuff/rev#> \n\n" +
+				 		" DESCRIBE ?x \n" +
+				 		"WHERE { <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromRatingSite1/Review992> rev:reviewer ?x }";
+				 System.out.println(queryString);
+				 graphQuery = con.prepareGraphQuery(QueryLanguage.SPARQL,	queryString);
+				 GraphQueryResult qresult = graphQuery.evaluate();
+					System.out.println("RESULT hasdata: " + qresult.hasNext());
+					while (qresult.hasNext())
+					{
+						org.openrdf.model.Statement st = qresult.next();
+						System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
+					}
 			con.close();
 			repo.shutDown();
 
@@ -301,6 +312,9 @@ public class QuestRepos {
 		try {
 
 			System.out.println("\nVirtal quest repo test....");
+			
+			String owlfile = "C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/bsbm/bsbm.owl";
+			String obdafile = "C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/bsbm/bsbm.obda";
 
 			RemoteRepositoryManager man = new RemoteRepositoryManager("http://localhost:8080/openrdf-sesame");
 			man.initialize();
@@ -314,8 +328,8 @@ public class QuestRepos {
 			SesameRepositoryConfig config = new SesameRepositoryConfig();
 			config.setQuestType("quest-virtual");
 			config.setName("my_repo");
-			config.setOwlFile("bsbm.owl");
-			config.setObdaFile("bsbm.obda");
+			config.setOwlFile(owlfile);
+			config.setObdaFile(obdafile);
 
 			RepositoryImplConfig repositoryTypeSpec = config;
 
@@ -370,9 +384,10 @@ public class QuestRepos {
 			}
 			
 			
-			 queryString = "PREFIX rev: <http://purl.org/stuff/rev#>\n" +
-					"DESCRIBE ?x" +
-					" WHERE { <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromRatingSite20/Review204048> rev:reviewer ?x }";
+			 queryString = "PREFIX  rev: <http://purl.org/stuff/rev#> \n" +
+			 		"DESCRIBE ?x " +
+			 		"WHERE \n { <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromRatingSite1/Review992> rev:reviewer ?x }";
+			 System.out.println(queryString);
 			 graphQuery = con.prepareGraphQuery(QueryLanguage.SPARQL,	queryString);
 				 qresult = graphQuery.evaluate();
 				System.out.println("RESULT hasdata: " + qresult.hasNext());
@@ -381,6 +396,7 @@ public class QuestRepos {
 					org.openrdf.model.Statement st = qresult.next();
 					System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
 				}
+				
 			con.close();
 			repository.shutDown();
 			man.removeRepositoryConfig("testdb");

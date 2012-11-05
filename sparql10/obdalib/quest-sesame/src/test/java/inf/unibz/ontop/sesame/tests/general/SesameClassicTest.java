@@ -152,7 +152,7 @@ public class SesameClassicTest extends TestCase {
 		addFromFile();
 		tupleQuery();
 		//booleanQuery();
-		graphQuery();
+		//graphQuery();
 		close();
 		}
 		catch(Exception e)
