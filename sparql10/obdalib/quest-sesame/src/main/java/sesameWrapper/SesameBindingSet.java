@@ -78,30 +78,26 @@ public class SesameBindingSet implements BindingSet {
 				else if (c instanceof ValueConstant) {
 					ValueConstant literal = set.getLiteral(column);
 					URI datatype = null;
-					if (literal.getType() == COL_TYPE.BOOLEAN)
-						datatype = fact
-								.createURI(OBDAVocabulary.XSD_BOOLEAN_URI);
-					else if (literal.getType() == COL_TYPE.DATETIME)
-						datatype = fact
-								.createURI(OBDAVocabulary.XSD_DATETIME_URI);
-					else if (literal.getType() == COL_TYPE.DECIMAL)
-						datatype = fact
-								.createURI(OBDAVocabulary.XSD_DECIMAL_URI);
-					else if (literal.getType() == COL_TYPE.DOUBLE)
-						datatype = fact
-								.createURI(OBDAVocabulary.XSD_DOUBLE_URI);
-					else if (literal.getType() == COL_TYPE.INTEGER)
-						datatype = fact
-								.createURI(OBDAVocabulary.XSD_INTEGER_URI);
-					else if (literal.getType() == COL_TYPE.LITERAL)
-						datatype = fact
-								.createURI(OBDAVocabulary.RDFS_LITERAL_URI);
-					else if (literal.getType() == COL_TYPE.OBJECT)
-						datatype = fact
-								.createURI(OBDAVocabulary.XSD_STRING_URI);
-					else if (literal.getType() == COL_TYPE.STRING)
-						datatype = fact
-								.createURI(OBDAVocabulary.XSD_STRING_URI);
+					COL_TYPE col_type = literal.getType();
+					String obdavoc = "";
+					if (col_type == COL_TYPE.BOOLEAN)
+						obdavoc = (OBDAVocabulary.XSD_BOOLEAN_URI);
+					else if (col_type == COL_TYPE.DATETIME)
+						obdavoc = (OBDAVocabulary.XSD_DATETIME_URI);
+					else if (col_type == COL_TYPE.DECIMAL)
+						obdavoc = (OBDAVocabulary.XSD_DECIMAL_URI);
+					else if (col_type == COL_TYPE.DOUBLE)
+						obdavoc = (OBDAVocabulary.XSD_DOUBLE_URI);
+					else if (col_type == COL_TYPE.INTEGER)
+						obdavoc = (OBDAVocabulary.XSD_INTEGER_URI);
+					else if (col_type == COL_TYPE.LITERAL)
+						obdavoc = (OBDAVocabulary.RDFS_LITERAL_URI);
+					else if (col_type == COL_TYPE.OBJECT)
+						obdavoc = (OBDAVocabulary.XSD_STRING_URI);
+					else if (col_type == COL_TYPE.STRING)
+						obdavoc = OBDAVocabulary.XSD_STRING_URI;
+						
+					datatype = fact.createURI(obdavoc);
 					value = fact.createLiteral(literal.getValue(), datatype);
 				}
 			}
