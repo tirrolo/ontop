@@ -24,15 +24,15 @@ public abstract class SesameAbstractRepo implements
 	}
 
 	public RepositoryConnection getConnection() throws RepositoryException {
+		//System.out.println("store getconn repoconn..");
 		try {
 			return new RepositoryConnection(this, getQuestConnection());
+					//this.repoConnection;
 		} catch (OBDAException e) {
-			throw new RepositoryException(e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		// Opens a connection to this repository that can be used for
-		// querying and updating the contents of the repository.
-		// Created connections need to be closed to make sure that any resources
-		// they keep hold of are released.
+		return repoConnection;
 	}
 
 	public File getDataDir() {
@@ -50,7 +50,9 @@ public abstract class SesameAbstractRepo implements
 	public void initialize() throws RepositoryException {
 		// Initializes this repository.
 		try {
+			//System.out.println("store initialize repoconn..");
 			this.repoConnection = new RepositoryConnection(this, getQuestConnection());
+			isinitialized = true;
 		} catch (OBDAException e) {
 			e.printStackTrace();
 		}
@@ -80,8 +82,10 @@ public abstract class SesameAbstractRepo implements
 		// of.
 		// Once shut down, the repository can no longer be used until it is
 		// re-initialized.
+		//System.out.println("repo shutdown, repoconn close..");
 		repoConnection.close();
 		try {
+			
 			// abstractStore.disconnect();
 		} catch (Exception e) {
 			e.printStackTrace();
