@@ -24,15 +24,7 @@ public class SesameVirtualRepo extends SesameAbstractRepo {
 
 	}
 
-	public void initialize() throws RepositoryException {
-		super.initialize();
-		try {
-			virtualStore.getConnection();
-		} catch (OBDAException e) {
-			e.printStackTrace();
-		}
-	}
-
+	
 	@Override
 	public QuestDBConnection getQuestConnection() throws OBDAException {
 		return virtualStore.getConnection();
