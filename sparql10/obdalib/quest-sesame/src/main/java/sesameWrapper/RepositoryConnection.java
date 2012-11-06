@@ -65,6 +65,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
     private boolean isOpen;
     private boolean autoCommit;
     private  RDFParser rdfParser;
+    private QuestDBStatement questStm;
 
 	
 	public RepositoryConnection(SesameAbstractRepo rep, QuestDBConnection connection) throws OBDAException
@@ -73,6 +74,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 		this.questConn = connection;
 		this.isOpen = !connection.isClosed();
 		this.autoCommit = connection.getAutoCommit();
+		this.questStm = questConn.createStatement();
 	}
 
 	
@@ -352,18 +354,16 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
           }
           
           private class Process implements Runnable{
-        	  private QuestDBStatement st;
         	  private SesameRDFIterator iterator;
         	  public Process(SesameRDFIterator iterator) throws OBDAException
         	  {
-        		  st = questConn.createStatement();
         		  this.iterator = iterator;
         	  }
         	  
         	  public void run()
         	  {
         		    try {
-						st.add(iterator, boolToInt(autoCommit), 5000);
+						questStm.add(iterator, boolToInt(autoCommit), 5000);
         		    	
 					} catch (SQLException e) {
 						e.printStackTrace();
@@ -385,14 +385,12 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
     	}
     	boolean currCommit = autoCommit;
     	autoCommit = false;
-    	//create new quest statement
-    	QuestDBStatement stm = questConn.createStatement();
  
     	SesameRDFIterator it = new SesameRDFIterator(stmIterator);
     	
     	//insert data   useFile=false, batch=0
     	try {
-			stm.add(it);
+			questStm.add(it);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -450,6 +448,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 		//all non-committed operations will be lost. 
 		this.isOpen = false;
 		try {
+			questStm.close();
 			questConn.close();
 		} catch (OBDAException e) {
 			e.printStackTrace();
@@ -624,12 +623,8 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 		if (ql != QueryLanguage.SPARQL)
 			throw new MalformedQueryException("SPARQL query expected!");
 		
-		try {
-			return new SesameBooleanQuery(queryString, baseURI, questConn.createStatement());
-		} catch (OBDAException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return new SesameBooleanQuery(queryString, baseURI, questStm);
+		
 	}
 
 	public GraphQuery prepareGraphQuery(QueryLanguage ql, String queryString)
@@ -645,13 +640,8 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 		//Prepares queries that produce RDF graphs. 
 		if (ql != QueryLanguage.SPARQL)
 			throw new MalformedQueryException("SPARQL query expected!");
-		
-		try {
-			return new SesameGraphQuery(queryString, baseURI, questConn.createStatement());
-		} catch (OBDAException e) {
-			e.printStackTrace();
-		}
-		return null;
+	
+		return new SesameGraphQuery(queryString, baseURI, questStm);
 	}
 
 	public Query prepareQuery(QueryLanguage ql, String query)
@@ -695,12 +685,9 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 		if (ql != QueryLanguage.SPARQL)
 			throw new MalformedQueryException("SPARQL query expected!");
 		
-		try {
-			return new SesameTupleQuery(queryString, baseURI, questConn.createStatement());
-		} catch (OBDAException e) {
-			e.printStackTrace();
-		}
-		return null;
+		
+		return new SesameTupleQuery(queryString, baseURI, questStm);
+		
 	}
 
 	public Update prepareUpdate(QueryLanguage arg0, String arg1)
