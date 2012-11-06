@@ -614,8 +614,8 @@ public class DatalogNormalizer {
 			Function atom = (Function) l;
 			if (!(atom.getFunctionSymbol() instanceof AlgebraOperatorPredicate))
 				continue;
-			System.out
-					.println("======================== INTO ALGEBRA =====================");
+		//	System.out
+			//		.println("======================== INTO ALGEBRA =====================");
 
 			List<NewLiteral> terms = atom.getTerms();
 
@@ -683,8 +683,8 @@ public class DatalogNormalizer {
 		//	System.out.println(currentLevelAtoms.size());
 			NewLiteral l = (NewLiteral) currentLevelAtoms.get(index);
 			Function atom = (Function) l;
-			System.out
-					.println(atom.getFunctionSymbol().getClass() + " " + atom);
+			//System.out
+				//	.println(atom.getFunctionSymbol().getClass() + " " + atom);
 			if (!(atom.getFunctionSymbol() instanceof BooleanOperationPredicate))
 				continue;
 			Set<Variable> variables = atom.getReferencedVariables();
