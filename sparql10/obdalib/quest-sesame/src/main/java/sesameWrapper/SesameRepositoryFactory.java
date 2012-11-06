@@ -7,7 +7,10 @@ import org.openrdf.repository.config.RepositoryRegistry;
 
 public class SesameRepositoryFactory implements RepositoryFactory{
 
-	   public static final String REPOSITORY_TYPE = "obda:QuestRepository";
+	public static final String REPOSITORY_TYPE = "obda:QuestRepository";
+	private SesameClassicInMemoryRepo mrepo = null;
+	private SesameClassicJDBCRepo rrepo = null;
+	private SesameVirtualRepo vrepo = null;
 	   
 	public String getRepositoryType() {
 		return REPOSITORY_TYPE;
@@ -32,18 +35,26 @@ public class SesameRepositoryFactory implements RepositoryFactory{
 					String owlfile = ((SesameRepositoryConfig) config).getOwlFile();
 					
 					if (((SesameRepositoryConfig) config).getQuestType().equals("quest-inmemory"))
-						return new SesameClassicInMemoryRepo(name, owlfile);
-					
-					
+					{
+						if (mrepo == null)
+							mrepo = new SesameClassicInMemoryRepo(name, owlfile);
+						return mrepo;
+					}
 					else if (((SesameRepositoryConfig) config).getQuestType().equals("quest-remote"))
-						return new SesameClassicJDBCRepo(name, owlfile);
-					
-					
+					{
+						if (rrepo == null)
+							rrepo = new SesameClassicJDBCRepo(name, owlfile);
+						return rrepo;
+					}
 					else if (((SesameRepositoryConfig) config).getQuestType().equals("quest-virtual")) 
 					{
 						String obdafile = ((SesameRepositoryConfig) config).getObdaFile();
-					//	System.out.println("OBDAFILE: "+obdafile);
-						return new SesameVirtualRepo(name, owlfile, obdafile);
+						if (vrepo == null)
+						{
+							//System.out.println("Repo created");
+							vrepo =  new SesameVirtualRepo(name, owlfile, obdafile);
+						}
+						return vrepo;
 					}
 			}}
 			catch(Exception e)
