@@ -447,12 +447,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 		//If the connection is not in autoCommit mode, 
 		//all non-committed operations will be lost. 
 		this.isOpen = false;
-		try {
-			questStm.close();
-			questConn.close();
-		} catch (OBDAException e) {
-			e.printStackTrace();
-		}
+		
 	}
 
 	public void commit() throws RepositoryException {
