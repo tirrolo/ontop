@@ -3,11 +3,13 @@ package it.unibz.krdb.obda.owlrefplatform.questdb;
 import it.unibz.krdb.obda.io.DataManager;
 import it.unibz.krdb.obda.io.ModelIOManager;
 import it.unibz.krdb.obda.model.OBDADataFactory;
+import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
 import it.unibz.krdb.obda.owlrefplatform.core.Quest;
+import it.unibz.krdb.obda.owlrefplatform.core.QuestConnection;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
 import it.unibz.krdb.obda.querymanager.QueryController;
@@ -80,6 +82,18 @@ public class QuestDBVirtualStore extends QuestDBAbstractStore {
 		questInstance.loadTBox(tbox);
 		questInstance.loadOBDAModel(obdaModel);
 		questInstance.setupRepository();
+	}
+	
+	public QuestConnection getQuestConnection() {
+		if (questConn == null) {
+			try {
+			//	System.out.println("getquestconn..");
+				questConn = questInstance.getConnection();
+			} catch (OBDAException e) {
+				e.printStackTrace();
+			}
+		}
+		return questConn;
 	}
 
 }
