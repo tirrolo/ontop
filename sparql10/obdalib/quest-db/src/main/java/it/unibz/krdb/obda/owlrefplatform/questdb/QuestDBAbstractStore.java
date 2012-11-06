@@ -2,6 +2,7 @@ package it.unibz.krdb.obda.owlrefplatform.questdb;
 
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.owlrefplatform.core.Quest;
+import it.unibz.krdb.obda.owlrefplatform.core.QuestConnection;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
 
 import java.io.File;
@@ -22,6 +23,7 @@ public abstract class QuestDBAbstractStore implements Serializable {
 	private static final long serialVersionUID = -8088123404566560283L;
 
 	protected Quest questInstance = null;
+	protected QuestConnection questConn = null;
 
 	protected String name;
 
@@ -73,7 +75,10 @@ public abstract class QuestDBAbstractStore implements Serializable {
 	}
 
 	public QuestDBConnection getConnection() throws OBDAException {
-		return new QuestDBConnection(questInstance.getConnection());
+	//	System.out.println("getquestdbconn..");
+		return new QuestDBConnection(getQuestConnection());
 	}
+	
+	public abstract QuestConnection getQuestConnection();
 
 }
