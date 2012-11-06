@@ -256,14 +256,22 @@ public class QuestRepos {
 
 			con = (RepositoryConnection) repo.getConnection();
 
-			String queryString = "SELECT * WHERE {?s ?p ?o} Limit 20";
+			String queryString = "SELECT * WHERE {?s ?p ?o} Limit 5";
 			TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString);
 			TupleQueryResult result = tupleQuery.evaluate();
 			System.out.println("RESULT hasdata: " + result.hasNext());
 			while (result.hasNext())
 				System.out.println(result.next());
-
-			 queryString = "PREFIX :<http://www.owl-ontologies.com/Ontology1207768242.owl#>\n" +
+			
+			 queryString = "SELECT * WHERE {?s ?p ?o} Limit 10";
+			 tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString);
+			 result = tupleQuery.evaluate();
+			System.out.println("RESULT hasdata: " + result.hasNext());
+			while (result.hasNext())
+				System.out.println(result.next());
+			result.close();
+			
+			/* queryString = "PREFIX :<http://www.owl-ontologies.com/Ontology1207768242.owl#>\n" +
 			 		"CONSTRUCT {?s :worksFor ?o } WHERE {?s :belongsToCompany ?o} Limit 20";
 			GraphQuery graphQuery = con.prepareGraphQuery(QueryLanguage.SPARQL,	queryString);
 			GraphQueryResult resultg = graphQuery.evaluate();
@@ -274,19 +282,9 @@ public class QuestRepos {
 				System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
 			}
 			
-			 queryString = "PREFIX  rev: <http://purl.org/stuff/rev#> \n\n" +
-				 		" DESCRIBE ?x \n" +
-				 		"WHERE { <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromRatingSite1/Review992> rev:reviewer ?x }";
-				 System.out.println(queryString);
-				 graphQuery = con.prepareGraphQuery(QueryLanguage.SPARQL,	queryString);
-				 GraphQueryResult qresult = graphQuery.evaluate();
-					System.out.println("RESULT hasdata: " + qresult.hasNext());
-					while (qresult.hasNext())
-					{
-						org.openrdf.model.Statement st = qresult.next();
-						System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
-					}
-			con.close();
+			
+*/
+			
 			repo.shutDown();
 
 			// System.out.println(con.toString());
@@ -341,13 +339,12 @@ public class QuestRepos {
 
 			org.openrdf.repository.RepositoryConnection con = repository.getConnection();
 
-			String queryString = "select * where { ?s ?p ?o} Limit 20";
+			String queryString = "SELECT * WHERE {?s ?p ?o} Limit 10";
 			TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString);
 			TupleQueryResult result = tupleQuery.evaluate();
 			System.out.println("RESULT hasdata: " + result.hasNext());
 			while (result.hasNext())
 				System.out.println(result.next());
-			
 			
 			 queryString = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
 			 		"PREFIX rev: <http://purl.org/stuff/rev#>\n" +
@@ -397,7 +394,6 @@ public class QuestRepos {
 					System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
 				}
 				
-			con.close();
 			repository.shutDown();
 			man.removeRepositoryConfig("testdb");
 			man.shutDown();
