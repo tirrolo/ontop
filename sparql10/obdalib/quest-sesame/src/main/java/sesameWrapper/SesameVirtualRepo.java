@@ -13,6 +13,7 @@ import org.openrdf.repository.RepositoryException;
 public class SesameVirtualRepo extends SesameAbstractRepo {
 
 	private QuestDBVirtualStore virtualStore;
+	private QuestDBConnection questDBConn;
 
 	public SesameVirtualRepo(String name, String tboxFile, String obdaFile)
 			throws Exception {
@@ -21,13 +22,13 @@ public class SesameVirtualRepo extends SesameAbstractRepo {
 		URI obdaURI = (new File(obdaFile)).toURI();
 		this.virtualStore = new QuestDBVirtualStore(name,
 				(new File(tboxFile)).toURI(), obdaURI);
-
+		questDBConn = virtualStore.getConnection();
 	}
 
 	
 	@Override
 	public QuestDBConnection getQuestConnection() throws OBDAException {
-		return virtualStore.getConnection();
+		return questDBConn;
 	}
 
 	@Override
@@ -37,6 +38,16 @@ public class SesameVirtualRepo extends SesameAbstractRepo {
 		// The writability of the repository is determined by the writability
 		// of the Sail that this repository operates on.
 		return false;
+	}
+	
+	@Override
+	public void shutDown() throws RepositoryException {
+		super.shutDown();
+		try {
+			questDBConn.close();
+		} catch (OBDAException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getType() {
