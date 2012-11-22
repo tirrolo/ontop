@@ -916,7 +916,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 			try {
 
-//				log.debug("Inserting statement: {}", ax);
+				// log.debug("Inserting statement: {}", ax);
 				batchCount += 1;
 				commitCount += 1;
 
@@ -1045,8 +1045,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 				roleStm.setBoolean(5, c2isBNode);
 				roleStm.addBatch();
 
-//				log.debug("inserted: {} {}", uri, uri2);
-//				log.debug("inserted: {} property", idx);
+				// log.debug("inserted: {} {}", uri, uri2);
+				// log.debug("inserted: {} property", idx);
 
 				break;
 			case LITERAL:
@@ -1121,7 +1121,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			classStm.setBoolean(3, c1isBNode);
 			classStm.addBatch();
 
-//			log.debug("inserted: {} {} class", uri, conceptIndex);
+			// log.debug("inserted: {} {} class", uri, conceptIndex);
 
 			monitor.success(); // advanced the success counter
 		}
@@ -1172,9 +1172,13 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 	 * <p>
 	 * triple(uri(x),uri(rdf:type),uri(Class))
 	 * 
+	 * <p>
+	 * Note, this method also takes into account the ontology in that an ABox
+	 * assertion about a role R affects non-emptyness about any S such that R
+	 * subPropertyOf S, similar for concept hierarchies, domain, range and
+	 * inverse inferences.
 	 */
 	private void assertNonEmptyness(Assertion assertion) {
-
 
 		if (assertion instanceof BinaryAssertion) {
 			BinaryAssertion ba = (BinaryAssertion) assertion;
@@ -1219,11 +1223,75 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 					OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject, fpredicate,
 					fobject);
 
-			int hash1 = getIndexHash(headDL);
-			emptynessIndexes.put(hash1, false);
+			assertNonEmptyness(headDL);
+			assertNonEmptyness(headTriple);
 
-			int hash2 = getIndexHash(headTriple);
-			emptynessIndexes.put(hash2, false);
+			/*
+			 * Dealing with emptyness of upper level roles in the hierarchy
+			 */
+
+			DAGNode node = dag.get(ofac.createProperty(p));
+			Set<DAGNode> parents = node.getAncestors();
+			for (DAGNode parent : parents) {
+				Description desc = parent.getDescription();
+				Property parentProp = (Property) desc;
+				Predicate parentP = parentProp.getPredicate();
+				boolean inverse = parentProp.isInverse();
+
+				fpredicate = dfac.getFunctionalTerm(typePredicate,
+						dfac.getURIConstant(parentP.getName()));
+
+				// DL style head
+				if (!inverse)
+					headDL = dfac.getFunctionalTerm(parentP, fsubject, fobject);
+				else
+					headDL = dfac.getFunctionalTerm(parentP, fobject, fsubject);
+
+				// Triple style head
+				if (!inverse)
+					headTriple = dfac.getFunctionalTerm(
+							OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject,
+							fpredicate, fobject);
+				else
+					headTriple = dfac.getFunctionalTerm(
+							OBDAVocabulary.QUEST_TRIPLE_PRED, fobject,
+							fpredicate, fsubject);
+
+				assertNonEmptyness(headDL);
+				assertNonEmptyness(headTriple);
+			}
+
+			/*
+			 * Dealing with domain and range inferences
+			 */
+
+			/*
+			 * First domain (inverse false for \exists R)
+			 */
+			Description d = ofac.createPropertySomeRestriction(p, false);
+			node = dag.get(d);
+			for (DAGNode parent: node.getAncestors()) {
+				// DL style head
+				ClassDescription classDescription = (ClassDescription) parent
+						.getDescription();
+
+				assertNonEmptynessOfClassExpression(typePredicate, typeObject,
+						fsubject, classDescription);
+			}
+			
+			
+			/*
+			 * First range (inverse true for \exists R^-)
+			 */
+			node = dag.get(ofac.createPropertySomeRestriction(p, true));
+			for (DAGNode parent: node.getAncestors()) {
+				// DL style head
+				ClassDescription classDescription = (ClassDescription) parent
+						.getDescription();
+
+				assertNonEmptynessOfClassExpression(typePredicate, typeObject,
+						fsubject, classDescription);
+			}
 
 		} else if (assertion instanceof UnaryAssertion) {
 			UnaryAssertion ua = (UnaryAssertion) assertion;
@@ -1260,12 +1328,113 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 					OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject, fpredicate,
 					fobject);
 
-			int hash1 = getIndexHash(headDL);
-			emptynessIndexes.put(hash1, false);
+			assertNonEmptyness(headDL);
+			assertNonEmptyness(headTriple);
 
-			int hash2 = getIndexHash(headTriple);
-			emptynessIndexes.put(hash2, false);
+			/*
+			 * Asserting non-emptyness for all the super classes of the current
+			 * class
+			 */
+
+			DAGNode node = dag.get(ofac.createClass(p));
+			Set<DAGNode> parents = node.getAncestors();
+			for (DAGNode parent : parents) {
+				// DL style head
+				ClassDescription classDescription = (ClassDescription) parent
+						.getDescription();
+
+				assertNonEmptynessOfClassExpression(typePredicate, typeObject,
+						fsubject, classDescription);
+			}
+
 		}
+	}
+
+	private void assertNonEmptynessOfClassExpression(Predicate typePredicate,
+			Predicate typeObject, Function fsubject,
+			ClassDescription classDescription) {
+		Function fpredicate;
+		Function fobject;
+		Function headDL;
+		Function headTriple;
+		if (classDescription instanceof OClass) {
+
+			OClass className = (OClass) classDescription;
+
+			Predicate predicate = className.getPredicate();
+			headDL = dfac.getFunctionalTerm(predicate, fsubject);
+
+			fpredicate = dfac.getFunctionalTerm(typeObject,
+					dfac.getURIConstant(URI
+							.create(OBDAVocabulary.RDF_TYPE)));
+			fobject = dfac.getFunctionalTerm(typePredicate,
+					dfac.getURIConstant(predicate.getName()));
+
+			// Triple style head
+			headTriple = dfac.getFunctionalTerm(
+					OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject,
+					fpredicate, fobject);
+
+			assertNonEmptyness(headDL);
+			assertNonEmptyness(headTriple);
+		} else if (classDescription instanceof PropertySomeRestriction) {
+			PropertySomeRestriction className = (PropertySomeRestriction) classDescription;
+
+			Predicate predicate = className.getPredicate();
+
+			
+
+			fpredicate = dfac.getFunctionalTerm(typeObject, dfac
+					.getURIConstant(URI.create(predicate.toString())));
+			fobject = dfac.getFunctionalTerm(typePredicate,
+					dfac.getVariable("X2"));
+			
+			
+			if (!className.isInverse())
+				headDL = dfac.getFunctionalTerm(predicate, fsubject,
+						fobject);
+			else
+				headDL = dfac.getFunctionalTerm(predicate,
+						fobject, fsubject);
+
+			// Triple style head
+			if (!className.isInverse())
+				headTriple = dfac.getFunctionalTerm(
+						OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject,
+						fpredicate, fobject);
+			else
+				headTriple = dfac.getFunctionalTerm(
+						OBDAVocabulary.QUEST_TRIPLE_PRED, fobject,
+						fpredicate, fsubject);
+
+			assertNonEmptyness(headDL);
+			assertNonEmptyness(headTriple);
+		} else if (classDescription instanceof DataType) {
+			DataType className = (DataType) classDescription;
+
+			Predicate predicate = className.getPredicate();
+
+			headDL = dfac.getFunctionalTerm(predicate, fsubject,
+					dfac.getVariable("X2"));
+
+			fpredicate = dfac.getFunctionalTerm(typeObject, dfac
+					.getURIConstant(URI.create(predicate.toString())));
+			fobject = dfac.getFunctionalTerm(typePredicate,
+					dfac.getVariable("X2"));
+
+			// Triple style head
+
+			headTriple = dfac.getFunctionalTerm(
+					OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject,
+					fpredicate, fobject);
+			assertNonEmptyness(headDL);
+			assertNonEmptyness(headTriple);
+		}
+	}
+
+	private void assertNonEmptyness(Function headDL) {
+		int hash1 = getIndexHash(headDL);
+		emptynessIndexes.put(hash1, false);
 	}
 
 	private int getRoleIndex(Predicate role) {
@@ -1315,8 +1484,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			String value, String lang, int idx, boolean isBnode)
 			throws SQLException {
 
-//		log.debug("inserted: {} {}", uri, value);
-//		log.debug("inserted: {} {}", lang, idx);
+		// log.debug("inserted: {} {}", uri, value);
+		// log.debug("inserted: {} {}", lang, idx);
 		stm.setString(1, uri);
 		stm.setString(2, value);
 		stm.setString(3, lang);
@@ -1328,8 +1497,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			String value, int idx, boolean isBnode) throws SQLException {
-//		log.debug("inserted: {} {}", uri, value);
-//		log.debug("inserted: {}", idx);
+		// log.debug("inserted: {} {}", uri, value);
+		// log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setString(2, value);
 		stm.setInt(3, idx);
@@ -1340,8 +1509,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			int value, int idx, boolean isBnode) throws SQLException {
-//		log.debug("inserted: {} {}", uri, value);
-//		log.debug("inserted: {}", idx);
+		// log.debug("inserted: {} {}", uri, value);
+		// log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setInt(2, value);
 		stm.setInt(3, idx);
@@ -1352,8 +1521,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			BigDecimal value, int idx, boolean isBnode) throws SQLException {
-//		log.debug("inserted: {} {}", uri, value);
-//		log.debug("inserted: {}", idx);
+		// log.debug("inserted: {} {}", uri, value);
+		// log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setBigDecimal(2, value);
 		stm.setInt(3, idx);
@@ -1364,8 +1533,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			double value, int idx, boolean isBnode) throws SQLException {
-//		log.debug("inserted: {} {}", uri, value);
-//		log.debug("inserted: {}", idx);
+		// log.debug("inserted: {} {}", uri, value);
+		// log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setDouble(2, value);
 		stm.setInt(3, idx);
@@ -1376,8 +1545,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			Timestamp value, int idx, boolean isBnode) throws SQLException {
-//		log.debug("inserted: {} {}", uri, value);
-//		log.debug("inserted: {}", idx);
+		// log.debug("inserted: {} {}", uri, value);
+		// log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setTimestamp(2, value);
 		stm.setInt(3, idx);
@@ -1388,8 +1557,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 	private void setInputStatement(PreparedStatement stm, String uri,
 			boolean value, int idx, boolean isBnode) throws SQLException {
-//		log.debug("inserted: {} {}", uri, value);
-//		log.debug("inserted: {}", idx);
+		// log.debug("inserted: {} {}", uri, value);
+		// log.debug("inserted: {}", idx);
 		stm.setString(1, uri);
 		stm.setBoolean(2, value);
 		stm.setInt(3, idx);
@@ -1892,107 +2061,109 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			currentMappings.add(basicmapping);
 
 			/* Rest mappings: computing mappings for inverses */
-
-			if (roleInverseMaps.get(roleNode).size() > 0) {
-				StringBuffer sql = new StringBuffer();
-				sql.append(select_mapping_role_inverse);
-				sql.append(" WHERE ");
-
-				boolean alreadyAppendedOne = false;
-
-				Set<DAGNode> inverseSubNodes = new HashSet<DAGNode>();
-				for (DAGNode inverseSubNode : roleInverseMaps.get(roleNode)) {
-					inverseSubNodes.add(inverseSubNode);
-				}
-				for (DAGNode equivNode : roleNode.getEquivalents()) {
-					if (((Property) equivNode.getDescription()).isInverse())
-						inverseSubNodes.add(equivNode);
-				}
-
-				for (DAGNode inverseSubNode : inverseSubNodes) {
-
-					/*
-					 * Getting the indexed node (from the pureIsa dag)
-					 */
-
-					Property inverseRole = (Property) inverseSubNode
-							.getDescription();
-					Property directRole = ofac.createProperty(inverseRole
-							.getPredicate());
-
-					indexedNode = pureIsa.getRoleNode(directRole);
-
-					if (indexedNode != null) {
-						List<Interval> intervals = indexedNode.getRange()
-								.getIntervals();
-
-						for (int intervali = 0; intervali < intervals.size(); intervali++) {
-							if (alreadyAppendedOne)
-								sql.append(" OR ");
-							appendIntervalString(intervals.get(intervali), sql);
-							alreadyAppendedOne = true;
-						}
-					}
-				}
-				if (alreadyAppendedOne) {
-					OBDAMappingAxiom inverseMapping = dfac
-							.getRDBMSMappingAxiom(sql.toString(), targetQuery);
-					currentMappings.add(inverseMapping);
-				}
-			}
+			//
+			// if (roleInverseMaps.get(roleNode).size() > 0) {
+			// StringBuffer sql = new StringBuffer();
+			// sql.append(select_mapping_role_inverse);
+			// sql.append(" WHERE ");
+			//
+			// boolean alreadyAppendedOne = false;
+			//
+			// Set<DAGNode> inverseSubNodes = new HashSet<DAGNode>();
+			// for (DAGNode inverseSubNode : roleInverseMaps.get(roleNode)) {
+			// inverseSubNodes.add(inverseSubNode);
+			// }
+			// for (DAGNode equivNode : roleNode.getEquivalents()) {
+			// if (((Property) equivNode.getDescription()).isInverse())
+			// inverseSubNodes.add(equivNode);
+			// }
+			//
+			// for (DAGNode inverseSubNode : inverseSubNodes) {
+			//
+			// /*
+			// * Getting the indexed node (from the pureIsa dag)
+			// */
+			//
+			// Property inverseRole = (Property) inverseSubNode
+			// .getDescription();
+			// Property directRole = ofac.createProperty(inverseRole
+			// .getPredicate());
+			//
+			// indexedNode = pureIsa.getRoleNode(directRole);
+			//
+			// if (indexedNode != null) {
+			// List<Interval> intervals = indexedNode.getRange()
+			// .getIntervals();
+			//
+			// for (int intervali = 0; intervali < intervals.size();
+			// intervali++) {
+			// if (alreadyAppendedOne)
+			// sql.append(" OR ");
+			// appendIntervalString(intervals.get(intervali), sql);
+			// alreadyAppendedOne = true;
+			// }
+			// }
+			// }
+			// if (alreadyAppendedOne) {
+			// OBDAMappingAxiom inverseMapping = dfac
+			// .getRDBMSMappingAxiom(sql.toString(), targetQuery);
+			// currentMappings.add(inverseMapping);
+			// }
+			// }
 
 			/*
 			 * Generating mappings for the equivalent nodes
 			 */
 
-			for (DAGNode equivalent : roleNode.getEquivalents()) {
-
-				Property equiproperty = (Property) equivalent.getDescription();
-
-				if (equiproperty.isInverse()) {
-					Property directEquiProperty = ofac.createProperty(
-							equiproperty.getPredicate(), false);
-					if ((pureIsa.getRoleNode(directEquiProperty) != null)
-							&& (pureIsa.getRoleNode(directEquiProperty)
-									.getIndex() != -1))
-						continue;
-				}
-
-				Atom headequi = dfac.getAtom(
-						dfac.getPredicate(URI.create("m"), 2),
-						dfac.getVariable("X"), dfac.getVariable("Y"));
-
-				Atom bodyequi = null;
-				if (!equiproperty.isInverse()) {
-					bodyequi = dfac.getAtom(
-							equiproperty.getPredicate(),
-							dfac.getFunctionalTerm(
-									dfac.getUriTemplatePredicate(1),
-									dfac.getVariable("X")),
-							dfac.getFunctionalTerm(
-									dfac.getUriTemplatePredicate(1),
-									dfac.getVariable("Y")));
-				} else {
-					bodyequi = dfac.getAtom(
-							equiproperty.getPredicate(),
-							dfac.getFunctionalTerm(
-									dfac.getUriTemplatePredicate(1),
-									dfac.getVariable("Y")),
-							dfac.getFunctionalTerm(
-									dfac.getUriTemplatePredicate(1),
-									dfac.getVariable("X")));
-				}
-
-				CQIE targetQueryEqui = dfac.getCQIE(headequi, bodyequi);
-
-				List<OBDAMappingAxiom> equimappings = new LinkedList<OBDAMappingAxiom>();
-				mappings.put(equiproperty.getPredicate(), equimappings);
-
-				for (OBDAMappingAxiom mapping : currentMappings) {
-					equimappings.add(dfac.getRDBMSMappingAxiom(mapping
-							.getSourceQuery().toString(), targetQueryEqui));
-				}
-			}
+			// for (DAGNode equivalent : roleNode.getEquivalents()) {
+			//
+			// Property equiproperty = (Property) equivalent.getDescription();
+			//
+			// if (equiproperty.isInverse()) {
+			// Property directEquiProperty = ofac.createProperty(
+			// equiproperty.getPredicate(), false);
+			// if ((pureIsa.getRoleNode(directEquiProperty) != null)
+			// && (pureIsa.getRoleNode(directEquiProperty)
+			// .getIndex() != -1))
+			// continue;
+			// }
+			//
+			// Atom headequi = dfac.getAtom(
+			// dfac.getPredicate(URI.create("m"), 2),
+			// dfac.getVariable("X"), dfac.getVariable("Y"));
+			//
+			// Atom bodyequi = null;
+			// if (!equiproperty.isInverse()) {
+			// bodyequi = dfac.getAtom(
+			// equiproperty.getPredicate(),
+			// dfac.getFunctionalTerm(
+			// dfac.getUriTemplatePredicate(1),
+			// dfac.getVariable("X")),
+			// dfac.getFunctionalTerm(
+			// dfac.getUriTemplatePredicate(1),
+			// dfac.getVariable("Y")));
+			// } else {
+			// bodyequi = dfac.getAtom(
+			// equiproperty.getPredicate(),
+			// dfac.getFunctionalTerm(
+			// dfac.getUriTemplatePredicate(1),
+			// dfac.getVariable("Y")),
+			// dfac.getFunctionalTerm(
+			// dfac.getUriTemplatePredicate(1),
+			// dfac.getVariable("X")));
+			// }
+			//
+			// CQIE targetQueryEqui = dfac.getCQIE(headequi, bodyequi);
+			//
+			// List<OBDAMappingAxiom> equimappings = new
+			// LinkedList<OBDAMappingAxiom>();
+			// mappings.put(equiproperty.getPredicate(), equimappings);
+			//
+			// for (OBDAMappingAxiom mapping : currentMappings) {
+			// equimappings.add(dfac.getRDBMSMappingAxiom(mapping
+			// .getSourceQuery().toString(), targetQueryEqui));
+			// }
+			// }
 		}
 
 		/*
@@ -2078,138 +2249,146 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 					targetQuery2);
 			currentMappings.add(basicmapping);
 
-			// TODO
-			// HERE WE ARE MISSING ALL THE CASES FOR BNODES!
-			// EXISTS R REQUIRES CASES WHERE THE PROJECTED VAR IS A URI ADN
-			// A BNODE
-
-			/*
-			 * Rest mappings 1: computing mappings for all exists R children
-			 * such that R is a role (Object Property)
-			 */
-
-			Set<DAGNode> nodeList = classExistsMaps.get(classNode);
-
-			// Create the mapping for role (or object property) node(s).
-			StringBuffer sqlroledirect = new StringBuffer();
-			boolean hasNode = createMappingForRole(nodeList, sqlroledirect);
-			if (hasNode) {
-				OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
-						sqlroledirect.toString(), targetQuery1);
-				currentMappings.add(existsMapping);
-			}
-
-			// Create the mapping for inverse role (or inverse object property)
-			// node(s).
-			StringBuffer sqlroleinverse = new StringBuffer();
-			hasNode = createMappingForInverseRole(nodeList, sqlroleinverse);
-			if (hasNode) {
-				OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
-						sqlroleinverse.toString(), targetQuery1);
-				currentMappings.add(existsMapping);
-			}
-
-			/*
-			 * Rest mappings 2: computing mappings for all exists R children
-			 * such that R is a attribute (Data Property)
-			 */
-
-			// Create the mapping for data property node(s) with range
-			// rdfs:Literal data type
-			StringBuffer sqlattribute = new StringBuffer();
-			hasNode = createMappingForLiteralDataType(nodeList, sqlattribute);
-			if (hasNode) {
-				OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
-						sqlattribute.toString(), targetQuery1);
-				currentMappings.add(existsMapping);
-			}
-
-			// Create the mapping for data property node(s) with range
-			// xsd:string data type
-			sqlattribute = new StringBuffer();
-			hasNode = createMappingForStringDataType(nodeList, sqlattribute);
-			if (hasNode) {
-				OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
-						sqlattribute.toString(), targetQuery1);
-				currentMappings.add(existsMapping);
-			}
-
-			// Create the mapping for data property node(s) with range xsd:int
-			// data type
-			sqlattribute = new StringBuffer();
-			hasNode = createMappingForIntegerDataType(nodeList, sqlattribute);
-			if (hasNode) {
-				OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
-						sqlattribute.toString(), targetQuery1);
-				currentMappings.add(existsMapping);
-			}
-
-			// Create the mapping for data property node(s) with range
-			// xsd:decimal data type
-			sqlattribute = new StringBuffer();
-			hasNode = createMappingForDecimalDataType(nodeList, sqlattribute);
-			if (hasNode) {
-				OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
-						sqlattribute.toString(), targetQuery1);
-				currentMappings.add(existsMapping);
-			}
-
-			// Create the mapping for data property node(s) with range
-			// xsd:double data type
-			sqlattribute = new StringBuffer();
-			hasNode = createMappingForDoubleDataType(nodeList, sqlattribute);
-			if (hasNode) {
-				OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
-						sqlattribute.toString(), targetQuery1);
-				currentMappings.add(existsMapping);
-			}
-
-			// Create the mapping for data property node(s) with range xsd:date
-			// data type
-			sqlattribute = new StringBuffer();
-			hasNode = createMappingForDateDataType(nodeList, sqlattribute);
-			if (hasNode) {
-				OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
-						sqlattribute.toString(), targetQuery1);
-				currentMappings.add(existsMapping);
-			}
-
-			// Create the mapping for data property node(s) with range
-			// xsd:boolean data type
-			sqlattribute = new StringBuffer();
-			hasNode = createMappingForBooleanDataType(nodeList, sqlattribute);
-			if (hasNode) {
-				OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
-						sqlattribute.toString(), targetQuery1);
-				currentMappings.add(existsMapping);
-			}
+			// // TODO
+			// // HERE WE ARE MISSING ALL THE CASES FOR BNODES!
+			// // EXISTS R REQUIRES CASES WHERE THE PROJECTED VAR IS A URI ADN
+			// // A BNODE
+			//
+			// /*
+			// * Rest mappings 1: computing mappings for all exists R children
+			// * such that R is a role (Object Property)
+			// */
+			//
+			// Set<DAGNode> nodeList = classExistsMaps.get(classNode);
+			//
+			// // Create the mapping for role (or object property) node(s).
+			// StringBuffer sqlroledirect = new StringBuffer();
+			// boolean hasNode = createMappingForRole(nodeList, sqlroledirect);
+			// if (hasNode) {
+			// OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
+			// sqlroledirect.toString(), targetQuery1);
+			// currentMappings.add(existsMapping);
+			// }
+			//
+			// // Create the mapping for inverse role (or inverse object
+			// property)
+			// // node(s).
+			// StringBuffer sqlroleinverse = new StringBuffer();
+			// hasNode = createMappingForInverseRole(nodeList, sqlroleinverse);
+			// if (hasNode) {
+			// OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
+			// sqlroleinverse.toString(), targetQuery1);
+			// currentMappings.add(existsMapping);
+			// }
+			//
+			// /*
+			// * Rest mappings 2: computing mappings for all exists R children
+			// * such that R is a attribute (Data Property)
+			// */
+			//
+			// // Create the mapping for data property node(s) with range
+			// // rdfs:Literal data type
+			// StringBuffer sqlattribute = new StringBuffer();
+			// hasNode = createMappingForLiteralDataType(nodeList,
+			// sqlattribute);
+			// if (hasNode) {
+			// OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
+			// sqlattribute.toString(), targetQuery1);
+			// currentMappings.add(existsMapping);
+			// }
+			//
+			// // Create the mapping for data property node(s) with range
+			// // xsd:string data type
+			// sqlattribute = new StringBuffer();
+			// hasNode = createMappingForStringDataType(nodeList, sqlattribute);
+			// if (hasNode) {
+			// OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
+			// sqlattribute.toString(), targetQuery1);
+			// currentMappings.add(existsMapping);
+			// }
+			//
+			// // Create the mapping for data property node(s) with range
+			// xsd:int
+			// // data type
+			// sqlattribute = new StringBuffer();
+			// hasNode = createMappingForIntegerDataType(nodeList,
+			// sqlattribute);
+			// if (hasNode) {
+			// OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
+			// sqlattribute.toString(), targetQuery1);
+			// currentMappings.add(existsMapping);
+			// }
+			//
+			// // Create the mapping for data property node(s) with range
+			// // xsd:decimal data type
+			// sqlattribute = new StringBuffer();
+			// hasNode = createMappingForDecimalDataType(nodeList,
+			// sqlattribute);
+			// if (hasNode) {
+			// OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
+			// sqlattribute.toString(), targetQuery1);
+			// currentMappings.add(existsMapping);
+			// }
+			//
+			// // Create the mapping for data property node(s) with range
+			// // xsd:double data type
+			// sqlattribute = new StringBuffer();
+			// hasNode = createMappingForDoubleDataType(nodeList, sqlattribute);
+			// if (hasNode) {
+			// OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
+			// sqlattribute.toString(), targetQuery1);
+			// currentMappings.add(existsMapping);
+			// }
+			//
+			// // Create the mapping for data property node(s) with range
+			// xsd:date
+			// // data type
+			// sqlattribute = new StringBuffer();
+			// hasNode = createMappingForDateDataType(nodeList, sqlattribute);
+			// if (hasNode) {
+			// OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
+			// sqlattribute.toString(), targetQuery1);
+			// currentMappings.add(existsMapping);
+			// }
+			//
+			// // Create the mapping for data property node(s) with range
+			// // xsd:boolean data type
+			// sqlattribute = new StringBuffer();
+			// hasNode = createMappingForBooleanDataType(nodeList,
+			// sqlattribute);
+			// if (hasNode) {
+			// OBDAMappingAxiom existsMapping = dfac.getRDBMSMappingAxiom(
+			// sqlattribute.toString(), targetQuery1);
+			// currentMappings.add(existsMapping);
+			// }
 
 			/*
 			 * Generating mappings for the equivalent nodes
 			 */
 
-			for (DAGNode equivalent : classNode.getEquivalents()) {
-				if (!(equivalent.getDescription() instanceof OClass)) {
-					continue;
-				}
-				OClass equiclass = (OClass) equivalent.getDescription();
-				Atom headequi = dfac.getAtom(
-						dfac.getPredicate(URI.create("m"), 1),
-						dfac.getVariable("X"));
-				Atom bodyequi = dfac.getAtom(equiclass.getPredicate(), dfac
-						.getFunctionalTerm(dfac.getUriTemplatePredicate(1),
-								dfac.getVariable("X")));
-
-				CQIE targetQueryEqui = dfac.getCQIE(headequi, bodyequi);
-
-				List<OBDAMappingAxiom> equimappings = new LinkedList<OBDAMappingAxiom>();
-				mappings.put(equiclass.getPredicate(), equimappings);
-
-				for (OBDAMappingAxiom mapping : currentMappings) {
-					equimappings.add(dfac.getRDBMSMappingAxiom(mapping
-							.getSourceQuery().toString(), targetQueryEqui));
-				}
-			}
+			// for (DAGNode equivalent : classNode.getEquivalents()) {
+			// if (!(equivalent.getDescription() instanceof OClass)) {
+			// continue;
+			// }
+			// OClass equiclass = (OClass) equivalent.getDescription();
+			// Atom headequi = dfac.getAtom(
+			// dfac.getPredicate(URI.create("m"), 1),
+			// dfac.getVariable("X"));
+			// Atom bodyequi = dfac.getAtom(equiclass.getPredicate(), dfac
+			// .getFunctionalTerm(dfac.getUriTemplatePredicate(1),
+			// dfac.getVariable("X")));
+			//
+			// CQIE targetQueryEqui = dfac.getCQIE(headequi, bodyequi);
+			//
+			// List<OBDAMappingAxiom> equimappings = new
+			// LinkedList<OBDAMappingAxiom>();
+			// mappings.put(equiclass.getPredicate(), equimappings);
+			//
+			// for (OBDAMappingAxiom mapping : currentMappings) {
+			// equimappings.add(dfac.getRDBMSMappingAxiom(mapping
+			// .getSourceQuery().toString(), targetQueryEqui));
+			// }
+			// }
 		}
 
 		/*

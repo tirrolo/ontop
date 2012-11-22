@@ -394,10 +394,9 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		/* The join */
 		Predicate joinp = OBDAVocabulary.SPARQL_LEFTJOIN;
-		
-		
+
 		Atom joinAtom = ofac.getAtom(joinp, leftAtom, rightAtom);
-		
+
 		/* adding the conditions of the filter for the LeftJoin */
 		if (filter != null) {
 			List joinTerms = joinAtom.getTerms();
@@ -405,7 +404,6 @@ public class SparqlAlgebraToDatalogTranslator {
 				joinTerms.add(((Function) getBooleanTerm(expr)).asAtom());
 			}
 		}
-		
 
 		/* Preparing the head of the LeftJoin rule */
 		// Collections.sort(vars, comparator);
@@ -422,8 +420,6 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		List<Atom> atoms = new LinkedList<Atom>();
 		atoms.add(joinAtom);
-
-		
 
 		CQIE newrule = ofac.getCQIE(head, atoms);
 		pr.appendRule(newrule);
@@ -709,15 +705,15 @@ public class SparqlAlgebraToDatalogTranslator {
 
 				Function functionURI = generateURIFunction(subjectUri);
 				terms.add(functionURI);
-				
-//				Function functionURI = ofac.getFunctionalTerm(
-//						ofac.getUriTemplatePredicate(1),
-//						ofac.getURIConstant(subjectUri));
-//				Variable freshVariable = getFreshVariable(varcount);
-//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-//				result.add(eqAtom);
-//
-//				terms.add(freshVariable);
+
+				// Function functionURI = ofac.getFunctionalTerm(
+				// ofac.getUriTemplatePredicate(1),
+				// ofac.getURIConstant(subjectUri));
+				// Variable freshVariable = getFreshVariable(varcount);
+				// Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+				// result.add(eqAtom);
+				//
+				// terms.add(freshVariable);
 
 			}
 
@@ -797,15 +793,15 @@ public class SparqlAlgebraToDatalogTranslator {
 
 				Function functionURI = generateURIFunction(subjectUri);
 				terms.add(functionURI);
-				
-//				Function functionURI = ofac.getFunctionalTerm(
-//						ofac.getUriTemplatePredicate(1),
-//						ofac.getURIConstant(subjectUri));
-//				Variable freshVariable = getFreshVariable(varcount);
-//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-//				result.add(eqAtom);
-//
-//				terms.add(freshVariable);
+
+				// Function functionURI = ofac.getFunctionalTerm(
+				// ofac.getUriTemplatePredicate(1),
+				// ofac.getURIConstant(subjectUri));
+				// Variable freshVariable = getFreshVariable(varcount);
+				// Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+				// result.add(eqAtom);
+				//
+				// terms.add(freshVariable);
 			}
 
 			// Object node
@@ -854,16 +850,16 @@ public class SparqlAlgebraToDatalogTranslator {
 
 				Function functionURI = generateURIFunction(objectUri);
 				terms.add(functionURI);
-				
-//				Function functionURI = ofac.getFunctionalTerm(
-//						ofac.getUriTemplatePredicate(1),
-//						ofac.getURIConstant(objectUri));
-//				Variable freshVariable = getFreshVariable(varcount);
-//				Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-//				result.add(eqAtom);
-//
-//				terms.add(freshVariable);
-				
+
+				// Function functionURI = ofac.getFunctionalTerm(
+				// ofac.getUriTemplatePredicate(1),
+				// ofac.getURIConstant(objectUri));
+				// Variable freshVariable = getFreshVariable(varcount);
+				// Atom eqAtom = ofac.getEQAtom(freshVariable, functionURI);
+				// result.add(eqAtom);
+				//
+				// terms.add(freshVariable);
+
 			}
 			// Construct the predicate
 
@@ -912,21 +908,32 @@ public class SparqlAlgebraToDatalogTranslator {
 				continue;
 
 			Function matchingFunction = uriTemplateMatcher.get(pattern);
+			NewLiteral baseParameter = matchingFunction.getTerms().get(0);
+			if (baseParameter instanceof Constant) {
+				/*
+				 * This is a general tempalte function of the form
+				 * uri("http://....", var1, var2,...) <p> we need to match var1,
+				 * var2, etc with substrings from the subjectURI
+				 */
+				List<NewLiteral> values = new LinkedList<NewLiteral>();
+				values.add(baseParameter);
+				for (int i = 0; i < matcher.groupCount(); i++) {
+					String value = matcher.group(i + 1);
+					values.add(ofac.getValueConstant(value));
+				}
 
-			int valueCount = matcher.groupCount();
+				// System.out.println("VALUES!!!" + values);
 
-			List<NewLiteral> values = new LinkedList<NewLiteral>();
-			values.add(matchingFunction.getTerms().get(0));
-
-			for (int i = 0; i < matcher.groupCount(); i++) {
-				String value = matcher.group(i+1);
-				values.add(ofac.getValueConstant(value));
+				functionURI = ofac.getFunctionalTerm(
+						ofac.getUriTemplatePredicate(values.size()), values);
+			} else if (baseParameter instanceof Variable) {
+				/*
+				 * This is a direct mapping to a column, uri(x)
+				 * we need to match x with the subjectURI
+				 */
+				functionURI = ofac.getFunctionalTerm(
+						ofac.getUriTemplatePredicate(1), ofac.getValueConstant(subjectUri.toString()));
 			}
-			
-			//System.out.println("VALUES!!!" + values);
-
-			functionURI = ofac.getFunctionalTerm(
-					ofac.getUriTemplatePredicate(values.size()), values);
 			break;
 
 		}

@@ -154,9 +154,9 @@ public class SQLGenerator implements SQLQueryGenerator {
 			log.debug("Before pushing equalities: \n{}", cq);
 
 			DatalogNormalizer.pushEqualities(cq, false);
-			
+
 			log.debug("Before folding Joins: \n{}", cq);
-			
+
 			DatalogNormalizer.foldJoinTrees(cq, false);
 
 			log.debug("Before pulling out equalities: \n{}", cq);
@@ -166,7 +166,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 			log.debug("Before pulling up nested references: \n{}", cq);
 
 			DatalogNormalizer.pullUpNestedReferences(cq, false);
-			
+
 			log.debug("Before adding trivial equalities: \n{}, cq);", cq);
 
 			DatalogNormalizer.addMinimalEqualityToLeftJoin(cq);
@@ -362,7 +362,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 			} else {
 				JOIN_KEYWORD = "JOIN";
 			}
-			String JOIN = "\n" + indent +"(\n" + indent + "%s\n" + indent
+			String JOIN = "\n" + indent + "(\n" + indent + "%s\n" + indent
 					+ JOIN_KEYWORD + "\n" + indent + "%s\n" + indent + ")";
 
 			if (size == 0) {
@@ -399,14 +399,18 @@ public class SQLGenerator implements SQLQueryGenerator {
 			 * last parenthesis ')' and replace it with ' ON %s)' where %s are
 			 * all the conditions
 			 */
-			String conditions = getConditionsString(inneratoms, index, true, indent);
+			String conditions = getConditionsString(inneratoms, index, true,
+					indent);
 
-			if (conditions.length() > 0 && tableDefinitionsString.lastIndexOf(")") != -1) {
+			if (conditions.length() > 0
+					&& tableDefinitionsString.lastIndexOf(")") != -1) {
 				int lastidx = tableDefinitionsString.lastIndexOf(")");
-				tableDefinitionsString.delete(lastidx, tableDefinitionsString.length());
-//				tableDefinitionsString.deleteCharAt(tableDefinitionsString
-//						.length() - 1);
-				String ON_CLAUSE = String.format("ON\n%s\n "+ indent+")", conditions);
+				tableDefinitionsString.delete(lastidx,
+						tableDefinitionsString.length());
+				// tableDefinitionsString.deleteCharAt(tableDefinitionsString
+				// .length() - 1);
+				String ON_CLAUSE = String.format("ON\n%s\n " + indent + ")",
+						conditions);
 				tableDefinitionsString.append(ON_CLAUSE);
 			}
 		}
@@ -484,9 +488,9 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 		LinkedHashSet<String> equalityConditions = new LinkedHashSet<String>();
 
-//		if (processShared)
-			equalityConditions.addAll(getConditionsSharedVariablesAndConstants(
-					atoms, index, processShared));
+		// if (processShared)
+		equalityConditions.addAll(getConditionsSharedVariablesAndConstants(
+				atoms, index, processShared));
 		LinkedHashSet<String> booleanConditions = getBooleanConditionsString(
 				atoms, index);
 
@@ -503,13 +507,13 @@ public class SQLGenerator implements SQLQueryGenerator {
 		if (conditionsIterator.hasNext()) {
 			conditionsString.append(indent);
 			conditionsString.append(conditionsIterator.next());
-			
+
 		}
 		while (conditionsIterator.hasNext()) {
 			conditionsString.append(" AND\n");
 			conditionsString.append(indent);
 			conditionsString.append(conditionsIterator.next());
-			
+
 		}
 		return conditionsString.toString();
 	}
@@ -917,15 +921,22 @@ public class SQLGenerator implements SQLQueryGenerator {
 					.nextToken());
 			List<String> vex = new LinkedList<String>();
 			int termIndex = 1;
-			do {
-				NewLiteral currentTerm = ov.getTerms().get(termIndex);
-				vex.add(getSQLString(currentTerm, index, false));
-				if (tokenizer.hasMoreTokens()) {
-					vex.add(jdbcutil.getSQLLexicalForm(tokenizer.nextToken()));
-				}
-				termIndex += 1;
-			} while (tokenizer.hasMoreElements()
-					|| termIndex < ov.getTerms().size());
+			
+			/*
+			 * New we concat the rest of the function, note that if there is only 1 element
+			 * there is nothing to concatenate
+			 */
+			if (ov.getTerms().size() > 1)
+				do {
+					NewLiteral currentTerm = ov.getTerms().get(termIndex);
+					vex.add(getSQLString(currentTerm, index, false));
+					if (tokenizer.hasMoreTokens()) {
+						vex.add(jdbcutil.getSQLLexicalForm(tokenizer
+								.nextToken()));
+					}
+					termIndex += 1;
+				} while (tokenizer.hasMoreElements()
+						|| termIndex < ov.getTerms().size());
 			String[] params = new String[vex.size() + 1];
 			int i = 0;
 			params[i] = functionString;
@@ -1155,7 +1166,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 		 * The atom must be of the form uri("...", x, y)
 		 */
 		String functionName = function.getFunctionSymbol().toString();
-		if (functionName.equals(OBDAVocabulary.QUEST_URI)) {
+		if (functionName.equals(OBDAVocabulary.QUEST_URI)
+				|| functionName.equals(OBDAVocabulary.QUEST_BNODE)) {
 			return getSQLStringForURIFunction(function, index);
 		} else {
 			throw new RuntimeException("Unexpected function in the query: "

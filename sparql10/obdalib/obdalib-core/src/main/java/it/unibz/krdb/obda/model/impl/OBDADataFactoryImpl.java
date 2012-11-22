@@ -32,6 +32,8 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 
 	private static final long serialVersionUID = 1851116693137470887L;
 	private static OBDADataFactory instance = null;
+	
+	private static int mappingIDCounter = 0;
 
 	protected OBDADataFactoryImpl() {
 		// protected constructor prevents instantiation from other classes.
@@ -210,7 +212,8 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 	@Override
 	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String sql,
 			OBDAQuery targetQuery) {
-		String id = new String("MAP" + System.nanoTime());
+		String id = new String("MAPID" + mappingIDCounter);
+		mappingIDCounter += 1;
 		return getRDBMSMappingAxiom(id, sql, targetQuery);
 	}
 

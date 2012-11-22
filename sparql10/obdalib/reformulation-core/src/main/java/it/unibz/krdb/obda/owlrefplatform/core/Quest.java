@@ -189,7 +189,6 @@ public class Quest implements Serializable {
 
 	Map<String, Boolean> isbooleancache = new HashMap<String, Boolean>();
 
-
 	Map<String, Boolean> isconstructcache = new HashMap<String, Boolean>();
 
 	Map<String, Boolean> isdescribecache = new HashMap<String, Boolean>();
@@ -206,7 +205,6 @@ public class Quest implements Serializable {
 		return isbooleancache;
 	}
 
-
 	protected Map<String, Boolean> getIsConstructCache() {
 		return isconstructcache;
 	}
@@ -214,7 +212,6 @@ public class Quest implements Serializable {
 	public Map<String, Boolean> getIsDescribeCache() {
 		return isdescribecache;
 	}
-
 
 	public void loadOBDAModel(OBDAModel model) {
 		isClassified = false;
@@ -305,13 +302,18 @@ public class Quest implements Serializable {
 	public void setPreferences(Properties preferences) {
 		this.preferences = preferences;
 
-
-		reformulate = Boolean.valueOf((String) preferences.get(QuestPreferences.REWRITE));
-		reformulationTechnique = (String) preferences.get(QuestPreferences.REFORMULATION_TECHNIQUE);
-		bOptimizeEquivalences = Boolean.valueOf((String) preferences.get(QuestPreferences.OPTIMIZE_EQUIVALENCES));
-		bOptimizeTBoxSigma = Boolean.valueOf((String) preferences.get(QuestPreferences.OPTIMIZE_TBOX_SIGMA));
-		bObtainFromOntology = Boolean.valueOf((String) preferences.get(QuestPreferences.OBTAIN_FROM_ONTOLOGY));
-		bObtainFromMappings = Boolean.valueOf((String) preferences.get(QuestPreferences.OBTAIN_FROM_MAPPINGS));
+		reformulate = Boolean.valueOf((String) preferences
+				.get(QuestPreferences.REWRITE));
+		reformulationTechnique = (String) preferences
+				.get(QuestPreferences.REFORMULATION_TECHNIQUE);
+		bOptimizeEquivalences = Boolean.valueOf((String) preferences
+				.get(QuestPreferences.OPTIMIZE_EQUIVALENCES));
+		bOptimizeTBoxSigma = Boolean.valueOf((String) preferences
+				.get(QuestPreferences.OPTIMIZE_TBOX_SIGMA));
+		bObtainFromOntology = Boolean.valueOf((String) preferences
+				.get(QuestPreferences.OBTAIN_FROM_ONTOLOGY));
+		bObtainFromMappings = Boolean.valueOf((String) preferences
+				.get(QuestPreferences.OBTAIN_FROM_MAPPINGS));
 		unfoldingMode = (String) preferences.get(QuestPreferences.ABOX_MODE);
 		dbType = (String) preferences.get(QuestPreferences.DBTYPE);
 		inmemory = preferences.getProperty(QuestPreferences.STORAGE_LOCATION)
@@ -621,20 +623,14 @@ public class Quest implements Serializable {
 			/*
 			 * T-mappings implementation
 			 */
-			if (unfoldingMode.equals(QuestConstants.VIRTUAL)
-					|| (unfoldingMode.equals(QuestConstants.CLASSIC) && dbType
-							.equals(QuestConstants.DIRECT))) {
-				// log.debug("Setting up T-Mappings");
-				TMappingProcessor tmappingProc = new TMappingProcessor(
-						reformulationOntology);
-				unfoldingProgram = tmappingProc.getTMappings(unfoldingProgram);
-				// log.debug("Resulting mappings: {}",
-				// unfoldingProgram.getRules().size());
-				sigma.addEntities(tmappingProc.getABoxDependencies()
-						.getVocabulary());
-				sigma.addAssertions(tmappingProc.getABoxDependencies()
-						.getAssertions());
-			}
+			// log.debug("Setting up T-Mappings");
+			TMappingProcessor tmappingProc = new TMappingProcessor(
+					reformulationOntology);
+			unfoldingProgram = tmappingProc.getTMappings(unfoldingProgram);
+			sigma.addEntities(tmappingProc.getABoxDependencies()
+					.getVocabulary());
+			sigma.addAssertions(tmappingProc.getABoxDependencies()
+					.getAssertions());
 
 			/*
 			 * Eliminating redundancy from the unfolding program
@@ -705,15 +701,14 @@ public class Quest implements Serializable {
 						 * URI without tempalte, we get it direclty from the
 						 * column of the table, and the function is only f(x)
 						 */
-						if (templateStrings.contains(".+"))
+						if (templateStrings.contains("(.+)"))
 							continue;
-						Function templateFunction = fac
-								.getFunctionalTerm(
-										fac.getUriTemplatePredicate(1),
-										fac.getVariable("x"));
-						Pattern matcher = Pattern.compile(".+");
+						Function templateFunction = fac.getFunctionalTerm(
+								fac.getUriTemplatePredicate(1),
+								fac.getVariable("x"));
+						Pattern matcher = Pattern.compile("(.+)");
 						getUriMatcherFunctions().put(matcher, templateFunction);
-						templateStrings.add(".+");
+						templateStrings.add("(.+)");
 					} else {
 						ValueConstant template = (ValueConstant) fun.getTerms()
 								.get(0);
@@ -777,6 +772,10 @@ public class Quest implements Serializable {
 			generateTripleMappings(fac, newmappings);
 			unfoldingProgram.appendRule(newmappings);
 
+			log.debug("Final set of mappings: \n{}", unfoldingProgram);
+
+			log.debug("DB Metadata: \n{}", metadata);
+
 			/*
 			 * Setting up the unfolder and SQL generation
 			 */
@@ -809,18 +808,20 @@ public class Quest implements Serializable {
 			 * Setting up the reformulation engine
 			 */
 
-
-//			if (reformulate == false) {
+			if (reformulate == false) {
 				rewriter = new DummyReformulator();
-//			} else if (QuestConstants.PERFECTREFORMULATION.equals(reformulationTechnique)) {
-//				rewriter = new DLRPerfectReformulator();
-//			} else if (QuestConstants.UCQBASED.equals(reformulationTechnique)) {
-//				rewriter = new TreeRedReformulator();
-//			} else if (QuestConstants.TW.equals(reformulationTechnique)) {
-//				rewriter = new TreeWitnessRewriter();
-//			} else {
-//				throw new IllegalArgumentException("Invalid value for argument: " + QuestPreferences.REFORMULATION_TECHNIQUE);
-//			}
+			} else if (QuestConstants.PERFECTREFORMULATION
+					.equals(reformulationTechnique)) {
+				rewriter = new DLRPerfectReformulator();
+			} else if (QuestConstants.UCQBASED.equals(reformulationTechnique)) {
+				rewriter = new TreeRedReformulator();
+			} else if (QuestConstants.TW.equals(reformulationTechnique)) {
+				rewriter = new TreeWitnessRewriter();
+			} else {
+				throw new IllegalArgumentException(
+						"Invalid value for argument: "
+								+ QuestPreferences.REFORMULATION_TECHNIQUE);
+			}
 
 			rewriter.setTBox(reformulationOntology);
 			rewriter.setCBox(sigma);

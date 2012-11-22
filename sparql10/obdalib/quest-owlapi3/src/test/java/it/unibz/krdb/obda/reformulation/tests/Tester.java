@@ -7,6 +7,7 @@ import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.owlapi3.OWLResultSet;
 import it.unibz.krdb.obda.owlapi3.OWLStatement;
+import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
 import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
 import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLFactory;
@@ -14,6 +15,7 @@ import it.unibz.krdb.obda.querymanager.QueryController;
 import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
 import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
 import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
+import it.unibz.krdb.obda.utils.OBDAPreferences;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -112,7 +114,6 @@ public class Tester {
 
         // fac.setOBDAController(apic);
         fac.setPreferenceHolder(pref);
-        pref.setProperty("rewrite", "true");
 
         reasoner = (QuestOWL) fac.createReasoner(ontology);
 

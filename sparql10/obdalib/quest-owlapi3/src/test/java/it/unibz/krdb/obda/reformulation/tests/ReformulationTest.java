@@ -20,6 +20,9 @@ public class ReformulationTest extends TestCase {
 		tester = new Tester(propfile);
 	}
         private void test_function(String ontoname, QuestPreferences pref) throws Exception {
+        	
+            pref.setProperty("rewrite", "true");
+
     	log.debug("Test case: {}", ontoname);
     	log.debug("Quest configuration: {}", pref.toString());
     	tester.load(ontoname, pref);
