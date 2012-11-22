@@ -1270,7 +1270,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 */
 			Description d = ofac.createPropertySomeRestriction(p, false);
 			node = dag.get(d);
-			for (DAGNode parent: node.getAncestors()) {
+			for (DAGNode parent : node.getAncestors()) {
 				// DL style head
 				ClassDescription classDescription = (ClassDescription) parent
 						.getDescription();
@@ -1278,13 +1278,12 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 				assertNonEmptynessOfClassExpression(typePredicate, typeObject,
 						fsubject, classDescription);
 			}
-			
-			
+
 			/*
 			 * First range (inverse true for \exists R^-)
 			 */
 			node = dag.get(ofac.createPropertySomeRestriction(p, true));
-			for (DAGNode parent: node.getAncestors()) {
+			for (DAGNode parent : node.getAncestors()) {
 				// DL style head
 				ClassDescription classDescription = (ClassDescription) parent
 						.getDescription();
@@ -1365,15 +1364,14 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			headDL = dfac.getFunctionalTerm(predicate, fsubject);
 
 			fpredicate = dfac.getFunctionalTerm(typeObject,
-					dfac.getURIConstant(URI
-							.create(OBDAVocabulary.RDF_TYPE)));
+					dfac.getURIConstant(URI.create(OBDAVocabulary.RDF_TYPE)));
 			fobject = dfac.getFunctionalTerm(typePredicate,
 					dfac.getURIConstant(predicate.getName()));
 
 			// Triple style head
 			headTriple = dfac.getFunctionalTerm(
-					OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject,
-					fpredicate, fobject);
+					OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject, fpredicate,
+					fobject);
 
 			assertNonEmptyness(headDL);
 			assertNonEmptyness(headTriple);
@@ -1382,30 +1380,25 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 			Predicate predicate = className.getPredicate();
 
-			
-
-			fpredicate = dfac.getFunctionalTerm(typeObject, dfac
-					.getURIConstant(URI.create(predicate.toString())));
+			fpredicate = dfac.getFunctionalTerm(typeObject,
+					dfac.getURIConstant(URI.create(predicate.toString())));
 			fobject = dfac.getFunctionalTerm(typePredicate,
 					dfac.getVariable("X2"));
-			
-			
+
 			if (!className.isInverse())
-				headDL = dfac.getFunctionalTerm(predicate, fsubject,
-						fobject);
+				headDL = dfac.getFunctionalTerm(predicate, fsubject, fobject);
 			else
-				headDL = dfac.getFunctionalTerm(predicate,
-						fobject, fsubject);
+				headDL = dfac.getFunctionalTerm(predicate, fobject, fsubject);
 
 			// Triple style head
 			if (!className.isInverse())
 				headTriple = dfac.getFunctionalTerm(
-						OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject,
-						fpredicate, fobject);
+						OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject, fpredicate,
+						fobject);
 			else
 				headTriple = dfac.getFunctionalTerm(
-						OBDAVocabulary.QUEST_TRIPLE_PRED, fobject,
-						fpredicate, fsubject);
+						OBDAVocabulary.QUEST_TRIPLE_PRED, fobject, fpredicate,
+						fsubject);
 
 			assertNonEmptyness(headDL);
 			assertNonEmptyness(headTriple);
@@ -1417,16 +1410,16 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			headDL = dfac.getFunctionalTerm(predicate, fsubject,
 					dfac.getVariable("X2"));
 
-			fpredicate = dfac.getFunctionalTerm(typeObject, dfac
-					.getURIConstant(URI.create(predicate.toString())));
+			fpredicate = dfac.getFunctionalTerm(typeObject,
+					dfac.getURIConstant(URI.create(predicate.toString())));
 			fobject = dfac.getFunctionalTerm(typePredicate,
 					dfac.getVariable("X2"));
 
 			// Triple style head
 
 			headTriple = dfac.getFunctionalTerm(
-					OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject,
-					fpredicate, fobject);
+					OBDAVocabulary.QUEST_TRIPLE_PRED, fsubject, fpredicate,
+					fobject);
 			assertNonEmptyness(headDL);
 			assertNonEmptyness(headTriple);
 		}
@@ -1437,27 +1430,27 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		emptynessIndexes.put(hash1, false);
 	}
 
-	private int getRoleIndex(Predicate role) {
-		Integer idxc = indexes.get(role);
-		if (idxc == null) {
-			Property description = ofac.createProperty(role);
-			DAGNode node = pureIsa.getRoleNode(description);
-			if (node == null) {
-				Property desc = (Property) dag.equi_mappings.get(description);
-				if (desc == null) {
-					log.error("Property class without node: " + description);
-				}
-				Property desinv = ofac.createProperty(desc.getPredicate(),
-						!desc.isInverse());
-				DAGNode node2 = (pureIsa.getRoleNode(desinv));
-				idxc = new Integer(node2.getIndex());
-			} else {
-				idxc = new Integer(node.getIndex());
-			}
-			indexes.put(role, idxc);
-		}
-		return idxc.intValue();
-	}
+//	private int getRoleIndex(Predicate role) {
+//		Integer idxc = indexes.get(role);
+//		if (idxc == null) {
+//			Property description = ofac.createProperty(role);
+//			DAGNode node = pureIsa.getRoleNode(description);
+//			if (node == null) {
+//				Property desc = (Property) dag.equi_mappings.get(description);
+//				if (desc == null) {
+//					log.error("Property class without node: " + description);
+//				}
+//				Property desinv = ofac.createProperty(desc.getPredicate(),
+//						!desc.isInverse());
+//				DAGNode node2 = (pureIsa.getRoleNode(desinv));
+//				idxc = new Integer(node2.getIndex());
+//			} else {
+//				idxc = new Integer(node.getIndex());
+//			}
+//			indexes.put(role, idxc);
+//		}
+//		return idxc.intValue();
+//	}
 
 	private int getAttributeIndex(Predicate attribute) {
 		Integer idxc = indexes.get(attribute);
@@ -2207,14 +2200,14 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			StringBuffer sql1 = new StringBuffer();
 			sql1.append(select_mapping_class);
 			sql1.append(" WHERE ");
-			sql1.append(" ISBNODE = FALSE AND (");
+			sql1.append(" ISBNODE = FALSE AND ");
 
 			/* FOR BNODE */
 
 			StringBuffer sql2 = new StringBuffer();
 			sql2.append(select_mapping_class);
 			sql2.append(" WHERE ");
-			sql2.append(" ISBNODE = TRUE AND (");
+			sql2.append(" ISBNODE = TRUE AND ");
 
 			/*
 			 * Getting the indexed node (from the pureIsa dag)
@@ -2223,27 +2216,34 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 					.getDescription());
 
 			List<Interval> intervals = indexedNode.getRange().getIntervals();
+
+			if (intervals.size() > 1)
+				sql1.append("(");
 			appendIntervalString(intervals.get(0), sql1);
 
 			for (int intervali = 1; intervali < intervals.size(); intervali++) {
 				sql1.append(" OR ");
 				appendIntervalString(intervals.get(intervali), sql1);
 			}
-			sql1.append(")");
-
+			if (intervals.size() > 1)
+				sql1.append(")");
+			
 			/* FOR BNODE */
 
 			OBDAMappingAxiom basicmapping = dfac.getRDBMSMappingAxiom(
 					sql1.toString(), targetQuery1);
 			currentMappings.add(basicmapping);
 
+			if (intervals.size() > 1)
+				sql2.append("(");
 			appendIntervalString(intervals.get(0), sql2);
 
 			for (int intervali = 1; intervali < intervals.size(); intervali++) {
 				sql2.append(" OR ");
 				appendIntervalString(intervals.get(intervali), sql2);
 			}
-			sql2.append(")");
+			if (intervals.size() > 1)
+				sql2.append(")");
 
 			basicmapping = dfac.getRDBMSMappingAxiom(sql2.toString(),
 					targetQuery2);
@@ -2596,505 +2596,527 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			sql.append("LANG IS NOT NULL AND ");
 		}
 
-		sql.append("(");
+		/*
+		 * Generating the interval conditions for semantic index
+		 */
 		List<Interval> intervals = node.getRange().getIntervals();
+		if (intervals.size() > 1)
+			sql.append("(");
+		
 		appendIntervalString(intervals.get(0), sql);
-
 		for (int intervali = 1; intervali < intervals.size(); intervali++) {
 			sql.append(" OR ");
 			appendIntervalString(intervals.get(intervali), sql);
 		}
-		sql.append(")");
+		if (intervals.size() > 1)
+			sql.append(")");
 
 		return sql.toString();
 	}
 
-	/***
-	 * Constructs the mappings for all roles (or object properties) in the DAG
-	 * node list. The string buffer stores the mapping string, if any. The
-	 * method returns true if it finds at least one role node.
-	 * 
-	 * @param nodeList
-	 *            The list of existential class nodes.
-	 * @param buffer
-	 *            The string buffer to stores the mapping string
-	 * @return Returns true if the method finds at least one role node, or false
-	 *         otherwise.
-	 */
-	private boolean createMappingForRole(Set<DAGNode> nodeList,
-			StringBuffer buffer) {
+	// /***
+	// * Constructs the mappings for all roles (or object properties) in the DAG
+	// * node list. The string buffer stores the mapping string, if any. The
+	// * method returns true if it finds at least one role node.
+	// *
+	// * @param nodeList
+	// * The list of existential class nodes.
+	// * @param buffer
+	// * The string buffer to stores the mapping string
+	// * @return Returns true if the method finds at least one role node, or
+	// false
+	// * otherwise.
+	// */
+	// private boolean createMappingForRole(Set<DAGNode> nodeList,
+	// StringBuffer buffer) {
+	//
+	// boolean hasRoleNode = false; // A flag if there is at least one role
+	//
+	// buffer.append(select_mapping_class_role_left);
+	// buffer.append(" WHERE ");
+	// buffer.append(" ISBNODE = FALSE AND (");
+	//
+	// boolean multipleIntervals = false; // A flag to tell there are more than
+	// // one SI intervals.
+	// for (DAGNode node : nodeList) {
+	// PropertySomeRestriction property = (PropertySomeRestriction) node
+	// .getDescription();
+	// boolean isObjectProperty = property.getPredicate().getType(1) ==
+	// COL_TYPE.OBJECT;
+	// if (isObjectProperty) {
+	// if (!property.isInverse()) {
+	//
+	// Property role = ofac.createProperty(
+	// property.getPredicate(), false);
+	// DAGNode indexedNode = pureIsa.getRoleNode(role);
+	// if (indexedNode != null) {
+	// hasRoleNode = true;
+	// List<Interval> intervals = indexedNode.getRange()
+	// .getIntervals();
+	// for (int i = 0; i < intervals.size(); i++) {
+	// if (multipleIntervals) {
+	// buffer.append(" OR ");
+	// }
+	// appendIntervalString(intervals.get(i), buffer);
+	// multipleIntervals = true;
+	// }
+	// }
+	// }
+	// }
+	// }
+	// buffer.append(")");
+	// return hasRoleNode;
+	// }
 
-		boolean hasRoleNode = false; // A flag if there is at least one role
+	// /**
+	// * Constructs the mappings for all inverse roles (or inverse object
+	// * properties) in the DAG node list. The string buffer stores the mapping
+	// * string, if any. The method returns true if it finds at least one
+	// inverse
+	// * role node.
+	// *
+	// * @param nodeList
+	// * The list of existential class nodes.
+	// * @param buffer
+	// * The string buffer to stores the mapping string
+	// * @return Returns true if the method finds at least one inverse role
+	// node,
+	// * or false otherwise.
+	// */
+	// private boolean createMappingForInverseRole(Set<DAGNode> nodeList,
+	// StringBuffer buffer) {
+	//
+	// boolean hasInverseRoleNode = false; // A flag if there is at least one
+	// // inverse role.
+	//
+	// buffer.append(select_mapping_class_role_right);
+	// buffer.append(" WHERE ");
+	// buffer.append(" ISBNODE2 = FALSE AND (");
+	//
+	// boolean multipleIntervals = false; // A flag to tell there are more than
+	// // one SI intervals.
+	// for (DAGNode node : nodeList) {
+	// PropertySomeRestriction property = (PropertySomeRestriction) node
+	// .getDescription();
+	// boolean isObjectProperty = property.getPredicate().getType(1) ==
+	// COL_TYPE.OBJECT;
+	// if (isObjectProperty) {
+	// if (property.isInverse()) {
+	// Property role = ofac.createProperty(
+	// property.getPredicate(), false);
+	// DAGNode indexedNode = pureIsa.getRoleNode(role);
+	// if (indexedNode != null) {
+	// hasInverseRoleNode = true;
+	// List<Interval> intervals = indexedNode.getRange()
+	// .getIntervals();
+	// for (int i = 0; i < intervals.size(); i++) {
+	// if (multipleIntervals) {
+	// buffer.append(" OR ");
+	// }
+	// appendIntervalString(intervals.get(i), buffer);
+	// multipleIntervals = true;
+	// }
+	// }
+	// }
+	// }
+	// }
+	// buffer.append(")");
+	//
+	// return hasInverseRoleNode;
+	// }
 
-		buffer.append(select_mapping_class_role_left);
-		buffer.append(" WHERE ");
-		buffer.append(" ISBNODE = FALSE AND (");
+	// /**
+	// * Constructs the mappings for all data properties with range rdfs:Literal
+	// * in the DAG node list. The string buffer stores the mapping string, if
+	// * any. The method returns true if it finds at least one of the node.
+	// *
+	// * @param nodeList
+	// * The list of existential class nodes.
+	// * @param buffer
+	// * The string buffer to stores the mapping string
+	// * @return Returns true if the method finds at least one data property
+	// node
+	// * with rdfs:Literal as the range, or false otherwise.
+	// */
+	// private boolean createMappingForLiteralDataType(Set<DAGNode> nodeList,
+	// StringBuffer buffer) {
+	//
+	// boolean hasLiteralNode = false; // A flag if there is at least one DP
+	// // with range rdfs:Literal
+	//
+	// buffer.append(select_mapping_class_attribute_literal_left);
+	// buffer.append(" WHERE ");
+	//
+	// boolean multipleIntervals = false; // A flag to tell there are more than
+	// // one SI interval.
+	// for (DAGNode node : nodeList) {
+	// Predicate property = ((PropertySomeRestriction) node
+	// .getDescription()).getPredicate();
+	// boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
+	// if (isObjectProperty) {
+	// continue;
+	// }
+	//
+	// PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
+	// .getDescription();
+	// Property role = ofac.createProperty(existsDesc.getPredicate(),
+	// false);
+	// DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
+	// // indexed
+	// // node.
+	// if (indexedNode == null) {
+	// continue;
+	// }
+	// hasLiteralNode = true;
+	// List<Interval> intervals = indexedNode.getRange().getIntervals();
+	// for (int i = 0; i < intervals.size(); i++) {
+	// if (multipleIntervals) {
+	// buffer.append(" OR ");
+	// }
+	// appendIntervalString(intervals.get(i), buffer);
+	// multipleIntervals = true;
+	// }
+	// }
+	//
+	// return hasLiteralNode;
+	// }
 
-		boolean multipleIntervals = false; // A flag to tell there are more than
-											// one SI intervals.
-		for (DAGNode node : nodeList) {
-			PropertySomeRestriction property = (PropertySomeRestriction) node
-					.getDescription();
-			boolean isObjectProperty = property.getPredicate().getType(1) == COL_TYPE.OBJECT;
-			if (isObjectProperty) {
-				if (!property.isInverse()) {
+	// /**
+	// * Constructs the mappings for all data properties with range xsd:string
+	// in
+	// * the DAG node list. The string buffer stores the mapping string, if any.
+	// * The method returns true if it finds at least one of the node.
+	// *
+	// * @param nodeList
+	// * The list of existential class nodes.
+	// * @param buffer
+	// * The string buffer to stores the mapping string
+	// * @return Returns true if the method finds at least one data property
+	// node
+	// * with xsd:string as the range, or false otherwise.
+	// */
+	// private boolean createMappingForStringDataType(Set<DAGNode> nodeList,
+	// StringBuffer buffer) {
+	//
+	// boolean hasStringNode = false; // A flag if there is at least one DP
+	// // with range xsd:string
+	//
+	// buffer.append(select_mapping_class_attribute_string_left);
+	// buffer.append(" WHERE ");
+	//
+	// boolean multipleIntervals = false; // A flag to tell there are more than
+	// // one SI interval.
+	// for (DAGNode node : nodeList) {
+	// Predicate property = ((PropertySomeRestriction) node
+	// .getDescription()).getPredicate();
+	// boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
+	// if (isObjectProperty) {
+	// continue;
+	// }
+	// PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
+	// .getDescription();
+	// Property role = ofac.createProperty(existsDesc.getPredicate(),
+	// false);
+	// DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
+	// // indexed
+	// // node.
+	// if (indexedNode == null) {
+	// continue;
+	// }
+	// hasStringNode = true;
+	// List<Interval> intervals = indexedNode.getRange().getIntervals();
+	// for (int i = 0; i < intervals.size(); i++) {
+	// if (multipleIntervals) {
+	// buffer.append(" OR ");
+	// }
+	// appendIntervalString(intervals.get(i), buffer);
+	// multipleIntervals = true;
+	// }
+	// }
+	//
+	// return hasStringNode;
+	// }
 
-					Property role = ofac.createProperty(
-							property.getPredicate(), false);
-					DAGNode indexedNode = pureIsa.getRoleNode(role);
-					if (indexedNode != null) {
-						hasRoleNode = true;
-						List<Interval> intervals = indexedNode.getRange()
-								.getIntervals();
-						for (int i = 0; i < intervals.size(); i++) {
-							if (multipleIntervals) {
-								buffer.append(" OR ");
-							}
-							appendIntervalString(intervals.get(i), buffer);
-							multipleIntervals = true;
-						}
-					}
-				}
-			}
-		}
-		buffer.append(")");
-		return hasRoleNode;
-	}
+	// /**
+	// * Constructs the mappings for all data properties with range xsd:int in
+	// the
+	// * DAG node list. The string buffer stores the mapping string, if any. The
+	// * method returns true if it finds at least one of the node.
+	// *
+	// * @param nodeList
+	// * The list of existential class nodes.
+	// * @param buffer
+	// * The string buffer to stores the mapping string
+	// * @return Returns true if the method finds at least one data property
+	// node
+	// * with xsd:int as the range, or false otherwise.
+	// */
+	// private boolean createMappingForIntegerDataType(Set<DAGNode> nodeList,
+	// StringBuffer buffer) {
+	//
+	// boolean hasIntegerNode = false; // A flag if there is at least one DP
+	// // with range xsd:int
+	//
+	// buffer.append(select_mapping_class_attribute_integer_left);
+	// buffer.append(" WHERE ");
+	//
+	// boolean multipleIntervals = false; // A flag to tell there are more than
+	// // one SI interval.
+	// for (DAGNode node : nodeList) {
+	// Predicate property = ((PropertySomeRestriction) node
+	// .getDescription()).getPredicate();
+	// boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
+	// if (isObjectProperty) {
+	// continue;
+	// }
+	//
+	// PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
+	// .getDescription();
+	// Property role = ofac.createProperty(existsDesc.getPredicate(),
+	// false);
+	// DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
+	// // indexed
+	// // node.
+	// if (indexedNode == null) {
+	// continue;
+	// }
+	// hasIntegerNode = true;
+	// List<Interval> intervals = indexedNode.getRange().getIntervals();
+	// for (int i = 0; i < intervals.size(); i++) {
+	// if (multipleIntervals) {
+	// buffer.append(" OR ");
+	// }
+	// appendIntervalString(intervals.get(i), buffer);
+	// multipleIntervals = true;
+	// }
+	// }
+	//
+	// return hasIntegerNode;
+	// }
 
-	/**
-	 * Constructs the mappings for all inverse roles (or inverse object
-	 * properties) in the DAG node list. The string buffer stores the mapping
-	 * string, if any. The method returns true if it finds at least one inverse
-	 * role node.
-	 * 
-	 * @param nodeList
-	 *            The list of existential class nodes.
-	 * @param buffer
-	 *            The string buffer to stores the mapping string
-	 * @return Returns true if the method finds at least one inverse role node,
-	 *         or false otherwise.
-	 */
-	private boolean createMappingForInverseRole(Set<DAGNode> nodeList,
-			StringBuffer buffer) {
+	// /**
+	// * Constructs the mappings for all data properties with range xsd:decimal
+	// in
+	// * the DAG node list. The string buffer stores the mapping string, if any.
+	// * The method returns true if it finds at least one of the node.
+	// *
+	// * @param nodeList
+	// * The list of existential class nodes.
+	// * @param buffer
+	// * The string buffer to stores the mapping string
+	// * @return Returns true if the method finds at least one data property
+	// node
+	// * with xsd:decimal as the range, or false otherwise.
+	// */
+	// private boolean createMappingForDecimalDataType(Set<DAGNode> nodeList,
+	// StringBuffer buffer) {
+	//
+	// boolean hasDecimalNode = false; // A flag if there is at least one DP
+	// // with range xsd:decimal
+	//
+	// buffer.append(select_mapping_class_attribute_decimal_left);
+	// buffer.append(" WHERE ");
+	//
+	// boolean multipleIntervals = false; // A flag to tell there are more than
+	// // one SI interval.
+	// for (DAGNode node : nodeList) {
+	// Predicate property = ((PropertySomeRestriction) node
+	// .getDescription()).getPredicate();
+	// boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
+	// if (isObjectProperty) {
+	// continue;
+	// }
+	//
+	// PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
+	// .getDescription();
+	// Property role = ofac.createProperty(existsDesc.getPredicate(),
+	// false);
+	// DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
+	// // indexed
+	// // node.
+	// if (indexedNode == null) {
+	// continue;
+	// }
+	// hasDecimalNode = true;
+	// List<Interval> intervals = indexedNode.getRange().getIntervals();
+	// for (int i = 0; i < intervals.size(); i++) {
+	// if (multipleIntervals) {
+	// buffer.append(" OR ");
+	// }
+	// appendIntervalString(intervals.get(i), buffer);
+	// multipleIntervals = true;
+	// }
+	// }
+	//
+	// return hasDecimalNode;
+	// }
 
-		boolean hasInverseRoleNode = false; // A flag if there is at least one
-											// inverse role.
+	// /**
+	// * Constructs the mappings for all data properties with range xsd:double
+	// in
+	// * the DAG node list. The string buffer stores the mapping string, if any.
+	// * The method returns true if it finds at least one of the node.
+	// *
+	// * @param nodeList
+	// * The list of existential class nodes.
+	// * @param buffer
+	// * The string buffer to stores the mapping string
+	// * @return Returns true if the method finds at least one data property
+	// node
+	// * with xsd:double as the range, or false otherwise.
+	// */
+	// private boolean createMappingForDoubleDataType(Set<DAGNode> nodeList,
+	// StringBuffer buffer) {
+	//
+	// boolean hasDoubleNode = false; // A flag if there is at least one DP
+	// // with range xsd:double
+	//
+	// buffer.append(select_mapping_class_attribute_double_left);
+	// buffer.append(" WHERE ");
+	//
+	// boolean multipleIntervals = false; // A flag to tell there are more than
+	// // one SI interval.
+	// for (DAGNode node : nodeList) {
+	// Predicate property = ((PropertySomeRestriction) node
+	// .getDescription()).getPredicate();
+	// boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
+	// if (isObjectProperty) {
+	// continue;
+	// }
+	// PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
+	// .getDescription();
+	// Property role = ofac.createProperty(existsDesc.getPredicate(),
+	// false);
+	// DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
+	// // indexed
+	// // node.
+	// if (indexedNode == null) {
+	// continue;
+	// }
+	// hasDoubleNode = true;
+	// List<Interval> intervals = indexedNode.getRange().getIntervals();
+	// for (int i = 0; i < intervals.size(); i++) {
+	// if (multipleIntervals) {
+	// buffer.append(" OR ");
+	// }
+	// appendIntervalString(intervals.get(i), buffer);
+	// multipleIntervals = true;
+	// }
+	// }
+	//
+	// return hasDoubleNode;
+	// }
 
-		buffer.append(select_mapping_class_role_right);
-		buffer.append(" WHERE ");
-		buffer.append(" ISBNODE2 = FALSE AND (");
+	// /**
+	// * Constructs the mappings for all data properties with range xsd:date in
+	// * the DAG node list. The string buffer stores the mapping string, if any.
+	// * The method returns true if it finds at least one of the node.
+	// *
+	// * @param nodeList
+	// * The list of existential class nodes.
+	// * @param buffer
+	// * The string buffer to stores the mapping string
+	// * @return Returns true if the method finds at least one data property
+	// node
+	// * with xsd:date as the range, or false otherwise.
+	// */
+	// private boolean createMappingForDateDataType(Set<DAGNode> nodeList,
+	// StringBuffer buffer) {
+	//
+	// boolean hasDateNode = false; // A flag if there is at least one DP with
+	// // range xsd:date
+	//
+	// buffer.append(select_mapping_class_attribute_datetime_left);
+	// buffer.append(" WHERE ");
+	//
+	// boolean multipleIntervals = false; // A flag to tell there are more than
+	// // one SI interval.
+	// for (DAGNode node : nodeList) {
+	// Predicate property = ((PropertySomeRestriction) node
+	// .getDescription()).getPredicate();
+	// boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
+	// if (isObjectProperty) {
+	// continue;
+	// }
+	// PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
+	// .getDescription();
+	// Property role = ofac.createProperty(existsDesc.getPredicate(),
+	// false);
+	// DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
+	// // indexed
+	// // node.
+	// if (indexedNode == null) {
+	// continue;
+	// }
+	// hasDateNode = true;
+	// List<Interval> intervals = indexedNode.getRange().getIntervals();
+	// for (int i = 0; i < intervals.size(); i++) {
+	// if (multipleIntervals) {
+	// buffer.append(" OR ");
+	// }
+	// appendIntervalString(intervals.get(i), buffer);
+	// multipleIntervals = true;
+	// }
+	// }
+	//
+	// return hasDateNode;
+	// }
 
-		boolean multipleIntervals = false; // A flag to tell there are more than
-											// one SI intervals.
-		for (DAGNode node : nodeList) {
-			PropertySomeRestriction property = (PropertySomeRestriction) node
-					.getDescription();
-			boolean isObjectProperty = property.getPredicate().getType(1) == COL_TYPE.OBJECT;
-			if (isObjectProperty) {
-				if (property.isInverse()) {
-					Property role = ofac.createProperty(
-							property.getPredicate(), false);
-					DAGNode indexedNode = pureIsa.getRoleNode(role);
-					if (indexedNode != null) {
-						hasInverseRoleNode = true;
-						List<Interval> intervals = indexedNode.getRange()
-								.getIntervals();
-						for (int i = 0; i < intervals.size(); i++) {
-							if (multipleIntervals) {
-								buffer.append(" OR ");
-							}
-							appendIntervalString(intervals.get(i), buffer);
-							multipleIntervals = true;
-						}
-					}
-				}
-			}
-		}
-		buffer.append(")");
-
-		return hasInverseRoleNode;
-	}
-
-	/**
-	 * Constructs the mappings for all data properties with range rdfs:Literal
-	 * in the DAG node list. The string buffer stores the mapping string, if
-	 * any. The method returns true if it finds at least one of the node.
-	 * 
-	 * @param nodeList
-	 *            The list of existential class nodes.
-	 * @param buffer
-	 *            The string buffer to stores the mapping string
-	 * @return Returns true if the method finds at least one data property node
-	 *         with rdfs:Literal as the range, or false otherwise.
-	 */
-	private boolean createMappingForLiteralDataType(Set<DAGNode> nodeList,
-			StringBuffer buffer) {
-
-		boolean hasLiteralNode = false; // A flag if there is at least one DP
-										// with range rdfs:Literal
-
-		buffer.append(select_mapping_class_attribute_literal_left);
-		buffer.append(" WHERE ");
-
-		boolean multipleIntervals = false; // A flag to tell there are more than
-											// one SI interval.
-		for (DAGNode node : nodeList) {
-			Predicate property = ((PropertySomeRestriction) node
-					.getDescription()).getPredicate();
-			boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
-			if (isObjectProperty) {
-				continue;
-			}
-
-			PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
-					.getDescription();
-			Property role = ofac.createProperty(existsDesc.getPredicate(),
-					false);
-			DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
-																// indexed
-																// node.
-			if (indexedNode == null) {
-				continue;
-			}
-			hasLiteralNode = true;
-			List<Interval> intervals = indexedNode.getRange().getIntervals();
-			for (int i = 0; i < intervals.size(); i++) {
-				if (multipleIntervals) {
-					buffer.append(" OR ");
-				}
-				appendIntervalString(intervals.get(i), buffer);
-				multipleIntervals = true;
-			}
-		}
-
-		return hasLiteralNode;
-	}
-
-	/**
-	 * Constructs the mappings for all data properties with range xsd:string in
-	 * the DAG node list. The string buffer stores the mapping string, if any.
-	 * The method returns true if it finds at least one of the node.
-	 * 
-	 * @param nodeList
-	 *            The list of existential class nodes.
-	 * @param buffer
-	 *            The string buffer to stores the mapping string
-	 * @return Returns true if the method finds at least one data property node
-	 *         with xsd:string as the range, or false otherwise.
-	 */
-	private boolean createMappingForStringDataType(Set<DAGNode> nodeList,
-			StringBuffer buffer) {
-
-		boolean hasStringNode = false; // A flag if there is at least one DP
-										// with range xsd:string
-
-		buffer.append(select_mapping_class_attribute_string_left);
-		buffer.append(" WHERE ");
-
-		boolean multipleIntervals = false; // A flag to tell there are more than
-											// one SI interval.
-		for (DAGNode node : nodeList) {
-			Predicate property = ((PropertySomeRestriction) node
-					.getDescription()).getPredicate();
-			boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
-			if (isObjectProperty) {
-				continue;
-			}
-			PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
-					.getDescription();
-			Property role = ofac.createProperty(existsDesc.getPredicate(),
-					false);
-			DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
-																// indexed
-																// node.
-			if (indexedNode == null) {
-				continue;
-			}
-			hasStringNode = true;
-			List<Interval> intervals = indexedNode.getRange().getIntervals();
-			for (int i = 0; i < intervals.size(); i++) {
-				if (multipleIntervals) {
-					buffer.append(" OR ");
-				}
-				appendIntervalString(intervals.get(i), buffer);
-				multipleIntervals = true;
-			}
-		}
-
-		return hasStringNode;
-	}
-
-	/**
-	 * Constructs the mappings for all data properties with range xsd:int in the
-	 * DAG node list. The string buffer stores the mapping string, if any. The
-	 * method returns true if it finds at least one of the node.
-	 * 
-	 * @param nodeList
-	 *            The list of existential class nodes.
-	 * @param buffer
-	 *            The string buffer to stores the mapping string
-	 * @return Returns true if the method finds at least one data property node
-	 *         with xsd:int as the range, or false otherwise.
-	 */
-	private boolean createMappingForIntegerDataType(Set<DAGNode> nodeList,
-			StringBuffer buffer) {
-
-		boolean hasIntegerNode = false; // A flag if there is at least one DP
-										// with range xsd:int
-
-		buffer.append(select_mapping_class_attribute_integer_left);
-		buffer.append(" WHERE ");
-
-		boolean multipleIntervals = false; // A flag to tell there are more than
-											// one SI interval.
-		for (DAGNode node : nodeList) {
-			Predicate property = ((PropertySomeRestriction) node
-					.getDescription()).getPredicate();
-			boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
-			if (isObjectProperty) {
-				continue;
-			}
-
-			PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
-					.getDescription();
-			Property role = ofac.createProperty(existsDesc.getPredicate(),
-					false);
-			DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
-																// indexed
-																// node.
-			if (indexedNode == null) {
-				continue;
-			}
-			hasIntegerNode = true;
-			List<Interval> intervals = indexedNode.getRange().getIntervals();
-			for (int i = 0; i < intervals.size(); i++) {
-				if (multipleIntervals) {
-					buffer.append(" OR ");
-				}
-				appendIntervalString(intervals.get(i), buffer);
-				multipleIntervals = true;
-			}
-		}
-
-		return hasIntegerNode;
-	}
-
-	/**
-	 * Constructs the mappings for all data properties with range xsd:decimal in
-	 * the DAG node list. The string buffer stores the mapping string, if any.
-	 * The method returns true if it finds at least one of the node.
-	 * 
-	 * @param nodeList
-	 *            The list of existential class nodes.
-	 * @param buffer
-	 *            The string buffer to stores the mapping string
-	 * @return Returns true if the method finds at least one data property node
-	 *         with xsd:decimal as the range, or false otherwise.
-	 */
-	private boolean createMappingForDecimalDataType(Set<DAGNode> nodeList,
-			StringBuffer buffer) {
-
-		boolean hasDecimalNode = false; // A flag if there is at least one DP
-										// with range xsd:decimal
-
-		buffer.append(select_mapping_class_attribute_decimal_left);
-		buffer.append(" WHERE ");
-
-		boolean multipleIntervals = false; // A flag to tell there are more than
-											// one SI interval.
-		for (DAGNode node : nodeList) {
-			Predicate property = ((PropertySomeRestriction) node
-					.getDescription()).getPredicate();
-			boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
-			if (isObjectProperty) {
-				continue;
-			}
-
-			PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
-					.getDescription();
-			Property role = ofac.createProperty(existsDesc.getPredicate(),
-					false);
-			DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
-																// indexed
-																// node.
-			if (indexedNode == null) {
-				continue;
-			}
-			hasDecimalNode = true;
-			List<Interval> intervals = indexedNode.getRange().getIntervals();
-			for (int i = 0; i < intervals.size(); i++) {
-				if (multipleIntervals) {
-					buffer.append(" OR ");
-				}
-				appendIntervalString(intervals.get(i), buffer);
-				multipleIntervals = true;
-			}
-		}
-
-		return hasDecimalNode;
-	}
-
-	/**
-	 * Constructs the mappings for all data properties with range xsd:double in
-	 * the DAG node list. The string buffer stores the mapping string, if any.
-	 * The method returns true if it finds at least one of the node.
-	 * 
-	 * @param nodeList
-	 *            The list of existential class nodes.
-	 * @param buffer
-	 *            The string buffer to stores the mapping string
-	 * @return Returns true if the method finds at least one data property node
-	 *         with xsd:double as the range, or false otherwise.
-	 */
-	private boolean createMappingForDoubleDataType(Set<DAGNode> nodeList,
-			StringBuffer buffer) {
-
-		boolean hasDoubleNode = false; // A flag if there is at least one DP
-										// with range xsd:double
-
-		buffer.append(select_mapping_class_attribute_double_left);
-		buffer.append(" WHERE ");
-
-		boolean multipleIntervals = false; // A flag to tell there are more than
-											// one SI interval.
-		for (DAGNode node : nodeList) {
-			Predicate property = ((PropertySomeRestriction) node
-					.getDescription()).getPredicate();
-			boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
-			if (isObjectProperty) {
-				continue;
-			}
-			PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
-					.getDescription();
-			Property role = ofac.createProperty(existsDesc.getPredicate(),
-					false);
-			DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
-																// indexed
-																// node.
-			if (indexedNode == null) {
-				continue;
-			}
-			hasDoubleNode = true;
-			List<Interval> intervals = indexedNode.getRange().getIntervals();
-			for (int i = 0; i < intervals.size(); i++) {
-				if (multipleIntervals) {
-					buffer.append(" OR ");
-				}
-				appendIntervalString(intervals.get(i), buffer);
-				multipleIntervals = true;
-			}
-		}
-
-		return hasDoubleNode;
-	}
-
-	/**
-	 * Constructs the mappings for all data properties with range xsd:date in
-	 * the DAG node list. The string buffer stores the mapping string, if any.
-	 * The method returns true if it finds at least one of the node.
-	 * 
-	 * @param nodeList
-	 *            The list of existential class nodes.
-	 * @param buffer
-	 *            The string buffer to stores the mapping string
-	 * @return Returns true if the method finds at least one data property node
-	 *         with xsd:date as the range, or false otherwise.
-	 */
-	private boolean createMappingForDateDataType(Set<DAGNode> nodeList,
-			StringBuffer buffer) {
-
-		boolean hasDateNode = false; // A flag if there is at least one DP with
-										// range xsd:date
-
-		buffer.append(select_mapping_class_attribute_datetime_left);
-		buffer.append(" WHERE ");
-
-		boolean multipleIntervals = false; // A flag to tell there are more than
-											// one SI interval.
-		for (DAGNode node : nodeList) {
-			Predicate property = ((PropertySomeRestriction) node
-					.getDescription()).getPredicate();
-			boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
-			if (isObjectProperty) {
-				continue;
-			}
-			PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
-					.getDescription();
-			Property role = ofac.createProperty(existsDesc.getPredicate(),
-					false);
-			DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
-																// indexed
-																// node.
-			if (indexedNode == null) {
-				continue;
-			}
-			hasDateNode = true;
-			List<Interval> intervals = indexedNode.getRange().getIntervals();
-			for (int i = 0; i < intervals.size(); i++) {
-				if (multipleIntervals) {
-					buffer.append(" OR ");
-				}
-				appendIntervalString(intervals.get(i), buffer);
-				multipleIntervals = true;
-			}
-		}
-
-		return hasDateNode;
-	}
-
-	/**
-	 * Constructs the mappings for all data properties with range xsd:boolean in
-	 * the DAG node list. The string buffer stores the mapping string, if any.
-	 * The method returns true if it finds at least one of the node.
-	 * 
-	 * @param nodeList
-	 *            The list of existential class nodes.
-	 * @param buffer
-	 *            The string buffer to stores the mapping string
-	 * @return Returns true if the method finds at least one data property node
-	 *         with xsd:boolean as the range, or false otherwise.
-	 */
-	private boolean createMappingForBooleanDataType(Set<DAGNode> nodeList,
-			StringBuffer buffer) {
-
-		boolean hasBooleanNode = false; // A flag if there is at least one DP
-										// with range xsd:boolean
-
-		buffer.append(select_mapping_class_attribute_boolean_left);
-		buffer.append(" WHERE ");
-
-		boolean multipleIntervals = false; // A flag to tell there are more than
-											// one SI interval.
-		for (DAGNode node : nodeList) {
-			Predicate property = ((PropertySomeRestriction) node
-					.getDescription()).getPredicate();
-			boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
-			if (isObjectProperty) {
-				continue;
-			}
-			PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
-					.getDescription();
-			Property role = ofac.createProperty(existsDesc.getPredicate(),
-					false);
-			DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
-																// indexed
-																// node.
-			if (indexedNode == null) {
-				continue;
-			}
-			hasBooleanNode = true;
-			List<Interval> intervals = indexedNode.getRange().getIntervals();
-			for (int i = 0; i < intervals.size(); i++) {
-				if (multipleIntervals) {
-					buffer.append(" OR ");
-				}
-				appendIntervalString(intervals.get(i), buffer);
-				multipleIntervals = true;
-			}
-		}
-
-		return hasBooleanNode;
-	}
+	// /**
+	// * Constructs the mappings for all data properties with range xsd:boolean
+	// in
+	// * the DAG node list. The string buffer stores the mapping string, if any.
+	// * The method returns true if it finds at least one of the node.
+	// *
+	// * @param nodeList
+	// * The list of existential class nodes.
+	// * @param buffer
+	// * The string buffer to stores the mapping string
+	// * @return Returns true if the method finds at least one data property
+	// node
+	// * with xsd:boolean as the range, or false otherwise.
+	// */
+	// private boolean createMappingForBooleanDataType(Set<DAGNode> nodeList,
+	// StringBuffer buffer) {
+	//
+	// boolean hasBooleanNode = false; // A flag if there is at least one DP
+	// // with range xsd:boolean
+	//
+	// buffer.append(select_mapping_class_attribute_boolean_left);
+	// buffer.append(" WHERE ");
+	//
+	// boolean multipleIntervals = false; // A flag to tell there are more than
+	// // one SI interval.
+	// for (DAGNode node : nodeList) {
+	// Predicate property = ((PropertySomeRestriction) node
+	// .getDescription()).getPredicate();
+	// boolean isObjectProperty = (property.getType(1) == COL_TYPE.OBJECT);
+	// if (isObjectProperty) {
+	// continue;
+	// }
+	// PropertySomeRestriction existsDesc = (PropertySomeRestriction) node
+	// .getDescription();
+	// Property role = ofac.createProperty(existsDesc.getPredicate(),
+	// false);
+	// DAGNode indexedNode = pureIsa.getRoleNode(role); // Get the
+	// // indexed
+	// // node.
+	// if (indexedNode == null) {
+	// continue;
+	// }
+	// hasBooleanNode = true;
+	// List<Interval> intervals = indexedNode.getRange().getIntervals();
+	// for (int i = 0; i < intervals.size(); i++) {
+	// if (multipleIntervals) {
+	// buffer.append(" OR ");
+	// }
+	// appendIntervalString(intervals.get(i), buffer);
+	// multipleIntervals = true;
+	// }
+	// }
+	//
+	// return hasBooleanNode;
+	// }
 
 	private void appendIntervalString(Interval interval, StringBuffer out) {
 		if (interval.getStart() == interval.getEnd()) {
