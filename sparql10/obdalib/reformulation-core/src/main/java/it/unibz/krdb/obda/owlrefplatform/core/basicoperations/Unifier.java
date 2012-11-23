@@ -238,8 +238,6 @@ public class Unifier {
 		for (int termidx = 0; termidx < arity; termidx++) {
 
 			NewLiteral term1 = terms1.get(termidx);
-			if (termidx >= terms2.size())
-				System.out.println("STOP");
 			NewLiteral term2 = terms2.get(termidx);
 
 			/*
