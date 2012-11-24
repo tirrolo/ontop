@@ -107,7 +107,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	 */
 
 	private List<Atom> getExtAtomsForGenerators(Collection<TreeWitnessGenerator> gens, NewLiteral r0, Set<Predicate> usedExts)  {
-		Collection<BasicClassDescription> concepts = TreeWitnessGenerator.getMaximalBasicConcepts(gens);		
+		Collection<BasicClassDescription> concepts = TreeWitnessGenerator.getMaximalBasicConcepts(gens, reasoner);		
 		List<Atom> extAtoms = new ArrayList<Atom>(concepts.size());
 		NewLiteral x = fac.getNondistinguishedVariable(); 
 		

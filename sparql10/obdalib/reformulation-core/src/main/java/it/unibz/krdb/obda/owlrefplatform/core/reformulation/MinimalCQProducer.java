@@ -6,7 +6,6 @@ import it.unibz.krdb.obda.model.impl.AnonymousVariable;
 import it.unibz.krdb.obda.ontology.BasicClassDescription;
 import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,15 +17,14 @@ import org.slf4j.LoggerFactory;
 
 public class MinimalCQProducer {
 	private final TreeWitnessReasonerLite reasoner;
-	private final List<NewLiteral> freeVariables;
 	private List<Atom> atoms = new LinkedList<Atom>();
 	
-	private static final OntologyFactory ontFactory = OntologyFactoryImpl.getInstance();
+	private final OntologyFactory ontFactory;
 	private static final Logger log = LoggerFactory.getLogger(MinimalCQProducer.class);	
 	
 	public MinimalCQProducer(TreeWitnessReasonerLite reasoner, List<NewLiteral> freeVariables) {
 		this.reasoner = reasoner;
-		this.freeVariables = freeVariables;
+		this.ontFactory = reasoner.getOntologyFactory();
 	}
 	
 	public boolean isMoreSpecific(Atom a1, Atom a2) {

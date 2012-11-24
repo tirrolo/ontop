@@ -128,10 +128,10 @@ public class DatalogQueryServices {
 					Map<Variable, NewLiteral> substituition = new HashMap<Variable, NewLiteral>(1);
 					NewLiteral t0 = a.getTerm(0); 
 					NewLiteral t1 = a.getTerm(1); 					
-					if (t0 instanceof Variable)
-						substituition.put((Variable)t0, t1);
-					else if (t1 instanceof Variable)
+					if (t1 instanceof Variable)
 						substituition.put((Variable)t1, t0);
+					else if (t0 instanceof Variable)
+						substituition.put((Variable)t0, t1);
 					else
 						substituition = null;
 					if (substituition != null) {
