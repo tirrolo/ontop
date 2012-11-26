@@ -4,6 +4,7 @@ import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.io.SimplePrefixManager;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
+import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.DataTypePredicate;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.OBDAQuery;
@@ -151,7 +152,12 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 						NewLiteral lang = function.getTerms().get(1);
 						sb.append(getDisplayName(var));
 						sb.append("@");
-						sb.append(lang.toString());
+						if (lang instanceof Variable) {
+							sb.append(((Variable) lang).getName());
+						} else if (lang instanceof Constant) {
+							sb.append(((Constant) lang).getValue());
+						}
+						
 					}
 				} else {
 					// for the other data types
@@ -233,7 +239,7 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 	}
 
 	private boolean isLiteralDataType(Predicate predicate) {
-		return predicate.equals(OBDAVocabulary.RDFS_LITERAL);
+		return predicate.equals(OBDAVocabulary.RDFS_LITERAL) || predicate.equals(OBDAVocabulary.RDFS_LITERAL_LANG);
 	}
 
 	@Override

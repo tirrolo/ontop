@@ -67,41 +67,45 @@ public class SesameBindingSet implements BindingSet {
 	private Binding createBinding(String bindingName) {
 		Value value = null;
 		try {
-
 			if (hasBinding(bindingName)) {
 				int column = set.getSignature().indexOf(bindingName) + 1;
 				Constant c = set.getConstant(bindingName);
-				if (c instanceof BNode)
+				if (c instanceof BNode) {
 					value = fact.createBNode(((BNode) c).getName());
-				else if (c instanceof URIConstant)
+				} else if (c instanceof URIConstant) {
 					value = fact.createURI(((URIConstant) c).getURI().toString());
-				else if (c instanceof ValueConstant) {
+				} else if (c instanceof ValueConstant) {
 					ValueConstant literal = set.getLiteral(column);
-					URI datatype = null;
 					COL_TYPE col_type = literal.getType();
-					String obdavoc = "";
-					if (col_type == COL_TYPE.BOOLEAN)
-						obdavoc = (OBDAVocabulary.XSD_BOOLEAN_URI);
-					else if (col_type == COL_TYPE.DATETIME)
-						obdavoc = (OBDAVocabulary.XSD_DATETIME_URI);
-					else if (col_type == COL_TYPE.DECIMAL)
-						obdavoc = (OBDAVocabulary.XSD_DECIMAL_URI);
-					else if (col_type == COL_TYPE.DOUBLE)
-						obdavoc = (OBDAVocabulary.XSD_DOUBLE_URI);
-					else if (col_type == COL_TYPE.INTEGER)
-						obdavoc = (OBDAVocabulary.XSD_INTEGER_URI);
-					else if (col_type == COL_TYPE.LITERAL)
-						obdavoc = (OBDAVocabulary.RDFS_LITERAL_URI);
-					else if (col_type == COL_TYPE.OBJECT)
-						obdavoc = (OBDAVocabulary.XSD_STRING_URI);
-					else if (col_type == COL_TYPE.STRING)
-						obdavoc = OBDAVocabulary.XSD_STRING_URI;
-						
-					datatype = fact.createURI(obdavoc);
-					value = fact.createLiteral(literal.getValue(), datatype);
+					if (col_type == COL_TYPE.BOOLEAN) {
+						URI datatype = fact.createURI(OBDAVocabulary.XSD_BOOLEAN_URI);
+						value = fact.createLiteral(literal.getValue(), datatype);
+					} else if (col_type == COL_TYPE.DATETIME) {
+						URI datatype = fact.createURI(OBDAVocabulary.XSD_DATETIME_URI);
+						value = fact.createLiteral(literal.getValue(), datatype);
+					} else if (col_type == COL_TYPE.DECIMAL) {
+						URI datatype = fact.createURI(OBDAVocabulary.XSD_DECIMAL_URI);
+						value = fact.createLiteral(literal.getValue(), datatype);
+					} else if (col_type == COL_TYPE.DOUBLE) {
+						URI datatype = fact.createURI(OBDAVocabulary.XSD_DOUBLE_URI);
+						value = fact.createLiteral(literal.getValue(), datatype);
+					} else if (col_type == COL_TYPE.INTEGER) {
+						URI datatype = fact.createURI(OBDAVocabulary.XSD_INTEGER_URI);
+						value = fact.createLiteral(literal.getValue(), datatype);
+					} else if (col_type == COL_TYPE.LITERAL) {
+						value = fact.createLiteral(literal.getValue());
+					} else if (col_type == COL_TYPE.LITERAL_LANG) {
+						value = fact.createLiteral(literal.getValue(), literal.getLanguage());
+					} else if (col_type == COL_TYPE.OBJECT) {
+						// TODO: Replace this with object datatype in the future
+						URI datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
+						value = fact.createLiteral(literal.getValue(), datatype);
+					} else if (col_type == COL_TYPE.STRING) {
+						URI datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
+						value = fact.createLiteral(literal.getValue(), datatype);
+					}						
 				}
 			}
-
 			return new BindingImpl(bindingName, value);
 		} catch (Exception e) {
 			e.printStackTrace();

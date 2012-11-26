@@ -79,6 +79,8 @@ public class ExpressionEvaluator {
 			return evalBoolean(expr);
 		} else if (p instanceof NonBooleanOperationPredicate) {
 			return evalNonBoolean(expr);
+		} else if (p instanceof NumericalOperationPredicate) {
+			return evalNumericalOperation(expr);
 		} else if (p == OBDAVocabulary.XSD_BOOLEAN) {
 			if (expr.getTerm(0) instanceof Constant) {
 				ValueConstant value = (ValueConstant) expr.getTerm(0);
@@ -87,10 +89,9 @@ public class ExpressionEvaluator {
 				} else if (value.equals("0") || value.equals("false")) {
 					return fac.getFalse();
 				}
-			} else
+			} else {
 				return expr;
-		} else if (p instanceof NumericalOperationPredicate) {
-			return evalNumericalOperation(expr);
+			}
 		}
 		return expr;
 	}
@@ -306,8 +307,9 @@ public class ExpressionEvaluator {
 							return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
 									parameter.clone());
 						} else if (parameter instanceof Constant) {
+							Constant c = (Constant) parameter;
 							return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
-									fac.getValueConstant(parameter.toString()));
+									fac.getValueConstant(c.getValue()));
 						}
 					} else {
 						return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
@@ -348,7 +350,9 @@ public class ExpressionEvaluator {
 		 * Term checks
 		 */
 		if (teval1 instanceof Constant && teval2 instanceof Constant) {
-			if (teval1.equals(teval2)) {
+			String lang1 = ((Constant) teval1).getValue();
+			String lang2 = ((Constant) teval2).getValue();			
+			if (lang1.equalsIgnoreCase(lang2)) {
 				return fac.getTrue();
 			} else {
 				return fac.getFalse();
