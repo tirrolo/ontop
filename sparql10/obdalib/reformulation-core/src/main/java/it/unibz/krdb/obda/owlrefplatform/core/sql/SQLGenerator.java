@@ -1151,14 +1151,16 @@ public class SQLGenerator implements SQLQueryGenerator {
 		} else {
 			String functionName = functionSymbol.toString();
 			if (functionName.equals(OBDAVocabulary.QUEST_CAST_STR)) {
-				String columnName = getSQLString(function.getTerm(0), index,
-						false);
+				String columnName = getSQLString(function.getTerm(0), index, false);
 				String datatype = ((Constant) function.getTerm(1)).getValue();
 				int sqlDatatype = -1;
 				if (datatype.equals(OBDAVocabulary.XSD_STRING_URI)) {
 					sqlDatatype = Types.VARCHAR;
 				}
 				return sqladapter.sqlCast(columnName, sqlDatatype);
+			} else if (functionName.equals(OBDAVocabulary.SPARQL_STR_URI)) {
+				String columnName = getSQLString(function.getTerm(0), index, false);
+				return sqladapter.sqlCast(columnName, Types.VARCHAR);
 			}
 		}
 
