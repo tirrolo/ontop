@@ -1231,7 +1231,14 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 */
 
 			DAGNode node = dag.get(ofac.createProperty(p));
-			Set<DAGNode> parents = node.getAncestors();
+			Set<DAGNode> parents = new HashSet<DAGNode>(node.getAncestors());
+			
+			Set<DAGNode> equivalents = new HashSet<DAGNode>();
+			for (DAGNode parent: parents) 
+				equivalents.addAll(parent.getEquivalents());
+			
+			parents.addAll(equivalents);
+			
 			for (DAGNode parent : parents) {
 				Description desc = parent.getDescription();
 				Property parentProp = (Property) desc;
@@ -1269,7 +1276,14 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 * First domain (inverse false for \exists R)
 			 */
 			Description d = ofac.createPropertySomeRestriction(p, false);
-			node = dag.get(d);
+			parents = new HashSet<DAGNode>(dag.get(d).getAncestors());
+			
+			equivalents = new HashSet<DAGNode>();
+			for (DAGNode parent: parents) 
+				equivalents.addAll(parent.getEquivalents());
+			
+			parents.addAll(equivalents);
+			
 			for (DAGNode parent : node.getAncestors()) {
 				// DL style head
 				ClassDescription classDescription = (ClassDescription) parent
@@ -1282,7 +1296,15 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			/*
 			 * First range (inverse true for \exists R^-)
 			 */
-			node = dag.get(ofac.createPropertySomeRestriction(p, true));
+			d = ofac.createPropertySomeRestriction(p, true);
+			parents = new HashSet<DAGNode>(dag.get(d).getAncestors());
+			
+			equivalents = new HashSet<DAGNode>();
+			for (DAGNode parent: parents) 
+				equivalents.addAll(parent.getEquivalents());
+			
+			parents.addAll(equivalents);
+			
 			for (DAGNode parent : node.getAncestors()) {
 				// DL style head
 				ClassDescription classDescription = (ClassDescription) parent
@@ -1336,7 +1358,13 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 */
 
 			DAGNode node = dag.get(ofac.createClass(p));
-			Set<DAGNode> parents = node.getAncestors();
+			Set<DAGNode> parents = new HashSet<DAGNode>(node.getAncestors());
+			Set<DAGNode> equivalents = new HashSet<DAGNode>();
+			for (DAGNode parent: parents) 
+				equivalents.addAll(parent.getEquivalents());
+			
+			parents.addAll(equivalents);
+			
 			for (DAGNode parent : parents) {
 				// DL style head
 				ClassDescription classDescription = (ClassDescription) parent

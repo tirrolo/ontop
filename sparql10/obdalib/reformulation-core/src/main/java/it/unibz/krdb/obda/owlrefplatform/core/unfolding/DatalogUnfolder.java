@@ -77,8 +77,6 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 
 	private final RuleEmptynessIndex emptynessIndex;
 
-
-
 	/***
 	 * Leaf predicates are those that do not appear in the head of any rule. If
 	 * a predicate is a leaf predicate, it should not be unfolded, they indicate
@@ -101,7 +99,6 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		this.primaryKeys = primaryKeys;
 		this.unfoldingProgram = unfoldingProgram;
 		this.emptynessIndex = emptynessIndex;
-		
 
 		/*
 		 * Creating a local index for the rules according to their predicate
@@ -125,8 +122,6 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 				allPredicates.addAll(getPredicates(atom));
 			}
 
-			
-
 		}
 
 		/*
@@ -137,26 +132,26 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		leafPredicates.addAll(allPredicates);
 	}
 
-//	private void generateURITemplateMatchers() {
-//}
+	// private void generateURITemplateMatchers() {
+	// }
 
-//	private void collectPrimaryKeyData() {
-//		for (CQIE mapping : unfoldingProgram.getRules()) {
-//			for (Atom newatom : mapping.getBody()) {
-//				Predicate newAtomPredicate = newatom.getPredicate();
-//				if (newAtomPredicate instanceof BooleanOperationPredicate) {
-//					continue;
-//				}
-//				String newAtomName = newAtomPredicate.toString();
-//				DataDefinition def = metadata.getDefinition(newAtomName);
-//				List<Integer> pkeyIdx = new LinkedList<Integer>();
-//				for (int columnidx = 1; columnidx <= def.countAttribute(); columnidx++) {
-//					Attribute column = def.getAttribute(columnidx);
-//					if (column.isPrimaryKey()) {
-//						pkeyIdx.add(columnidx);
-//					}
-//
-//	}
+	// private void collectPrimaryKeyData() {
+	// for (CQIE mapping : unfoldingProgram.getRules()) {
+	// for (Atom newatom : mapping.getBody()) {
+	// Predicate newAtomPredicate = newatom.getPredicate();
+	// if (newAtomPredicate instanceof BooleanOperationPredicate) {
+	// continue;
+	// }
+	// String newAtomName = newAtomPredicate.toString();
+	// DataDefinition def = metadata.getDefinition(newAtomName);
+	// List<Integer> pkeyIdx = new LinkedList<Integer>();
+	// for (int columnidx = 1; columnidx <= def.countAttribute(); columnidx++) {
+	// Attribute column = def.getAttribute(columnidx);
+	// if (column.isPrimaryKey()) {
+	// pkeyIdx.add(columnidx);
+	// }
+	//
+	// }
 
 	private Set<Predicate> getPredicates(Function atom) {
 		Set<Predicate> predicates = new HashSet<Predicate>();
@@ -225,14 +220,14 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 
 		List<CQIE> workingSet = new LinkedList<CQIE>();
 		workingSet.addAll(inputquery.getRules());
-		
+
 		log.debug("Unfolding started. Intial CQs: {}", workingSet.size());
 		log.debug("Pusing URI constants before unfolding: ");
-		 for (CQIE query : workingSet) {
+		for (CQIE query : workingSet) {
 			DatalogNormalizer.pushEqualities(query, false);
-			
+
 			log.debug("{}", query);
-		 }
+		}
 
 		int failedAtempts = computePartialEvaluation(workingSet);
 
@@ -249,7 +244,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		log.debug("Resulting unfolding size: {} cqs", resultdp.getRules()
 				.size());
 		log.debug("Failed resolution attempts: {}", failedAtempts);
-		//System.out.println(failedAtempts);
+		// System.out.println(failedAtempts);
 
 		log.debug(resultdp.toString());
 
@@ -1320,11 +1315,10 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		 */
 
 		List<CQIE> result = new LinkedList<CQIE>();
-		List<CQIE> candidateMatches = ruleIndex.get(focusAtom
-				.getFunctionSymbol());
-
-		if (candidateMatches == null)
+		List<CQIE> currentList = ruleIndex.get(focusAtom.getFunctionSymbol());
+		if (currentList == null)
 			return null;
+		List<CQIE> candidateMatches = new LinkedList<CQIE>(currentList);
 
 		/*
 		 * Eliminating any candidate rule that is known not to produce any data
@@ -1333,6 +1327,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		if (emptynessIndex != null) {
 			Iterator<CQIE> candiateIterator = candidateMatches.iterator();
 			while (candiateIterator.hasNext()) {
+				System.out.println("Testsd");
 				CQIE candidate = candiateIterator.next();
 				Atom head = candidate.getHead();
 				if (emptynessIndex.isEmpty(head))
@@ -1351,8 +1346,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			if (mgu == null) {
 				/* Failed attempt */
 				resolutionCount[1] += 1;
-			//	if (resolutionCount[1] % 1000 == 0)
-				//	System.out.println(resolutionCount[1]);
+				// if (resolutionCount[1] % 1000 == 0)
+				// System.out.println(resolutionCount[1]);
 				continue;
 			}
 
