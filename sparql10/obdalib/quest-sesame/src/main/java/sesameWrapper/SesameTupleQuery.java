@@ -75,6 +75,14 @@ public class SesameTupleQuery implements TupleQuery {
 			e.printStackTrace();
 			throw new QueryEvaluationException(e.getMessage());
 		}
+		finally{
+			try {
+				System.out.println("QuestStatement closed TuplQuery.");
+				stm.close();
+			} catch (OBDAException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private Binding createBinding(String bindingName, OBDAResultSet set) {
@@ -96,21 +104,10 @@ public class SesameTupleQuery implements TupleQuery {
 	}
 
 	public int getMaxQueryTime() {
-		try {
-			return stm.getQueryTimeout();
-		} catch (OBDAException e) {
-			e.printStackTrace();
-		}
 		return -1;
 	}
 
 	public void setMaxQueryTime(int maxQueryTime) {
-		try {
-			stm.setQueryTimeout(maxQueryTime);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	public void clearBindings() {
