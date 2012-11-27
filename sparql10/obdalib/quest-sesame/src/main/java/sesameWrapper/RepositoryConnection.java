@@ -296,7 +296,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
             Thread insert = new Thread(new Insert(rdfParser, (InputStream)inputStreamOrReader, baseURI));
             Thread process = new Thread(new Process(rdfHandler, questStm));
             
-            questStm.close();
+           
           
             //start threads
             insert.start();
@@ -304,6 +304,8 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
             
             insert.join();
             process.join();
+            
+            questStm.close();
                      
      
         } catch (RuntimeException e) {
