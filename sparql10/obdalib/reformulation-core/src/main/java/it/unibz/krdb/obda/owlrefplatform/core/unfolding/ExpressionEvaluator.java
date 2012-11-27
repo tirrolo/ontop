@@ -31,8 +31,9 @@ public class ExpressionEvaluator {
 		Set<CQIE> toremove = new LinkedHashSet<CQIE>();
 		for (CQIE q : p.getRules()) {
 			boolean empty = evaluateExpressions(q);
-			if (empty)
+			if (empty) {
 				toremove.add(q);
+			}
 		}
 		p.removeRules(toremove);
 	}
@@ -45,8 +46,9 @@ public class ExpressionEvaluator {
 				q.getBody().remove(atomidx);
 				atomidx -= 1;
 				continue;
-			} else if (newatom == fac.getFalse())
+			} else if (newatom == fac.getFalse()) {
 				return true;
+			}
 			q.getBody().remove(atomidx);
 			q.getBody().add(atomidx, newatom.asAtom());
 		}
@@ -340,6 +342,8 @@ public class ExpressionEvaluator {
 	 * Expression evaluator for langMatches() function
 	 */
 	private static NewLiteral evalLangMatches(Function term) {
+		final String SELECT_ALL = "*";
+		
 		/*
 		 * Evaluate the first term
 		 */
@@ -360,18 +364,26 @@ public class ExpressionEvaluator {
 		 */
 		if (teval1 instanceof Constant && teval2 instanceof Constant) {
 			String lang1 = ((Constant) teval1).getValue();
-			String lang2 = ((Constant) teval2).getValue();			
-			if (lang1.equals(lang2)) {
-				return fac.getTrue();
+			String lang2 = ((Constant) teval2).getValue();	
+			if (lang2.equals(SELECT_ALL)) {
+				if (lang1.isEmpty()) {
+					return fac.getIsNullFunction(teval1);
+				} else {
+					return fac.getIsNotNullFunction(teval1);
+				}
 			} else {
-				return fac.getFalse();
+				if (lang1.equals(lang2)) {
+					return fac.getTrue();
+				} else {
+					return fac.getFalse();
+				}
 			}
 		} else if (teval1 instanceof Variable && teval2 instanceof Constant) {
 			Variable var = (Variable) teval1;
 			Constant lang = (Constant) teval2;
-			if (lang.getValue().equals("*")) {
+			if (lang.getValue().equals(SELECT_ALL)) {
 				// The char * means to get all languages
-				return fac.getNEQAtom(var, fac.getNULL());
+				return fac.getIsNotNullFunction(var);
 			} else {
 				return fac.getEQFunction(var, lang);
 			}
@@ -432,7 +444,13 @@ public class ExpressionEvaluator {
 				return fac.getIsNullFunction(f.getTerm(0));
 			} else if (predicate == OBDAVocabulary.IS_NULL) {
 				return fac.getIsNotNullFunction(f.getTerm(0));
+			} else if (predicate == OBDAVocabulary.NEQ) {
+				return fac.getEQFunction(f.getTerm(0), f.getTerm(1));
+			} else if (predicate == OBDAVocabulary.EQ) {
+				return fac.getNEQFunction(f.getTerm(0), f.getTerm(1));
 			}
+		} else if (teval instanceof Constant) {
+			return teval;
 		}
 		return term;
 	}
