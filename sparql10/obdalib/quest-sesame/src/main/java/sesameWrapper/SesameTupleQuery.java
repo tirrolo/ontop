@@ -77,7 +77,6 @@ public class SesameTupleQuery implements TupleQuery {
 		}
 		finally{
 			try {
-				System.out.println("QuestStatement closed TuplQuery.");
 				stm.close();
 			} catch (OBDAException e) {
 				e.printStackTrace();
