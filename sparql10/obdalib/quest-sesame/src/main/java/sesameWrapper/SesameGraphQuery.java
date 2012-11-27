@@ -30,7 +30,6 @@ public class SesameGraphQuery implements GraphQuery {
 
 	private String queryString, baseURI;
 	private QuestDBStatement stm;
-	private ValueFactory fact = new ValueFactoryImpl();
 
 	public SesameGraphQuery(String queryString, String baseURI,
 			QuestDBStatement statement) throws MalformedQueryException {
@@ -43,19 +42,9 @@ public class SesameGraphQuery implements GraphQuery {
 	}
 
 	public void setMaxQueryTime(int maxQueryTime) {
-		try {
-			stm.setQueryTimeout(maxQueryTime);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public int getMaxQueryTime() {
-		try {
-			return stm.getQueryTimeout();
-		} catch (OBDAException e) {
-			e.printStackTrace();
-		}
 		return -1;
 	}
 
@@ -118,11 +107,13 @@ public class SesameGraphQuery implements GraphQuery {
 			
 			Map<String, String> namespaces = new HashMap<String, String>();
 			List<Statement> results = new LinkedList<Statement>();
-			while (res.hasNext()) {
-				List<Assertion> chunk = res.next();
-				for (Assertion as : chunk) {
-					Statement st = createStatement(as);
-					results.add(st);
+			if (res != null) {
+				while (res.hasNext()) {
+					List<Assertion> chunk = res.next();
+					for (Assertion as : chunk) {
+						Statement st = createStatement(as);
+						results.add(st);
+					}
 				}
 			}
 
@@ -131,6 +122,13 @@ public class SesameGraphQuery implements GraphQuery {
 		} catch (OBDAException e) {
 			e.printStackTrace();
 			throw new QueryEvaluationException(e.getMessage());
+		}
+		finally{
+			try {
+				stm.close();
+			} catch (OBDAException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
