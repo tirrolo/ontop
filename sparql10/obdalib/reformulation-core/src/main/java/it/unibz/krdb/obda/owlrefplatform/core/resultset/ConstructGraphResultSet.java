@@ -60,10 +60,10 @@ public class ConstructGraphResultSet implements GraphResultSet {
 			// Determines the type of assertion
 			String predicateName = predicateConstant.getValue();
 			if (predicateName.equals(OBDAVocabulary.RDF_TYPE)) {
-				Predicate concept = dfac.getClassPredicate(subjectConstant.getValue());
+				Predicate concept = dfac.getClassPredicate(objectConstant.getValue());
 				ClassAssertion ca = ofac.createClassAssertion(
 						concept,
-						(ObjectConstant) objectConstant);
+						(ObjectConstant) subjectConstant);
 				tripleAssertions.add(ca);
 			} else {
 				if (objectConstant instanceof URIConstant) {
