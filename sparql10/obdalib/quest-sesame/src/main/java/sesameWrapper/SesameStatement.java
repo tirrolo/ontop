@@ -127,4 +127,9 @@ public class SesameStatement implements Statement {
 		return context;
 	}
 
+	@Override
+	public String toString()
+	{
+		return "("+subject+", "+predicate+", "+object+")";
+	}
 }
