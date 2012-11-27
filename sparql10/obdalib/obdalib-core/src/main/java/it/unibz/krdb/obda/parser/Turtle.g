@@ -358,7 +358,7 @@ dataTypeFunction returns [Function value]
 
 language returns [NewLiteral value]
   : languageTag {
-    	$value = dfac.getValueConstant($language.text, COL_TYPE.STRING);
+    	$value = dfac.getValueConstant($languageTag.text.toLowerCase(), COL_TYPE.STRING);
     }
   | variable {
     	$value = $variable.value;

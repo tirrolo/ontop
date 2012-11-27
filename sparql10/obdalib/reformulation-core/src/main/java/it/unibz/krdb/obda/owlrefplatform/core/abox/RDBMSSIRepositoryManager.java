@@ -645,7 +645,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 					String lit = attributeABoxAssertion.getValue().getValue();
 					String lang = attributeABoxAssertion.getValue()
-							.getLanguage();
+							.getLanguage().toLowerCase();
 
 					Predicate.COL_TYPE attributeType = attributeABoxAssertion
 							.getValue().getType();

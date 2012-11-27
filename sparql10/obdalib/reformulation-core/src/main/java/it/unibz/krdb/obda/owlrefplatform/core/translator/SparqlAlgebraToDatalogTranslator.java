@@ -3,6 +3,7 @@ package it.unibz.krdb.obda.owlrefplatform.core.translator;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.Constant;
+import it.unibz.krdb.obda.model.DataTypePredicate;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
@@ -821,7 +822,7 @@ public class SparqlAlgebraToDatalogTranslator {
 				if (objectType == COL_TYPE.LITERAL) {
 					// If the object has type LITERAL, check any language
 					// tag!
-					String lang = object.getLiteralLanguage();
+					String lang = object.getLiteralLanguage().toLowerCase();
 					Predicate functionSymbol = ofac
 							.getDataTypePredicateLiteral();
 					Constant languageConstant = null;
@@ -1302,7 +1303,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		} else if (expr instanceof E_LessThanOrEqual) {
 			function = ofac.getLTEFunction(term1, term2);
 		} else if (expr instanceof E_LangMatches) {
-			function = ofac.getLANGMATCHESFunction(term1, term2);
+			function = ofac.getLANGMATCHESFunction(term1, toLowerCase(term2));
 		}
 		// The Numerical expression
 		if (expr instanceof E_Add) {
@@ -1313,6 +1314,24 @@ public class SparqlAlgebraToDatalogTranslator {
 			function = ofac.getMultiplyFunction(term1, term2);
 		}
 		return function;
+	}
+
+	private NewLiteral toLowerCase(NewLiteral term) {
+		NewLiteral output = term;
+		if (term instanceof Function) {
+			Function f = (Function) term;
+			Predicate functor = f.getFunctionSymbol();
+			if (functor instanceof DataTypePredicate) {
+				NewLiteral functionTerm = f.getTerm(0);
+				if (functionTerm instanceof Constant) {
+					Constant c = (Constant) functionTerm;
+					output = ofac.getFunctionalTerm(functor, 
+							 ofac.getValueConstant(c.getValue().toLowerCase(), 
+							 c.getType()));
+				}
+			}
+		}
+		return output;
 	}
 
 	private NewLiteral getOtherFunctionTerm(ExprFunctionN expr) {

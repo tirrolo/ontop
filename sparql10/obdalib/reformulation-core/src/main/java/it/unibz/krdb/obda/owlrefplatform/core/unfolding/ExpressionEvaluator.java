@@ -79,6 +79,8 @@ public class ExpressionEvaluator {
 			return evalBoolean(expr);
 		} else if (p instanceof NonBooleanOperationPredicate) {
 			return evalNonBoolean(expr);
+		} else if (p instanceof NumericalOperationPredicate) {
+			return evalNumericalOperation(expr);
 		} else if (p == OBDAVocabulary.XSD_BOOLEAN) {
 			if (expr.getTerm(0) instanceof Constant) {
 				ValueConstant value = (ValueConstant) expr.getTerm(0);
@@ -87,10 +89,9 @@ public class ExpressionEvaluator {
 				} else if (value.equals("0") || value.equals("false")) {
 					return fac.getFalse();
 				}
-			} else
+			} else {
 				return expr;
-		} else if (p instanceof NumericalOperationPredicate) {
-			return evalNumericalOperation(expr);
+			}
 		}
 		return expr;
 	}
@@ -303,7 +304,7 @@ public class ExpressionEvaluator {
 		NewLiteral teval = eval(term.getTerm(0));
 
 		NewLiteral emptyconstant = fac.getFunctionalTerm(
-				fac.getDataTypePredicateString(), fac.getValueConstant(""));
+				fac.getDataTypePredicateString(), fac.getValueConstant("", COL_TYPE.STRING));
 
 		if (!(teval instanceof Function)) {
 			return emptyconstant;
@@ -311,28 +312,28 @@ public class ExpressionEvaluator {
 		Function function = (Function) teval;
 		Predicate predicate = function.getFunctionSymbol();
 
-		if (!(predicate instanceof DataTypePredicate)
-				|| function.getTerms().size() != 2) {
-			return emptyconstant;
+		if (!(predicate instanceof DataTypePredicate)) {
+			return null;
 		}
 
 		String datatype = predicate.toString();
-
 		if (!(datatype.equals(OBDAVocabulary.RDFS_LITERAL_URI))) {
 			return emptyconstant;
 		}
 
-		NewLiteral parameter = function.getTerm(1);
-		if (parameter instanceof Variable) {
-			return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
-					parameter.clone());
-		} else if (parameter instanceof Constant) {
-			return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
-					fac.getValueConstant(((Constant) parameter).getValue(),COL_TYPE.STRING));
+		if (function.getTerms().size() != 2) {
+			return emptyconstant;
+		} else {
+			NewLiteral parameter = function.getTerm(1);
+			if (parameter instanceof Variable) {
+				return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+						parameter.clone());
+			} else if (parameter instanceof Constant) {
+				return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+						fac.getValueConstant(((Constant) parameter).getValue(),COL_TYPE.STRING));
+			}
 		}
-		
-		return emptyconstant;
-
+		return term;
 	}
 
 	/*
@@ -358,7 +359,9 @@ public class ExpressionEvaluator {
 		 * Term checks
 		 */
 		if (teval1 instanceof Constant && teval2 instanceof Constant) {
-			if (teval1.equals(teval2)) {
+			String lang1 = ((Constant) teval1).getValue();
+			String lang2 = ((Constant) teval2).getValue();			
+			if (lang1.equals(lang2)) {
 				return fac.getTrue();
 			} else {
 				return fac.getFalse();
@@ -451,8 +454,8 @@ public class ExpressionEvaluator {
 			return fac.getFalse();
 		}
 
-		/*
-		 * Normalizing the locatino of terms, functions first
+		/* 
+		 * Normalizing the location of terms, functions first 
 		 */
 		NewLiteral eval1 = teval1 instanceof Function ? teval1 : teval2;
 		NewLiteral eval2 = teval1 instanceof Function ? teval2 : teval1;
