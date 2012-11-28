@@ -1225,47 +1225,23 @@ public class SparqlAlgebraToDatalogTranslator {
 						getVariableTerm((ExprVar) arg));
 			}
 		} else if (expr instanceof E_IsLiteral) {
-			Expr arg = expr.getArg();
-			if (arg instanceof ExprVar) {
-				builtInFunction = ofac.getFunctionalTerm(
-						OBDAVocabulary.SPARQL_IS_LITERAL,
-						getVariableTerm((ExprVar) arg));
-			}
+			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_LITERAL, getBooleanTerm( expr.getArg()));
+			
 		} else if (expr instanceof E_IsBlank) {
-			Expr arg = expr.getArg();
-			if (arg instanceof ExprVar) {
-				builtInFunction = ofac.getFunctionalTerm(
-						OBDAVocabulary.SPARQL_IS_BLANK,
-						getVariableTerm((ExprVar) arg));
-			}
+			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_BLANK, getBooleanTerm( expr.getArg()));
+			
 		} else if (expr instanceof E_IsURI) {
-			Expr arg = expr.getArg();
-			if (arg instanceof ExprVar) {
-				builtInFunction = ofac.getFunctionalTerm(
-						OBDAVocabulary.SPARQL_IS_URI,
-						getVariableTerm((ExprVar) arg));
-			}
+			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_URI, getBooleanTerm( expr.getArg()));
+			
 		} else if (expr instanceof E_IsIRI) {
-			Expr arg = expr.getArg();
-			if (arg instanceof ExprVar) {
-				builtInFunction = ofac.getFunctionalTerm(
-						OBDAVocabulary.SPARQL_IS_IRI,
-						getVariableTerm((ExprVar) arg));
-			}
+			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_IRI, getBooleanTerm( expr.getArg()));
+			
 		} else if (expr instanceof E_Str) {
-			Expr arg = expr.getArg();
-			if (arg instanceof ExprVar) {
-				builtInFunction = ofac.getFunctionalTerm(
-						OBDAVocabulary.SPARQL_STR,
-						getVariableTerm((ExprVar) arg));
-			}
+			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_STR, getBooleanTerm( expr.getArg()));
+			
 		} else if (expr instanceof E_Datatype) {
-			Expr arg = expr.getArg();
-			if (arg instanceof ExprVar) {
-				builtInFunction = ofac.getFunctionalTerm(
-						OBDAVocabulary.SPARQL_DATATYPE,
-						getVariableTerm((ExprVar) arg));
-			}
+			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_DATATYPE, getBooleanTerm( expr.getArg()));
+							
 		} else if (expr instanceof E_Lang) {
 			Expr arg = expr.getArg();
 			if (arg instanceof ExprVar) {
