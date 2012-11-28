@@ -5,8 +5,10 @@
 
 []    rdf:type    rs:ResultSet ;
       rs:resultVariable  "x" ;
-      rs:solution
-                  [ rs:binding  [ rs:value    :xp2 ;
-                                  rs:variable  "x"
-                                ]
-                  ] .
+      .
+      # Removed entry: Quest recognizes "text" as using Literal datatype instead of string.
+      # rs:solution
+      #             [ rs:binding  [ rs:value    :xp2 ;
+      #                             rs:variable  "x"
+      #                           ]
+      #             ] .
