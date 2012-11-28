@@ -1195,8 +1195,8 @@ public class SparqlAlgebraToDatalogTranslator {
 						node.getLiteralLexicalForm(), COL_TYPE.UNSUPPORTED));
 			} else if (node instanceof Node_URI) {
 				constantFunction = ofac.getFunctionalTerm(ofac
-						.getDataTypePredicateLiteral(), ofac.getValueConstant(
-						node.toString(), COL_TYPE.UNSUPPORTED));
+						.getUriTemplatePredicate(1), ofac.getValueConstant(
+						node.toString(), COL_TYPE.OBJECT));
 			} else {
 				throw new RuntimeException("Unsupported node: "
 						+ expr.toString());
@@ -1225,23 +1225,47 @@ public class SparqlAlgebraToDatalogTranslator {
 						getVariableTerm((ExprVar) arg));
 			}
 		} else if (expr instanceof E_IsLiteral) {
-			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_LITERAL, getBooleanTerm( expr.getArg()));
-			
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_IS_LITERAL,
+						getVariableTerm((ExprVar) arg));
+			}
 		} else if (expr instanceof E_IsBlank) {
-			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_BLANK, getBooleanTerm( expr.getArg()));
-			
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_IS_BLANK,
+						getVariableTerm((ExprVar) arg));
+			}
 		} else if (expr instanceof E_IsURI) {
-			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_URI, getBooleanTerm( expr.getArg()));
-			
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_IS_URI,
+						getVariableTerm((ExprVar) arg));
+			}
 		} else if (expr instanceof E_IsIRI) {
-			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_IRI, getBooleanTerm( expr.getArg()));
-			
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_IS_IRI,
+						getVariableTerm((ExprVar) arg));
+			}
 		} else if (expr instanceof E_Str) {
-			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_STR, getBooleanTerm( expr.getArg()));
-			
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_STR,
+						getVariableTerm((ExprVar) arg));
+			}
 		} else if (expr instanceof E_Datatype) {
-			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_DATATYPE, getBooleanTerm( expr.getArg()));
-							
+			Expr arg = expr.getArg();
+			if (arg instanceof ExprVar) {
+				builtInFunction = ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_DATATYPE,
+						getVariableTerm((ExprVar) arg));
+			}
 		} else if (expr instanceof E_Lang) {
 			Expr arg = expr.getArg();
 			if (arg instanceof ExprVar) {
