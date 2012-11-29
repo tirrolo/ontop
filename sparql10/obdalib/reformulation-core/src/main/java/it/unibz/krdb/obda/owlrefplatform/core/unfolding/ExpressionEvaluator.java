@@ -331,7 +331,6 @@ public class ExpressionEvaluator {
 			} else if (predicate instanceof NonBooleanOperationPredicate){
 				return null;
 			}
-			
 		}
 		return term;
 	}
@@ -433,7 +432,6 @@ public class ExpressionEvaluator {
 			return term;
 		}
 	}
-	
 
 	private static NewLiteral evalRegex(Function term) {
 		NewLiteral teval = eval(term.getTerm(0));
