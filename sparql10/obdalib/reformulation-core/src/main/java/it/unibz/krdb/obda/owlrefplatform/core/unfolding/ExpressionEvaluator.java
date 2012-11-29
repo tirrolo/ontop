@@ -319,7 +319,7 @@ public class ExpressionEvaluator {
 						Predicate pred1 = arg1.asAtom().getFunctionSymbol();
 						NewLiteral arg2 = func.getTerm(1);
 						Predicate pred2 = arg2.asAtom().getFunctionSymbol();
-						if(pred1.equals(pred2))
+						if(pred1.equals(pred2) || (isDouble(pred1) && isNumeric(pred2)) || (isNumeric(pred1) && isDouble(pred2)))
 						{	return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
 								fac.getValueConstant(pred1.toString(),
 										COL_TYPE.OBJECT));
@@ -331,8 +331,19 @@ public class ExpressionEvaluator {
 			} else if (predicate instanceof NonBooleanOperationPredicate){
 				return null;
 			}
+			
 		}
 		return term;
+	}
+	
+	private static boolean isDouble(Predicate pred)
+	{
+		return pred.equals(OBDAVocabulary.XSD_DOUBLE);
+	}
+	
+	private static boolean isNumeric(Predicate pred)
+	{
+		return (pred.equals(OBDAVocabulary.XSD_INTEGER) || pred.equals(OBDAVocabulary.XSD_DECIMAL) || pred.equals(OBDAVocabulary.XSD_DOUBLE));
 	}
 
 	/*
@@ -432,6 +443,7 @@ public class ExpressionEvaluator {
 			return term;
 		}
 	}
+	
 
 	private static NewLiteral evalRegex(Function term) {
 		NewLiteral teval = eval(term.getTerm(0));
