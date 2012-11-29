@@ -9,6 +9,7 @@ import it.unibz.krdb.obda.model.ObjectConstant;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
+import it.unibz.krdb.obda.model.impl.BNodeConstantImpl;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.ontology.Assertion;
@@ -73,7 +74,15 @@ public class ConstructGraphResultSet implements GraphResultSet {
 							(ObjectConstant) subjectConstant, 
 							(ObjectConstant) objectConstant);
 					tripleAssertions.add(op);
-				} else {
+				} else if (objectConstant instanceof BNodeConstantImpl)
+				{
+					Predicate role = dfac.getObjectPropertyPredicate(predicateName);
+					ObjectPropertyAssertion op = ofac.createObjectPropertyAssertion(
+							role, 
+							(ObjectConstant) subjectConstant, 
+							(ObjectConstant) objectConstant);
+					tripleAssertions.add(op);
+				}else {
 					Predicate attribute = dfac.getDataPropertyPredicate(predicateName);
 					DataPropertyAssertion dp = ofac.createDataPropertyAssertion(
 							attribute, 
