@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
 
+import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.BNodePredicate;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
@@ -12,6 +13,7 @@ import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.NonBooleanOperationPredicate;
 import it.unibz.krdb.obda.model.NumericalOperationPredicate;
 import it.unibz.krdb.obda.model.OBDADataFactory;
+import it.unibz.krdb.obda.model.OperationPredicate;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.URITemplatePredicate;
 import it.unibz.krdb.obda.model.ValueConstant;
@@ -287,14 +289,49 @@ public class ExpressionEvaluator {
 			Function function = (Function) teval;
 			Predicate predicate = function.getFunctionSymbol();
 			if (predicate instanceof DataTypePredicate) {
-				return fac.getFunctionalTerm(fac.getDataTypePredicateLiteral(),
+				return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
 						fac.getValueConstant(predicate.toString(),
-								COL_TYPE.UNSUPPORTED));
+								COL_TYPE.OBJECT));
 			} else if (predicate instanceof BNodePredicate) {
 				return null;
 			} else if (predicate instanceof URITemplatePredicate) {
 				return null;
+			} else if (predicate instanceof AlgebraOperatorPredicate){
+				return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+						fac.getValueConstant(OBDAVocabulary.XSD_BOOLEAN_URI,
+								COL_TYPE.OBJECT));
+			} else if (predicate instanceof OperationPredicate){
+				if (predicate instanceof BooleanOperationPredicate)
+				{
+					//return boolean uri
+					return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+							fac.getValueConstant(OBDAVocabulary.XSD_BOOLEAN_URI,
+									COL_TYPE.OBJECT));
+				}
+				else if (predicate instanceof NumericalOperationPredicate)
+				{
+					//return numerical if arguments have same type
+					NewLiteral lit = term.getTerm(0);
+					if (lit instanceof Function)
+					{
+						Function func = (Function) lit;
+						NewLiteral arg1 = func.getTerm(0);
+						Predicate pred1 = arg1.asAtom().getFunctionSymbol();
+						NewLiteral arg2 = func.getTerm(1);
+						Predicate pred2 = arg2.asAtom().getFunctionSymbol();
+						if(pred1.equals(pred2))
+						{	return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+								fac.getValueConstant(pred1.toString(),
+										COL_TYPE.OBJECT));
+						}else
+							return null;
+					}
+					
+				}
+			} else if (predicate instanceof NonBooleanOperationPredicate){
+				return null;
 			}
+			
 		}
 		return term;
 	}
