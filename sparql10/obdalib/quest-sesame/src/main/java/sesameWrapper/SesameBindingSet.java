@@ -70,40 +70,44 @@ public class SesameBindingSet implements BindingSet {
 			if (hasBinding(bindingName)) {
 				int column = set.getSignature().indexOf(bindingName) + 1;
 				Constant c = set.getConstant(bindingName);
-				if (c instanceof BNode) {
-					value = fact.createBNode(((BNode) c).getName());
-				} else if (c instanceof URIConstant) {
-					value = fact.createURI(((URIConstant) c).getURI().toString());
-				} else if (c instanceof ValueConstant) {
-					ValueConstant literal = set.getLiteral(column);
-					COL_TYPE col_type = literal.getType();
-					if (col_type == COL_TYPE.BOOLEAN) {
-						URI datatype = fact.createURI(OBDAVocabulary.XSD_BOOLEAN_URI);
-						value = fact.createLiteral(literal.getValue(), datatype);
-					} else if (col_type == COL_TYPE.DATETIME) {
-						URI datatype = fact.createURI(OBDAVocabulary.XSD_DATETIME_URI);
-						value = fact.createLiteral(literal.getValue(), datatype);
-					} else if (col_type == COL_TYPE.DECIMAL) {
-						URI datatype = fact.createURI(OBDAVocabulary.XSD_DECIMAL_URI);
-						value = fact.createLiteral(literal.getValue(), datatype);
-					} else if (col_type == COL_TYPE.DOUBLE) {
-						URI datatype = fact.createURI(OBDAVocabulary.XSD_DOUBLE_URI);
-						value = fact.createLiteral(literal.getValue(), datatype);
-					} else if (col_type == COL_TYPE.INTEGER) {
-						URI datatype = fact.createURI(OBDAVocabulary.XSD_INTEGER_URI);
-						value = fact.createLiteral(literal.getValue(), datatype);
-					} else if (col_type == COL_TYPE.LITERAL) {
-						value = fact.createLiteral(literal.getValue());
-					} else if (col_type == COL_TYPE.LITERAL_LANG) {
-						value = fact.createLiteral(literal.getValue(), literal.getLanguage());
-					} else if (col_type == COL_TYPE.OBJECT) {
-						// TODO: Replace this with object datatype in the future
-						URI datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
-						value = fact.createLiteral(literal.getValue(), datatype);
-					} else if (col_type == COL_TYPE.STRING) {
-						URI datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
-						value = fact.createLiteral(literal.getValue(), datatype);
-					}						
+				if (c == null) {
+					return null;
+				} else {
+					if (c instanceof BNode) {
+						value = fact.createBNode(((BNode) c).getName());
+					} else if (c instanceof URIConstant) {
+						value = fact.createURI(((URIConstant) c).getURI().toString());
+					} else if (c instanceof ValueConstant) {
+						ValueConstant literal = set.getLiteral(column);
+						COL_TYPE col_type = literal.getType();
+						if (col_type == COL_TYPE.BOOLEAN) {
+							URI datatype = fact.createURI(OBDAVocabulary.XSD_BOOLEAN_URI);
+							value = fact.createLiteral(literal.getValue(), datatype);
+						} else if (col_type == COL_TYPE.DATETIME) {
+							URI datatype = fact.createURI(OBDAVocabulary.XSD_DATETIME_URI);
+							value = fact.createLiteral(literal.getValue(), datatype);
+						} else if (col_type == COL_TYPE.DECIMAL) {
+							URI datatype = fact.createURI(OBDAVocabulary.XSD_DECIMAL_URI);
+							value = fact.createLiteral(literal.getValue(), datatype);
+						} else if (col_type == COL_TYPE.DOUBLE) {
+							URI datatype = fact.createURI(OBDAVocabulary.XSD_DOUBLE_URI);
+							value = fact.createLiteral(literal.getValue(), datatype);
+						} else if (col_type == COL_TYPE.INTEGER) {
+							URI datatype = fact.createURI(OBDAVocabulary.XSD_INTEGER_URI);
+							value = fact.createLiteral(literal.getValue(), datatype);
+						} else if (col_type == COL_TYPE.LITERAL) {
+							value = fact.createLiteral(literal.getValue());
+						} else if (col_type == COL_TYPE.LITERAL_LANG) {
+							value = fact.createLiteral(literal.getValue(), literal.getLanguage());
+						} else if (col_type == COL_TYPE.OBJECT) {
+							// TODO: Replace this with object datatype in the future
+							URI datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
+							value = fact.createLiteral(literal.getValue(), datatype);
+						} else if (col_type == COL_TYPE.STRING) {
+							URI datatype = fact.createURI(OBDAVocabulary.XSD_STRING_URI);
+							value = fact.createLiteral(literal.getValue(), datatype);
+						}						
+					}
 				}
 			}
 			return new BindingImpl(bindingName, value);

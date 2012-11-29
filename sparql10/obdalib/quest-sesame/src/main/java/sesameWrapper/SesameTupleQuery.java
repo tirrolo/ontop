@@ -64,7 +64,10 @@ public class SesameTupleQuery implements TupleQuery {
 			while (res.nextRow()) {
 				MapBindingSet set = new MapBindingSet(signature.size() * 2);
 				for (String name : signature) {
-					set.addBinding(createBinding(name, res));
+					Binding binding = createBinding(name, res);
+					if (binding != null) {
+						set.addBinding(binding);
+					}
 				}
 				results.add(set);
 			}

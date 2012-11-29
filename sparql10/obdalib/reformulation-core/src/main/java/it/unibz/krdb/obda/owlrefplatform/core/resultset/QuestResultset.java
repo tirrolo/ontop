@@ -207,67 +207,53 @@ public class QuestResultset implements OBDAResultSet {
 
 	@Override
 	public Constant getConstant(String name) throws OBDAException {
-		int index = columnMap.get(name);
-
 		Constant result = null;
-
 		try {
-
-			//System.out.println(set.getString(name));
-			//System.out.println(set.getByte(name + "QuestType"));
 			COL_TYPE type = getQuestType((byte) set.getInt(name + "QuestType"));
-			Object realValue = set.getString(name);
+			String realValue = set.getString(name);
 			
-			if (type == null || realValue == null)
+			if (type == null || realValue == null) {
 				return null;
-			
-			if (type == COL_TYPE.OBJECT) {
-				URI value = getURI(name);
-				result = fac.getURIConstant(value);
-			} else if (type == COL_TYPE.BNODE) {
-				String rawLabel = set.getString(name);
-				String scopedLabel = this.bnodeMap.get(rawLabel);
-				if (scopedLabel == null) {
-					scopedLabel = "b" + bnodeCounter;
-					bnodeCounter += 1;
-					bnodeMap.put(rawLabel, scopedLabel);
-				}
-
-				result = fac.getBNodeConstant(scopedLabel);
 			} else {
-				/*
-				 * The constant is a literal, we need to find if its
-				 * rdfs:Literal or a normal literal and construct it properly.
-				 */
-				if (type == COL_TYPE.LITERAL) {
-					String value = set.getString(name);
-					String language = set.getString(name + "Lang");
-					if (language == null || language.trim().equals("")) {
-						result = fac.getValueConstant(value);
-					} else {
-						result = fac.getValueConstant(value, language);
+				if (type == COL_TYPE.OBJECT) {
+					URI value = getURI(name);
+					result = fac.getURIConstant(value);
+				} else if (type == COL_TYPE.BNODE) {
+					String rawLabel = set.getString(name);
+					String scopedLabel = this.bnodeMap.get(rawLabel);
+					if (scopedLabel == null) {
+						scopedLabel = "b" + bnodeCounter;
+						bnodeCounter += 1;
+						bnodeMap.put(rawLabel, scopedLabel);
 					}
-
-				} else if (type == COL_TYPE.BOOLEAN) {
-					boolean value = set.getBoolean(name);
-					if (value)
-						result = fac.getValueConstant("true", type);
-					else
-						result = fac.getValueConstant("false", type);
-
-				} else if (type == COL_TYPE.DATETIME) {
-					Timestamp value = set.getTimestamp(name);
-					result = fac.getValueConstant(
-							value.toString().replace(' ', 'T'), type);
-
-					// if (value)
-					// result = fac.getValueConstant("true", type);
-					// else
-					// result = fac.getValueConstant("false", type);
-
+					result = fac.getBNodeConstant(scopedLabel);
 				} else {
-
-					result = fac.getValueConstant(set.getString(name), type);
+					/*
+					 * The constant is a literal, we need to find if its
+					 * rdfs:Literal or a normal literal and construct it properly.
+					 */
+					if (type == COL_TYPE.LITERAL) {
+						String value = set.getString(name);
+						String language = set.getString(name + "Lang");
+						if (language == null || language.trim().equals("")) {
+							result = fac.getValueConstant(value);
+						} else {
+							result = fac.getValueConstant(value, language);
+						}
+					} else if (type == COL_TYPE.BOOLEAN) {
+						boolean value = set.getBoolean(name);
+						if (value) {
+							result = fac.getValueConstant("true", type);
+						} else {
+							result = fac.getValueConstant("false", type);
+						}
+					} else if (type == COL_TYPE.DATETIME) {
+						Timestamp value = set.getTimestamp(name);
+						result = fac.getValueConstant(
+								value.toString().replace(' ', 'T'), type);
+					} else {
+						result = fac.getValueConstant(realValue, type);
+					}
 				}
 			}
 		} catch (IllegalArgumentException e) {
