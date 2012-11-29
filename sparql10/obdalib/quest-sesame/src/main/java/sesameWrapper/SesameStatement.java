@@ -98,8 +98,7 @@ public class SesameStatement implements Statement {
 			datatype = fact
 					.createURI(OBDAVocabulary.XSD_INTEGER_URI);
 		else if (literal.getType() == COL_TYPE.LITERAL)
-			datatype = fact
-					.createURI(OBDAVocabulary.RDFS_LITERAL_URI);
+			datatype = null;
 		else if (literal.getType() == COL_TYPE.OBJECT)
 			datatype = fact
 					.createURI(OBDAVocabulary.XSD_STRING_URI);
