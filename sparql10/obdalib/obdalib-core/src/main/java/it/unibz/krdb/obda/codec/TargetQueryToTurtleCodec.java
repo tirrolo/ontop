@@ -152,12 +152,7 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 						NewLiteral lang = function.getTerms().get(1);
 						sb.append(getDisplayName(var));
 						sb.append("@");
-						if (lang instanceof Variable) {
-							sb.append(((Variable) lang).getName());
-						} else if (lang instanceof Constant) {
-							sb.append(((Constant) lang).getValue());
-						}
-						
+						sb.append(getDisplayName(lang));						
 					}
 				} else {
 					// for the other data types
@@ -212,27 +207,23 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 			}
 		} else if (term instanceof Variable) {
 			sb.append("$");
-			sb.append(term.toString());
+			sb.append(((Variable) term).getName());
 		} else if (term instanceof URIConstant) {
 			String originalUri = term.toString();
-			String abbreviatedUri = getAbbreviatedName(originalUri, false); // Shorten
-																			// the
-																			// URI
-																			// if
-																			// possible
-
+			
+			// Shorten the URI if possible
+			String abbreviatedUri = getAbbreviatedName(originalUri, false);
 			if (!abbreviatedUri.equals(originalUri)) {
 				sb.append(abbreviatedUri);
 			} else {
-				// If the URI can't be shorten then use the full URI within
-				// brackets
+				// If the URI can't be shorten then use the full URI within brackets
 				sb.append("<");
 				sb.append(originalUri);
 				sb.append(">");
 			}
 		} else if (term instanceof ValueConstant) {
 			sb.append("\"");
-			sb.append(term.toString());
+			sb.append(((ValueConstant) term).getValue());
 			sb.append("\"");
 		}
 		return sb.toString();

@@ -440,13 +440,14 @@ term returns [NewLiteral value]
   ;
 
 literal returns [NewLiteral value]
-  : stringLiteral (AT languageTag)? {
-       Predicate functionSymbol = dfac.getDataTypePredicateLiteral();
+  : stringLiteral (AT language)? {
        ValueConstant constant = $stringLiteral.value;
-       if ($languageTag.text != null || $languageTag.text.trim().length() > 0) {
-         constant = dfac.getValueConstant(constant.getValue(), $languageTag.text);
+       NewLiteral lang = $language.value;
+       if (lang != null) {
+         $value = dfac.getFunctionalTerm(dfac.getDataTypePredicateLiteralLang(), constant, lang);
+       } else {
+       	 $value = dfac.getFunctionalTerm(dfac.getDataTypePredicateLiteral(), constant);
        }
-       $value = dfac.getFunctionalTerm(functionSymbol, constant);
     }
   | dataTypeString { $value = $dataTypeString.value; }
   | numericLiteral { $value = $numericLiteral.value; }

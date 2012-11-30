@@ -1,4 +1,4 @@
-// $ANTLR 3.4 C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g 2012-11-27 13:30:18
+// $ANTLR 3.4 C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g 2012-11-30 10:44:47
 
 package it.unibz.krdb.obda.parser;
 
@@ -167,8 +167,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = BASE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:546:5: ( ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' ) )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:546:7: ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:547:5: ( ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' ) )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:547:7: ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='B'||input.LA(1)=='b' ) {
                 input.consume();
@@ -226,8 +226,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = PREFIX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:548:7: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'X' | 'x' ) )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:548:9: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'X' | 'x' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:549:7: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'X' | 'x' ) )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:549:9: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'X' | 'x' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -305,8 +305,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = FALSE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:550:6: ( ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:550:8: ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:551:6: ( ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:551:8: ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -374,8 +374,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = TRUE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:552:5: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' ) )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:552:7: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:553:5: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' ) )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:553:7: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='T'||input.LA(1)=='t' ) {
                 input.consume();
@@ -433,8 +433,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = REFERENCE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:554:10: ( '^^' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:554:16: '^^'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:555:10: ( '^^' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:555:16: '^^'
             {
             match("^^"); 
 
@@ -456,8 +456,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = LTSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:555:7: ( '<\"' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:555:16: '<\"'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:556:7: ( '<\"' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:556:16: '<\"'
             {
             match("<\""); 
 
@@ -479,8 +479,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = RTSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:556:7: ( '\">' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:556:16: '\">'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:557:7: ( '\">' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:557:16: '\">'
             {
             match("\">"); 
 
@@ -502,8 +502,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = SEMI;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:557:5: ( ';' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:557:16: ';'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:558:5: ( ';' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:558:16: ';'
             {
             match(';'); 
 
@@ -523,8 +523,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = PERIOD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:558:7: ( '.' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:558:16: '.'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:559:7: ( '.' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:559:16: '.'
             {
             match('.'); 
 
@@ -544,8 +544,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = COMMA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:559:6: ( ',' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:559:16: ','
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:560:6: ( ',' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:560:16: ','
             {
             match(','); 
 
@@ -565,8 +565,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = LSQ_BRACKET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:560:12: ( '[' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:560:16: '['
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:561:12: ( '[' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:561:16: '['
             {
             match('['); 
 
@@ -586,8 +586,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = RSQ_BRACKET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:561:12: ( ']' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:561:16: ']'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:562:12: ( ']' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:562:16: ']'
             {
             match(']'); 
 
@@ -607,8 +607,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = LCR_BRACKET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:562:12: ( '{' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:562:16: '{'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:563:12: ( '{' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:563:16: '{'
             {
             match('{'); 
 
@@ -628,8 +628,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = RCR_BRACKET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:563:12: ( '}' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:563:16: '}'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:564:12: ( '}' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:564:16: '}'
             {
             match('}'); 
 
@@ -649,8 +649,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = LPAREN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:564:7: ( '(' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:564:16: '('
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:565:7: ( '(' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:565:16: '('
             {
             match('('); 
 
@@ -670,8 +670,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = RPAREN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:565:7: ( ')' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:565:16: ')'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:566:7: ( ')' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:566:16: ')'
             {
             match(')'); 
 
@@ -691,8 +691,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = QUESTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:566:9: ( '?' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:566:16: '?'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:567:9: ( '?' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:567:16: '?'
             {
             match('?'); 
 
@@ -712,8 +712,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = DOLLAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:567:7: ( '$' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:567:16: '$'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:568:7: ( '$' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:568:16: '$'
             {
             match('$'); 
 
@@ -733,8 +733,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = QUOTE_DOUBLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:568:13: ( '\"' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:568:16: '\"'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:569:13: ( '\"' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:569:16: '\"'
             {
             match('\"'); 
 
@@ -754,8 +754,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = QUOTE_SINGLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:569:13: ( '\\'' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:569:16: '\\''
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:570:13: ( '\\'' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:570:16: '\\''
             {
             match('\''); 
 
@@ -775,8 +775,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = APOSTROPHE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:570:11: ( '`' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:570:16: '`'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:571:11: ( '`' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:571:16: '`'
             {
             match('`'); 
 
@@ -796,8 +796,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = UNDERSCORE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:571:11: ( '_' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:571:16: '_'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:572:11: ( '_' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:572:16: '_'
             {
             match('_'); 
 
@@ -817,8 +817,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = MINUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:572:6: ( '-' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:572:16: '-'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:573:6: ( '-' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:573:16: '-'
             {
             match('-'); 
 
@@ -838,8 +838,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = ASTERISK;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:573:9: ( '*' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:573:16: '*'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:574:9: ( '*' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:574:16: '*'
             {
             match('*'); 
 
@@ -859,8 +859,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = AMPERSAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:574:10: ( '&' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:574:16: '&'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:575:10: ( '&' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:575:16: '&'
             {
             match('&'); 
 
@@ -880,8 +880,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = AT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:575:3: ( '@' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:575:16: '@'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:576:3: ( '@' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:576:16: '@'
             {
             match('@'); 
 
@@ -901,8 +901,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = EXCLAMATION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:576:12: ( '!' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:576:16: '!'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:577:12: ( '!' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:577:16: '!'
             {
             match('!'); 
 
@@ -922,8 +922,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = HASH;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:577:5: ( '#' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:577:16: '#'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:578:5: ( '#' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:578:16: '#'
             {
             match('#'); 
 
@@ -943,8 +943,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = PERCENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:578:8: ( '%' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:578:16: '%'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:579:8: ( '%' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:579:16: '%'
             {
             match('%'); 
 
@@ -964,8 +964,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = PLUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:579:5: ( '+' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:579:16: '+'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:580:5: ( '+' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:580:16: '+'
             {
             match('+'); 
 
@@ -985,8 +985,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = EQUALS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:580:7: ( '=' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:580:16: '='
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:581:7: ( '=' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:581:16: '='
             {
             match('='); 
 
@@ -1006,8 +1006,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = COLON;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:581:6: ( ':' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:581:16: ':'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:582:6: ( ':' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:582:16: ':'
             {
             match(':'); 
 
@@ -1027,8 +1027,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = LESS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:582:5: ( '<' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:582:16: '<'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:583:5: ( '<' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:583:16: '<'
             {
             match('<'); 
 
@@ -1048,8 +1048,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = GREATER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:583:8: ( '>' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:583:16: '>'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:584:8: ( '>' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:584:16: '>'
             {
             match('>'); 
 
@@ -1069,8 +1069,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = SLASH;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:584:6: ( '/' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:584:16: '/'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:585:6: ( '/' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:585:16: '/'
             {
             match('/'); 
 
@@ -1090,8 +1090,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = DOUBLE_SLASH;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:585:13: ( '//' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:585:16: '//'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:586:13: ( '//' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:586:16: '//'
             {
             match("//"); 
 
@@ -1113,8 +1113,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = BACKSLASH;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:586:10: ( '\\\\' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:586:16: '\\\\'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:587:10: ( '\\\\' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:587:16: '\\\\'
             {
             match('\\'); 
 
@@ -1134,8 +1134,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = BLANK;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:587:6: ( '[]' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:587:15: '[]'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:588:6: ( '[]' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:588:15: '[]'
             {
             match("[]"); 
 
@@ -1157,8 +1157,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = BLANK_PREFIX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:588:13: ( '_:' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:588:16: '_:'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:589:13: ( '_:' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:589:16: '_:'
             {
             match("_:"); 
 
@@ -1180,8 +1180,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = TILDE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:589:6: ( '~' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:589:16: '~'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:590:6: ( '~' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:590:16: '~'
             {
             match('~'); 
 
@@ -1201,8 +1201,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = CARET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:590:6: ( '^' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:590:16: '^'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:591:6: ( '^' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:591:16: '^'
             {
             match('^'); 
 
@@ -1220,7 +1220,7 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "ALPHA"
     public final void mALPHA() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:593:3: ( 'a' .. 'z' | 'A' .. 'Z' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:594:3: ( 'a' .. 'z' | 'A' .. 'Z' )
             // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:
             {
             if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -1246,7 +1246,7 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "DIGIT"
     public final void mDIGIT() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:598:3: ( '0' .. '9' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:599:3: ( '0' .. '9' )
             // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:
             {
             if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
@@ -1272,7 +1272,7 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "ALPHANUM"
     public final void mALPHANUM() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:602:3: ( ALPHA | DIGIT )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:603:3: ( ALPHA | DIGIT )
             // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:
             {
             if ( (input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -1298,7 +1298,7 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "CHAR"
     public final void mCHAR() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:607:3: ( ALPHANUM | UNDERSCORE | MINUS | PERIOD )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:608:3: ( ALPHANUM | UNDERSCORE | MINUS | PERIOD )
             // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:
             {
             if ( (input.LA(1) >= '-' && input.LA(1) <= '.')||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -1326,10 +1326,10 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = INTEGER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:614:3: ( ( DIGIT )+ )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:614:5: ( DIGIT )+
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:615:3: ( ( DIGIT )+ )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:615:5: ( DIGIT )+
             {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:614:5: ( DIGIT )+
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:615:5: ( DIGIT )+
             int cnt1=0;
             loop1:
             do {
@@ -1384,14 +1384,14 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = DOUBLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:618:3: ( ( DIGIT )+ PERIOD ( DIGIT )* ( 'e' | 'E' ) ( '-' | '+' )? | PERIOD ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )? | ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )? )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:619:3: ( ( DIGIT )+ PERIOD ( DIGIT )* ( 'e' | 'E' ) ( '-' | '+' )? | PERIOD ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )? | ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )? )
             int alt9=3;
             alt9 = dfa9.predict(input);
             switch (alt9) {
                 case 1 :
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:618:5: ( DIGIT )+ PERIOD ( DIGIT )* ( 'e' | 'E' ) ( '-' | '+' )?
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:619:5: ( DIGIT )+ PERIOD ( DIGIT )* ( 'e' | 'E' ) ( '-' | '+' )?
                     {
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:618:5: ( DIGIT )+
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:619:5: ( DIGIT )+
                     int cnt2=0;
                     loop2:
                     do {
@@ -1433,7 +1433,7 @@ public class TurtleLexer extends Lexer {
                     mPERIOD(); 
 
 
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:618:19: ( DIGIT )*
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:619:19: ( DIGIT )*
                     loop3:
                     do {
                         int alt3=2;
@@ -1477,7 +1477,7 @@ public class TurtleLexer extends Lexer {
                     }
 
 
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:618:36: ( '-' | '+' )?
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:619:36: ( '-' | '+' )?
                     int alt4=2;
                     int LA4_0 = input.LA(1);
 
@@ -1507,12 +1507,12 @@ public class TurtleLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:619:5: PERIOD ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )?
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:620:5: PERIOD ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )?
                     {
                     mPERIOD(); 
 
 
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:619:12: ( DIGIT )+
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:620:12: ( DIGIT )+
                     int cnt5=0;
                     loop5:
                     do {
@@ -1561,7 +1561,7 @@ public class TurtleLexer extends Lexer {
                     }
 
 
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:619:29: ( '-' | '+' )?
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:620:29: ( '-' | '+' )?
                     int alt6=2;
                     int LA6_0 = input.LA(1);
 
@@ -1591,9 +1591,9 @@ public class TurtleLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:620:5: ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )?
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:621:5: ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )?
                     {
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:620:5: ( DIGIT )+
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:621:5: ( DIGIT )+
                     int cnt7=0;
                     loop7:
                     do {
@@ -1642,7 +1642,7 @@ public class TurtleLexer extends Lexer {
                     }
 
 
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:620:22: ( '-' | '+' )?
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:621:22: ( '-' | '+' )?
                     int alt8=2;
                     int LA8_0 = input.LA(1);
 
@@ -1687,7 +1687,7 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = DECIMAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:624:3: ( ( DIGIT )+ PERIOD ( DIGIT )+ | PERIOD ( DIGIT )+ )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:625:3: ( ( DIGIT )+ PERIOD ( DIGIT )+ | PERIOD ( DIGIT )+ )
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -1706,9 +1706,9 @@ public class TurtleLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:624:5: ( DIGIT )+ PERIOD ( DIGIT )+
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:625:5: ( DIGIT )+ PERIOD ( DIGIT )+
                     {
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:624:5: ( DIGIT )+
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:625:5: ( DIGIT )+
                     int cnt10=0;
                     loop10:
                     do {
@@ -1750,7 +1750,7 @@ public class TurtleLexer extends Lexer {
                     mPERIOD(); 
 
 
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:624:19: ( DIGIT )+
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:625:19: ( DIGIT )+
                     int cnt11=0;
                     loop11:
                     do {
@@ -1792,12 +1792,12 @@ public class TurtleLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:625:5: PERIOD ( DIGIT )+
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:626:5: PERIOD ( DIGIT )+
                     {
                     mPERIOD(); 
 
 
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:625:12: ( DIGIT )+
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:626:12: ( DIGIT )+
                     int cnt12=0;
                     loop12:
                     do {
@@ -1854,8 +1854,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = INTEGER_POSITIVE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:629:3: ( PLUS INTEGER )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:629:5: PLUS INTEGER
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:630:3: ( PLUS INTEGER )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:630:5: PLUS INTEGER
             {
             mPLUS(); 
 
@@ -1879,8 +1879,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = INTEGER_NEGATIVE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:633:3: ( MINUS INTEGER )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:633:5: MINUS INTEGER
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:634:3: ( MINUS INTEGER )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:634:5: MINUS INTEGER
             {
             mMINUS(); 
 
@@ -1904,8 +1904,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = DOUBLE_POSITIVE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:637:3: ( PLUS DOUBLE )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:637:5: PLUS DOUBLE
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:638:3: ( PLUS DOUBLE )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:638:5: PLUS DOUBLE
             {
             mPLUS(); 
 
@@ -1929,8 +1929,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = DOUBLE_NEGATIVE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:641:3: ( MINUS DOUBLE )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:641:5: MINUS DOUBLE
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:642:3: ( MINUS DOUBLE )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:642:5: MINUS DOUBLE
             {
             mMINUS(); 
 
@@ -1954,8 +1954,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = DECIMAL_POSITIVE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:645:3: ( PLUS DECIMAL )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:645:5: PLUS DECIMAL
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:646:3: ( PLUS DECIMAL )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:646:5: PLUS DECIMAL
             {
             mPLUS(); 
 
@@ -1979,8 +1979,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = DECIMAL_NEGATIVE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:649:3: ( MINUS DECIMAL )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:649:5: MINUS DECIMAL
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:650:3: ( MINUS DECIMAL )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:650:5: MINUS DECIMAL
             {
             mMINUS(); 
 
@@ -2004,13 +2004,13 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = VARNAME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:653:3: ( ALPHA ( CHAR )* )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:653:5: ALPHA ( CHAR )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:654:3: ( ALPHA ( CHAR )* )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:654:5: ALPHA ( CHAR )*
             {
             mALPHA(); 
 
 
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:653:11: ( CHAR )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:654:11: ( CHAR )*
             loop14:
             do {
                 int alt14=2;
@@ -2058,8 +2058,8 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "ECHAR"
     public final void mECHAR() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:657:3: ( '\\\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\\\\' | '\"' | '\\'' ) )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:657:5: '\\\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\\\\' | '\"' | '\\'' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:658:3: ( '\\\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\\\\' | '\"' | '\\'' ) )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:658:5: '\\\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\\\\' | '\"' | '\\'' )
             {
             match('\\'); 
 
@@ -2086,13 +2086,13 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "SCHEMA"
     public final void mSCHEMA() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:660:16: ( ALPHA ( ALPHANUM | PLUS | MINUS | PERIOD )* )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:660:18: ALPHA ( ALPHANUM | PLUS | MINUS | PERIOD )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:661:16: ( ALPHA ( ALPHANUM | PLUS | MINUS | PERIOD )* )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:661:18: ALPHA ( ALPHANUM | PLUS | MINUS | PERIOD )*
             {
             mALPHA(); 
 
 
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:660:24: ( ALPHANUM | PLUS | MINUS | PERIOD )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:661:24: ( ALPHANUM | PLUS | MINUS | PERIOD )*
             loop15:
             do {
                 int alt15=2;
@@ -2139,7 +2139,7 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "URI_PATH"
     public final void mURI_PATH() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:662:18: ( ( ALPHANUM | UNDERSCORE | MINUS | COLON | PERIOD | HASH | QUESTION | SLASH ) )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:663:18: ( ( ALPHANUM | UNDERSCORE | MINUS | COLON | PERIOD | HASH | QUESTION | SLASH ) )
             // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:
             {
             if ( input.LA(1)=='#'||(input.LA(1) >= '-' && input.LA(1) <= ':')||input.LA(1)=='?'||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -2165,7 +2165,7 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "ID_START"
     public final void mID_START() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:664:18: ( ( ALPHA | UNDERSCORE ) )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:665:18: ( ( ALPHA | UNDERSCORE ) )
             // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:
             {
             if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -2191,7 +2191,7 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "ID_CORE"
     public final void mID_CORE() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:666:17: ( ( ID_START | DIGIT ) )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:667:17: ( ( ID_START | DIGIT ) )
             // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:
             {
             if ( (input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -2217,13 +2217,13 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "ID"
     public final void mID() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:668:12: ( ID_START ( ID_CORE )* )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:668:14: ID_START ( ID_CORE )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:669:12: ( ID_START ( ID_CORE )* )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:669:14: ID_START ( ID_CORE )*
             {
             mID_START(); 
 
 
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:668:23: ( ID_CORE )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:669:23: ( ID_CORE )*
             loop16:
             do {
                 int alt16=2;
@@ -2270,7 +2270,7 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "NAME_START_CHAR"
     public final void mNAME_START_CHAR() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:670:25: ( ( ALPHA | UNDERSCORE ) )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:671:25: ( ( ALPHA | UNDERSCORE ) )
             // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:
             {
             if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -2296,7 +2296,7 @@ public class TurtleLexer extends Lexer {
     // $ANTLR start "NAME_CHAR"
     public final void mNAME_CHAR() throws RecognitionException {
         try {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:672:19: ( ( NAME_START_CHAR | DIGIT | UNDERSCORE | MINUS | PERIOD | HASH | QUESTION | SLASH ) )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:673:19: ( ( NAME_START_CHAR | DIGIT | UNDERSCORE | MINUS | PERIOD | HASH | QUESTION | SLASH ) )
             // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:
             {
             if ( input.LA(1)=='#'||(input.LA(1) >= '-' && input.LA(1) <= '9')||input.LA(1)=='?'||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
@@ -2324,13 +2324,13 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = NCNAME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:675:3: ( NAME_START_CHAR ( NAME_CHAR )* )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:675:5: NAME_START_CHAR ( NAME_CHAR )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:676:3: ( NAME_START_CHAR ( NAME_CHAR )* )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:676:5: NAME_START_CHAR ( NAME_CHAR )*
             {
             mNAME_START_CHAR(); 
 
 
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:675:21: ( NAME_CHAR )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:676:21: ( NAME_CHAR )*
             loop17:
             do {
                 int alt17=2;
@@ -2380,13 +2380,13 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = NAMESPACE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:678:3: ( NAME_START_CHAR ( NAME_CHAR )* COLON )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:678:5: NAME_START_CHAR ( NAME_CHAR )* COLON
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:679:3: ( NAME_START_CHAR ( NAME_CHAR )* COLON )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:679:5: NAME_START_CHAR ( NAME_CHAR )* COLON
             {
             mNAME_START_CHAR(); 
 
 
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:678:21: ( NAME_CHAR )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:679:21: ( NAME_CHAR )*
             loop18:
             do {
                 int alt18=2;
@@ -2439,10 +2439,10 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = PREFIXED_NAME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:682:3: ( ( NCNAME )? COLON NCNAME )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:682:5: ( NCNAME )? COLON NCNAME
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:683:3: ( ( NCNAME )? COLON NCNAME )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:683:5: ( NCNAME )? COLON NCNAME
             {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:682:5: ( NCNAME )?
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:683:5: ( NCNAME )?
             int alt19=2;
             int LA19_0 = input.LA(1);
 
@@ -2451,7 +2451,7 @@ public class TurtleLexer extends Lexer {
             }
             switch (alt19) {
                 case 1 :
-                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:682:5: NCNAME
+                    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:683:5: NCNAME
                     {
                     mNCNAME(); 
 
@@ -2484,12 +2484,12 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = STRING_WITH_QUOTE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:686:3: ( '\\'' ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\\'' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:686:5: '\\'' ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\\''
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:687:3: ( '\\'' ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\\'' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:687:5: '\\'' ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\\''
             {
             match('\''); 
 
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:686:10: ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:687:10: ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )*
             loop20:
             do {
                 int alt20=3;
@@ -2508,7 +2508,7 @@ public class TurtleLexer extends Lexer {
 
                 switch (alt20) {
             	case 1 :
-            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:686:40: ~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' )
+            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:687:40: ~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' )
             	    {
             	    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '&')||(input.LA(1) >= '(' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
             	        input.consume();
@@ -2523,7 +2523,7 @@ public class TurtleLexer extends Lexer {
             	    }
             	    break;
             	case 2 :
-            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:686:87: ECHAR
+            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:687:87: ECHAR
             	    {
             	    mECHAR(); 
 
@@ -2555,12 +2555,12 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = STRING_WITH_QUOTE_DOUBLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:690:3: ( '\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\"' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:690:5: '\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\"'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:691:3: ( '\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\"' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:691:5: '\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\"'
             {
             match('\"'); 
 
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:690:10: ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:691:10: ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )*
             loop21:
             do {
                 int alt21=3;
@@ -2579,7 +2579,7 @@ public class TurtleLexer extends Lexer {
 
                 switch (alt21) {
             	case 1 :
-            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:690:40: ~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' )
+            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:691:40: ~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' )
             	    {
             	    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '!')||(input.LA(1) >= '#' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
             	        input.consume();
@@ -2594,7 +2594,7 @@ public class TurtleLexer extends Lexer {
             	    }
             	    break;
             	case 2 :
-            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:690:87: ECHAR
+            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:691:87: ECHAR
             	    {
             	    mECHAR(); 
 
@@ -2626,14 +2626,14 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = STRING_WITH_TEMPLATE_SIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:694:3: ( '<\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\">' )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:694:5: '<\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\">'
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:695:3: ( '<\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\">' )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:695:5: '<\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\">'
             {
             match("<\""); 
 
 
 
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:694:11: ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:695:11: ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )*
             loop22:
             do {
                 int alt22=3;
@@ -2652,7 +2652,7 @@ public class TurtleLexer extends Lexer {
 
                 switch (alt22) {
             	case 1 :
-            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:694:41: ~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' )
+            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:695:41: ~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' )
             	    {
             	    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '!')||(input.LA(1) >= '#' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
             	        input.consume();
@@ -2667,7 +2667,7 @@ public class TurtleLexer extends Lexer {
             	    }
             	    break;
             	case 2 :
-            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:694:88: ECHAR
+            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:695:88: ECHAR
             	    {
             	    mECHAR(); 
 
@@ -2701,8 +2701,8 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = STRING_URI;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:698:3: ( SCHEMA COLON DOUBLE_SLASH ( URI_PATH )* )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:698:5: SCHEMA COLON DOUBLE_SLASH ( URI_PATH )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:699:3: ( SCHEMA COLON DOUBLE_SLASH ( URI_PATH )* )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:699:5: SCHEMA COLON DOUBLE_SLASH ( URI_PATH )*
             {
             mSCHEMA(); 
 
@@ -2713,7 +2713,7 @@ public class TurtleLexer extends Lexer {
             mDOUBLE_SLASH(); 
 
 
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:698:31: ( URI_PATH )*
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:699:31: ( URI_PATH )*
             loop23:
             do {
                 int alt23=2;
@@ -2763,10 +2763,10 @@ public class TurtleLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:3: ( ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+ )
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:5: ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:3: ( ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+ )
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:5: ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+
             {
-            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:5: ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+
+            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:5: ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+
             int cnt25=0;
             loop25:
             do {
@@ -2793,23 +2793,23 @@ public class TurtleLexer extends Lexer {
 
                 switch (alt25) {
             	case 1 :
-            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:6: ' '
+            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:6: ' '
             	    {
             	    match(' '); 
 
             	    }
             	    break;
             	case 2 :
-            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:10: '\\t'
+            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:10: '\\t'
             	    {
             	    match('\t'); 
 
             	    }
             	    break;
             	case 3 :
-            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:15: ( '\\n' | '\\r' ( '\\n' ) )
+            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:15: ( '\\n' | '\\r' ( '\\n' ) )
             	    {
-            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:15: ( '\\n' | '\\r' ( '\\n' ) )
+            	    // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:15: ( '\\n' | '\\r' ( '\\n' ) )
             	    int alt24=2;
             	    int LA24_0 = input.LA(1);
 
@@ -2828,19 +2828,19 @@ public class TurtleLexer extends Lexer {
             	    }
             	    switch (alt24) {
             	        case 1 :
-            	            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:16: '\\n'
+            	            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:16: '\\n'
             	            {
             	            match('\n'); 
 
             	            }
             	            break;
             	        case 2 :
-            	            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:21: '\\r' ( '\\n' )
+            	            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:21: '\\r' ( '\\n' )
             	            {
             	            match('\r'); 
 
-            	            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:25: ( '\\n' )
-            	            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:701:26: '\\n'
+            	            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:25: ( '\\n' )
+            	            // C:\\Project\\Code\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Turtle.g:702:26: '\\n'
             	            {
             	            match('\n'); 
 
@@ -3422,7 +3422,7 @@ public class TurtleLexer extends Lexer {
             this.transition = DFA9_transition;
         }
         public String getDescription() {
-            return "617:1: DOUBLE : ( ( DIGIT )+ PERIOD ( DIGIT )* ( 'e' | 'E' ) ( '-' | '+' )? | PERIOD ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )? | ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )? );";
+            return "618:1: DOUBLE : ( ( DIGIT )+ PERIOD ( DIGIT )* ( 'e' | 'E' ) ( '-' | '+' )? | PERIOD ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )? | ( DIGIT )+ ( 'e' | 'E' ) ( '-' | '+' )? );";
         }
     }
     static final String DFA26_eotS =
