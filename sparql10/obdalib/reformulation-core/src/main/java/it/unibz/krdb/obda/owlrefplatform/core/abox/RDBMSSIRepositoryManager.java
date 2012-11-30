@@ -425,6 +425,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 	private static final boolean mergeUniions = false;
 
 	private HashMap<Integer, Boolean> emptynessIndexes = new HashMap<Integer, Boolean>();
+	
+	private RepositoryChangedListener changeList;
 
 	public RDBMSSIRepositoryManager() throws PunningException {
 		this(null);
@@ -438,6 +440,31 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		}
 	}
 
+	public void addRepositoryChangedListener(RepositoryChangedListener list)
+	{
+		this.changeList = list;
+	}
+	
+	public HashMap<Predicate, Integer> getIndexes()
+	{
+		return indexes;
+	}
+	
+	public HashMap<Integer, Boolean> getEmptynessIndexes()
+	{
+		return emptynessIndexes;
+	}
+	
+	public boolean getIsIndexed()
+	{
+		return this.isIndexed;
+	}
+	
+	public boolean getmergeUnions()
+	{
+		return this.mergeUniions;
+	}
+	
 	@Override
 	public void setConfig(Properties config) {
 		this.config = config;
@@ -983,6 +1010,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		// Print the monitoring log
 		monitor.printLog();
 
+		changeList.repositoryChanged();
+		
 		return monitor.getSuccessCount();
 	}
 

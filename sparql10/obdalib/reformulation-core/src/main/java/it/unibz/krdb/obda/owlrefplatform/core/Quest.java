@@ -23,6 +23,7 @@ import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.ABoxToFactConverter;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSSIRepositoryManager;
+import it.unibz.krdb.obda.owlrefplatform.core.abox.RepositoryChangedListener;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.QueryVocabularyValidator;
@@ -37,7 +38,6 @@ import it.unibz.krdb.obda.owlrefplatform.core.reformulation.DLRPerfectReformulat
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.DummyReformulator;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeRedReformulator;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.sql.SQLGenerator;
 import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
 import it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.EquivalenceTBoxOptimizer;
@@ -55,6 +55,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -68,8 +69,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Quest implements Serializable {
-
+public class Quest implements Serializable, RepositoryChangedListener {
 	/**
 	 * 
 	 */
@@ -81,7 +81,7 @@ public class Quest implements Serializable {
 
 	/* The active ABox repository, might be null */
 	protected RDBMSSIRepositoryManager dataRepository = null;
-
+	
 	// /* The query answering engine */
 	// private TechniqueWrapper techwrapper = null;
 
@@ -521,7 +521,7 @@ public class Quest implements Serializable {
 				if (dbType.equals(QuestConstants.SEMANTIC)) {
 					dataRepository = new RDBMSSIRepositoryManager(
 							reformulationOntology.getVocabulary());
-
+					dataRepository.addRepositoryChangedListener(this);
 				} else {
 					throw new Exception(
 							dbType
@@ -815,8 +815,8 @@ public class Quest implements Serializable {
 				rewriter = new DLRPerfectReformulator();
 			} else if (QuestConstants.UCQBASED.equals(reformulationTechnique)) {
 				rewriter = new TreeRedReformulator();
-			} else if (QuestConstants.TW.equals(reformulationTechnique)) {
-				rewriter = new TreeWitnessRewriter();
+			//} else if (QuestConstants.TW.equals(reformulationTechnique)) {
+				//rewriter = new TreeWitnessRewriter();
 			} else {
 				throw new IllegalArgumentException(
 						"Invalid value for argument: "
@@ -950,5 +950,12 @@ public class Quest implements Serializable {
 
 	public HashMap<Pattern, Function> getUriMatcherFunctions() {
 		return uriMatcherFunctions;
+	}
+	
+	
+	public void repositoryChanged()
+	{
+		//clear cache
+		this.querycache.clear();
 	}
 }
