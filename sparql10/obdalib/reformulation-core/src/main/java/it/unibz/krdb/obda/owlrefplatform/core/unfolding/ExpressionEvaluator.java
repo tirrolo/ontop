@@ -331,7 +331,6 @@ public class ExpressionEvaluator {
 			} else if (predicate instanceof NonBooleanOperationPredicate){
 				return null;
 			}
-			
 		}
 		return term;
 	}
@@ -443,7 +442,6 @@ public class ExpressionEvaluator {
 			return term;
 		}
 	}
-	
 
 	private static NewLiteral evalRegex(Function term) {
 		NewLiteral teval = eval(term.getTerm(0));
@@ -582,17 +580,13 @@ public class ExpressionEvaluator {
 						Function eqLang = null;
 						Function comparison = null;
 						if (eq) {
-							eqValues = fac.getEQFunction(f1.getTerm(0),
-									f2.getTerm(0));
-							eqLang = fac.getEQFunction(f1.getTerm(1),
-									f2.getTerm(1));
+							eqValues = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
+							eqLang = fac.getEQFunction(f1.getTerm(1), f2.getTerm(1));
 							comparison = fac.getANDFunction(eqValues, eqLang);
 							return evalAndOr(comparison, true);
 						}
-						eqValues = fac.getNEQFunction(f1.getTerm(0),
-								f2.getTerm(0));
-						eqLang = fac.getNEQFunction(f1.getTerm(1),
-								f2.getTerm(1));
+						eqValues = fac.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
+						eqLang = fac.getNEQFunction(f1.getTerm(1), f2.getTerm(1));
 						comparison = fac.getORFunction(eqValues, eqLang);
 						return evalAndOr(comparison, false);
 					}
@@ -604,8 +598,7 @@ public class ExpressionEvaluator {
 						neweq = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
 						return evalEqNeq(neweq, true);
 					} else {
-						neweq = fac
-								.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
+						neweq = fac.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
 						return evalEqNeq(neweq, false);
 					}
 				} else if (pred1.equals(pred2)) {
@@ -614,9 +607,14 @@ public class ExpressionEvaluator {
 						neweq = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
 						return evalEqNeq(neweq, true);
 					} else {
-						neweq = fac
-								.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
+						neweq = fac.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
 						return evalEqNeq(neweq, false);
+					}
+				} else if (!pred1.equals(pred2)) {
+					if (eq) {
+						return fac.getFalse();
+					} else {
+						return fac.getTrue();
 					}
 				} else {
 					return term;
