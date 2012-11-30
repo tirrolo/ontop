@@ -58,5 +58,7 @@ public interface Predicate extends Cloneable, Serializable {
 	boolean isBooleanPredicate();
 	
 	boolean isAlgebraPredicate();
+	
+	boolean isNumericalPredicate();
 
 }

@@ -122,7 +122,6 @@ public class AtomWrapperImpl implements Atom {
 	@Override
 	public boolean isDataFunction() {
 		return this.f.isDataFunction();
-
 	}
 
 	@Override
@@ -134,5 +133,9 @@ public class AtomWrapperImpl implements Atom {
 	public boolean isAlgebraFunction() {
 		return this.f.isAlgebraFunction();
 	}
-
+	
+	@Override
+	public boolean isNumericalFunction() {
+		return this.f.isNumericalFunction();
+	}
 }

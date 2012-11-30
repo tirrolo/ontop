@@ -258,13 +258,26 @@ public class SQLGenerator implements SQLQueryGenerator {
 			String column = getSQLString(term, index, false);
 			return String.format(expressionFormat, column);
 		} else if (isBinary(atom)) {
-			// For binary boolean operators, e.g., AND, OR, EQ, GT, LT, etc. _
-			String expressionFormat = getBooleanOperatorString(functionSymbol);
-			NewLiteral left = atom.getTerm(0);
-			NewLiteral right = atom.getTerm(1);
-			String leftOp = getSQLString(left, index, true);
-			String rightOp = getSQLString(right, index, true);
-			return String.format("(" + expressionFormat + ")", leftOp, rightOp);
+			if (atom.isBooleanFunction()) {
+				// For binary boolean operators, e.g., AND, OR, EQ, GT, LT, etc. _
+				String expressionFormat = getBooleanOperatorString(functionSymbol);
+				NewLiteral left = atom.getTerm(0);
+				NewLiteral right = atom.getTerm(1);
+				String leftOp = getSQLString(left, index, true);
+				String rightOp = getSQLString(right, index, true);
+				return String.format("(" + expressionFormat + ")", leftOp, rightOp);
+			} else if (atom.isNumericalFunction()) {
+				// For numerical operators, e.g., MUTLIPLY, SUBSTRACT, ADDITION
+				String expressionFormat = getNumericalOperatorString(functionSymbol);
+				NewLiteral left = atom.getTerm(0);
+				NewLiteral right = atom.getTerm(1);
+				String leftOp = getSQLString(left, index, true);
+				String rightOp = getSQLString(right, index, true);
+				return String.format("(" + expressionFormat + ")", leftOp, rightOp);
+			} else {
+				throw new RuntimeException("The binary function "
+						+ functionSymbol.toString() + " is not supported yet!");
+			}
 		} else {
 			if (functionSymbol == OBDAVocabulary.SPARQL_REGEX) {
 				NewLiteral p1 = atom.getTerm(0);
@@ -317,7 +330,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 			NewLiteral innerAtom = inneratoms.get(atomidx);
 			Function innerAtomAsFunction = (Function) innerAtom;
 
-			if (!innerAtomAsFunction.isBooleanFunction()) {
+			if (innerAtomAsFunction.isDataFunction()) {
 				String definition = getTableDefinition(innerAtomAsFunction,
 						index, indent + INDENT);
 				tableDefinitions.add(definition);
@@ -433,13 +446,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 		Predicate predicate = atom.getPredicate();
 
-		if (predicate instanceof BooleanOperationPredicate) {
-			/*
-			 * These don't participate in the FROM clause
-			 */
+		if (predicate instanceof BooleanOperationPredicate
+				|| predicate instanceof NumericalOperationPredicate) {
+			// These don't participate in the FROM clause
 			return "";
 		} else if (predicate instanceof AlgebraOperatorPredicate) {
-
 			List<Function> innerTerms = new LinkedList<Function>();
 			for (NewLiteral innerTerm : atom.getTerms())
 				innerTerms.add((Function) innerTerm);

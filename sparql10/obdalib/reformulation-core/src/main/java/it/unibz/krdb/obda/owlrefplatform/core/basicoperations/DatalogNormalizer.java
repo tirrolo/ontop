@@ -404,7 +404,7 @@ public class DatalogNormalizer {
 						"Unexpected term found while normalizing (pulling out equalities) the query.");
 
 			Function atom = (Function) term;
-			if (atom.isBooleanFunction()) {
+			if (atom.isBooleanFunction() || atom.isNumericalFunction()) {
 				// NO-OP
 				continue;
 			}

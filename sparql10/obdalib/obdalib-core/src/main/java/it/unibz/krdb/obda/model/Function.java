@@ -70,5 +70,7 @@ public interface Function extends NewLiteral {
 	boolean isBooleanFunction();
 
 	boolean isAlgebraFunction();
+	
+	boolean isNumericalFunction();
 
 }

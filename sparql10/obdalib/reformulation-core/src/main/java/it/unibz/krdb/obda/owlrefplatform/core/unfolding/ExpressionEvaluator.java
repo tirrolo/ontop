@@ -160,6 +160,9 @@ public class ExpressionEvaluator {
 
 	private static NewLiteral evalNumericalOperation(Function term) {
 		Predicate pred = term.getFunctionSymbol();
+		
+		// TODO: Put datatype evaluator, return false if one of the term is non-numerical datatype.
+		
 		if (pred == OBDAVocabulary.ADD) {
 			return term;
 		} else if (pred == OBDAVocabulary.SUBSTRACT) {
@@ -540,9 +543,15 @@ public class ExpressionEvaluator {
 		} else if (eval1 instanceof Function) {
 			Function f1 = (Function) eval1;
 			Predicate pred1 = f1.getFunctionSymbol();
-			if (pred1.getType(0) == COL_TYPE.UNSUPPORTED) {
-				throw new RuntimeException("Unsupported type: " + pred1);
+			
+			if (pred1 instanceof DataTypePredicate) {
+				if (pred1.getType(0) == COL_TYPE.UNSUPPORTED) {
+					throw new RuntimeException("Unsupported type: " + pred1);
+				}
+			} else if (pred1 instanceof NumericalOperationPredicate) {
+				return term;
 			}
+			
 			/*
 			 * Evaluate the second term
 			 */

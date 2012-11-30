@@ -82,6 +82,7 @@ import com.hp.hpl.jena.sparql.expr.E_NotEquals;
 import com.hp.hpl.jena.sparql.expr.E_Regex;
 import com.hp.hpl.jena.sparql.expr.E_Str;
 import com.hp.hpl.jena.sparql.expr.E_Subtract;
+import com.hp.hpl.jena.sparql.expr.E_UnaryMinus;
 import com.hp.hpl.jena.sparql.expr.Expr;
 import com.hp.hpl.jena.sparql.expr.ExprFunction1;
 import com.hp.hpl.jena.sparql.expr.ExprFunction2;
@@ -1217,7 +1218,12 @@ public class SparqlAlgebraToDatalogTranslator {
 		/*
 		 * The following expressions only accept variable as the parameter
 		 */
-		else if (expr instanceof E_Bound) {
+		else if (expr instanceof E_UnaryMinus) {
+			Expr arg = expr.getArg();
+			NewLiteral term = getBooleanTerm(arg);
+			NewLiteral minusOneConstant = ofac.getValueConstant("-1", COL_TYPE.INTEGER);
+			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.MULTIPLY, minusOneConstant, term);
+		} else if (expr instanceof E_Bound) {
 			Expr arg = expr.getArg();
 			if (arg instanceof ExprVar) {
 				builtInFunction = ofac.getFunctionalTerm(
