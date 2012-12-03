@@ -159,20 +159,20 @@ public class ExpressionEvaluator {
 	}
 
 	private static NewLiteral evalNumericalOperation(Function term) {
-		Predicate pred = term.getFunctionSymbol();
-		
-		// TODO: Put datatype evaluator, return false if one of the term is non-numerical datatype.
-		
-		if (pred == OBDAVocabulary.ADD) {
-			return term;
-		} else if (pred == OBDAVocabulary.SUBSTRACT) {
-			return term;
-		} else if (pred == OBDAVocabulary.MULTIPLY) {
-			return term;
+		Function returnedDatatype = (Function) evalDatatype(term);
+		if (returnedDatatype != null && isNumeric((ValueConstant) returnedDatatype.getTerm(0))) {
+			Predicate pred = term.getFunctionSymbol();
+			if (pred == OBDAVocabulary.ADD
+				 || pred == OBDAVocabulary.SUBSTRACT
+				 || pred == OBDAVocabulary.MULTIPLY) {
+				return term;
+			} else {
+				throw new RuntimeException(
+						"Evaluation of expression not supported: "
+								+ term.toString());
+			}
 		} else {
-			throw new RuntimeException(
-					"Evaluation of expression not supported: "
-							+ term.toString());
+			return fac.getFalse();
 		}
 	}
 
@@ -315,21 +315,24 @@ public class ExpressionEvaluator {
 				{
 					//return numerical if arguments have same type
 					NewLiteral lit = term.getTerm(0);
-					if (lit instanceof Function)
-					{
+					if (lit instanceof Function) {
 						Function func = (Function) lit;
 						NewLiteral arg1 = func.getTerm(0);
 						Predicate pred1 = arg1.asAtom().getFunctionSymbol();
 						NewLiteral arg2 = func.getTerm(1);
 						Predicate pred2 = arg2.asAtom().getFunctionSymbol();
-						if(pred1.equals(pred2) || (isDouble(pred1) && isNumeric(pred2)) || (isNumeric(pred1) && isDouble(pred2)))
-						{	return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
-								fac.getValueConstant(pred1.toString(),
-										COL_TYPE.OBJECT));
-						}else
+						if (pred1.equals(pred2) || (isDouble(pred1) && isNumeric(pred2))) {
+							return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+									fac.getValueConstant(pred1.toString(),
+											COL_TYPE.OBJECT));
+						} else if (isNumeric(pred1) && isDouble(pred2)) {
+							return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1), 
+									fac.getValueConstant(pred2.toString(),
+											COL_TYPE.OBJECT));
+						} else {
 							return null;
+						}
 					}
-					
 				}
 			} else if (predicate instanceof NonBooleanOperationPredicate){
 				return null;
@@ -346,6 +349,14 @@ public class ExpressionEvaluator {
 	private static boolean isNumeric(Predicate pred)
 	{
 		return (pred.equals(OBDAVocabulary.XSD_INTEGER) || pred.equals(OBDAVocabulary.XSD_DECIMAL) || pred.equals(OBDAVocabulary.XSD_DOUBLE));
+	}
+	
+	private static boolean isNumeric(ValueConstant constant)
+	{
+		String constantValue = constant.getValue();
+		return (constantValue.equals(OBDAVocabulary.XSD_INTEGER_URI) 
+				|| constantValue.equals(OBDAVocabulary.XSD_DECIMAL_URI) 
+				|| constantValue.equals(OBDAVocabulary.XSD_DOUBLE_URI));
 	}
 
 	/*
