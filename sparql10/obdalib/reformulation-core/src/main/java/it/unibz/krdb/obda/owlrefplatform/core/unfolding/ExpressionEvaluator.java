@@ -159,7 +159,7 @@ public class ExpressionEvaluator {
 	}
 
 	private static NewLiteral evalNumericalOperation(Function term) {
-		Function returnedDatatype = (Function) evalDatatype(term);
+		Function returnedDatatype = (Function) getDatatype(term.getFunctionSymbol(), term);
 		if (returnedDatatype != null && isNumeric((ValueConstant) returnedDatatype.getTerm(0))) {
 			Predicate pred = term.getFunctionSymbol();
 			if (pred == OBDAVocabulary.ADD
@@ -291,54 +291,63 @@ public class ExpressionEvaluator {
 		if (teval instanceof Function) {
 			Function function = (Function) teval;
 			Predicate predicate = function.getFunctionSymbol();
-			if (predicate instanceof DataTypePredicate) {
-				return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
-						fac.getValueConstant(predicate.toString(),
-								COL_TYPE.OBJECT));
-			} else if (predicate instanceof BNodePredicate) {
-				return null;
-			} else if (predicate instanceof URITemplatePredicate) {
-				return null;
-			} else if (predicate instanceof AlgebraOperatorPredicate){
+			return getDatatype(predicate,  term.getTerm(0));
+		}
+		return null;
+	}
+	
+	private static NewLiteral getDatatype(Predicate predicate, NewLiteral lit)
+	{
+		if (predicate instanceof DataTypePredicate) {
+			return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+					fac.getValueConstant(predicate.toString(),
+							COL_TYPE.OBJECT));
+		} else if (predicate instanceof BNodePredicate) {
+			return null;
+		} else if (predicate instanceof URITemplatePredicate) {
+			return null;
+		} else if (predicate instanceof AlgebraOperatorPredicate){
+			return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+					fac.getValueConstant(OBDAVocabulary.XSD_BOOLEAN_URI,
+							COL_TYPE.OBJECT));
+		} else if (predicate instanceof OperationPredicate){
+			if (predicate instanceof BooleanOperationPredicate)
+			{
+				//return boolean uri
 				return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
 						fac.getValueConstant(OBDAVocabulary.XSD_BOOLEAN_URI,
 								COL_TYPE.OBJECT));
-			} else if (predicate instanceof OperationPredicate){
-				if (predicate instanceof BooleanOperationPredicate)
-				{
-					//return boolean uri
-					return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
-							fac.getValueConstant(OBDAVocabulary.XSD_BOOLEAN_URI,
-									COL_TYPE.OBJECT));
-				}
-				else if (predicate instanceof NumericalOperationPredicate)
-				{
-					//return numerical if arguments have same type
-					NewLiteral lit = term.getTerm(0);
-					if (lit instanceof Function) {
-						Function func = (Function) lit;
-						NewLiteral arg1 = func.getTerm(0);
-						Predicate pred1 = arg1.asAtom().getFunctionSymbol();
-						NewLiteral arg2 = func.getTerm(1);
-						Predicate pred2 = arg2.asAtom().getFunctionSymbol();
-						if (pred1.equals(pred2) || (isDouble(pred1) && isNumeric(pred2))) {
-							return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
-									fac.getValueConstant(pred1.toString(),
-											COL_TYPE.OBJECT));
-						} else if (isNumeric(pred1) && isDouble(pred2)) {
-							return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1), 
-									fac.getValueConstant(pred2.toString(),
-											COL_TYPE.OBJECT));
-						} else {
-							return null;
-						}
+			}
+			else if (predicate instanceof NumericalOperationPredicate)
+			{
+				//return numerical if arguments have same type
+				if (lit instanceof Function) {
+					Function func = (Function) lit;
+					NewLiteral arg1 = func.getTerm(0);
+					Predicate pred1 = arg1.asAtom().getFunctionSymbol();
+					NewLiteral arg2 = func.getTerm(1);
+					Predicate pred2 = arg2.asAtom().getFunctionSymbol();
+					if (pred1.equals(pred2) || (isDouble(pred1) && isNumeric(pred2))) {
+						return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+								fac.getValueConstant(pred1.toString(),
+										COL_TYPE.OBJECT));
+					} else if (isNumeric(pred1) && isDouble(pred2)) {
+						return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1), 
+								fac.getValueConstant(pred2.toString(),
+										COL_TYPE.OBJECT));
+					} else {
+						return null;
 					}
 				}
-			} else if (predicate instanceof NonBooleanOperationPredicate){
-				return null;
+				else
+				{
+					return null;
+				}
 			}
+		} else if (predicate instanceof NonBooleanOperationPredicate){
+			return null;
 		}
-		return term;
+		return null;
 	}
 	
 	private static boolean isDouble(Predicate pred)
