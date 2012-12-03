@@ -89,7 +89,11 @@ public class SesameGraphQuery implements GraphQuery {
 
 	private Statement createStatement(Assertion assertion) {
 
-		return new SesameStatement(assertion);
+		SesameStatement stm = new SesameStatement(assertion);
+		if (stm.getSubject()!=null && stm.getPredicate()!=null && stm.getObject()!=null)
+			return stm;
+		else 
+			return null;
 	}
 
 	public GraphQueryResult evaluate() throws QueryEvaluationException {
@@ -112,7 +116,8 @@ public class SesameGraphQuery implements GraphQuery {
 					List<Assertion> chunk = res.next();
 					for (Assertion as : chunk) {
 						Statement st = createStatement(as);
-						results.add(st);
+						if (st!=null)
+							results.add(st);
 					}
 				}
 			}
