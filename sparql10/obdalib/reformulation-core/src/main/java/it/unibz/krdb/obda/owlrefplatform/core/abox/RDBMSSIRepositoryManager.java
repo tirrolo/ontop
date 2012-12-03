@@ -1305,7 +1305,9 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 * First domain (inverse false for \exists R)
 			 */
 			Description d = ofac.createPropertySomeRestriction(p, false);
-			parents = new HashSet<DAGNode>(dag.get(d).getAncestors());
+			DAGNode dagNode = dag.get(d);
+			parents = new HashSet<DAGNode>(dagNode.getAncestors());
+			parents.addAll(dagNode.getEquivalents());
 			
 			equivalents = new HashSet<DAGNode>();
 			for (DAGNode parent: parents) 
@@ -1313,7 +1315,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			
 			parents.addAll(equivalents);
 			
-			for (DAGNode parent : node.getAncestors()) {
+			for (DAGNode parent : parents) {
 				// DL style head
 				ClassDescription classDescription = (ClassDescription) parent
 						.getDescription();
@@ -1326,7 +1328,9 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 * First range (inverse true for \exists R^-)
 			 */
 			d = ofac.createPropertySomeRestriction(p, true);
-			parents = new HashSet<DAGNode>(dag.get(d).getAncestors());
+			dagNode = dag.get(d);
+			parents = new HashSet<DAGNode>(dagNode.getAncestors());
+			parents.addAll(dagNode.getEquivalents());
 			
 			equivalents = new HashSet<DAGNode>();
 			for (DAGNode parent: parents) 
@@ -1334,7 +1338,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			
 			parents.addAll(equivalents);
 			
-			for (DAGNode parent : node.getAncestors()) {
+			for (DAGNode parent : parents) {
 				// DL style head
 				ClassDescription classDescription = (ClassDescription) parent
 						.getDescription();

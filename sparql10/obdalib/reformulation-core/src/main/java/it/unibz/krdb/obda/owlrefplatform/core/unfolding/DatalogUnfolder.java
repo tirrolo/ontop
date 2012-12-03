@@ -1327,7 +1327,6 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		if (emptynessIndex != null) {
 			Iterator<CQIE> candiateIterator = candidateMatches.iterator();
 			while (candiateIterator.hasNext()) {
-				System.out.println("Testsd");
 				CQIE candidate = candiateIterator.next();
 				Atom head = candidate.getHead();
 				if (emptynessIndex.isEmpty(head))
