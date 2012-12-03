@@ -96,9 +96,9 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} finally{
         autoCommit();
-
+		}
 	}
 
 	public void add(Iterable<? extends Statement> statements, Resource... contexts)
@@ -126,6 +126,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 			e.printStackTrace();
 		} finally {
              setAutoCommit(autoCommit);
+             autoCommit();
          }
 
 	}
@@ -156,6 +157,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 			e.printStackTrace();
 		} finally {
               setAutoCommit(autoCommit);
+              autoCommit();
           }
 
 	}
@@ -227,7 +229,6 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 		
 		add(st, contexts);
 		
-        autoCommit();
 
 	}
 	
@@ -329,6 +330,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 	            }
 		} finally {
             setAutoCommit(autoCommit);
+            autoCommit();
         }
     }
 
@@ -472,6 +474,7 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 	public void commit() throws RepositoryException {
 		//Commits all updates that have been performed as part of this connection sofar. 
 		try {
+			//System.out.println("QuestConn commit..");
 			questConn.commit();
 		} catch (OBDAException e) {
 			e.printStackTrace();
@@ -577,9 +580,10 @@ public class RepositoryConnection implements org.openrdf.repository.RepositoryCo
 			GraphQueryResult result = query.evaluate();
 
 			List<Statement> list = new LinkedList<Statement>();
+		//	System.out.println("result: "+result.hasNext());
 			while (result.hasNext())
 				list.add(result.next());
-			result.close();
+			//result.close();
 
 			CloseableIteration<Statement, RepositoryException> iter = new CloseableIteratorIteration<Statement, RepositoryException>(
 					list.iterator());
