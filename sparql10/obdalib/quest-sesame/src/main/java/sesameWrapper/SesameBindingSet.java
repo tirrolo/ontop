@@ -99,6 +99,12 @@ public class SesameBindingSet implements BindingSet {
 						
 					datatype = fact.createURI(obdavoc);
 					value = fact.createLiteral(literal.getValue(), datatype);
+					
+					if (col_type == COL_TYPE.LITERAL) {
+						value = fact.createLiteral(literal.getValue());
+					} else if (col_type == COL_TYPE.LITERAL_LANG) {
+						value = fact.createLiteral(literal.getValue(), literal.getLanguage());
+					}
 				}
 			}
 
