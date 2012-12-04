@@ -2,6 +2,7 @@ package it.unibz.krdb.obda.owlrefplatform.core;
 
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
+import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
@@ -55,7 +56,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.EventObject;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -610,6 +610,48 @@ public class Quest implements Serializable, RepositoryChangedListener {
 					unfoldingOBDAModel.getMappings(sourceId), metadata);
 			unfoldingProgram = analyzer.constructDatalogProgram();
 
+			
+			/*
+			 * Normalizing language tags. Making all LOWER CASE
+			 */
+	
+			for (CQIE mapping : unfoldingProgram.getRules()) {
+				Function head = mapping.getHead();
+				for (NewLiteral term : head.getTerms()) {
+					if (!(term instanceof Function))
+						continue;
+					Function typedTerm = (Function) term;
+					Predicate type = typedTerm.getFunctionSymbol();
+					
+					
+					
+					if (typedTerm.getTerms().size() != 2 || !type.getName().toString().equals(OBDAVocabulary.RDFS_LITERAL_URI))
+						continue;
+					/*
+					 * changing the language, its always the second inner term
+					 * (literal,lang)
+					 */
+					NewLiteral originalLangTag = typedTerm.getTerm(1);
+					NewLiteral normalizedLangTag = null;
+	
+					if (originalLangTag instanceof Constant) {
+						ValueConstant originalLangConstant = (ValueConstant)originalLangTag;
+						normalizedLangTag = fac.getValueConstant(originalLangConstant.getValue().toLowerCase(), originalLangConstant.getType());
+					} else {
+						normalizedLangTag = originalLangTag;
+	
+					}
+	
+					typedTerm.setTerm(1, normalizedLangTag);
+	
+				}
+			}
+			
+			
+			/*
+			 * Normalizing equalities
+			 */
+	
 			unfoldingProgram = DatalogNormalizer
 					.pushEqualities(unfoldingProgram);
 
