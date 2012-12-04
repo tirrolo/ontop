@@ -329,13 +329,10 @@ public class SQLGenerator implements SQLQueryGenerator {
 		for (int atomidx = 0; atomidx < inneratoms.size(); atomidx++) {
 			NewLiteral innerAtom = inneratoms.get(atomidx);
 			Function innerAtomAsFunction = (Function) innerAtom;
-
-			if (innerAtomAsFunction.isDataFunction()) {
-				String definition = getTableDefinition(innerAtomAsFunction,
-						index, indent + INDENT);
+			String definition = getTableDefinition(innerAtomAsFunction, index, indent + INDENT);
+			if (!definition.isEmpty()) {
 				tableDefinitions.add(definition);
 			}
-
 		}
 
 		/*
