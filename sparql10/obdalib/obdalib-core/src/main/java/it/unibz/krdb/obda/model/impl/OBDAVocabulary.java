@@ -185,6 +185,8 @@ public class OBDAVocabulary {
 	// The name of the function that creates URI's in Quest
 	public static final String QUEST_URI = "URI";
 
+	public static final String QUEST_URI_LEGACY = "http://obda.org/quest#uri";
+
 	// The name of the function that creates URI's in Quest
 	public static final String QUEST_BNODE = "BNODE";
 

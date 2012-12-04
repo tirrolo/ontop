@@ -161,12 +161,12 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 					sb.append("^^");
 					sb.append(fname);
 				}
-			} else {
-				if (functionSymbol.getName().toString().equals(OBDAVocabulary.QUEST_URI)) {
+			} else { // For non-datatype predicate names
+				String functionSymbolName = functionSymbol.getName().toString();
+				if (functionSymbolName.equals(OBDAVocabulary.QUEST_URI) || functionSymbolName.equals(OBDAVocabulary.QUEST_URI_LEGACY)) {
 					String uriTemplate = ((ValueConstant) function.getTerms().get(0)).getValue();
 					// Shorten the URI if possible
 					uriTemplate = getAbbreviatedName(uriTemplate, true);
-						
 					sb.append("<");
 					sb.append("\"");
 					StringTokenizer st = new StringTokenizer(uriTemplate, "}", true);
