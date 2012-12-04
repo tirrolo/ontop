@@ -324,9 +324,9 @@ public class ExpressionEvaluator {
 				if (lit instanceof Function) {
 					Function func = (Function) lit;
 					NewLiteral arg1 = func.getTerm(0);
-					Predicate pred1 = arg1.asAtom().getFunctionSymbol();
+					Predicate pred1 = getDatatypePredicate(arg1);
 					NewLiteral arg2 = func.getTerm(1);
-					Predicate pred2 = arg2.asAtom().getFunctionSymbol();
+					Predicate pred2 = getDatatypePredicate(arg2);
 					if (pred1.equals(pred2) || (isDouble(pred1) && isNumeric(pred2))) {
 						return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
 								fac.getValueConstant(pred1.toString(),
@@ -348,6 +348,39 @@ public class ExpressionEvaluator {
 			return null;
 		}
 		return null;
+	}
+	
+	private static Predicate getDatatypePredicate(NewLiteral term) {
+		if (term instanceof Function) {
+			Function function = (Function) term;
+			return function.asAtom().getFunctionSymbol();
+		} else if (term instanceof Constant) {
+			Constant constant = (Constant) term;
+			COL_TYPE type = constant.getType();
+			switch(type) {
+				case OBJECT:
+				case STRING:
+					return OBDAVocabulary.XSD_STRING;
+				case LITERAL:
+				case LITERAL_LANG:
+					return OBDAVocabulary.RDFS_LITERAL;
+				case INTEGER:
+					return OBDAVocabulary.XSD_INTEGER;
+				case DECIMAL:
+					return OBDAVocabulary.XSD_DECIMAL;
+				case DOUBLE:
+					return OBDAVocabulary.XSD_DOUBLE;
+				case DATETIME:
+					return OBDAVocabulary.XSD_DATETIME;
+				case BOOLEAN:
+					return OBDAVocabulary.XSD_BOOLEAN;
+				default:
+					// For other data types
+					return OBDAVocabulary.XSD_STRING;
+			}
+		} else {
+			throw new RuntimeException("Unknown term type");
+		}
 	}
 	
 	private static boolean isDouble(Predicate pred)
