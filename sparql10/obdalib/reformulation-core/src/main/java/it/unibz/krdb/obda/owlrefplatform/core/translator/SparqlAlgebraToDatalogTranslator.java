@@ -516,7 +516,12 @@ public class SparqlAlgebraToDatalogTranslator {
 		List<Atom> filterAtoms = new LinkedList<Atom>();
 		Set<Variable> filteredVariables = new LinkedHashSet<Variable>();
 		for (Expr expr : exprlist) {
-			Function a = (Function) getBooleanTerm(expr);
+			Function a = null;
+			if (expr.isVariable()) {
+				a = ofac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, getVariableTerm((ExprVar) expr));
+			} else {
+				a = (Function) getBooleanTerm(expr);
+			}
 			if (a != null) {
 				Atom filterAtom = ofac.getAtom(a.getFunctionSymbol(),
 						a.getTerms());
@@ -1156,6 +1161,10 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 	}
 
+	private Function getVariableTermIntoBoolFunction(ExprVar expr) {
+		return ofac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, getVariableTerm(expr));
+	}
+	
 	private Variable getVariableTerm(ExprVar expr) {
 		return ofac.getVariable(expr.getVarName());
 	}

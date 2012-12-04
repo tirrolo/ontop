@@ -135,7 +135,12 @@ public class AtomWrapperImpl implements Atom {
 	}
 	
 	@Override
-	public boolean isNumericalFunction() {
-		return this.f.isNumericalFunction();
+	public boolean isArithmeticFunction() {
+		return this.f.isArithmeticFunction();
+	}
+
+	@Override
+	public boolean isDataTypeFunction() {
+		return this.f.isDataTypeFunction();
 	}
 }

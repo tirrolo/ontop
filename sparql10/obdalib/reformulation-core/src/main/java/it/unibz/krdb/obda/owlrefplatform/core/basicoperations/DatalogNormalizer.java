@@ -318,7 +318,7 @@ public class DatalogNormalizer {
 
 		public int getDepth(Function term) {
 			int max = 0;
-			if (term.isDataFunction() || term.isBooleanFunction()) {
+			if (term.isDataFunction() || term.isBooleanFunction() || term.isDataTypeFunction()) {
 				return 0;
 			} else {
 				List<NewLiteral> innerTerms = term.getTerms();
@@ -404,7 +404,7 @@ public class DatalogNormalizer {
 						"Unexpected term found while normalizing (pulling out equalities) the query.");
 
 			Function atom = (Function) term;
-			if (atom.isBooleanFunction() || atom.isNumericalFunction()) {
+			if (atom.isBooleanFunction() || atom.isArithmeticFunction() || atom.isDataTypeFunction()) {
 				// NO-OP
 				continue;
 			}

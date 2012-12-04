@@ -65,6 +65,12 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 	private static final String INDENT = "    ";
 
+	private static final String IS_TRUE_OPERATOR = "%s IS TRUE";
+	//private static final String IS_TRUE_BOOL = "%s";
+	//private static final String IS_TRUE_INT = "%s > 0";
+	//private static final String IS_TRUE_DOUBLE = "%s > 0";
+	//private static final String IS_TRUE_STRING = "LENGTH(%s) > 0";
+	
 	/**
 	 * Formatting template
 	 */
@@ -253,9 +259,30 @@ public class SQLGenerator implements SQLQueryGenerator {
 		Predicate functionSymbol = atom.getFunctionSymbol();
 		if (isUnary(atom)) {
 			// For unary boolean operators, e.g., NOT, IS NULL, IS NOT NULL.
+			// added also for IS TRUE
 			String expressionFormat = getBooleanOperatorString(functionSymbol);
 			NewLiteral term = atom.getTerm(0);
 			String column = getSQLString(term, index, false);
+			if (expressionFormat.contains("NOT %s") ) {
+				// find data type of term and evaluate accordingly
+				//int type = 8;
+				int type = getVariableDataType(term, index);
+				if (type == Types.INTEGER) return String.format("NOT %s > 0", column);
+				if (type == Types.DOUBLE) return String.format("NOT %s > 0", column);
+				if (type == Types.BOOLEAN) return String.format("NOT %s", column);
+				if (type == Types.VARCHAR) return String.format("NOT LENGTH(%s) > 0", column);
+				return "0;";
+			}
+			if (expressionFormat.contains("IS TRUE")) {
+				// find data type of term and evaluate accordingly
+				//int type = 8;
+				int type = getVariableDataType(term, index);
+				if (type == Types.INTEGER) return String.format("%s > 0", column);
+				if (type == Types.DOUBLE) return String.format("%s > 0", column);
+				if (type == Types.BOOLEAN) return String.format("%s", column);
+				if (type == Types.VARCHAR) return String.format("LENGTH(%s) > 0", column);
+				return "1;";
+			}
 			return String.format(expressionFormat, column);
 		} else if (isBinary(atom)) {
 			if (atom.isBooleanFunction()) {
@@ -266,7 +293,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 				String leftOp = getSQLString(left, index, true);
 				String rightOp = getSQLString(right, index, true);
 				return String.format("(" + expressionFormat + ")", leftOp, rightOp);
-			} else if (atom.isNumericalFunction()) {
+			} else if (atom.isArithmeticFunction()) {
 				// For numerical operators, e.g., MUTLIPLY, SUBSTRACT, ADDITION
 				String expressionFormat = getNumericalOperatorString(functionSymbol);
 				NewLiteral left = atom.getTerm(0);
@@ -444,7 +471,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 		Predicate predicate = atom.getPredicate();
 
 		if (predicate instanceof BooleanOperationPredicate
-				|| predicate instanceof NumericalOperationPredicate) {
+				|| predicate instanceof NumericalOperationPredicate
+				|| predicate instanceof DataTypePredicate) {
 			// These don't participate in the FROM clause
 			return "";
 		} else if (predicate instanceof AlgebraOperatorPredicate) {
@@ -649,6 +677,26 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 	}
 
+	// return variable SQL data type
+	private int getVariableDataType (NewLiteral term, QueryAliasIndex idx) {
+		//int size = idx.dataDefinitions.size();
+		//DataDefinition def = idx.dataDefinitions.get(var);
+		//def.getAttribute(def.getAttributePosition(var.toString()));
+		
+		Function f = (Function) term;
+		if (f.isDataTypeFunction()) {
+			Predicate p = f.getPredicate();
+			if (p.toString() == OBDAVocabulary.XSD_BOOLEAN_URI) return Types.BOOLEAN;
+			if (p.toString() == OBDAVocabulary.XSD_INT_URI)  return Types.INTEGER;
+			if (p.toString() == OBDAVocabulary.XSD_INTEGER_URI)  return Types.INTEGER;
+			if (p.toString() == OBDAVocabulary.XSD_DOUBLE_URI) return Types.DOUBLE;
+			if (p.toString() == OBDAVocabulary.XSD_STRING_URI) return Types.VARCHAR;
+			if (p.toString() == OBDAVocabulary.RDFS_LITERAL_URI) return Types.VARCHAR;
+		}
+		// Return varchar for unknown
+		return 12;
+	}
+	
 	// private Set<Variable> getMandatoryColumnsOnJoinsAndLeftJoinsRecursively(
 	// Atom atom) {
 	// if (atom.isDataFunction()) {
@@ -1127,6 +1175,20 @@ public class SQLGenerator implements SQLQueryGenerator {
 			String expressionFormat = getBooleanOperatorString(functionSymbol);
 			if (isUnary(function)) {
 				// for unary functions, e.g., NOT, IS NULL, IS NOT NULL
+				// also added for IS TRUE
+				
+				if (expressionFormat.contains("IS TRUE")) {
+					// find data type of term and evaluate accordingly
+					//int type = 8;
+					String column = getSQLString(term1, index, false);
+					int type = getVariableDataType(term1, index);
+					if (type == Types.INTEGER) return String.format("%s > 0", column);
+					if (type == Types.DOUBLE) return String.format("%s > 0", column);
+					if (type == Types.BOOLEAN) return String.format("%s", column);
+					if (type == Types.VARCHAR) return String.format("LENGTH(%s) > 0", column);
+					return "1";
+				}
+				
 				String op = getSQLString(term1, index, true);
 				return String.format(expressionFormat, op);
 			} else if (isBinary(function)) {
@@ -1216,6 +1278,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 			operator = IS_NULL_OPERATOR;
 		} else if (functionSymbol.equals(OBDAVocabulary.IS_NOT_NULL)) {
 			operator = IS_NOT_NULL_OPERATOR;
+		} else if (functionSymbol.equals(OBDAVocabulary.IS_TRUE)) {
+			operator = IS_TRUE_OPERATOR;
 		} else {
 			throw new RuntimeException("Unknown boolean operator: "
 					+ functionSymbol);

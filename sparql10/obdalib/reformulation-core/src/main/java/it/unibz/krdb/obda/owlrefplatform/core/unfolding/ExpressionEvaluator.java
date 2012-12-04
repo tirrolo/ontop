@@ -71,6 +71,7 @@ public class ExpressionEvaluator {
 
 	public static NewLiteral eval(Variable expr) {
 		return expr;
+		//return fac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, expr);
 	}
 
 	public static NewLiteral eval(Constant expr) {
@@ -85,16 +86,76 @@ public class ExpressionEvaluator {
 			return evalNonBoolean(expr);
 		} else if (p instanceof NumericalOperationPredicate) {
 			return evalNumericalOperation(expr);
-		} else if (p == OBDAVocabulary.XSD_BOOLEAN) {
-			if (expr.getTerm(0) instanceof Constant) {
-				ValueConstant value = (ValueConstant) expr.getTerm(0);
-				if (value.equals("1") || value.equals("true")) {
-					return fac.getTrue();
-				} else if (value.equals("0") || value.equals("false")) {
-					return fac.getFalse();
+		} else if (p instanceof DataTypePredicate) {
+			if (p == OBDAVocabulary.XSD_BOOLEAN) {
+				if (expr.getTerm(0) instanceof Constant) {
+					ValueConstant value = (ValueConstant) expr.getTerm(0);
+					String valueString = value.getValue();
+					if (valueString.equals("true") || valueString.equals("1")) {
+						return fac.getTrue();
+					} else if (valueString.equals("false") || valueString.equals("0")) {
+						return fac.getFalse();
+					}
+				} else if (expr.getTerm(0) instanceof Variable) {
+					return fac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, expr);
+				} 
+				else {
+					return expr;
 				}
-			} else {
-				return expr;
+			}
+			if (p == OBDAVocabulary.XSD_INTEGER) {
+				if (expr.getTerm(0) instanceof Constant) {
+					ValueConstant value = (ValueConstant) expr.getTerm(0);
+					int valueInteger = Integer.parseInt(value.getValue());
+					if (valueInteger != 0) {
+						return fac.getTrue();
+					}
+					return fac.getFalse();
+				} else if (expr.getTerm(0) instanceof Variable) {
+					return fac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, expr);
+				} else {
+					return expr;
+				}
+			}
+			if (p == OBDAVocabulary.XSD_DOUBLE) {
+				if (expr.getTerm(0) instanceof Constant) {
+					ValueConstant value = (ValueConstant) expr.getTerm(0);
+					double valueD = Double.parseDouble(value.getValue());
+					if (valueD > 0) {
+						return fac.getTrue();
+					}
+					return fac.getFalse();
+				} else if (expr.getTerm(0) instanceof Variable) {
+					return fac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, expr);
+				} else {
+					return expr;
+				}
+			}
+			if (p == OBDAVocabulary.XSD_STRING) {
+				if (expr.getTerm(0) instanceof Constant) {
+					ValueConstant value = (ValueConstant) expr.getTerm(0);
+					if (value.toString().length() == 0) {
+						return fac.getFalse();
+					}
+					return fac.getTrue();
+				} else if (expr.getTerm(0) instanceof Variable) {
+					return fac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, expr);
+				} else {
+					return expr;
+				}
+			}
+			if (p == OBDAVocabulary.RDFS_LITERAL) {
+				if (expr.getTerm(0) instanceof Constant) {
+					ValueConstant value = (ValueConstant) expr.getTerm(0);
+					if (value.toString().length() == 0) {
+						return fac.getFalse();
+					}
+					return fac.getTrue();
+				} else if (expr.getTerm(0) instanceof Variable) {
+					return fac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, expr);
+				} else {
+					return expr;
+				}
 			}
 		}
 		return expr;
@@ -124,6 +185,8 @@ public class ExpressionEvaluator {
 			return evalEqNeq(term, false);
 		} else if (pred == OBDAVocabulary.NOT) {
 			return evalNot(term);
+		} else if (pred == OBDAVocabulary.IS_TRUE) {
+			return evalIsTrue(term);
 		} else if (pred == OBDAVocabulary.SPARQL_IS_LITERAL) {
 			return evalIsLiteral(term);
 		} else if (pred == OBDAVocabulary.SPARQL_IS_BLANK) {
@@ -536,6 +599,27 @@ public class ExpressionEvaluator {
 		}
 	}
 
+	private static NewLiteral evalIsTrue(Function term) {
+		NewLiteral teval = eval(term.getTerm(0));
+		if (teval instanceof Function) {
+			Function f = (Function) teval;
+			Predicate predicate = f.getFunctionSymbol();
+			if (predicate == OBDAVocabulary.IS_NOT_NULL) {
+				return fac.getIsNotNullFunction(f.getTerm(0));
+			} else if (predicate == OBDAVocabulary.IS_NULL) {
+				return fac.getIsNullFunction(f.getTerm(0));
+			} else if (predicate == OBDAVocabulary.NEQ) {
+				return fac.getNEQFunction(f.getTerm(0), f.getTerm(1));
+			} else if (predicate == OBDAVocabulary.EQ) {
+				return fac.getEQFunction(f.getTerm(0), f.getTerm(1));
+			}
+		} else if (teval instanceof Constant) {
+			return teval;
+		}
+		return term;
+	}
+	
+	
 	private static NewLiteral evalNot(Function term) {
 		NewLiteral teval = eval(term.getTerm(0));
 		if (teval instanceof Function) {
@@ -560,17 +644,43 @@ public class ExpressionEvaluator {
 		/*
 		 * Evaluate the first term
 		 */
-		NewLiteral teval1 = eval(term.getTerm(0));
-		if (teval1 == null) {
-			return fac.getFalse();
+		
+		// Do not eval if term is DataTypeFunction, e.g. integer(10)
+		NewLiteral teval1 = null;
+		NewLiteral teval2 = null;
+		
+		if (term.getTerm(0) instanceof Function) {
+			Function t1 = (Function) term.getTerm(0);
+			Predicate p1 = t1.getFunctionSymbol();
+			if (!(p1 instanceof DataTypePredicate)) {
+				teval1 = eval(term.getTerm(0));
+				if (teval1 == null) {
+					return fac.getFalse();
+				}
+			} else {
+				teval1 = term.getTerm(0);
+			}
+		} else {
+			teval1 = eval(term.getTerm(0));
 		}
 
 		/*
 		 * Evaluate the second term
 		 */
-		NewLiteral teval2 = eval(term.getTerm(1));
-		if (teval2 == null) {
-			return fac.getFalse();
+
+		if (term.getTerm(1) instanceof Function) {
+			Function t2 = (Function) term.getTerm(1);
+			Predicate p2 = t2.getFunctionSymbol();
+			if (!(p2 instanceof DataTypePredicate)) {
+				teval2 = eval(term.getTerm(1));
+				if (teval2 == null) {
+					return fac.getFalse();
+				}
+			} else {
+				teval2 = term.getTerm(1);
+			}
+		} else {
+			teval2 = eval(term.getTerm(1));
 		}
 
 		/* 

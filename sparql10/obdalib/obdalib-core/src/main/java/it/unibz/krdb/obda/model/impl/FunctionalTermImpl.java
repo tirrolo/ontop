@@ -341,7 +341,12 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 	}
 
 	@Override
-	public boolean isNumericalFunction() {
-		return this.functor.isNumericalPredicate();
+	public boolean isArithmeticFunction() {
+		return this.functor.isArithmeticPredicate();
+	}
+
+	@Override
+	public boolean isDataTypeFunction() {
+		return this.functor.isDataTypePredicate();
 	}
 }

@@ -67,6 +67,8 @@ public class OBDAVocabulary {
 
 	public static final String strIS_NOT_NULL = "IS_NOT_NULL";
 
+	public static final String strIS_TRUE = "IS_TRUE";
+	
 	/* Boolean predicates */
 
 	public static final Predicate AND = new BooleanOperationPredicateImpl(
@@ -101,6 +103,9 @@ public class OBDAVocabulary {
 
 	public static final Predicate IS_NOT_NULL = new BooleanOperationPredicateImpl(
 			URI.create(strIS_NOT_NULL), 1);
+	
+	public static final Predicate IS_TRUE = new BooleanOperationPredicateImpl(
+			URI.create(strIS_TRUE), 1);
 
 	public static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 

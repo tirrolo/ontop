@@ -2,6 +2,7 @@ package it.unibz.krdb.obda.model.impl;
 
 import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
+import it.unibz.krdb.obda.model.DataTypePredicate;
 import it.unibz.krdb.obda.model.NumericalOperationPredicate;
 import it.unibz.krdb.obda.model.Predicate;
 
@@ -102,7 +103,7 @@ public class PredicateImpl implements Predicate {
 
 	@Override
 	public boolean isDataPredicate() {
-		return (!(isBooleanPredicate() || isAlgebraPredicate() || isNumericalPredicate()));
+		return (!(isBooleanPredicate() || isAlgebraPredicate() || isArithmeticPredicate() || isDataTypePredicate()));
 	}
 
 	@Override
@@ -111,12 +112,17 @@ public class PredicateImpl implements Predicate {
 	}
 	
 	@Override
-	public boolean isNumericalPredicate() {
+	public boolean isArithmeticPredicate() {
 		return this instanceof NumericalOperationPredicate;
 	}
 
 	@Override
 	public boolean isAlgebraPredicate() {
 		return this instanceof AlgebraOperatorPredicate;
+	}
+
+	@Override
+	public boolean isDataTypePredicate() {
+		return this instanceof DataTypePredicate;
 	}
 }
