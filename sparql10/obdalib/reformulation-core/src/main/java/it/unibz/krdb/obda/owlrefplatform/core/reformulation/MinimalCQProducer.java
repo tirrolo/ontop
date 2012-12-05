@@ -7,6 +7,7 @@ import it.unibz.krdb.obda.ontology.BasicClassDescription;
 import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,15 +19,23 @@ import org.slf4j.LoggerFactory;
 public class MinimalCQProducer {
 	private final TreeWitnessReasonerLite reasoner;
 	private List<Atom> atoms = new LinkedList<Atom>();
+	private List<Atom> noCheckAtoms = new LinkedList<Atom>();
 	
 	private final OntologyFactory ontFactory;
 	private static final Logger log = LoggerFactory.getLogger(MinimalCQProducer.class);	
 	
-	public MinimalCQProducer(TreeWitnessReasonerLite reasoner, List<NewLiteral> freeVariables) {
+	public MinimalCQProducer(TreeWitnessReasonerLite reasoner) {
 		this.reasoner = reasoner;
 		this.ontFactory = reasoner.getOntologyFactory();
 	}
-	
+
+	public MinimalCQProducer(TreeWitnessReasonerLite reasoner, MinimalCQProducer cqp) {
+		this.reasoner = reasoner;
+		this.ontFactory = reasoner.getOntologyFactory();
+		this.atoms.addAll(cqp.atoms);
+		this.noCheckAtoms.addAll(cqp.noCheckAtoms);
+	}
+
 	public boolean isMoreSpecific(Atom a1, Atom a2) {
 		if (a1.equals(a2))
 			return true;
@@ -91,6 +100,11 @@ public class MinimalCQProducer {
 		}
 		atoms.add(atom);
 	}
+	
+	public void addAll(Collection<Atom> aa) {
+		for (Atom a : aa) 
+			add(a);
+	}
 
 	public boolean wouldSubsume(Atom atom) {
 		for (Atom a : atoms) 
@@ -100,10 +114,14 @@ public class MinimalCQProducer {
 	}
 	
 	public void addNoCheck(Atom atom) {
-		atoms.add(atom);
+		noCheckAtoms.add(atom);
 	}
 	
-	public List<Atom> getBody() {
+	public List<Atom> getAtoms() {
 		return atoms;
+	}
+	
+	public List<Atom> getNoCheckAtoms() {
+		return noCheckAtoms;
 	}
 }

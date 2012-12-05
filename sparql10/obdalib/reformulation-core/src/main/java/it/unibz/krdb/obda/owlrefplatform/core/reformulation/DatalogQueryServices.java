@@ -6,11 +6,13 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.impl.AnonymousVariable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -65,15 +67,49 @@ public class DatalogQueryServices {
 
 			boolean replaced = false;
 			if (chosenDefinitions != null) {
-				for (CQIE rule : chosenDefinitions) {
+				int maxlen = 0;
+				for (Variable v : query.getReferencedVariables())
+					maxlen = Math.max(maxlen, v.getName().length());
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < maxlen; i++)
+					sb.append("t");
+				String prefix = sb.toString();
+				
+				for (CQIE rule : chosenDefinitions) {				
+					Atom ruleheadcopy;
+					{
+						List<NewLiteral> termscopy = new ArrayList<NewLiteral>(rule.getHead().getArity());
+						for (NewLiteral t : rule.getHead().getTerms()) {
+							if ((t instanceof Variable) && !(t instanceof AnonymousVariable)) {
+								Variable v = (Variable)t;
+								termscopy.add(fac.getVariable(prefix + v.getName()));
+							}
+							else
+								termscopy.add(t.clone());
+						}
+						ruleheadcopy = fac.getAtom(rule.getHead().getPredicate(), termscopy);
+					}
+					
 					//CQIE newquery = ResolutionEngine.resolve(rule, query, chosenAtomIdx);					
-					Map<Variable, NewLiteral> mgu = Unifier.getMGU(rule.getHead(), query.getBody().get(chosenAtomIdx));
+					Map<Variable, NewLiteral> mgu = Unifier.getMGU(ruleheadcopy, query.getBody().get(chosenAtomIdx));
 					if (mgu != null) {
 						CQIE newquery = query.clone();
 						List<Atom> newbody = newquery.getBody();
 						newbody.remove(chosenAtomIdx);
-						newbody.addAll(rule.clone().getBody()); 
-
+						//CQIE rulecopy = rule.clone();
+						for (Atom a : rule.getBody())   {
+							List<NewLiteral> termscopy = new ArrayList<NewLiteral>(rule.getHead().getArity());
+							for (NewLiteral t : a.getTerms()) {
+								if ((t instanceof Variable) && !(t instanceof AnonymousVariable)) {
+									Variable v = (Variable)t;
+									termscopy.add(fac.getVariable(prefix + v.getName()));
+								}
+								else
+									termscopy.add(t.clone());
+							}
+							newbody.add(fac.getAtom(a.getPredicate(), termscopy));
+						}
+												
 						// newquery contains only cloned atoms, so it is safe to unify "in-place"
 						Unifier.applyUnifier(newquery, mgu, false);
 						queue.add(reduce(newquery));
