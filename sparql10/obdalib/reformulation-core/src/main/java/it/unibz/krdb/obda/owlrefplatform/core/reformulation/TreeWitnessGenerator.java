@@ -48,20 +48,18 @@ public class TreeWitnessGenerator {
 		if (cons.size() > 1) {
 			// TODO: re-implement as removals (inner iterator loop with restarts on top) 
 			log.debug("MORE THAN ONE GEN CON: " + cons);
-			Set<BasicClassDescription> reduced = new HashSet<BasicClassDescription>();
-			Iterator<BasicClassDescription> i = cons.iterator();
-			while (i.hasNext()) {
-				BasicClassDescription c = i.next();
-				boolean found = false;
-				for (BasicClassDescription b: cons) 
-					if (!b.equals(c) && reasoner.getSubConcepts(b).contains(c)) {
-						found = true;
-						break;
-					}
-				if (!found)
-					reduced.add(c);
-			}
-			cons = reduced;
+			//Set<BasicClassDescription> reduced = new HashSet<BasicClassDescription>();
+			//for (BasicClassDescription concept0 : cons) {
+			//	boolean found = false;
+			//	for (BasicClassDescription concept1 : cons)
+			//		if (!concept0.equals(concept1) && reasoner.getSubConcepts(concept1).contains(concept0)) {
+			//			found = true;
+			//			break;
+			//		}
+			//	if (!found)
+			//		reduced.add(concept0);
+			//}
+			//cons = reduced;
 		}
 		
 		return cons;
