@@ -243,17 +243,18 @@ public class ExpressionEvaluator {
 	 * Expression evaluator for isLiteral() function
 	 */
 	private static NewLiteral evalIsLiteral(Function term) {
-		NewLiteral teval = eval(term.getTerm(0));
-		if (teval instanceof Function) {
-			Function function = (Function) teval;
+		NewLiteral innerTerm = term.getTerm(0);
+		if (innerTerm instanceof Function) {
+			Function function = (Function) innerTerm;
 			Predicate predicate = function.getFunctionSymbol();
 			if (predicate instanceof DataTypePredicate) {
 				return fac.getTrue();
 			} else {
 				return fac.getFalse();
 			}
+		} else {
+			return term;
 		}
-		return term;
 	}
 
 	/*
@@ -311,9 +312,9 @@ public class ExpressionEvaluator {
 	 * Expression evaluator for str() function
 	 */
 	private static NewLiteral evalStr(Function term) {
-		NewLiteral teval = eval(term.getTerm(0));
-		if (teval instanceof Function) {
-			Function function = (Function) teval;
+		NewLiteral innerTerm = term.getTerm(0);
+		if (innerTerm instanceof Function) {
+			Function function = (Function) innerTerm;
 			Predicate predicate = function.getFunctionSymbol();
 			NewLiteral parameter = function.getTerm(0);
 			if (predicate instanceof DataTypePredicate) {
@@ -350,13 +351,13 @@ public class ExpressionEvaluator {
 	 * Expression evaluator for datatype() function
 	 */
 	private static NewLiteral evalDatatype(Function term) {
-		NewLiteral teval = eval(term.getTerm(0));
-		if (teval instanceof Function) {
-			Function function = (Function) teval;
+		NewLiteral innerTerm = term.getTerm(0);
+		if (innerTerm instanceof Function) {
+			Function function = (Function) innerTerm;
 			Predicate predicate = function.getFunctionSymbol();
-			return getDatatype(predicate,  term.getTerm(0));
+			return getDatatype(predicate, term.getTerm(0));
 		}
-		return null;
+		return term;
 	}
 	
 	private static NewLiteral getDatatype(Predicate predicate, NewLiteral lit)
@@ -468,15 +469,15 @@ public class ExpressionEvaluator {
 	 * Expression evaluator for lang() function
 	 */
 	private static NewLiteral evalLang(Function term) {
-		NewLiteral teval = eval(term.getTerm(0));
+		NewLiteral innerTerm = term.getTerm(0);
 
 		NewLiteral emptyconstant = fac.getFunctionalTerm(
 				fac.getDataTypePredicateString(), fac.getValueConstant("", COL_TYPE.STRING));
 
-		if (!(teval instanceof Function)) {
+		if (!(innerTerm instanceof Function)) {
 			return emptyconstant;
-		}
-		Function function = (Function) teval;
+		} 
+		Function function = (Function) innerTerm;
 		Predicate predicate = function.getFunctionSymbol();
 
 		if (!(predicate instanceof DataTypePredicate)) {
@@ -519,17 +520,17 @@ public class ExpressionEvaluator {
 		/*
 		 * Evaluate the second term
 		 */
-		NewLiteral teval2 = eval(term.getTerm(1));
-		if (teval2 == null) {
+		NewLiteral innerTerm2 = term.getTerm(1);
+		if (innerTerm2 == null) {
 			return fac.getFalse();
 		}
 
 		/*
 		 * Term checks
 		 */
-		if (teval1 instanceof Constant && teval2 instanceof Constant) {
+		if (teval1 instanceof Constant && innerTerm2 instanceof Constant) {
 			String lang1 = ((Constant) teval1).getValue();
-			String lang2 = ((Constant) teval2).getValue();	
+			String lang2 = ((Constant) innerTerm2).getValue();	
 			if (lang2.equals(SELECT_ALL)) {
 				if (lang1.isEmpty()) {
 					return fac.getIsNullFunction(teval1);
@@ -543,19 +544,19 @@ public class ExpressionEvaluator {
 					return fac.getFalse();
 				}
 			}
-		} else if (teval1 instanceof Variable && teval2 instanceof Constant) {
+		} else if (teval1 instanceof Variable && innerTerm2 instanceof Constant) {
 			Variable var = (Variable) teval1;
-			Constant lang = (Constant) teval2;
+			Constant lang = (Constant) innerTerm2;
 			if (lang.getValue().equals(SELECT_ALL)) {
 				// The char * means to get all languages
 				return fac.getIsNotNullFunction(var);
 			} else {
 				return fac.getEQFunction(var, lang);
 			}
-		} else if (teval1 instanceof Function && teval2 instanceof Function) {
+		} else if (teval1 instanceof Function && innerTerm2 instanceof Function) {
 			Function f1 = (Function) teval1;
-			Function f2 = (Function) teval2;
-			return evalLangMatches(fac.getLANGMATCHESFunction(f1.getTerm(0),
+			Function f2 = (Function) innerTerm2;
+			return evalLangMatches(fac.getLANGMATCHESFunction(f1.getTerm(0), 
 					f2.getTerm(0)));
 		} else {
 			return term;
