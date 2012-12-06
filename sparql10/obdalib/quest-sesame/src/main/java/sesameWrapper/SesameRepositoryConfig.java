@@ -55,8 +55,8 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
         NAME = factory.createURI(NAMESPACE, "repo_name");
         OWLFILE = factory.createURI(NAMESPACE, "owlfile");
         OBDAFILE = factory.createURI(NAMESPACE, "obdafile");
-        EXISTENTIAL = factory.createURI(NAMESPACE, "false");
-        REWRITING = factory.createURI(NAMESPACE, "Default");
+        EXISTENTIAL = factory.createURI(NAMESPACE, "existential");
+        REWRITING = factory.createURI(NAMESPACE, "rewriting");
     }
     
     
@@ -122,7 +122,6 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
     public void setExistential(boolean ex)
     {
     	this.existential = ex;
-    	System.out.println("Existential set:"+ex);
     }
     
     public String getRewriting()
@@ -133,7 +132,6 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
     public void setRewriting(String rew)
     {
     	this.rewriting = rew;
-    	System.out.println("Rewriting set: "+rew);
     }
 
     @Override
@@ -207,12 +205,10 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
                     setObdaFile(obdafile.getLabel());
                 }
                 Literal existl = GraphUtil.getOptionalObjectLiteral(graph, implNode, EXISTENTIAL);
-                System.out.println("Parse: "+existl);
                 if (existl != null) {
                     setExistential(existl.booleanValue());
                 }
                 Literal rewr = GraphUtil.getOptionalObjectLiteral(graph, implNode, REWRITING);
-                System.out.println("Parse: "+rewr);
                 if (rewr != null) {
                     setRewriting(rewr.getLabel());
                 }

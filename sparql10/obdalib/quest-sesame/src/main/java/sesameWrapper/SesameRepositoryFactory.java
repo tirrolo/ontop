@@ -32,7 +32,6 @@ public class SesameRepositoryFactory implements RepositoryFactory{
 					String owlfile = ((SesameRepositoryConfig) config).getOwlFile();
 					boolean existential = ((SesameRepositoryConfig) config).getExistential();
 					String rewriting = ((SesameRepositoryConfig) config).getRewriting();
-					System.out.println("Creating with: "+existential + rewriting);
 					
 					if (((SesameRepositoryConfig) config).getQuestType().equals("quest-inmemory"))
 					{
