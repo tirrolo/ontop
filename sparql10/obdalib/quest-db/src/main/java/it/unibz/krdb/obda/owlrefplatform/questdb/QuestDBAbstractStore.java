@@ -31,30 +31,6 @@ public abstract class QuestDBAbstractStore implements Serializable {
 		this.name = name;
 	}
 
-	/* Serialize methods */
-
-	public static void saveState(String storePath, QuestDBAbstractStore store) throws IOException {
-		StringBuffer filename = new StringBuffer();
-		filename.append(storePath);
-		if (!storePath.endsWith(System.getProperty("file.separator")))
-			filename.append(System.getProperty("file.separator"));
-		filename.append(store.getName());
-		filename.append(".qst");
-		ObjectOutput out = new ObjectOutputStream(new FileOutputStream(filename.toString()));
-		out.writeObject(store);
-		out.close();
-
-	}
-
-	public static QuestDBAbstractStore restore(String storePath) throws IOException, ClassNotFoundException {
-		File file = new File(storePath);
-		ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
-
-		QuestDBAbstractStore store = (QuestDBAbstractStore) in.readObject();
-
-		in.close();
-		return store;
-	}
 
 	public String getName() {
 		return name;

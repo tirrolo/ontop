@@ -16,7 +16,13 @@ import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
@@ -123,6 +129,26 @@ public class QuestDBClassicStore extends QuestDBAbstractStore {
 		questInstance.setupRepository();
 
 		log.debug("Store {} has been created successfully", name);
+	}
+	
+	
+
+	public void saveState(String storePath) throws IOException {
+		//StringBuffer filename = new StringBuffer();
+	//	filename.append(storePath);
+		//ObjectOutput out = new ObjectOutputStream(new FileOutputStream(filename.toString()));
+	//	out.writeObject(store);
+	//	out.close();
+
+	}
+
+	public QuestDBClassicStore restore(String storePath) throws IOException {
+		//File file = new File(storePath);
+		//ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+		//QuestDBAbstractStore store = (QuestDBAbstractStore) in.readObject();
+		//in.close();
+		
+		return this;
 	}
 	
 	public QuestConnection getQuestConnection() {
