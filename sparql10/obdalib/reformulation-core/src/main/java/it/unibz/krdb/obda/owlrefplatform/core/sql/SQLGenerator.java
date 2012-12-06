@@ -307,11 +307,19 @@ public class SQLGenerator implements SQLQueryGenerator {
 			}
 		} else {
 			if (functionSymbol == OBDAVocabulary.SPARQL_REGEX) {
+				boolean caseinSensitive = false;
+				if (atom.getArity() == 3) {
+					if (atom.getTerm(2).toString().contains("i")) {
+						caseinSensitive = true;
+					} 
+				}
+				
 				NewLiteral p1 = atom.getTerm(0);
 				NewLiteral p2 = atom.getTerm(1);
+				
 				String column = getSQLString(p1, index, false);
 				String pattern = getSQLString(p2, index, false);
-				return sqladapter.sqlRegex(column, pattern);
+				return sqladapter.sqlRegex(column, pattern, caseinSensitive);
 			} else {
 				throw new RuntimeException("The builtin function "
 						+ functionSymbol.toString() + " is not supported yet!");

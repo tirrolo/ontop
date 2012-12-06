@@ -28,10 +28,12 @@ import java.util.Set;
 public class ExpressionEvaluator {
 
 	private static OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
+	private static boolean regexFlag = false;
 
 	public static void evaluateExpressions(DatalogProgram p) {
 		Set<CQIE> toremove = new LinkedHashSet<CQIE>();
 		for (CQIE q : p.getRules()) {
+			setRegexFlag(false); // reset the ObjectConstant flag
 			boolean empty = evaluateExpressions(q);
 			if (empty) {
 				toremove.add(q);
@@ -71,7 +73,6 @@ public class ExpressionEvaluator {
 
 	public static NewLiteral eval(Variable expr) {
 		return expr;
-		//return fac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, expr);
 	}
 
 	public static NewLiteral eval(Constant expr) {
@@ -158,7 +159,20 @@ public class ExpressionEvaluator {
 				}
 			}
 		}
+		if (p.getName().toString().equals("QUEST_OBJECT_PROPERTY_ASSERTION")) {
+			setRegexFlag(true);
+		}
 		return expr;
+	}
+
+	private static void setRegexFlag(boolean b) {
+		// TODO Auto-generated method stub
+		regexFlag = b;
+	}
+	
+	private static boolean isObjectConstant() {
+		// TODO Auto-generated method stub
+		return regexFlag;
 	}
 
 	public static NewLiteral evalBoolean(Function term) {
@@ -564,10 +578,18 @@ public class ExpressionEvaluator {
 	}
 
 	private static NewLiteral evalRegex(Function term) {
-		NewLiteral teval = eval(term.getTerm(0));
-		if (teval instanceof Function) {
-			term.setTerm(0, teval);
-			return term;
+		NewLiteral innerTerm = term.getTerm(0);
+		if (innerTerm instanceof Function) {
+			Function f = (Function) innerTerm;
+			Predicate functionSymbol = f.getFunctionSymbol();
+			if (isObjectConstant()) {
+				setRegexFlag(false);
+				if (functionSymbol.equals(OBDAVocabulary.SPARQL_STR)) {
+					return fac.getTrue();
+				} else {
+					return fac.getFalse();
+				}
+			}
 		}
 		return term;
 	}
