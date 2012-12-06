@@ -77,15 +77,6 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	public void initialize() {
 		// TODO Auto-generated method stub
 	}
-
-		
-	private List<Atom> getEdgeAtoms(Edge edge) {
-		List<Atom> extAtoms = new ArrayList<Atom>(edge.size());
-		extAtoms.addAll(edge.getBAtoms());
-		extAtoms.addAll(edge.getAtoms0());
-		extAtoms.addAll(edge.getAtoms1());
-		return extAtoms;
-	}
 	
 	private Atom getExtAtom(Atom a, Set<Predicate> usedExts) {
 		if (a.getArity() == 1) {
@@ -164,9 +155,11 @@ public class TreeWitnessRewriter implements QueryRewriter {
 	 */
 	
 	private void rewriteCC(QueryConnectedComponent cc, Atom headAtom, DatalogProgram output, Set<Predicate> usedExts, DatalogProgram edgeDP) {
+		URI headURI = headAtom.getPredicate().getName();
+		
 		TreeWitnessSet tws = TreeWitnessSet.getTreeWitnesses(cc, reasoner);
 
-		if (cc.hasNoFreeNewLiterals()) {  
+		if (cc.hasNoFreeTerms()) {  
 			for (Atom a : getAtomsForGenerators(tws.getGeneratorsOfDetachedCC(), fac.getNondistinguishedVariable())) {
 				output.appendRule(fac.getCQIE(headAtom, getExtAtom(a, usedExts))); 
 			}
@@ -214,7 +207,6 @@ public class TreeWitnessRewriter implements QueryRewriter {
 			if (tws.hasConflicts()) { 
 				// there are conflicting tree witnesses
 				// use compact exponential rewriting by enumerating all compatible subsets of tree witnesses
-				URI atomURI = headAtom.getPredicate().getName();
 				CompatibleTreeWitnessSetIterator iterator = tws.getIterator();
 				while (iterator.hasNext()) {
 					Collection<TreeWitness> compatibleTWs = iterator.next();
@@ -231,11 +223,11 @@ public class TreeWitnessRewriter implements QueryRewriter {
 							}
 						if (!contained) {
 							log.debug("EDGE " + edge + " NOT COVERED BY ANY TW");
-							mainbody.addAll(getEdgeAtoms(edge));
+							mainbody.addAll(edge.getAtoms());
 						}
 					}
 					for (TreeWitness tw : compatibleTWs) {
-						Atom twAtom = getHeadAtom(atomURI, "TW_" + (edgeDP.getRules().size() + 1), cc.getVariables());
+						Atom twAtom = getHeadAtom(headURI, "TW_" + (edgeDP.getRules().size() + 1), cc.getVariables());
 						mainbody.addNoCheck(twAtom);				
 						for (List<Atom> twfa : tw.getFormula())
 							edgeDP.appendRule(fac.getCQIE(twAtom, twfa));
@@ -250,15 +242,15 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				for (Edge edge : cc.getEdges()) {
 					log.debug("EDGE " + edge);
 					MinimalCQProducer edgeAtoms = new MinimalCQProducer(reasoner); 
-					edgeAtoms.addAll(getEdgeAtoms(edge));
+					edgeAtoms.addAll(edge.getAtoms());
 					
 					Atom edgeAtom = null;
 					for (TreeWitness tw : tws.getTWs())
 						if (tw.getDomain().contains(edge.getTerm0()) && tw.getDomain().contains(edge.getTerm1())) {
 							if (edgeAtom == null) {
 								URI atomURI = edge.getBAtoms().iterator().next().getPredicate().getName();
-								edgeAtom = getHeadAtom(atomURI, 
-										"E_" + (edgeDP.getRules().size() + 1) + "_" + atomURI.getFragment(), cc.getVariables());
+								edgeAtom = getHeadAtom(headURI, 
+										"EDGE_" + (edgeDP.getRules().size() + 1) + "_" + atomURI.getFragment(), cc.getVariables());
 								mainbody.addNoCheck(edgeAtom);				
 								edgeDP.appendRule(fac.getCQIE(edgeAtom, getExtAtoms(edgeAtoms, usedExts)));													
 							}
@@ -311,8 +303,7 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				List<Atom> ccBody = new ArrayList<Atom>(ccs.size());
 				for (QueryConnectedComponent cc : ccs) {
 					log.debug("CONNECTED COMPONENT (" + cc.getFreeVariables() + ")" + " EXISTS " + cc.getQuantifiedVariables() + " WITH EDGES " + cc.getEdges());
-					Atom ccAtom = getHeadAtom(cqieURI, 
-							cqieURI.getFragment() + "_CC_" + (ccDP.getRules().size() + 1), cc.getFreeVariables());
+					Atom ccAtom = getHeadAtom(cqieURI, "CC_" + (ccDP.getRules().size() + 1), cc.getFreeVariables());
 					rewriteCC(cc, ccAtom, ccDP, exts, edgeDP); 
 					ccBody.add(ccAtom);
 				}

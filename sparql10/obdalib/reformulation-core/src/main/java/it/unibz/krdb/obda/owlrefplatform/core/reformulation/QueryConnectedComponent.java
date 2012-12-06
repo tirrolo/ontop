@@ -36,7 +36,7 @@ public class QueryConnectedComponent {
 	private final List<Edge> edges;  // a connect component contains a list of edges 
 	private final Loop loop;  //                                   or a loop if it is degenerate 
 	
-	private boolean noFreeNewLiterals; // no free variables and no constants 
+	private boolean noFreeTerms; // no free variables and no constants 
 	                             // if true the component can be mapped onto the anonymous part of the canonical model
 
 	
@@ -44,20 +44,19 @@ public class QueryConnectedComponent {
 	 * constructor: it is private as instances created only by the static method getConnectedComponents
 	 * 
 	 * @param edges: a list of edges in the connected component
-	 * @param NewLiterals: NewLiterals that are coveted by the edges
-	 * @param headNewLiterals: NewLiterals of the head of the query, which is used to deNewLiteraline whether a variable is free of quantified
+	 * @param terms: terms that are coveted by the edges
 	 */
 	
-	private QueryConnectedComponent(List<Edge> edges, Loop loop, List<Loop> NewLiterals) {
+	private QueryConnectedComponent(List<Edge> edges, Loop loop, List<Loop> terms) {
 		this.edges = edges;
 		this.loop = loop;
 
-		quantifiedVariables = new ArrayList<Loop>(NewLiterals.size());
-		variables = new ArrayList<NewLiteral>(NewLiterals.size());
-		freeVariables = new ArrayList<NewLiteral>(NewLiterals.size());
-		noFreeNewLiterals = true;
+		quantifiedVariables = new ArrayList<Loop>(terms.size());
+		variables = new ArrayList<NewLiteral>(terms.size());
+		freeVariables = new ArrayList<NewLiteral>(terms.size());
+		noFreeTerms = true;
 		
-		for (Loop l: NewLiterals) {
+		for (Loop l: terms) {
 			NewLiteral t = l.getTerm(); 
 			if (t instanceof Variable) {
 				variables.add(t);
@@ -67,16 +66,16 @@ public class QueryConnectedComponent {
 				else 
 					{
 					freeVariables.add(t);
-					noFreeNewLiterals = false;
+					noFreeTerms = false;
 				}
 			}
 			else
-				noFreeNewLiterals = false; // not a variable -- better definition?
+				noFreeTerms = false; // not a variable -- better definition?
 		}
 	}
 	
-	private static boolean isExistentialVariable(NewLiteral t, Set<NewLiteral> headNewLiterals) {
-		return ((t instanceof Variable) && !headNewLiterals.contains(t));
+	private static boolean isExistentialVariable(NewLiteral t, Set<NewLiteral> headTerms) {
+		return ((t instanceof Variable) && !headTerms.contains(t));
 	}
 
 	/**
@@ -89,30 +88,30 @@ public class QueryConnectedComponent {
 	public static List<QueryConnectedComponent> getConnectedComponents(CQIE cqie) {
 		List<QueryConnectedComponent> ccs = new ArrayList<QueryConnectedComponent>();
 
-		Set<NewLiteral> headNewLiterals = new HashSet<NewLiteral>(cqie.getHead().getTerms());
+		Set<NewLiteral> headTerms = new HashSet<NewLiteral>(cqie.getHead().getTerms());
 
 
 		// collect all edges and loops 
 		//      an edge is a binary predicate P(t, t') with t \ne t'
 		// 		a loop is either a unary predicate A(t) or a binary predicate P(t,t)
-		Map<NewLiteralPair, Edge> pairs = new HashMap<NewLiteralPair, Edge>();
+		Map<TermPair, Edge> pairs = new HashMap<TermPair, Edge>();
 		Map<NewLiteral, Loop> allLoops = new HashMap<NewLiteral, Loop>();
 		
 		for (Atom a: cqie.getBody()) {
 			NewLiteral t0 = a.getTerm(0);				
 			if (a.getArity() == 2 && !t0.equals(a.getTerm(1))) {
 				NewLiteral t1 = a.getTerm(1);
-				NewLiteralPair pair = new NewLiteralPair(t0, t1);
+				TermPair pair = new TermPair(t0, t1);
 				Edge edge =  pairs.get(pair); 
 				if (edge == null) {
 					Loop l0 = allLoops.get(t0);
 					if (l0 == null) {
-						l0 = new Loop(t0, isExistentialVariable(t0, headNewLiterals));
+						l0 = new Loop(t0, isExistentialVariable(t0, headTerms));
 						allLoops.put(t0, l0);
 					}
 					Loop l1 = allLoops.get(t1);
 					if (l1 == null) {
-						l1 = new Loop(t1, isExistentialVariable(t1, headNewLiterals));
+						l1 = new Loop(t1, isExistentialVariable(t1, headTerms));
 						allLoops.put(t1, l1);
 					}				
 					edge = new Edge(l0, l1);
@@ -123,7 +122,7 @@ public class QueryConnectedComponent {
 			else {
 				Loop l0 = allLoops.get(t0);
 				if (l0 == null) {
-					l0 = new Loop(t0, isExistentialVariable(t0, headNewLiterals));
+					l0 = new Loop(t0, isExistentialVariable(t0, headTerms));
 					allLoops.put(t0, l0);
 				}
 				l0.atoms.add(a);
@@ -133,17 +132,17 @@ public class QueryConnectedComponent {
 		// form the list of connected components from the list of edges
 		while (!pairs.isEmpty()) {
 			List<Edge> ccEdges = new ArrayList<Edge>(pairs.size());
-			Set<NewLiteral> ccNewLiterals = new HashSet<NewLiteral>((allLoops.size() * 2) / 3);
-			Iterator<Entry<NewLiteralPair, Edge>> i = pairs.entrySet().iterator();
+			Set<NewLiteral> ccTerms = new HashSet<NewLiteral>((allLoops.size() * 2) / 3);
+			Iterator<Entry<TermPair, Edge>> i = pairs.entrySet().iterator();
 			List<Loop> ccLoops = new ArrayList<Loop>(allLoops.size());
 			
 			// add the first available edge to the current CC
 			Edge edge0 = i.next().getValue();
 			ccEdges.add(edge0);
-			ccNewLiterals.add(edge0.getTerm0());
+			ccTerms.add(edge0.getTerm0());
 			ccLoops.add(edge0.getLoop0());
 			allLoops.remove(edge0.getTerm0());
-			ccNewLiterals.add(edge0.getTerm1());
+			ccTerms.add(edge0.getTerm1());
 			ccLoops.add(edge0.getLoop1());
 			allLoops.remove(edge0.getTerm1());
 			i.remove();
@@ -157,14 +156,14 @@ public class QueryConnectedComponent {
 					Edge edge = i.next().getValue();
 					NewLiteral t0 = edge.getTerm0();
 					NewLiteral t1 = edge.getTerm1();
-					if (ccNewLiterals.contains(t0)) {
-						if (ccNewLiterals.add(t1))  { // the other NewLiteral is already there
+					if (ccTerms.contains(t0)) {
+						if (ccTerms.add(t1))  { // the other NewLiteral is already there
 							ccLoops.add(edge.getLoop1());
 							allLoops.remove(t1); // remove the loops that are covered by the edges in CC
 						}
 					}
-					else if (ccNewLiterals.contains(t1)) {
-						if (ccNewLiterals.add(t0))  {// the other NewLiteral is already there
+					else if (ccTerms.contains(t1)) {
+						if (ccTerms.add(t0))  {// the other NewLiteral is already there
 							ccLoops.add(edge.getLoop0()); 
 							allLoops.remove(t0); // remove the loops that are covered by the edges in CC
 						}
@@ -209,8 +208,8 @@ public class QueryConnectedComponent {
 	 * @return true if all NewLiterals of the connected component are existentially quantified variables
 	 */
 	
-	public boolean hasNoFreeNewLiterals() {
-		return noFreeNewLiterals;
+	public boolean hasNoFreeTerms() {
+		return noFreeTerms;
 	}
 	
 	/**
@@ -263,25 +262,19 @@ public class QueryConnectedComponent {
 	 */
 	
 	static class Loop {
-		private final NewLiteral NewLiteral;
+		private final NewLiteral term;
 		private Collection<Atom> atoms;
-//		private Collection<Edge> adjacentEdges;
 		private final boolean isExistentialVariable;
 		
-		public Loop(NewLiteral NewLiteral, boolean isExistentialVariable) {
-			this.NewLiteral = NewLiteral;
+		public Loop(NewLiteral term, boolean isExistentialVariable) {
+			this.term = term;
 			this.isExistentialVariable = isExistentialVariable;
 			this.atoms = new ArrayList<Atom>(10);
-//			this.adjacentEdges = new ArrayList<Edge>(10);
 		}
 		
 		public NewLiteral getTerm() {
-			return NewLiteral;
+			return term;
 		}
-		
-//		public Collection<Edge> getAdjacentEdges() {
-//			return adjacentEdges;
-//		}
 		
 		public Collection<Atom> getAtoms() {
 			return atoms;
@@ -293,19 +286,19 @@ public class QueryConnectedComponent {
 		
 		@Override
 		public String toString() {
-			return "loop: {" + NewLiteral + "}" + atoms;
+			return "loop: {" + term + "}" + atoms;
 		}
 		
 		@Override 
 		public boolean equals(Object o) {
 			if (o instanceof Loop) 
-				return NewLiteral.equals(((Loop)o).NewLiteral);
+				return term.equals(((Loop)o).term);
 			return false;
 		}
 		
 		@Override
 		public int hashCode() {
-			return NewLiteral.hashCode();
+			return term.hashCode();
 		}
 		
 	}
@@ -326,9 +319,7 @@ public class QueryConnectedComponent {
 		public Edge(Loop l0, Loop l1) {
 			this.bAtoms = new ArrayList<Atom>(10);
 			this.l0 = l0;
-//			l0.adjacentEdges.add(this);
 			this.l1 = l1;
-//			l1.adjacentEdges.add(this);
 		}
 
 		public Loop getLoop0() {
@@ -340,11 +331,11 @@ public class QueryConnectedComponent {
 		}
 		
 		public NewLiteral getTerm0() {
-			return l0.NewLiteral;
+			return l0.term;
 		}
 		
 		public NewLiteral getTerm1() {
-			return l1.NewLiteral;
+			return l1.term;
 		}
 		
 		public Collection<Atom> getAtoms0() {
@@ -359,28 +350,32 @@ public class QueryConnectedComponent {
 			return bAtoms;
 		}
 		
-		public int size() {
-			return bAtoms.size() + l0.atoms.size() + l1.atoms.size();
+		public List<Atom> getAtoms() {
+			List<Atom> extAtoms = new ArrayList<Atom>(bAtoms.size() + l0.atoms.size() + l1.atoms.size());
+			extAtoms.addAll(bAtoms);
+			extAtoms.addAll(l0.atoms);
+			extAtoms.addAll(l1.atoms);
+			return extAtoms;
 		}
 		
 		@Override
 		public String toString() {
-			return "edge: {" + l0.NewLiteral + ", " + l1.NewLiteral + "}" + bAtoms + l0.atoms + l1.atoms;
+			return "edge: {" + l0.term + ", " + l1.term + "}" + bAtoms + l0.atoms + l1.atoms;
 		}
 	}
 	
 	/**
-	 * NewLiteralPair: a simple abstraction of *unordered* pair of NewLiterals (i.e., {t1, t2} and {t2, t1} are equal)
+	 * TermPair: a simple abstraction of *unordered* pair of NewLiterals (i.e., {t1, t2} and {t2, t1} are equal)
 	 * 
 	 * @author Roman Kontchakov
 	 *
 	 */
 	
-	private static class NewLiteralPair {
+	private static class TermPair {
 		private final NewLiteral t0, t1;
 		private final int hashCode;
 
-		public NewLiteralPair(NewLiteral t0, NewLiteral t1) {
+		public TermPair(NewLiteral t0, NewLiteral t1) {
 			this.t0 = t0;
 			this.t1 = t1;
 			this.hashCode = t0.hashCode() ^ t1.hashCode();
@@ -388,8 +383,8 @@ public class QueryConnectedComponent {
 
 		@Override
 		public boolean equals(Object o) {
-			if (o instanceof NewLiteralPair) {
-				NewLiteralPair other = (NewLiteralPair) o;
+			if (o instanceof TermPair) {
+				TermPair other = (TermPair) o;
 				if (this.t0.equals(other.t0) && this.t1.equals(other.t1))
 					return true;
 				if (this.t0.equals(other.t1) && this.t1.equals(other.t0))
