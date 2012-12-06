@@ -9,7 +9,7 @@ public class SesameClassicInMemoryRepo extends SesameClassicRepo {
 	
 	private static QuestPreferences p = new QuestPreferences();
 
-	public SesameClassicInMemoryRepo(String name, String tboxFile)
+	public SesameClassicInMemoryRepo(String name, String tboxFile, boolean existential, String rewriting)
 			throws Exception {
 		
 		super();
@@ -21,6 +21,10 @@ public class SesameClassicInMemoryRepo extends SesameClassicRepo {
 		p.setCurrentValueOf(QuestPreferences.OBTAIN_FROM_ONTOLOGY, "false");
 		p.setCurrentValueOf(QuestPreferences.DBTYPE, QuestConstants.SEMANTIC); 
 		p.setCurrentValueOf(QuestPreferences.STORAGE_LOCATION, QuestConstants.INMEMORY);
+		if (rewriting.equals("TreeWitness"))
+			p.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.TW);
+		else if (rewriting.equals("Default"))
+			p.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.UCQBASED);
 		
 		createStore(name, tboxFile, p); 
 		

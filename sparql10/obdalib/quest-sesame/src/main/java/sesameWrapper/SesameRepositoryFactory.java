@@ -30,10 +30,13 @@ public class SesameRepositoryFactory implements RepositoryFactory{
 				config.validate();
 					String name = ((SesameRepositoryConfig) config).getName();
 					String owlfile = ((SesameRepositoryConfig) config).getOwlFile();
+					boolean existential = ((SesameRepositoryConfig) config).getExistential();
+					String rewriting = ((SesameRepositoryConfig) config).getRewriting();
+					System.out.println("Creating with: "+existential + rewriting);
 					
 					if (((SesameRepositoryConfig) config).getQuestType().equals("quest-inmemory"))
 					{
-						return new SesameClassicInMemoryRepo(name, owlfile);
+						return new SesameClassicInMemoryRepo(name, owlfile, existential, rewriting);
 					}
 					else if (((SesameRepositoryConfig) config).getQuestType().equals("quest-remote"))
 					{
@@ -42,7 +45,7 @@ public class SesameRepositoryFactory implements RepositoryFactory{
 					else if (((SesameRepositoryConfig) config).getQuestType().equals("quest-virtual")) 
 					{
 						String obdafile = ((SesameRepositoryConfig) config).getObdaFile();
-						return new SesameVirtualRepo(name, owlfile, obdafile);
+						return new SesameVirtualRepo(name, owlfile, obdafile, existential, rewriting);
 					}
 			}}
 			catch(Exception e)

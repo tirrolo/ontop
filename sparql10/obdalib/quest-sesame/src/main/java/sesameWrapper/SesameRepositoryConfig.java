@@ -45,12 +45,18 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
     /** <tt>http://inf.unibz.it/krdb/obda/quest#obdafile</tt> */
     public final static URI OBDAFILE;
     
+    public final static URI EXISTENTIAL;
+    
+    public final static URI REWRITING;
+    
     static {
         ValueFactory factory = ValueFactoryImpl.getInstance();
         QUEST_TYPE = factory.createURI(NAMESPACE, "quest_type");
         NAME = factory.createURI(NAMESPACE, "repo_name");
         OWLFILE = factory.createURI(NAMESPACE, "owlfile");
         OBDAFILE = factory.createURI(NAMESPACE, "obdafile");
+        EXISTENTIAL = factory.createURI(NAMESPACE, "false");
+        REWRITING = factory.createURI(NAMESPACE, "Default");
     }
     
     
@@ -58,6 +64,8 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
     private String name;
     private String owlfile;
     private String obdafile;
+    private boolean existential;
+    private String rewriting;
 
     /**
      * Create a new RepositoryConfigImpl.
@@ -106,6 +114,27 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
     	this.obdafile = file;
     }
 
+    public boolean getExistential()
+    {
+    	return existential;
+    }
+    
+    public void setExistential(boolean ex)
+    {
+    	this.existential = ex;
+    	System.out.println("Existential set:"+ex);
+    }
+    
+    public String getRewriting()
+    {
+    	return this.rewriting;
+    }
+    
+    public void setRewriting(String rew)
+    {
+    	this.rewriting = rew;
+    	System.out.println("Rewriting set: "+rew);
+    }
 
     @Override
     public void validate()
@@ -141,6 +170,12 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
         if (obdafile != null) {
             graph.add(implNode, OBDAFILE, vf.createLiteral(obdafile));
         }
+        if (existential == false || existential == true) {
+        	graph.add(implNode, EXISTENTIAL, vf.createLiteral(existential));
+        }
+        if (rewriting != null) {
+            graph.add(implNode, REWRITING, vf.createLiteral(rewriting));
+        }
       
         return implNode;
     }
@@ -170,6 +205,16 @@ public class SesameRepositoryConfig extends RepositoryImplConfigBase {
                 Literal obdafile = GraphUtil.getOptionalObjectLiteral(graph, implNode, OBDAFILE);
                 if (obdafile != null) {
                     setObdaFile(obdafile.getLabel());
+                }
+                Literal existl = GraphUtil.getOptionalObjectLiteral(graph, implNode, EXISTENTIAL);
+                System.out.println("Parse: "+existl);
+                if (existl != null) {
+                    setExistential(existl.booleanValue());
+                }
+                Literal rewr = GraphUtil.getOptionalObjectLiteral(graph, implNode, REWRITING);
+                System.out.println("Parse: "+rewr);
+                if (rewr != null) {
+                    setRewriting(rewr.getLabel());
                 }
                 
             }

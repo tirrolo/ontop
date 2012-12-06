@@ -3,6 +3,7 @@ package sesameWrapper;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
+import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
 import it.unibz.krdb.obda.owlrefplatform.questdb.QuestDBVirtualStore;
 
 import java.io.File;
@@ -15,13 +16,21 @@ public class SesameVirtualRepo extends SesameAbstractRepo {
 	private QuestDBVirtualStore virtualStore;
 	private QuestDBConnection questDBConn;
 
-	public SesameVirtualRepo(String name, String tboxFile, String obdaFile)
+	public SesameVirtualRepo(String name, String tboxFile, String obdaFile, boolean existential, String rewriting)
 			throws Exception {
 		super();
 
+		QuestPreferences pref = new QuestPreferences();
+		pref.setCurrentValueOf(QuestPreferences.ABOX_MODE, QuestConstants.VIRTUAL);
+		if (rewriting.equals("TreeWitness"))
+			pref.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.TW);
+		else if (rewriting.equals("Default"))
+			pref.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.UCQBASED);
+		
+		
 		URI obdaURI = (new File(obdaFile)).toURI();
 		this.virtualStore = new QuestDBVirtualStore(name,
-				(new File(tboxFile)).toURI(), obdaURI);
+				(new File(tboxFile)).toURI(), obdaURI, pref);
 		questDBConn = virtualStore.getConnection();
 	}
 
