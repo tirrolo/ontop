@@ -15,8 +15,7 @@ import sesameWrapper.SesameClassicInMemoryRepo;
 public class QuestMemorySPARQLQueryTest extends SPARQLQueryTest {
 
 	public static Test suite() throws Exception {
-		return ManifestTest.suite(new Factory() {
-
+		return QuestManifestTest.suite(new Factory() {
 			public QuestMemorySPARQLQueryTest createSPARQLQueryTest(
 					String testURI, String name, String queryFileURL,
 					String resultFileURL, Dataset dataSet,

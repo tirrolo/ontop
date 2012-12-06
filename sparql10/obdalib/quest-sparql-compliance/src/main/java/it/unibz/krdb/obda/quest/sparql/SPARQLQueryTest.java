@@ -45,7 +45,6 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.QueryResultUtil;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.dawg.DAWGTestResultSetUtil;
@@ -64,8 +63,8 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
-import org.openrdf.rio.RDFParser.DatatypeHandling;
 import org.openrdf.rio.Rio;
+import org.openrdf.rio.RDFParser.DatatypeHandling;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.sail.memory.MemoryStore;
 import org.slf4j.Logger;
@@ -186,9 +185,6 @@ public abstract class SPARQLQueryTest extends TestCase {
 			if (dataset != null) {
 				query.setDataset(dataset);
 			}
-
-			String name = this.getName();
-
 			if (query instanceof TupleQuery) {
 				TupleQueryResult queryResult = ((TupleQuery)query).evaluate();
 
@@ -203,9 +199,7 @@ public abstract class SPARQLQueryTest extends TestCase {
 			else if (query instanceof GraphQuery) {
 				GraphQueryResult gqr = ((GraphQuery)query).evaluate();
 				Set<Statement> queryResult = Iterations.asSet(gqr);
-
 				Set<Statement> expectedResult = readExpectedGraphQueryResult();
-
 				compareGraphs(queryResult, expectedResult);
 			}
 			else if (query instanceof BooleanQuery) {

@@ -5,6 +5,9 @@
  */
 package it.unibz.krdb.obda.quest.sparql;
 
+import info.aduna.io.FileUtil;
+import info.aduna.io.ZipUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,12 +17,6 @@ import java.util.jar.JarFile;
 
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import info.aduna.io.ZipUtil;
-import info.aduna.io.FileUtil;
 
 import org.openrdf.OpenRDFUtil;
 import org.openrdf.model.Resource;
@@ -37,6 +34,8 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.turtle.TurtleParser;
 import org.openrdf.sail.memory.MemoryStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ManifestTest {
 
