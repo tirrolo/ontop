@@ -29,6 +29,7 @@ import org.openrdf.repository.config.RepositoryImplConfig;
 import org.openrdf.repository.config.RepositoryRegistry;
 import org.openrdf.repository.manager.RemoteRepositoryManager;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.helpers.RDFHandlerBase;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -44,7 +45,7 @@ import sesameWrapper.StartJetty;
 public class QuestRepos {
 
 	// classic
-	// @Test
+	 @Test
 	public void test_inmemory() {
 		RepositoryConnection con = null;
 		try {
@@ -63,13 +64,29 @@ public class QuestRepos {
 
 			con = (RepositoryConnection) repo.getConnection();
 
-			String queryString = "SELECT * WHERE {?s ?p ?o} Limit 20";
-			TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString);
-			TupleQueryResult result = tupleQuery.evaluate();
+
+			 String queryString = "SELECT * WHERE {?s ?p ?o} Limit 20";
+			 TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString);
+			 TupleQueryResult result = tupleQuery.evaluate();
 			System.out.println("RESULT hasdata: " + result.hasNext());
 			while (result.hasNext())
 				System.out.println(result.next());
-
+			result.close();
+			
+			File file = new File("C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/stockexchange/new 2.ttl");
+			String baseURI = "<http://www.owl-ontologies.com/Ontology1207768242.owl#>";
+			con.add(file,  baseURI, RDFFormat.TURTLE);
+			con.commit();
+			
+			 String queryString2 = "SELECT * WHERE {?s ?p ?o} Limit 20";
+			 TupleQuery tupleQuery2 = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString2);
+			 TupleQueryResult result2 = tupleQuery2.evaluate();
+			System.out.println("RESULT hasdata: " + result2.hasNext());
+			while (result2.hasNext())
+				System.out.println(result2.next());
+			result2.close();
+			//con.export(new RDFHandlerBase(), (Resource)null);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -102,7 +119,7 @@ public class QuestRepos {
 			config = (SesameRepositoryConfig) fact.getConfig();
 			config.setQuestType("quest-inmemory");
 			config.setName("my_remote");
-			config.setOwlFile("stockexchange-h2-unittest.owl");
+			config.setOwlFile("C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/stockexchange/stockexchange-h2-unittest.owl");
 			RepositoryRegistry.getInstance().add(fact);
 
 			RepositoryImplConfig repositoryTypeSpec = config;
@@ -115,15 +132,18 @@ public class QuestRepos {
 			Repository repository = man.getRepository(repositoryId);
 
 			con = repository.getConnection();
-
-			String queryString = "SELECT * WHERE {?s ?p ?o} Limit 20";
-			TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,
-					queryString);
+			File f = new File("C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/stockexchange/stockexchange-h2-unittest.ttl");
+			con.add(f, "http://www.owl-ontologies.com/Ontology1207768242.owl#", RDFFormat.TURTLE, (Resource)null);
+			
+			String queryString = "SELECT * WHERE {?s a ?o} Limit 20";
+			TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString);
 			TupleQueryResult result = tupleQuery.evaluate();
+			
 			System.out.println("RESULT hasdata: " + result.hasNext());
 			while (result.hasNext())
 				System.out.println(result.next());
-
+			result.close();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -281,38 +301,40 @@ public class QuestRepos {
 				org.openrdf.model.Statement st = resultg.next();
 				System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
 			}
-			
-			
 */
+			//con.close();
+			repo.shutDown();
+			
+			repo.initialize();
+
+			con = (RepositoryConnection) repo.getConnection();
+
+			 queryString = "SELECT * WHERE {?s ?p ?o} Limit 5";
+			 tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString);
+			 result = tupleQuery.evaluate();
+			System.out.println("RESULT hasdata: " + result.hasNext());
+			while (result.hasNext())
+				System.out.println(result.next());
+			
+			
+			System.out.println("Con is open: "+con.isOpen());
+			System.out.println("Result is readable: "+result.hasNext());
 			
 			repo.shutDown();
-
-			// System.out.println(con.toString());
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		finally {
-			try {
-				con.close();
-			} catch (RepositoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
 	}
 
-	@Test
-	public void test_virtual_localhost() {
-
+	// @Test
+	public void test_virtual_local(){
 		try {
 
 			System.out.println("\nVirtal quest repo test....");
 			
-			String owlfile = "C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/bsbm/bsbm.owl";
-			String obdafile = "C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/bsbm/bsbm.obda";
+			String owlfile = "C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/stockexchange/stockexchange-h2-unittest.owl";//bsbm/bsbm.owl";
+			String obdafile = "C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/stockexchange/stockexchange-h2-unittest.obda";//bsbm/bsbm.obda";
 
 			RemoteRepositoryManager man = new RemoteRepositoryManager("http://localhost:8080/openrdf-sesame");
 			man.initialize();
@@ -331,7 +353,75 @@ public class QuestRepos {
 
 			RepositoryImplConfig repositoryTypeSpec = config;
 
-			String repositoryId = "testdb";
+			String repositoryId = "stockexch";
+			RepositoryConfig repConfig = new RepositoryConfig(repositoryId, repositoryTypeSpec);
+			man.addRepositoryConfig(repConfig);
+		
+			Repository repository = man.getRepository(repositoryId);
+			
+			repository.initialize();
+
+			org.openrdf.repository.RepositoryConnection con = repository.getConnection();
+			
+			String queryString = "SELECT * WHERE {?s ?p ?o} Limit 10";
+			TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,
+					queryString);
+			TupleQueryResult result = tupleQuery.evaluate();
+			System.out.println("RESULT hasdata: " + result.hasNext());
+			while (result.hasNext())
+				System.out.println(result.next());
+			
+			if (con.isOpen()) {
+				queryString = "SELECT * WHERE {?s ?p ?o} Limit 10";
+				tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,
+						queryString);
+				result = tupleQuery.evaluate();
+				System.out.println("RESULT hasdata: " + result.hasNext());
+				while (result.hasNext())
+					System.out.println(result.next());
+
+				con.close();
+			}
+			
+			repository.shutDown();
+			man.removeRepositoryConfig(repositoryId);
+			man.shutDown();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	
+	//@Test
+	public void test_virtual_localhost() {
+
+		try {
+
+			System.out.println("\nVirtal quest repo test....");
+			
+			String owlfile = "C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/stockexchange/stockexchange-h2-unittest.owl";//bsbm/bsbm.owl";
+			String obdafile = "C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/Quest/stockexchange/stockexchange-h2-unittest.obda";//bsbm/bsbm.obda";
+
+			RemoteRepositoryManager man = new RemoteRepositoryManager("http://localhost:8080/openrdf-sesame");
+			man.initialize();
+			Set<String> ss = man.getRepositoryIDs();
+			for (String s : ss)
+				System.out.println(s);
+					
+			// create a configuration for the repository implementation
+			SesameRepositoryFactory f = new SesameRepositoryFactory();
+			RepositoryRegistry.getInstance().add(f);
+			SesameRepositoryConfig config = new SesameRepositoryConfig();
+			config.setQuestType("quest-virtual");
+			config.setName("my_repo");
+			config.setOwlFile(owlfile);
+			config.setObdaFile(obdafile);
+
+			RepositoryImplConfig repositoryTypeSpec = config;
+
+			String repositoryId = "stockexchange";
 			RepositoryConfig repConfig = new RepositoryConfig(repositoryId, repositoryTypeSpec);
 			man.addRepositoryConfig(repConfig);
 		
@@ -345,8 +435,15 @@ public class QuestRepos {
 			System.out.println("RESULT hasdata: " + result.hasNext());
 			while (result.hasNext())
 				System.out.println(result.next());
+			 queryString = "SELECT * WHERE {?s ?p ?o} Limit 10";
+			 tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString);
+			 result = tupleQuery.evaluate();
+			System.out.println("RESULT hasdata: " + result.hasNext());
+			while (result.hasNext())
+				System.out.println(result.next());
+			result.close();
 			
-			 queryString = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+		/*	 queryString = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
 			 		"PREFIX rev: <http://purl.org/stuff/rev#>\n" +
 			 		"PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n" +
 			 		"PREFIX bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/>\n" +
@@ -394,7 +491,62 @@ public class QuestRepos {
 					System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
 				}
 				
-			repository.shutDown();
+				*/
+			//repository.shutDown();
+			man.removeRepositoryConfig(repositoryId);
+			man.shutDown();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	
+	//@Test
+	public void test_virtual_fish() {
+
+		try {
+
+			System.out.println("\nVirtal quest fish test....");
+			
+			String owlfile = "//Ubz01fst/Profs/User/TiBagosi/Desktop/mappings/fishdelish/fishdelish-simple.owl";
+			String obdafile = "//Ubz01fst/Profs/User/TiBagosi/Desktop/mappings/fishdelish/fishdelish-simple.obda";
+
+			RemoteRepositoryManager man = new RemoteRepositoryManager("http://10.10.160.28:8080/openrdf-sesame");
+			man.initialize();
+			Set<String> ss = man.getRepositoryIDs();
+			for (String s : ss)
+				System.out.println(s);
+					
+			// create a configuration for the repository implementation
+			SesameRepositoryFactory f = new SesameRepositoryFactory();
+			RepositoryRegistry.getInstance().add(f);
+			SesameRepositoryConfig config = new SesameRepositoryConfig();
+			config.setQuestType("quest-virtual");
+			config.setName("my_repo");
+			config.setOwlFile(owlfile);
+			config.setObdaFile(obdafile);
+
+			RepositoryImplConfig repositoryTypeSpec = config;
+
+			String repositoryId = "testdb";
+			RepositoryConfig repConfig = new RepositoryConfig(repositoryId, repositoryTypeSpec);
+			man.addRepositoryConfig(repConfig);
+		
+			Repository repository = man.getRepository(repositoryId);
+			System.out.println(repository.getConnection().isOpen());
+			org.openrdf.repository.RepositoryConnection con = repository.getConnection();
+
+			String queryString = "SELECT * WHERE {?s ?p ?o} Limit 10";
+			TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL,	queryString);
+			TupleQueryResult result = tupleQuery.evaluate();
+			System.out.println("RESULT hasdata: " + result.hasNext());
+			while (result.hasNext())
+				System.out.println(result.next());
+			
+		
+			//repository.shutDown();
 			man.removeRepositoryConfig("testdb");
 			man.shutDown();
 
@@ -403,5 +555,6 @@ public class QuestRepos {
 			System.out.println(e.getMessage());
 		}
 	}
+
 
 }

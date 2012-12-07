@@ -225,7 +225,7 @@ public class StockExchangeTestH2 extends TestCase {
 		RepositoryConnection con = null;
 		Repository repo = null;
 
-		repo = new SesameVirtualRepo("my_name", owlfile, obdafile);
+		repo = new SesameVirtualRepo("my_name", owlfile, obdafile, false, "TreeWitness");
 		repo.initialize();
 		con = repo.getConnection();
 

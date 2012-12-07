@@ -29,7 +29,7 @@ public class SesameVirtualTest extends TestCase {
 			String owlfile = "../quest-owlapi3/src/test/resources/test/bsbm.owl";
 			String obdafile = "../quest-owlapi3/src/test/resources/test/bsbm.obda";
 				//"/home/timi/ontologies/helloworld/helloworld.owl";
-			repo = new SesameVirtualRepo("my_name", owlfile, obdafile);
+			repo = new SesameVirtualRepo("my_name", owlfile, obdafile, false, "TreeWitness");
 	
 			repo.initialize();
 			

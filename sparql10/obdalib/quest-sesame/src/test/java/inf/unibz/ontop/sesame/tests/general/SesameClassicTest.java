@@ -39,7 +39,7 @@ public class SesameClassicTest extends TestCase {
 		// create a sesame in-memory repository
 		String owlfile = "src/test/resources/onto2.owl";
 
-		repo = new SesameClassicInMemoryRepo("my_name", owlfile);
+		repo = new SesameClassicInMemoryRepo("my_name", owlfile, false, "TreeWitness");
 		repo.initialize();
 		con = (RepositoryConnection) repo.getConnection();
 	}
@@ -60,8 +60,8 @@ public class SesameClassicTest extends TestCase {
 		ValueFactory f = repo.getValueFactory();
 
 		// create some resources and literals to make statements out of
-		org.openrdf.model.URI alice = f.createURI("http://example.org/people/alice");
-		org.openrdf.model.URI bob = f.createURI("http://example.org/people/bob");
+		org.openrdf.model.URI alice = f.createURI(baseURI+"Alice");
+		org.openrdf.model.URI bob = f.createURI(baseURI+"Bob");
 		org.openrdf.model.URI age = f.createURI(baseURI + "age");
 		org.openrdf.model.URI person = f.createURI(baseURI+ "Person");
 		Literal bobsAge = f.createLiteral(5);
@@ -70,12 +70,12 @@ public class SesameClassicTest extends TestCase {
 		// alice is a person
 		con.add(alice, RDF.TYPE, person);
 		// alice's name is "Alice"
-		con.add(alice, age, alicesAge);
+		//con.add(alice, age, alicesAge);
 
 		// bob is a person
 		con.add(bob, RDF.TYPE, person);
 		// bob's name is "Bob"
-		con.add(bob, age, bobsAge);
+		//con.add(bob, age, bobsAge);
 	}
 	
 	
@@ -106,8 +106,7 @@ public class SesameClassicTest extends TestCase {
 	
 	public void graphQuery() throws RepositoryException, MalformedQueryException, QueryEvaluationException
 	{
-		String queryString = "PREFIX : \n<http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#>\n "
-				+ "CONSTRUCT {?x :eta ?y} WHERE { ?x :age ?y} ";
+		String queryString = "CONSTRUCT {?x a ?y} WHERE { ?x a ?y} ";
 		// String queryString =
 		// "SELECT ?x ?y WHERE { ?x a onto:Person. ?x onto:age ?y } ";
 		GraphQuery graphQuery = (con).prepareGraphQuery(QueryLanguage.SPARQL, queryString);
@@ -115,13 +114,10 @@ public class SesameClassicTest extends TestCase {
 
 		while (result.hasNext()) {
 			Statement st = result.next();
-			System.out.println(st.getSubject().stringValue() + " "+ st.getPredicate().stringValue()+" "+st.getObject().stringValue());
+			System.out.println(st.toString());
 		}
 		result.close();
 	}
-	
-	
-	
 	
 	public void booleanQuery() throws QueryEvaluationException, RepositoryException, MalformedQueryException
 	{	
@@ -148,11 +144,11 @@ public class SesameClassicTest extends TestCase {
 	{
 		try{
 		setupInMemory();
-		//addFromURI();
-		addFromFile();
-		tupleQuery();
+		addFromURI();
+		//addFromFile();
+	//	tupleQuery();
 		//booleanQuery();
-		//graphQuery();
+		graphQuery();
 		close();
 		}
 		catch(Exception e)
