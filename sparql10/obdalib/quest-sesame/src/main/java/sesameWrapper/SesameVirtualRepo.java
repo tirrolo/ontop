@@ -22,10 +22,14 @@ public class SesameVirtualRepo extends SesameAbstractRepo {
 
 		QuestPreferences pref = new QuestPreferences();
 		pref.setCurrentValueOf(QuestPreferences.ABOX_MODE, QuestConstants.VIRTUAL);
+		if (existential)
+			pref.setCurrentValueOf(QuestPreferences.REWRITE, "true");
+		else
+			pref.setCurrentValueOf(QuestPreferences.REWRITE, "false");
 		if (rewriting.equals("TreeWitness"))
-			pref.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.TW);
+			pref.setCurrentValueOf(QuestPreferences.REFORMULATION_TECHNIQUE, QuestConstants.TW);
 		else if (rewriting.equals("Default"))
-			pref.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.UCQBASED);
+			pref.setCurrentValueOf(QuestPreferences.REFORMULATION_TECHNIQUE, QuestConstants.UCQBASED);
 		
 		
 		URI obdaURI = (new File(obdaFile)).toURI();

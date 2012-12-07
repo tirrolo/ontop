@@ -21,10 +21,14 @@ public class SesameClassicInMemoryRepo extends SesameClassicRepo {
 		p.setCurrentValueOf(QuestPreferences.OBTAIN_FROM_ONTOLOGY, "false");
 		p.setCurrentValueOf(QuestPreferences.DBTYPE, QuestConstants.SEMANTIC); 
 		p.setCurrentValueOf(QuestPreferences.STORAGE_LOCATION, QuestConstants.INMEMORY);
+		if (existential)
+			p.setCurrentValueOf(QuestPreferences.REWRITE, "true");
+		else
+			p.setCurrentValueOf(QuestPreferences.REWRITE, "false");
 		if (rewriting.equals("TreeWitness"))
-			p.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.TW);
+			p.setCurrentValueOf(QuestPreferences.REFORMULATION_TECHNIQUE, QuestConstants.TW);
 		else if (rewriting.equals("Default"))
-			p.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.UCQBASED);
+			p.setCurrentValueOf(QuestPreferences.REFORMULATION_TECHNIQUE, QuestConstants.UCQBASED);
 		
 		createStore(name, tboxFile, p); 
 		
