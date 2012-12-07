@@ -304,8 +304,10 @@ public class QuestResultset implements OBDAResultSet {
 		try {
 			result = set.getString(name);
 			
-			String encoded = URIref.encode(result);
-			return URI.create(encoded);
+//			result
+//			String encoded = URIref.encode(result);
+			
+			return URI.create(result.replace(' ', '_'));
 		} catch (SQLException e) {
 			throw new OBDAException(e.getMessage());
 		}
