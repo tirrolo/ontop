@@ -276,17 +276,6 @@ public class DatalogNormalizer {
 		Map<Variable, NewLiteral> substitutions = new HashMap<Variable, NewLiteral>();
 		int[] newVarCounter = { 1 };
 
-		/*
-		 * Here we collect boolean atoms that have conditions of atoms on the
-		 * left of left joins. These cannot be put in the conditions of
-		 * LeftJoin(...) atoms as inside terms, since these conditions have to
-		 * be applied no matter what. Keeping them there makes them "optional",
-		 * i.e., or else return NULL. Hence these conditions have to be pulled
-		 * up to the nearest JOIN in the upper levels in the branches. The
-		 * pulloutEqualities method iwll do this, however if there are still
-		 * remaiing some by the time it finish, we must add them to the body of
-		 * the CQIE as normal conditions to the query (WHERE clauses)
-		 */
 		Set<Function> booleanAtoms = new HashSet<Function>();
 
 		pullOutEqualities(query.getBody(), substitutions, booleanAtoms,
@@ -305,6 +294,8 @@ public class DatalogNormalizer {
 	}
 
 	private static BranchDepthSorter sorter = new BranchDepthSorter();
+	private static boolean secondDataAtomFound;
+	private static boolean firstDataAtomFound;
 
 	/***
 	 * Compares two atoms by the depth of their JOIN/LEFT JOIN branches. This is
@@ -418,7 +409,7 @@ public class DatalogNormalizer {
 				else
 					pullOutEqualities(subterms, substitutions,
 							leftConditionBooleans, newVarCounter, false);
-
+			
 				if (!isLeftJoin) {
 					/*
 					 * Collecting any conditions that had to be pulled up to an
@@ -649,9 +640,6 @@ public class DatalogNormalizer {
 			if (!belongsToThisLevel)
 				continue;
 
-		//	System.out.println("EQUALITYEQUALITYEQUALITYEQUALITYEQUALITY"
-		//			+ equality.getFunctionSymbol().getClass() + " " + equality);
-		//	System.out.println("BELONGS!!!!");
 			currentLevelAtoms.add(equality);
 			removedBooleanConditions.add(equality);
 		}
@@ -800,4 +788,98 @@ public class DatalogNormalizer {
 
 		return result;
 	}
+
+	
+	// THE FOLLOWING COMMENT IS TAKEN FROM THE CODE ABOVE, THE FUNCTIONALITY IT DESCRIBES
+	// WAS IMPLEMENTED BELLOW
+	/*
+	 * Here we collect boolean atoms that have conditions of atoms on the
+	 * left of left joins. These cannot be put in the conditions of
+	 * LeftJoin(...) atoms as inside terms, since these conditions have to
+	 * be applied no matter what. Keeping them there makes them "optional",
+	 * i.e., or else return NULL. Hence these conditions have to be pulled
+	 * up to the nearest JOIN in the upper levels in the branches. The
+	 * pulloutEqualities method iwll do this, however if there are still
+	 * remaiing some by the time it finish, we must add them to the body of
+	 * the CQIE as normal conditions to the query (WHERE clauses)
+	 */	
+	
+	public static void pullOutLeftJoinConditions(CQIE query) {
+		secondDataAtomFound = false;
+		firstDataAtomFound = false;
+		Set<Function> booleanAtoms = new HashSet<Function>();
+		Function f = query.getBody().get(0);
+		if (f.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN) {
+			pullOutLJCond(query.getBody(), booleanAtoms, true);
+		} else
+			pullOutLJCond(query.getBody(), booleanAtoms, false);
+
+		List body = query.getBody();
+		body.addAll(booleanAtoms);
+	}
+	
+	private static void pullOutLJCond(List currentTerms,	Set<Function> leftConditionBooleans, boolean isLeftJoin) {
+		Set<Variable> firstDataAtomVars = null;
+
+		for (int i = 0; i < currentTerms.size(); i++) {
+			NewLiteral term = (NewLiteral) currentTerms.get(i);
+			if (!(term instanceof Function))
+				throw new RuntimeException(
+						"Unexpected term found while normalizing (pulling out conditions) the query.");
+
+			Function atom = (Function) term;
+			List<NewLiteral> subterms = atom.getTerms();
+
+			// if we are in left join then pull out boolean conditions that
+			// correspond to first data atom
+			if (isLeftJoin) {
+
+				if (atom.isDataFunction()) {
+					// if both are false then its first one
+					if (!firstDataAtomFound && !secondDataAtomFound) {
+						firstDataAtomFound = true;
+						// collect variable references from first data atom
+						firstDataAtomVars = atom.getReferencedVariables();
+					}
+				} else {
+					// if we are past first data term, then collect terms
+					if (firstDataAtomFound) {
+						// check if this boolean term has variables referencing
+						// first data atom
+						// if yes then they need to be pulled out of LEFT JOINs ON clause
+						if (hasReferencestoFirstDataAtom(atom,
+								firstDataAtomVars)) {
+							currentTerms.remove(i);
+							leftConditionBooleans.add(atom);
+						}
+
+					}
+				}
+			}
+			if (atom.isAlgebraFunction()) {
+				if (atom.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN)
+					pullOutLJCond(subterms, leftConditionBooleans, true);
+				else
+					pullOutLJCond(subterms, leftConditionBooleans, false);
+			}
+
+		}
+
+	}
+
+	// check if an atom shares same variables with first data atom 
+	private static boolean hasReferencestoFirstDataAtom(Function atom,
+			Set<Variable> firstDataAtomVars) {
+		Set<Variable> curAtomVars = atom.getReferencedVariables();
+		if (firstDataAtomVars == null)
+			return false;
+		if (!curAtomVars.isEmpty() && !firstDataAtomVars.isEmpty()) {
+			Variable first = (Variable) curAtomVars.toArray()[0];
+			if (firstDataAtomVars.contains(first))
+				return true;
+		}
+		return false;
+	}
 }
+
+

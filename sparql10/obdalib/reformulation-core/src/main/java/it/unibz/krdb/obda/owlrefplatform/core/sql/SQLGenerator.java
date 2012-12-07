@@ -165,10 +165,14 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 			DatalogNormalizer.foldJoinTrees(cq, false);
 
+			log.debug("Before pulling out Left Join Conditions: \n{}", cq);
+			
+			DatalogNormalizer.pullOutLeftJoinConditions(cq);
+			
 			log.debug("Before pulling out equalities: \n{}", cq);
-
+			
 			DatalogNormalizer.pullOutEqualities(cq);
-
+			
 			log.debug("Before pulling up nested references: \n{}", cq);
 
 			DatalogNormalizer.pullUpNestedReferences(cq, false);
@@ -687,10 +691,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 	// return variable SQL data type
 	private int getVariableDataType (NewLiteral term, QueryAliasIndex idx) {
-		//int size = idx.dataDefinitions.size();
-		//DataDefinition def = idx.dataDefinitions.get(var);
-		//def.getAttribute(def.getAttributePosition(var.toString()));
-		
+	
 		Function f = (Function) term;
 		if (f.isDataTypeFunction()) {
 			Predicate p = f.getPredicate();
