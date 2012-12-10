@@ -7,6 +7,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
 import it.unibz.krdb.obda.owlrefplatform.questdb.QuestDBVirtualStore;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.URI;
 
 import org.openrdf.repository.RepositoryException;
@@ -31,13 +32,26 @@ public class SesameVirtualRepo extends SesameAbstractRepo {
 		else if (rewriting.equals("Default"))
 			pref.setCurrentValueOf(QuestPreferences.REFORMULATION_TECHNIQUE, QuestConstants.UCQBASED);
 		
-		
-		URI obdaURI = (new File(obdaFile)).toURI();
-		this.virtualStore = new QuestDBVirtualStore(name,
-				(new File(tboxFile)).toURI(), obdaURI, pref);
+		URI obdaURI = URI.create(obdaFile);
+		URI tboxURI = URI.create(tboxFile);
+		this.virtualStore = new QuestDBVirtualStore(name, tboxURI, obdaURI, null);
 		questDBConn = virtualStore.getConnection();
 	}
 
+	public SesameVirtualRepo(String name, String tboxFile, String obdaFile, String configFileName) throws Exception {
+		super();
+		QuestPreferences pref = new QuestPreferences();
+		if (!configFileName.isEmpty()) {
+			File configFile = new File(URI.create(configFileName));
+			pref.readDefaultPropertiesFile(new FileInputStream(configFile));
+		} else {
+			pref.readDefaultPropertiesFile();
+		}
+		URI obdaURI = URI.create(obdaFile);
+		URI tboxURI = URI.create(tboxFile);
+		this.virtualStore = new QuestDBVirtualStore(name, tboxURI, obdaURI, pref);
+		questDBConn = virtualStore.getConnection();
+	}
 	
 	@Override
 	public QuestDBConnection getQuestConnection() throws OBDAException {

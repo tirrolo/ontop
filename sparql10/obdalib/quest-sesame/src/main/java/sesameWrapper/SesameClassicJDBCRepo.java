@@ -48,7 +48,7 @@ public class SesameClassicJDBCRepo extends SesameClassicRepo {
 		createStore(name, tboxFile, p); 
 		}
 		
-		classicStore.saveState(storePath);
+//		classicStore.saveState(storePath);
 	}
 
 }
