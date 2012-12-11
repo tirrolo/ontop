@@ -1,10 +1,14 @@
-@prefix rs:      <http://www.w3.org/2001/sw/DataAccess/tests/result-set#> .
-@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xsd:	 <http://www.w3.org/2001/XMLSchema#> .
+@prefix bsbm: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/> .
+@prefix bsbm-inst: <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/> .
+@prefix : <http://obda.inf.unibz.it/ontop/benchmark/bsbm.owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-[]    rdf:type      rs:ResultSet ;
-      rs:resultVariable  "counter" ;
-      rs:solution   [ rs:binding    [ rs:value      "25" ;
-                                      rs:variable   "counter"
-                                    ]
-                    ] .
+bsbm-inst:dataFromVendor2/Offer3470 
+	bsbm:export/product 		bsbm-inst:dataFromProducer6/Product231 ;
+	bsbm:export/productlabel 	"patchier" ;
+	bsbm:export/vendor 			"blears" ;
+	bsbm:export/vendorhomepage 	"http://www.vendor2.com/" ;
+	bsbm:export/offerURL 		"http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromVendor2/Offer3470/" ;
+	bsbm:export/price 			"4537.99" ;
+	bsbm:export/deliveryDays 	"6" ;
+	bsbm:export/validuntil 		"2008-05-19T00:00:00.0" .
