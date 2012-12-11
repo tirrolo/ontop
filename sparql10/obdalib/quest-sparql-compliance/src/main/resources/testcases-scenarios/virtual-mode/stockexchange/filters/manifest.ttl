@@ -1,0 +1,68 @@
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix : 		<http://fishdelish.cs.man.ac.uk/rdf/vocab/resource/> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix mf:     <http://obda.org/quest/tests/test-manifest#> .
+@prefix qt:     <http://obda.org/quest/tests/test-query#> .
+@prefix obdat:  <http://obda.org/quest/tests/test-scenario#> .
+
+<>  rdf:type mf:Manifest ;
+    rdfs:label "StockExchange Filter Queries" ;
+    mf:entries
+    ( 
+      :boolean-and
+	  :boolean-or
+	  :boolean-nested-1
+	  :boolean-nested-2
+	  :boolean-nested-3
+    ) .
+
+:boolean-and rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q1" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
+    mf:action
+            [ qt:query <boolean-and.rq> ] ;
+    mf:result <boolean-and.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:boolean-or rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q2" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
+    mf:action
+            [ qt:query <boolean-or.rq> ] ;
+    mf:result <boolean-or.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:boolean-nested-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q3" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
+    mf:action
+            [ qt:query <boolean-nested-1.rq> ] ;
+    mf:result <boolean-nested-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:boolean-nested-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q4" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
+    mf:action
+            [ qt:query <boolean-nested-2.rq> ] ;
+    mf:result <boolean-nested-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:boolean-nested-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q5" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
+    mf:action
+            [ qt:query <boolean-nested-3.rq> ] ;
+    mf:result <boolean-nested-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+ 

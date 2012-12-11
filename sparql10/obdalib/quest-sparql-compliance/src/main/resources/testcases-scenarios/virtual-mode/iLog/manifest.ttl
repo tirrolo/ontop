@@ -62,7 +62,7 @@
     mf:mappings <iLog.obda> .
  
 :query-5 rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q5: A terminal without trainpassage" ;
+    mf:name    "Q5: All terminals without trainpassage" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://wifo5-03.informatik.uni-mannheim.de/bizer/berlinsparqlbenchmark/spec/20080912/index.html#queryTripleQ5> ;
     mf:action
@@ -82,7 +82,7 @@
     mf:mappings <iLog.obda> .
   
 :query-7 rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q7: Loaded and unloaded ITUs in a terminal in a time interval" ;
+    mf:name    "Q7: Loaded and unloaded ITUs in all terminals in a time interval" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://wifo5-03.informatik.uni-mannheim.de/bizer/berlinsparqlbenchmark/spec/20080912/index.html#queryTripleQ7> ;
     mf:action

@@ -10,5 +10,8 @@
         <fishmark/manifest.ttl>
         <iLog/manifest.ttl>
         <stockexchange/datatypes/manifest.ttl>
+        <stockexchange/filters/manifest.ttl>
+        <stockexchange/modifiers/manifest.ttl>
+        <stockexchange/simplecq/manifest.ttl>
     ).
 
