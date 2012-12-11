@@ -9,5 +9,6 @@
         <bsbm/manifest.ttl>
         <fishmark/manifest.ttl>
         <iLog/manifest.ttl>
+        <stockexchange/datatypes/manifest.ttl>
     ).
 
