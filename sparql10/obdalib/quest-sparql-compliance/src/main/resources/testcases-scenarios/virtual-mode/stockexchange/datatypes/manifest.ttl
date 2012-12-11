@@ -9,7 +9,14 @@
     rdfs:label "Stockexchange Datatype Queries" ;
     mf:entries
     ( 
-      :literal-1
+      :literal-1 :literal-2
+      :string-1 :string-2 :string-3
+      :integer-1 :integer-2 :integer-3
+      :pos-integer-1 :pos-integer-2 :pos-integer-3
+      :neg-integer-1 :neg-integer-2 :neg-integer-3
+      :decimal-1 :decimal-2 :decimal-3
+      :pos-decimal-1 :pos-decimal-2 :pos-decimal-3
+      :neg-decimal-1 :neg-decimal-2 :neg-decimal-3
     ) .
 
 :literal-1 rdf:type mf:QueryEvaluationTest ;
@@ -19,5 +26,225 @@
     mf:action
             [ qt:query <literal-1.rq> ] ;
     mf:result <literal-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:literal-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q2: Literal with quotes and language tag" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <literal-2.rq> ] ;
+    mf:result <literal-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:string-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q3: String with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <string-1.rq> ] ;
+    mf:result <string-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:string-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q4: String without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <string-2.rq> ] ;
+    mf:result <string-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+ 
+:string-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q5: String with xsd:string" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <string-3.rq> ] ;
+    mf:result <string-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:integer-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q6: Integer with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <integer-1.rq> ] ;
+    mf:result <integer-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:integer-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q7: Integer without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <integer-2.rq> ] ;
+    mf:result <integer-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:integer-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q8: Integer with xsd:integer" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <integer-3.rq> ] ;
+    mf:result <integer-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:pos-integer-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q9: PositiveInteger with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <pos-integer-1.rq> ] ;
+    mf:result <pos-integer-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:pos-integer-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q10: PositiveInteger without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <pos-integer-2.rq> ] ;
+    mf:result <pos-integer-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:pos-integer-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q11: PositiveInteger with xsd:integer" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <pos-integer-3.rq> ] ;
+    mf:result <pos-integer-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:neg-integer-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q12: NegativeInteger with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <neg-integer-1.rq> ] ;
+    mf:result <neg-integer-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:neg-integer-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q13: NegativeInteger without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <neg-integer-2.rq> ] ;
+    mf:result <neg-integer-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:neg-integer-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q14: NegativeInteger with xsd:integer" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <neg-integer-3.rq> ] ;
+    mf:result <neg-integer-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:decimal-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q15: Decimal with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <decimal-1.rq> ] ;
+    mf:result <decimal-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:decimal-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q16: Decimal without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <integer-2.rq> ] ;
+    mf:result <integer-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:decimal-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q17: Decimal with xsd:decimal" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <integer-3.rq> ] ;
+    mf:result <integer-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:pos-decimal-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q18: PositiveDecimal with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <pos-decimal-1.rq> ] ;
+    mf:result <pos-decimal-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:pos-decimal-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q19: PositiveDecimal without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <pos-decimal-2.rq> ] ;
+    mf:result <pos-decimal-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:pos-decimal-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q20: PositiveDecimal with xsd:decimal" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <pos-decimal-3.rq> ] ;
+    mf:result <pos-decimal-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:neg-decimal-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q21: NegativeDecimal with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <neg-decimal-1.rq> ] ;
+    mf:result <neg-decimal-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:neg-decimal-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q22: NegativeDecimal without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <neg-decimal-2.rq> ] ;
+    mf:result <neg-decimal-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:neg-decimal-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q23: NegativeDecimal with xsd:decimal" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <neg-decimal-3.rq> ] ;
+    mf:result <neg-decimal-3.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange.obda> .
