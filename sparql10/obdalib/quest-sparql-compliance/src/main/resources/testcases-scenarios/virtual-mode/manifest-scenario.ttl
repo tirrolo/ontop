@@ -6,7 +6,8 @@
 <>  rdf:type mf:Manifest ;
     rdfs:label "Quest query evaluation scenario tests" ;
     mf:include (
-      #  <bsbm/manifest.ttl>
-	  <iLog/manifest.ttl>
+        <bsbm/manifest.ttl>
+        <fishmark/manifest.ttl>
+        <iLog/manifest.ttl>
     ).
 
