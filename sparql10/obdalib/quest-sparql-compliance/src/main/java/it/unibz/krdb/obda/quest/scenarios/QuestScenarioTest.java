@@ -127,6 +127,8 @@ public abstract class QuestScenarioTest extends TestCase {
 			} else {
 				throw new RuntimeException("Unexpected query type: " + query.getClass());
 			}
+		} catch (Exception e) {
+			compareTupleQuerySizeResults(null, readExpectedTupleQueryResult());
 		}
 		finally {
 			con.close();
@@ -155,6 +157,9 @@ public abstract class QuestScenarioTest extends TestCase {
 	}
 
 	private int countTuple(TupleQueryResult tuples) throws QueryEvaluationException {
+		if (tuples == null) {
+			return -1;
+		}
 		int counter = 0;
 		while (tuples.hasNext()) {
 			counter++;
