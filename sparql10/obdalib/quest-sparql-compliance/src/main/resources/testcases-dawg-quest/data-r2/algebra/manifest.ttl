@@ -21,7 +21,7 @@
         :filter-nested-2 
         :filter-scope-1 
         :join-scope-1
-        #:join-combo-1 
+        :join-combo-1 
         :join-combo-2
     ) .
 
