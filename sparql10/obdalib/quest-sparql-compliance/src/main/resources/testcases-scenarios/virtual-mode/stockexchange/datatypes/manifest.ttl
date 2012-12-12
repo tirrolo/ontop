@@ -17,6 +17,15 @@
       :decimal-1 :decimal-2 :decimal-3
       :pos-decimal-1 :pos-decimal-2 :pos-decimal-3
       :neg-decimal-1 :neg-decimal-2 :neg-decimal-3
+      :double-1 :double-2 :double-3
+      :pos-double-1 :pos-double-2 :pos-double-3
+      :neg-double-1 :neg-double-2 :neg-double-3
+      :datetime-1a :datetime-1b :datetime-1c
+      :datetime-2a :datetime-2b :datetime-2c
+      :datetime-3a :datetime-3b :datetime-3c
+      :boolean-1a :boolean-1b :boolean-1c :boolean-1d
+      :boolean-2a :boolean-2b :boolean-2c :boolean-2d
+      :boolean-3a :boolean-3b :boolean-3c :boolean-3d
     ) .
 
 :literal-1 rdf:type mf:QueryEvaluationTest ;
@@ -246,5 +255,305 @@
     mf:action
             [ qt:query <neg-decimal-3.rq> ] ;
     mf:result <neg-decimal-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:double-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q24: Double with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <double-1.rq> ] ;
+    mf:result <double-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:double-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q25: Double without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <double-2.rq> ] ;
+    mf:result <double-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:double-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q26: Double with xsd:double" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <double-3.rq> ] ;
+    mf:result <double-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:pos-double-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q27: PositiveDouble with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <pos-double-1.rq> ] ;
+    mf:result <pos-double-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:pos-double-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q28: PositiveDouble without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <pos-double-2.rq> ] ;
+    mf:result <pos-double-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:pos-double-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q29: PositiveDouble with xsd:double" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <pos-double-3.rq> ] ;
+    mf:result <pos-double-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:neg-double-1 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q30: NegativeDouble with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <neg-double-1.rq> ] ;
+    mf:result <neg-double-1.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:neg-double-2 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q31: NegativeDouble without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <neg-double-2.rq> ] ;
+    mf:result <neg-double-2.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:neg-double-3 rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q32: NegativeDouble with xsd:double" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <neg-double-3.rq> ] ;
+    mf:result <neg-double-3.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:datetime-1a rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q33: Datetime YYYY-MM-DD with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <datetime-1a.rq> ] ;
+    mf:result <datetime-1a.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:datetime-1b rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q34: Datetime YYYY-MM-DD hh:mm:ss.s with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <datetime-1b.rq> ] ;
+    mf:result <datetime-1b.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+        
+:datetime-1c rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q35: Datetime YYYY-MM-DDThh:mm:ssZ with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <datetime-1c.rq> ] ;
+    mf:result <datetime-1c.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:datetime-2a rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q36: Datetime YYYY-MM-DD without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <datetime-2a.rq> ] ;
+    mf:result <datetime-2a.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:datetime-2b rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q37: Datetime YYYY-MM-DD hh:mm:ss.s without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <datetime-2b.rq> ] ;
+    mf:result <datetime-2b.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+        
+:datetime-2c rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q38: Datetime YYYY-MM-DDThh:mm:ssZ without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <datetime-2c.rq> ] ;
+    mf:result <datetime-2c.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:datetime-3a rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q39: Datetime YYYY-MM-DD with xsd:datetime" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <datetime-3a.rq> ] ;
+    mf:result <datetime-3a.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:datetime-3b rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q40: Datetime YYYY-MM-DD hh:mm:ss.s with xsd:datetime" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <datetime-3b.rq> ] ;
+    mf:result <datetime-3b.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+        
+:datetime-3c rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q41: Datetime YYYY-MM-DDThh:mm:ssZ with xsd:datetime" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <datetime-3c.rq> ] ;
+    mf:result <datetime-3c.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+   
+:boolean-1a rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q42: Boolean [true|false] with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-1a.rq> ] ;
+    mf:result <boolean-1a.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:boolean-1b rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q43: Boolean [TRUE|FALSE] with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-1b.rq> ] ;
+    mf:result <boolean-1b.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+        
+:boolean-1c rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q44: Boolean [t|f] with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-1c.rq> ] ;
+    mf:result <boolean-1c.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:boolean-1d rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q45: Boolean [1|0] with quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-1d.rq> ] ;
+    mf:result <boolean-1d.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:boolean-2a rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q46: Boolean [true|false] without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-2a.rq> ] ;
+    mf:result <boolean-2a.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:boolean-2b rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q47: Boolean [TRUE|FALSE] without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-2b.rq> ] ;
+    mf:result <boolean-2b.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+        
+:boolean-2c rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q48: Boolean [t|f] without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-2c.rq> ] ;
+    mf:result <boolean-2c.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:boolean-2d rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q49: Boolean [1|0] without quotes" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-2d.rq> ] ;
+    mf:result <boolean-2d.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+    
+:boolean-3a rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q50: Boolean [true|false] with xsd:boolean" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-3a.rq> ] ;
+    mf:result <boolean-3a.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:boolean-3b rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q51: Boolean [TRUE|FALSE] with xsd:boolean" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-3b.rq> ] ;
+    mf:result <boolean-3b.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+        
+:boolean-3c rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q52: Boolean [t|f] with xsd:boolean" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-3c.rq> ] ;
+    mf:result <boolean-3c.ttl> ;
+    mf:knowledgebase <stockexchange.owl> ;
+    mf:mappings <stockexchange.obda> .
+
+:boolean-3d rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q53: Boolean [1|0] with xsd:boolean" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <boolean-3d.rq> ] ;
+    mf:result <boolean-3d.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange.obda> .
