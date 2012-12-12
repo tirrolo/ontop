@@ -96,7 +96,7 @@
     mf:mappings <stockexchange.obda> .
  
 :string-eq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q6: String EQ" ;
+    mf:name    "Q6: Filter city string with equality" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -106,7 +106,7 @@
     mf:mappings <stockexchange.obda> .
 
 :string-neq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q7: String NEQ" ;
+    mf:name    "Q7: Filter city string with inequality" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -116,7 +116,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-eq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q8: Integer EQ" ;
+    mf:name    "Q8: Filter street number with equality" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -126,7 +126,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-neq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q9: Integer NEQ" ;
+    mf:name    "Q9: Filter street number with inequality" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -136,7 +136,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-gt rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q10: Integer GT" ;
+    mf:name    "Q10: Filter street number with greater-than" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -146,7 +146,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-gte rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q11: Integer GTE" ;
+    mf:name    "Q11: Filter street number with greater-or-equal-than" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -156,7 +156,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-lt rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q12: Integer LT" ;
+    mf:name    "Q12: Filter street number with less-than" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -166,7 +166,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-lte rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q13: Integer LTE" ;
+    mf:name    "Q13: Filter street number with less-or-equal-than" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
