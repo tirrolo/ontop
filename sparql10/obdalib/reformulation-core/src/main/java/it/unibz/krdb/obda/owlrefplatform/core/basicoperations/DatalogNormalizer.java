@@ -277,14 +277,14 @@ public class DatalogNormalizer {
 		int[] newVarCounter = { 1 };
 
 		Set<Function> booleanAtoms = new HashSet<Function>();
-
-		pullOutEqualities(query.getBody(), substitutions, booleanAtoms,
+		List<Function> equalities = new LinkedList<Function>();
+		pullOutEqualities(query.getBody(), substitutions, equalities,
 				newVarCounter, false);
 		List body = query.getBody();
-		body.addAll(booleanAtoms);
+		body.addAll(equalities);
 
 		/*
-		 * All new variables have been generates, the substitutions also, we
+		 * All new variables have been generated, the substitutions also, we
 		 * need to apply them to the equality atoms and to the head of the
 		 * query.
 		 */
@@ -294,8 +294,6 @@ public class DatalogNormalizer {
 	}
 
 	private static BranchDepthSorter sorter = new BranchDepthSorter();
-	private static boolean secondDataAtomFound;
-	private static boolean firstDataAtomFound;
 
 	/***
 	 * Compares two atoms by the depth of their JOIN/LEFT JOIN branches. This is
@@ -365,7 +363,7 @@ public class DatalogNormalizer {
 	/***
 	 * This method introduces new variable names in each data atom and
 	 * equalities to account for JOIN operations. This method is called before
-	 * generating SQL queries and allows to avoid cross refrences in nested
+	 * generating SQL queries and allows to avoid cross references in nested
 	 * JOINs, which generate wrong ON or WHERE conditions.
 	 * 
 	 * 
@@ -374,16 +372,13 @@ public class DatalogNormalizer {
 	 */
 	private static void pullOutEqualities(List currentTerms,
 			Map<Variable, NewLiteral> substitutions,
-			Set<Function> leftConditionBooleans, int[] newVarCounter,
+			List<Function> eqList,
+			int[] newVarCounter,
 			boolean isLeftJoin) {
 
-		List orderedList = new LinkedList();
-		orderedList.addAll(currentTerms);
-		Collections.sort(orderedList, sorter);
-	//	System.out.println("sorted");
-		for (int i = 0; i < orderedList.size(); i++) {
+		for (int i = 0; i < currentTerms.size(); i++) {
 
-			NewLiteral term = (NewLiteral) orderedList.get(i);
+			NewLiteral term = (NewLiteral) currentTerms.get(i);
 
 			/*
 			 * We don't expect any functions as terms, data atoms will only have
@@ -395,42 +390,22 @@ public class DatalogNormalizer {
 						"Unexpected term found while normalizing (pulling out equalities) the query.");
 
 			Function atom = (Function) term;
-			if (atom.isBooleanFunction() || atom.isArithmeticFunction() || atom.isDataTypeFunction()) {
-				// NO-OP
-				continue;
-			}
-
 			List<NewLiteral> subterms = atom.getTerms();
 
 			if (atom.isAlgebraFunction()) {
 				if (atom.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN)
-					pullOutEqualities(subterms, substitutions,
-							leftConditionBooleans, newVarCounter, true);
+					pullOutEqualities(subterms, substitutions, eqList,
+							newVarCounter, true);
 				else
-					pullOutEqualities(subterms, substitutions,
-							leftConditionBooleans, newVarCounter, false);
-			
-				if (!isLeftJoin) {
-					/*
-					 * Collecting any conditions that had to be pulled up to an
-					 * upper level JOIN from a lower lever leftJoin. These are
-					 * genearted when there are constants in left side data
-					 * atoms in a left join
-					 */
-					currentTerms.addAll(leftConditionBooleans);
-					leftConditionBooleans.clear();
-				}
+					pullOutEqualities(subterms, substitutions, eqList,
+							newVarCounter, false);
 
+			} else if (atom.isBooleanFunction()) {
 				continue;
+
 			}
 
-			/*
-			 * This is a data atom, we need to change ALL variables that appear
-			 * in it
-			 */
-			if (!(atom.isDataFunction()))
-				throw new RuntimeException(
-						"Unpexpected kind of function found while pulling out equalities. Exected data atom");
+			// rename/substitute variables
 
 			for (int j = 0; j < subterms.size(); j++) {
 				NewLiteral subTerm = subterms.get(j);
@@ -441,7 +416,7 @@ public class DatalogNormalizer {
 
 					if (var2 == null) {
 						/*
-						 * No substitution exists, hence, no action but genrate
+						 * No substitution exists, hence, no action but generate
 						 * a new variable and register in the substitutions, and
 						 * replace the current value with a fresh one.
 						 */
@@ -455,18 +430,24 @@ public class DatalogNormalizer {
 
 						/*
 						 * There already exists one, so we generate a fresh,
-						 * replace the current value, and add an equalility
+						 * replace the current value, and add an equality
 						 * between the substitution and the new value.
 						 */
 
-						Variable newVariable = fac.getVariable(var1.getName()
-								+ newVarCounter[0]);
+						if (atom.isDataFunction()) {
+							Variable newVariable = fac.getVariable(var1
+									.getName()
+									+ newVarCounter[0]);
 
-						subterms.set(j, newVariable);
-						Function equality = fac
-								.getEQFunction(var2, newVariable);
-						currentTerms.add(equality);
+							subterms.set(j, newVariable);
+							Function equality = fac.getEQFunction(var2,
+									newVariable);
+							eqList.add(equality);
 
+						} else { // if its not data function, just replace
+									// variable
+							subterms.set(j, var2);
+						}
 					}
 					newVarCounter[0] += 1;
 				} else if (subTerm instanceof Constant) {
@@ -477,18 +458,20 @@ public class DatalogNormalizer {
 					 * A('c') Replacing the constant with a fresh variable x and
 					 * adding an quality atom ,e.g., A(x), x = 'c'
 					 */
-					Variable var = fac.getVariable("f" + newVarCounter[0]);
-					newVarCounter[0] += 1;
-					Function equality = fac.getEQFunction(var, subTerm);
-					subterms.set(j, var);
-					if (isLeftJoin && currentTerms.indexOf(atom) == 0) {
-						leftConditionBooleans.add(equality);
-					} else {
-						currentTerms.add(equality);
+					// only relevant if in data function?
+					if (atom.isDataFunction()) {
+						Variable var = fac.getVariable("f" + newVarCounter[0]);
+						newVarCounter[0] += 1;
+						Function equality = fac.getEQFunction(var, subTerm);
+						subterms.set(j, var);
+						eqList.add(equality);
 					}
 
 				}
 			}
+			currentTerms.addAll(i + 1, eqList);
+			i = i + eqList.size();
+			eqList.clear();
 		}
 	}
 
@@ -805,80 +788,100 @@ public class DatalogNormalizer {
 	 */	
 	
 	public static void pullOutLeftJoinConditions(CQIE query) {
-		secondDataAtomFound = false;
-		firstDataAtomFound = false;
 		Set<Function> booleanAtoms = new HashSet<Function>();
-		Function f = query.getBody().get(0);
-		if (f.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN) {
-			pullOutLJCond(query.getBody(), booleanAtoms, true);
-		} else
-			pullOutLJCond(query.getBody(), booleanAtoms, false);
-
+		Set<Function> tempBooleans = new HashSet<Function>();
 		List body = query.getBody();
+		Function f = (Function) body.get(0);
+		pullOutLJCond(body, booleanAtoms, false, tempBooleans, false);
 		body.addAll(booleanAtoms);
 	}
 	
-	private static void pullOutLJCond(List currentTerms,	Set<Function> leftConditionBooleans, boolean isLeftJoin) {
-		Set<Variable> firstDataAtomVars = null;
+	private static void pullOutLJCond(List currentTerms,	Set<Function> leftConditionBooleans, boolean isLeftJoin,
+			Set<Function> currentBooleans, boolean isSecondJoin) {
+		boolean firstDataAtomFound = false;
+		boolean secondDataAtomFound = false;
+		boolean is2 = false;
+		List tempTerms = new LinkedList();
+		tempTerms.addAll(currentTerms);
+		Set<Function> tempConditionBooleans = new HashSet<Function>();
+		NewLiteral firstT = (NewLiteral) currentTerms.get(0);
+		if (!(firstT instanceof Function))
+			throw new RuntimeException(
+					"Unexpected term found while normalizing (pulling out conditions) the query.");
+
+		Function f = (Function) firstT;
 
 		for (int i = 0; i < currentTerms.size(); i++) {
 			NewLiteral term = (NewLiteral) currentTerms.get(i);
-			if (!(term instanceof Function))
-				throw new RuntimeException(
-						"Unexpected term found while normalizing (pulling out conditions) the query.");
 
 			Function atom = (Function) term;
 			List<NewLiteral> subterms = atom.getTerms();
 
 			// if we are in left join then pull out boolean conditions that
 			// correspond to first data atom
-			if (isLeftJoin) {
 
-				if (atom.isDataFunction()) {
-					// if both are false then its first one
-					if (!firstDataAtomFound && !secondDataAtomFound) {
-						firstDataAtomFound = true;
-						// collect variable references from first data atom
-						firstDataAtomVars = atom.getReferencedVariables();
-					}
-				} else {
-					// if we are past first data term, then collect terms
-					if (firstDataAtomFound) {
-						// check if this boolean term has variables referencing
-						// first data atom
-						// if yes then they need to be pulled out of LEFT JOINs ON clause
-						if (hasReferencestoFirstDataAtom(atom,
-								firstDataAtomVars)) {
-							currentTerms.remove(i);
-							leftConditionBooleans.add(atom);
-						}
+			if (atom.isDataFunction() || atom.isAlgebraFunction()) {
+				// if an atom is a Join then go inside, otherwise its
+				// Data Atom
+				if (atom.isAlgebraFunction()) {
+					if (i != 0)
+						is2 = true;
+					if (atom.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN)
+						pullOutLJCond(subterms, leftConditionBooleans, true,
+								currentBooleans, is2);
+					else
+						pullOutLJCond(subterms, leftConditionBooleans, false,
+								currentBooleans, is2);
 
+				}
+
+				// if first data atom is found already then this is the second
+				if (firstDataAtomFound)
+					secondDataAtomFound = true;
+				// if both are false then its the first data atom
+				if (!firstDataAtomFound && !secondDataAtomFound) {
+					firstDataAtomFound = true;
+				}
+
+				if (secondDataAtomFound && isLeftJoin) {
+					tempTerms.addAll(currentBooleans);
+				}
+
+			} else { // its boolean atom
+				if (firstDataAtomFound && !secondDataAtomFound) {
+					// they need to be pulled out of LEFT
+					// JOINs ON clause
+					if (isLeftJoin) {
+						tempTerms.remove(atom);
+						// currentTerms.remove(atom);
+						// i--;
+						tempConditionBooleans.add(atom);
+						// leftConditionBooleans.add(atom);
 					}
+
 				}
 			}
-			if (atom.isAlgebraFunction()) {
-				if (atom.getFunctionSymbol() == OBDAVocabulary.SPARQL_LEFTJOIN)
-					pullOutLJCond(subterms, leftConditionBooleans, true);
-				else
-					pullOutLJCond(subterms, leftConditionBooleans, false);
-			}
 
 		}
+		// tempTerms is currentTerms with "bad" boolean conditions removed
+		// now add all these removed conditions at the end
+		// and update current terms
 
-	}
+		// if we are at the top level Left Join then push booleans into
+		// where clause
+		// otherwise push it into upper Left Join ON clause
 
-	// check if an atom shares same variables with first data atom 
-	private static boolean hasReferencestoFirstDataAtom(Function atom,
-			Set<Variable> firstDataAtomVars) {
-		Set<Variable> curAtomVars = atom.getReferencedVariables();
-		if (firstDataAtomVars == null)
-			return false;
-		if (!curAtomVars.isEmpty() && !firstDataAtomVars.isEmpty()) {
-			Variable first = (Variable) curAtomVars.toArray()[0];
-			if (firstDataAtomVars.contains(first))
-				return true;
+		// if we are in a Join that is a second data atom, then dont push it all
+		// the way up
+		if (!isSecondJoin) {
+			leftConditionBooleans.addAll(tempConditionBooleans);
 		}
-		return false;
+		currentTerms.clear();
+		currentTerms.addAll(tempTerms);
+		// currentTerms.addAll(currentBooleans);
+		currentBooleans.clear();
+		currentBooleans.addAll(tempConditionBooleans);
+
 	}
 }
 

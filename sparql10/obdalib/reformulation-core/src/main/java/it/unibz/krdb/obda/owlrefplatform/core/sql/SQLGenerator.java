@@ -165,13 +165,13 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 			DatalogNormalizer.foldJoinTrees(cq, false);
 
-			log.debug("Before pulling out Left Join Conditions: \n{}", cq);
-			
-			DatalogNormalizer.pullOutLeftJoinConditions(cq);
-			
 			log.debug("Before pulling out equalities: \n{}", cq);
 			
 			DatalogNormalizer.pullOutEqualities(cq);
+			
+			log.debug("Before pulling out Left Join Conditions: \n{}", cq);
+			
+			DatalogNormalizer.pullOutLeftJoinConditions(cq);
 			
 			log.debug("Before pulling up nested references: \n{}", cq);
 
