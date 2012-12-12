@@ -96,7 +96,7 @@
     mf:mappings <stockexchange.obda> .
  
 :string-eq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q6" ;
+    mf:name    "Q6: String EQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -106,7 +106,7 @@
     mf:mappings <stockexchange.obda> .
 
 :string-neq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q7" ;
+    mf:name    "Q7: String NEQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -116,7 +116,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-eq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q8" ;
+    mf:name    "Q8: Integer EQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -126,7 +126,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-neq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q9" ;
+    mf:name    "Q9: Integer NEQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -136,7 +136,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-gt rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q10" ;
+    mf:name    "Q10: Integer GT" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -146,7 +146,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-gte rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q11" ;
+    mf:name    "Q11: Integer GTE" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -156,7 +156,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-lt rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q12" ;
+    mf:name    "Q12: Integer LT" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -166,7 +166,7 @@
     mf:mappings <stockexchange.obda> .
 
 :integer-lte rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q13" ;
+    mf:name    "Q13: Integer LTE" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -176,7 +176,7 @@
     mf:mappings <stockexchange.obda> .
 
 :decimal-eq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q14" ;
+    mf:name    "Q14: Decimal EQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -186,7 +186,7 @@
     mf:mappings <stockexchange.obda> .
 
 :decimal-neq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q15" ;
+    mf:name    "Q15: Decimal NEQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -196,7 +196,7 @@
     mf:mappings <stockexchange.obda> .
 
 :decimal-gt rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q16" ;
+    mf:name    "Q16: Decimal GT" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -206,7 +206,7 @@
     mf:mappings <stockexchange.obda> .
 
 :decimal-gte rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q17" ;
+    mf:name    "Q17: Decimal GTE" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -216,7 +216,7 @@
     mf:mappings <stockexchange.obda> .
 
 :decimal-lt rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q18" ;
+    mf:name    "Q18: Decimal LT" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -226,7 +226,7 @@
     mf:mappings <stockexchange.obda> .
 
 :decimal-lte rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q19" ;
+    mf:name    "Q19: Decimal LTE" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -236,7 +236,7 @@
     mf:mappings <stockexchange.obda> .
 
 :double-eq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q20" ;
+    mf:name    "Q20: Double EQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -246,7 +246,7 @@
     mf:mappings <stockexchange.obda> .
 
 :double-neq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q21" ;
+    mf:name    "Q21: Double NEQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -256,7 +256,7 @@
     mf:mappings <stockexchange.obda> .
 
 :double-gt rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q22" ;
+    mf:name    "Q22: Double GT" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -266,7 +266,7 @@
     mf:mappings <stockexchange.obda> .
 
 :double-gte rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q23" ;
+    mf:name    "Q23: Double GTE" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -276,7 +276,7 @@
     mf:mappings <stockexchange.obda> .
 
 :double-lt rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q24" ;
+    mf:name    "Q24: Double LT" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -286,7 +286,7 @@
     mf:mappings <stockexchange.obda> .
 
 :double-lte rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q25" ;
+    mf:name    "Q25: Double LTE" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -296,7 +296,7 @@
     mf:mappings <stockexchange.obda> .
 
 :datetime-eq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q26" ;
+    mf:name    "Q26: DateTime EQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -306,7 +306,7 @@
     mf:mappings <stockexchange.obda> .
 
 :datetime-neq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q27" ;
+    mf:name    "Q27: DateTime NEQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -316,7 +316,7 @@
     mf:mappings <stockexchange.obda> .
 
 :datetime-gt rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q28" ;
+    mf:name    "Q28: DateTime GT" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -326,7 +326,7 @@
     mf:mappings <stockexchange.obda> .
 
 :datetime-gte rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q29" ;
+    mf:name    "Q29: DateTime GTE" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -336,7 +336,7 @@
     mf:mappings <stockexchange.obda> .
 
 :datetime-lt rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q30" ;
+    mf:name    "Q30: DateTime LT" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -346,7 +346,7 @@
     mf:mappings <stockexchange.obda> .
 
 :datetime-lte rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q31" ;
+    mf:name    "Q31: DateTime LTE" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -356,7 +356,7 @@
     mf:mappings <stockexchange.obda> .
 
 :boolean-eq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q32" ;
+    mf:name    "Q32: Boolean EQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -366,7 +366,7 @@
     mf:mappings <stockexchange.obda> .
 
 :boolean-neq rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q33" ;
+    mf:name    "Q33: Boolean NEQ" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -376,7 +376,7 @@
     mf:mappings <stockexchange.obda> .
 
 :literal-langmatch rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q34" ;
+    mf:name    "Q34: Literal Langmatch" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
