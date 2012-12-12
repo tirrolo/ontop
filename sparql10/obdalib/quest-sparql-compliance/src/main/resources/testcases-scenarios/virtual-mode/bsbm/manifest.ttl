@@ -13,7 +13,7 @@
       :query-2
       :query-3
       :query-4
-      :query-5
+      :query-5 :query-5b
       :query-6
       :query-7
       :query-8
@@ -70,6 +70,16 @@
     mf:action
             [ qt:query <query-5.rq> ] ;
     mf:result <query-result-5.ttl> ;
+    mf:knowledgebase <bsbm.owl> ;
+    mf:mappings <bsbm.obda> .
+
+:query-5b rdf:type mf:QueryEvaluationTest ;
+    mf:name    "Q5B: Find products that are similar to a given product, with different FILTER settings" ;
+    obdat:approval obdat:Approved ;
+    obdat:approvedBy <-ontop- Team> ;
+    mf:action
+            [ qt:query <query-5b.rq> ] ;
+    mf:result <query-result-5b.ttl> ;
     mf:knowledgebase <bsbm.owl> ;
     mf:mappings <bsbm.obda> .
   
