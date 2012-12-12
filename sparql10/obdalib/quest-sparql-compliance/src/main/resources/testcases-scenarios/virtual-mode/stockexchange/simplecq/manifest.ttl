@@ -23,7 +23,7 @@
     ) .
 
 :addresses rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q1" ;
+    mf:name    "Q1: Select distinct addresses" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -33,7 +33,7 @@
     mf:mappings <stockexchange.obda> .
     
 :addresses-id rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q2" ;
+    mf:name    "Q2: Select distinct addresses diff formulation" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -43,7 +43,7 @@
     mf:mappings <stockexchange.obda> .
 
 :person-addresses rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q3" ;
+    mf:name    "Q3: Get distinct persons and their addresses" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -53,7 +53,7 @@
     mf:mappings <stockexchange.obda> .
     
 :stocktraders rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q4" ;
+    mf:name    "Q4: Get distinct stocktraders" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -63,7 +63,7 @@
     mf:mappings <stockexchange.obda> .
     
 :brokers-workfor-themselves rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q5" ;
+    mf:name    "Q5: Get brokers who tradeOnBehalfOf themselves" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -73,7 +73,7 @@
     mf:mappings <stockexchange.obda> .
  
 :brokers-workfor-physical rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q6" ;
+    mf:name    "Q6: Get brokers who tradeOnBehalfOf physical persons" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -83,7 +83,7 @@
     mf:mappings <stockexchange.obda> .
     
 :brokers-workfor-legal rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q7" ;
+    mf:name    "Q7: Get brokers who tradeOnBehalfOf legal persons" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -93,7 +93,7 @@
     mf:mappings <stockexchange.obda> .
     
 :brokers-workfor-legal-physical rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q8" ;
+    mf:name    "Q8: Get brokers who tradeOnBehalfOf a legal and a physical person" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -103,7 +103,7 @@
     mf:mappings <stockexchange.obda> .
     
 :transactions-finantialinstrument rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q9" ;
+    mf:name    "Q9: Get transactions of a finantial instrument" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -113,7 +113,7 @@
     mf:mappings <stockexchange.obda> .
     
 :transaction-stock-type rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q10" ;
+    mf:name    "Q10: Get transactions involving stocks" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
@@ -123,7 +123,7 @@
     mf:mappings <stockexchange.obda> .
 
 :transaction-offer-stock rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q11" ;
+    mf:name    "Q11: Get offers of stocks" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
