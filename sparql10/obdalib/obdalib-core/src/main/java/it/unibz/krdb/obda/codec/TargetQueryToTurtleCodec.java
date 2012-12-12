@@ -4,12 +4,11 @@ import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.io.SimplePrefixManager;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.DataTypePredicate;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
@@ -152,7 +151,7 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 						NewLiteral lang = function.getTerms().get(1);
 						sb.append(getDisplayName(var));
 						sb.append("@");
-						sb.append(getDisplayName(lang));						
+						sb.append(((ValueConstant) lang).getValue());				
 					}
 				} else {
 					// for the other data types
