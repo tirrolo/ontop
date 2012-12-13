@@ -6,12 +6,12 @@
 <>  rdf:type mf:Manifest ;
     rdfs:label "Quest query evaluation scenario tests" ;
     mf:include (
-        <bsbm/manifest.ttl>
-        <fishmark/manifest.ttl>
-        <iLog/manifest.ttl>
-        <stockexchange/datatypes/manifest.ttl>
-        <stockexchange/filters/manifest.ttl>
-        <stockexchange/modifiers/manifest.ttl>
-        <stockexchange/simplecq/manifest.ttl>
+        <bsbm/manifest-oracle.ttl>
+        <fishmark/manifest-oracle.ttl>
+        <iLog/manifest-oracle.ttl>
+        <stockexchange/datatypes/manifest-oracle.ttl>
+        <stockexchange/filters/manifest-oracle.ttl>
+        <stockexchange/modifiers/manifest-oracle.ttl>
+        <stockexchange/simplecq/manifest-oracle.ttl>
     ).
 

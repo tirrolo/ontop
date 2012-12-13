@@ -29,7 +29,7 @@
             [ qt:query <query-1.rq> ] ;
     mf:result <query-result-1.ttl> ;
     mf:knowledgebase <iLog.owl> ;
-    mf:mappings <iLog.obda> .
+    mf:mappings <iLog-oracle.obda> .
 
 :query-2 rdf:type mf:QueryEvaluationTest ;
     mf:name    "Q2: Terminal and events in a certain datetime" ;
@@ -39,7 +39,7 @@
             [ qt:query <query-2.rq> ] ;
     mf:result <query-result-2.ttl> ;
     mf:knowledgebase <iLog.owl> ;
-    mf:mappings <iLog.obda> .
+    mf:mappings <iLog-oracle.obda> .
 
 :query-3 rdf:type mf:QueryEvaluationTest ;
     mf:name    "Q3: The ITUs of a certain day that are unloading" ;
@@ -49,7 +49,7 @@
             [ qt:query <query-3.rq> ] ;
     mf:result <query-result-3.ttl> ;
     mf:knowledgebase <iLog.owl> ;
-    mf:mappings <iLog.obda> .
+    mf:mappings <iLog-oracle.obda> .
     
 :query-4 rdf:type mf:QueryEvaluationTest ;
     mf:name    "Q4: Late trains" ;
@@ -59,7 +59,7 @@
             [ qt:query <query-4.rq> ] ;
     mf:result <query-result-4.ttl> ;
     mf:knowledgebase <iLog.owl> ;
-    mf:mappings <iLog.obda> .
+    mf:mappings <iLog-oracle.obda> .
  
 :query-5 rdf:type mf:QueryEvaluationTest ;
     mf:name    "Q5: All terminals without trainpassage" ;
@@ -69,7 +69,7 @@
             [ qt:query <query-5.rq> ] ;
     mf:result <query-result-5.ttl> ;
     mf:knowledgebase <iLog.owl> ;
-    mf:mappings <iLog.obda> .
+    mf:mappings <iLog-oracle.obda> .
   
 :query-6 rdf:type mf:QueryEvaluationTest ;
     mf:name    "Q6: Customers who have unloaded orders" ;
@@ -79,7 +79,7 @@
             [ qt:query <query-6.rq> ] ;
     mf:result <query-result-6.ttl> ;
     mf:knowledgebase <iLog.owl> ;
-    mf:mappings <iLog.obda> .
+    mf:mappings <iLog-oracle.obda> .
   
 :query-7 rdf:type mf:QueryEvaluationTest ;
     mf:name    "Q7: Loaded and unloaded ITUs in all terminals in a time interval" ;
@@ -89,7 +89,7 @@
             [ qt:query <query-7.rq> ] ;
     mf:result <query-result-7.ttl> ;
     mf:knowledgebase <iLog.owl> ;
-    mf:mappings <iLog.obda> .
+    mf:mappings <iLog-oracle.obda> .
   
 :query-8 rdf:type mf:QueryEvaluationTest ;
     mf:name    "Q8: Customer with requests between a time interval" ;
@@ -99,7 +99,7 @@
             [ qt:query <query-8.rq> ] ;
     mf:result <query-result-8.ttl> ;
     mf:knowledgebase <iLog.owl> ;
-    mf:mappings <iLog.obda> .
+    mf:mappings <iLog-oracle.obda> .
     
 :query-9 rdf:type mf:QueryEvaluationTest ;
     mf:name    "Q9: Loading ITUs in a given time" ;
@@ -109,7 +109,7 @@
             [ qt:query <query-9.rq> ] ;
     mf:result <query-result-9.ttl> ;
     mf:knowledgebase <iLog.owl> ;
-    mf:mappings <iLog.obda> .
+    mf:mappings <iLog-oracle.obda> .
  
 :query-10 rdf:type mf:QueryEvaluationTest ;
     mf:name    "Q10: How many ITUs happen on a particular route" ;
@@ -119,5 +119,5 @@
             [ qt:query <query-10.rq> ] ;
     mf:result <query-result-10.ttl> ;
     mf:knowledgebase <iLog.owl> ;
-    mf:mappings <iLog.obda> .
+    mf:mappings <iLog-oracle.obda> .
  
