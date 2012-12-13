@@ -1,7 +1,6 @@
 package it.unibz.krdb.obda.owlrefplatform.core;
 
 import it.unibz.krdb.obda.codec.DatalogProgramToTextCodec;
-import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.GraphResultSet;
@@ -103,7 +102,7 @@ public class QuestStatement implements OBDAStatement {
 		this.questInstance = questinstance;
 
 		this.translator = new SparqlAlgebraToDatalogTranslator(
-				this.questInstance.getUriMatcherFunctions());
+				this.questInstance.getUriTemplateMatcher());
 		this.querycache = questinstance.getSQLCache();
 		this.signaturecache = questinstance.getSignatureCache();
 		this.isbooleancache = questinstance.getIsBooleanCache();
@@ -305,8 +304,10 @@ public class QuestStatement implements OBDAStatement {
 		removeNonAnswerQueries(unfolding);
 
 		log.debug("After target rules removed: \n{}", unfolding);
-
-		ExpressionEvaluator.evaluateExpressions(unfolding);
+		
+		ExpressionEvaluator evaluator = new ExpressionEvaluator();
+		evaluator.setUriTemplateMatcher(questInstance.getUriTemplateMatcher());
+		evaluator.evaluateExpressions(unfolding);
 
 		log.debug("Boolean expression evaluated: \n{}", unfolding);
 		log.debug("Partial evaluation ended.");
@@ -565,28 +566,6 @@ public class QuestStatement implements OBDAStatement {
 		} else {
 			throw new Exception("Action canceled.");
 		}
-	}
-
-	/**
-	 * Checks whether the given query is boolean or not
-	 * 
-	 * @param dp
-	 *            the given datalog program
-	 * @return true if the query is boolean, false otherwise
-	 */
-	private boolean isDPBoolean(DatalogProgram dp) {
-
-		List<CQIE> rules = dp.getRules();
-		Iterator<CQIE> it = rules.iterator();
-		boolean bool = true;
-		while (it.hasNext() && bool) {
-			CQIE query = it.next();
-			Atom a = query.getHead();
-			if (a.getTerms().size() != 0) {
-				bool = false;
-			}
-		}
-		return bool;
 	}
 
 	@Override

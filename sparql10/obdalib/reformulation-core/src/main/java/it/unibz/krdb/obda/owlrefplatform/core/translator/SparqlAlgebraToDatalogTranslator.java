@@ -8,14 +8,15 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.UriTemplateMatcher;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -29,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.LoggerFactory;
 
@@ -116,11 +115,10 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	private NewLiteralComparator comparator = new NewLiteralComparator();
 
-	private final Map<Pattern, Function> uriTemplateMatcher;
+	private final UriTemplateMatcher uriTemplateMatcher;
 
-	public SparqlAlgebraToDatalogTranslator(
-			Map<Pattern, Function> templateMatcher) {
-		this.uriTemplateMatcher = templateMatcher;
+	public SparqlAlgebraToDatalogTranslator(UriTemplateMatcher templateMatcher) {
+		uriTemplateMatcher = templateMatcher;
 	}
 
 	protected static org.slf4j.Logger log = LoggerFactory
@@ -710,7 +708,7 @@ public class SparqlAlgebraToDatalogTranslator {
 				subjectType = COL_TYPE.OBJECT;
 				subjectUri = URI.create(subject.getURI());
 
-				Function functionURI = generateURIFunction(subjectUri);
+				Function functionURI = uriTemplateMatcher.generateURIFunction(subjectUri);
 				terms.add(functionURI);
 
 				// Function functionURI = ofac.getFunctionalTerm(
@@ -798,7 +796,7 @@ public class SparqlAlgebraToDatalogTranslator {
 				subjectType = COL_TYPE.OBJECT;
 				subjectUri = URI.create(subject.getURI());
 
-				Function functionURI = generateURIFunction(subjectUri);
+				Function functionURI = uriTemplateMatcher.generateURIFunction(subjectUri);
 				terms.add(functionURI);
 
 				// Function functionURI = ofac.getFunctionalTerm(
@@ -855,7 +853,7 @@ public class SparqlAlgebraToDatalogTranslator {
 				objectType = COL_TYPE.OBJECT;
 				objectUri = URI.create(object.getURI());
 
-				Function functionURI = generateURIFunction(objectUri);
+				Function functionURI = uriTemplateMatcher.generateURIFunction(objectUri);
 				terms.add(functionURI);
 
 				// Function functionURI = ofac.getFunctionalTerm(
@@ -894,58 +892,6 @@ public class SparqlAlgebraToDatalogTranslator {
 
 		CQIE newrule = ofac.getCQIE(head, result);
 		pr.appendRule(newrule);
-
-	}
-
-	/***
-	 * We will try to match the URI to one of our patterns, if this happens, we
-	 * have a corresponding function, and the paramters for this function. The
-	 * parameters are the values for the groups of the pattern,.
-	 * <P>
-	 * THIS METHOD IS INCORRECT!!! IT DOESNT GENERATE ALL POSSIBLE FUNCTIONS!!!
-	 */
-	private Function generateURIFunction(URI subjectUri) {
-		Function functionURI = null;
-		String uriString = subjectUri.toString();
-		for (Pattern pattern : this.uriTemplateMatcher.keySet()) {
-
-			Matcher matcher = pattern.matcher(uriString);
-			boolean match = matcher.matches();
-			if (!match)
-				continue;
-
-			Function matchingFunction = uriTemplateMatcher.get(pattern);
-			NewLiteral baseParameter = matchingFunction.getTerms().get(0);
-			if (baseParameter instanceof Constant) {
-				/*
-				 * This is a general tempalte function of the form
-				 * uri("http://....", var1, var2,...) <p> we need to match var1,
-				 * var2, etc with substrings from the subjectURI
-				 */
-				List<NewLiteral> values = new LinkedList<NewLiteral>();
-				values.add(baseParameter);
-				for (int i = 0; i < matcher.groupCount(); i++) {
-					String value = matcher.group(i + 1);
-					values.add(ofac.getValueConstant(value));
-				}
-
-				// System.out.println("VALUES!!!" + values);
-
-				functionURI = ofac.getFunctionalTerm(
-						ofac.getUriTemplatePredicate(values.size()), values);
-			} else if (baseParameter instanceof Variable) {
-				/*
-				 * This is a direct mapping to a column, uri(x)
-				 * we need to match x with the subjectURI
-				 */
-				functionURI = ofac.getFunctionalTerm(
-						ofac.getUriTemplatePredicate(1), ofac.getValueConstant(subjectUri.toString()));
-			}
-			break;
-
-		}
-
-		return functionURI;
 	}
 
 	// private class VariableComparator implements Comparator<Variable> {

@@ -28,6 +28,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.abox.RepositoryChangedListener;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.QueryVocabularyValidator;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.UriTemplateMatcher;
 import it.unibz.krdb.obda.owlrefplatform.core.mappingprocessing.MappingDataTypeRepair;
 import it.unibz.krdb.obda.owlrefplatform.core.mappingprocessing.MappingVocabularyTranslator;
 import it.unibz.krdb.obda.owlrefplatform.core.mappingprocessing.TMappingProcessor;
@@ -130,7 +131,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 	 * These are pattern matchers that will help transforming the URI's in
 	 * queries into Functions, used by the SPARQL translator.
 	 */
-	private final HashMap<Pattern, Function> uriMatcherFunctions = new HashMap<Pattern, Function>();
+	private UriTemplateMatcher uriTemplateMatcher = new UriTemplateMatcher();
 
 	final HashSet<String> templateStrings = new HashSet<String>();
 
@@ -750,7 +751,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 								fac.getUriTemplatePredicate(1),
 								fac.getVariable("x"));
 						Pattern matcher = Pattern.compile("(.+)");
-						getUriMatcherFunctions().put(matcher, templateFunction);
+						getUriTemplateMatcher().put(matcher, templateFunction);
 						templateStrings.add("(.+)");
 					} else {
 						ValueConstant template = (ValueConstant) fun.getTerms()
@@ -762,7 +763,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 							continue;
 
 						Pattern mattcher = Pattern.compile(templateString);
-						getUriMatcherFunctions().put(mattcher, fun);
+						getUriTemplateMatcher().put(mattcher, fun);
 
 						templateStrings.add(templateString);
 
@@ -991,8 +992,8 @@ public class Quest implements Serializable, RepositoryChangedListener {
 
 	}
 
-	public HashMap<Pattern, Function> getUriMatcherFunctions() {
-		return uriMatcherFunctions;
+	public UriTemplateMatcher getUriTemplateMatcher() {
+		return uriTemplateMatcher;
 	}
 	
 	
