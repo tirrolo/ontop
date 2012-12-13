@@ -48,9 +48,6 @@ public class PredicateImpl implements Predicate {
 			return false;
 
 		PredicateImpl pred2 = (PredicateImpl) obj;
-		if (pred2.arity != arity)
-			return false;
-
 		return this.identifier == pred2.identifier;
 	}
 
