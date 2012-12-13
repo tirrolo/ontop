@@ -24,9 +24,9 @@ owl:Thing, :Offer, :PhysicalPerson, :Transaction, :Investor, :StockTrader, :Lega
 
 [SourceDeclaration]
 sourceUri	RandBStockExchange
-connectionUrl	
-username	fish
-password	fish
+connectionUrl	jdbc:sqlserver://obdawin.unibz.it;databaseName=stockexchange
+username	mssql
+password	obdaps83
 driverClass	com.microsoft.sqlserver.jdbc.SQLServerDriver
 
 [MappingDeclaration] @collection [[

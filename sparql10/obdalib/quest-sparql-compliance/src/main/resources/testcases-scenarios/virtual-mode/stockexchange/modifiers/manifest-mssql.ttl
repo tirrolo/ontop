@@ -26,7 +26,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <slice-test.rq> ] ;
+            [ qt:query <slice-test-mssql.rq> ] ;
     mf:result <slice-test.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-mssql.obda> .
@@ -36,7 +36,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <limit-test.rq> ] ;
+            [ qt:query <limit-test-mssql.rq> ] ;
     mf:result <limit-test.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-mssql.obda> .
@@ -46,7 +46,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <offset-test.rq> ] ;
+            [ qt:query <offset-test-mssql.rq> ] ;
     mf:result <offset-test.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-mssql.obda> .
@@ -56,7 +56,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <limit0-offsetn.rq> ] ;
+            [ qt:query <limit0-offsetn-mssql.rq> ] ;
     mf:result <limit0-offsetn.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-mssql.obda> .
@@ -66,7 +66,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <limitn-offset0.rq> ] ;
+            [ qt:query <limitn-offset0-mssql.rq> ] ;
     mf:result <limitn-offset0.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-mssql.obda> .

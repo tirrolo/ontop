@@ -24,9 +24,9 @@ owl:Thing, :Offer, :PhysicalPerson, :Transaction, :Investor, :StockTrader, :Lega
 
 [SourceDeclaration]
 sourceUri	RandBStockExchange
-connectionUrl	
-username	fish
-password	fish
+connectionUrl	jdbc:oracle:thin:@//obdawin.unibz.it:1521/xe
+username	system
+password	obda09
 driverClass	oracle.jdbc.OracleDriver
 
 [MappingDeclaration] @collection [[
