@@ -21,16 +21,28 @@ import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
+import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.UriTemplateMatcher;
 
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ExpressionEvaluator {
 
-	private static OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
-	private static boolean regexFlag = false;
+	private UriTemplateMatcher uriTemplateMatcher;
+	
+	private OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
+	private boolean regexFlag = false;
 
-	public static void evaluateExpressions(DatalogProgram p) {
+	public void setUriTemplateMatcher(UriTemplateMatcher matcher) {
+		uriTemplateMatcher = matcher;
+	}
+	
+	public void evaluateExpressions(DatalogProgram p) {
 		Set<CQIE> toremove = new LinkedHashSet<CQIE>();
 		for (CQIE q : p.getRules()) {
 			setRegexFlag(false); // reset the ObjectConstant flag
@@ -42,7 +54,7 @@ public class ExpressionEvaluator {
 		p.removeRules(toremove);
 	}
 
-	public static boolean evaluateExpressions(CQIE q) {
+	public boolean evaluateExpressions(CQIE q) {
 		for (int atomidx = 0; atomidx < q.getBody().size(); atomidx++) {
 			Atom atom = q.getBody().get(atomidx);
 			NewLiteral newatom = eval(atom);
@@ -59,7 +71,7 @@ public class ExpressionEvaluator {
 		return false;
 	}
 
-	public static NewLiteral eval(NewLiteral expr) {
+	public NewLiteral eval(NewLiteral expr) {
 		if (expr instanceof Variable) {
 			return eval((Variable) expr);
 		} else if (expr instanceof Constant) {
@@ -71,15 +83,15 @@ public class ExpressionEvaluator {
 		}
 	}
 
-	public static NewLiteral eval(Variable expr) {
+	public NewLiteral eval(Variable expr) {
 		return expr;
 	}
 
-	public static NewLiteral eval(Constant expr) {
+	public NewLiteral eval(Constant expr) {
 		return expr;
 	}
 
-	public static NewLiteral eval(Function expr) {
+	public NewLiteral eval(Function expr) {
 		Predicate p = expr.getFunctionSymbol();
 		if (p instanceof BooleanOperationPredicate) {
 			return evalBoolean(expr);
@@ -165,17 +177,15 @@ public class ExpressionEvaluator {
 		return expr;
 	}
 
-	private static void setRegexFlag(boolean b) {
-		// TODO Auto-generated method stub
+	private void setRegexFlag(boolean b) {
 		regexFlag = b;
 	}
 	
-	private static boolean isObjectConstant() {
-		// TODO Auto-generated method stub
+	private boolean isObjectConstant() {
 		return regexFlag;
 	}
 
-	public static NewLiteral evalBoolean(Function term) {
+	public NewLiteral evalBoolean(Function term) {
 		Predicate pred = term.getFunctionSymbol();
 		if (pred == OBDAVocabulary.AND) {
 			return evalAndOr(term, true);
@@ -220,7 +230,7 @@ public class ExpressionEvaluator {
 		}
 	}
 
-	private static NewLiteral evalNonBoolean(Function term) {
+	private NewLiteral evalNonBoolean(Function term) {
 		Predicate pred = term.getFunctionSymbol();
 		if (pred == OBDAVocabulary.SPARQL_STR) {
 			return evalStr(term);
@@ -235,7 +245,7 @@ public class ExpressionEvaluator {
 		}
 	}
 
-	private static NewLiteral evalNumericalOperation(Function term) {
+	private NewLiteral evalNumericalOperation(Function term) {
 		Function returnedDatatype = (Function) getDatatype(term.getFunctionSymbol(), term);
 		if (returnedDatatype != null && isNumeric((ValueConstant) returnedDatatype.getTerm(0))) {
 			Predicate pred = term.getFunctionSymbol();
@@ -256,7 +266,7 @@ public class ExpressionEvaluator {
 	/*
 	 * Expression evaluator for isLiteral() function
 	 */
-	private static NewLiteral evalIsLiteral(Function term) {
+	private NewLiteral evalIsLiteral(Function term) {
 		NewLiteral innerTerm = term.getTerm(0);
 		if (innerTerm instanceof Function) {
 			Function function = (Function) innerTerm;
@@ -274,7 +284,7 @@ public class ExpressionEvaluator {
 	/*
 	 * Expression evaluator for isBlank() function
 	 */
-	private static NewLiteral evalIsBlank(Function term) {
+	private NewLiteral evalIsBlank(Function term) {
 		NewLiteral teval = eval(term.getTerm(0));
 		if (teval instanceof Function) {
 			Function function = (Function) teval;
@@ -291,7 +301,7 @@ public class ExpressionEvaluator {
 	/*
 	 * Expression evaluator for isURI() function
 	 */
-	private static NewLiteral evalIsUri(Function term) {
+	private NewLiteral evalIsUri(Function term) {
 		NewLiteral teval = eval(term.getTerm(0));
 		if (teval instanceof Function) {
 			Function function = (Function) teval;
@@ -308,7 +318,7 @@ public class ExpressionEvaluator {
 	/*
 	 * Expression evaluator for isIRI() function
 	 */
-	private static NewLiteral evalIsIri(Function term) {
+	private NewLiteral evalIsIri(Function term) {
 		NewLiteral teval = eval(term.getTerm(0));
 		if (teval instanceof Function) {
 			Function function = (Function) teval;
@@ -325,7 +335,7 @@ public class ExpressionEvaluator {
 	/*
 	 * Expression evaluator for str() function
 	 */
-	private static NewLiteral evalStr(Function term) {
+	private NewLiteral evalStr(Function term) {
 		NewLiteral innerTerm = term.getTerm(0);
 		if (innerTerm instanceof Function) {
 			Function function = (Function) innerTerm;
@@ -364,7 +374,7 @@ public class ExpressionEvaluator {
 	/*
 	 * Expression evaluator for datatype() function
 	 */
-	private static NewLiteral evalDatatype(Function term) {
+	private NewLiteral evalDatatype(Function term) {
 		NewLiteral innerTerm = term.getTerm(0);
 		if (innerTerm instanceof Function) {
 			Function function = (Function) innerTerm;
@@ -374,7 +384,7 @@ public class ExpressionEvaluator {
 		return term;
 	}
 	
-	private static NewLiteral getDatatype(Predicate predicate, NewLiteral lit)
+	private NewLiteral getDatatype(Predicate predicate, NewLiteral lit)
 	{
 		if (predicate instanceof DataTypePredicate) {
 			return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
@@ -428,7 +438,7 @@ public class ExpressionEvaluator {
 		return null;
 	}
 	
-	private static Predicate getDatatypePredicate(NewLiteral term) {
+	private Predicate getDatatypePredicate(NewLiteral term) {
 		if (term instanceof Function) {
 			Function function = (Function) term;
 			return function.asAtom().getFunctionSymbol();
@@ -461,18 +471,15 @@ public class ExpressionEvaluator {
 		}
 	}
 	
-	private static boolean isDouble(Predicate pred)
-	{
+	private boolean isDouble(Predicate pred) {
 		return pred.equals(OBDAVocabulary.XSD_DOUBLE);
 	}
 	
-	private static boolean isNumeric(Predicate pred)
-	{
+	private boolean isNumeric(Predicate pred) {
 		return (pred.equals(OBDAVocabulary.XSD_INTEGER) || pred.equals(OBDAVocabulary.XSD_DECIMAL) || pred.equals(OBDAVocabulary.XSD_DOUBLE));
 	}
 	
-	private static boolean isNumeric(ValueConstant constant)
-	{
+	private boolean isNumeric(ValueConstant constant) {
 		String constantValue = constant.getValue();
 		return (constantValue.equals(OBDAVocabulary.XSD_INTEGER_URI) 
 				|| constantValue.equals(OBDAVocabulary.XSD_DECIMAL_URI) 
@@ -482,7 +489,7 @@ public class ExpressionEvaluator {
 	/*
 	 * Expression evaluator for lang() function
 	 */
-	private static NewLiteral evalLang(Function term) {
+	private NewLiteral evalLang(Function term) {
 		NewLiteral innerTerm = term.getTerm(0);
 
 		NewLiteral emptyconstant = fac.getFunctionalTerm(
@@ -521,7 +528,7 @@ public class ExpressionEvaluator {
 	/*
 	 * Expression evaluator for langMatches() function
 	 */
-	private static NewLiteral evalLangMatches(Function term) {
+	private NewLiteral evalLangMatches(Function term) {
 		final String SELECT_ALL = "*";
 		
 		/*
@@ -577,7 +584,7 @@ public class ExpressionEvaluator {
 		}
 	}
 
-	private static NewLiteral evalRegex(Function term) {
+	private NewLiteral evalRegex(Function term) {
 		NewLiteral innerTerm = term.getTerm(0);
 		if (innerTerm instanceof Function) {
 			Function f = (Function) innerTerm;
@@ -594,7 +601,7 @@ public class ExpressionEvaluator {
 		return term;
 	}
 
-	public static NewLiteral evalIsNullNotNull(Function term, boolean isnull) {
+	public NewLiteral evalIsNullNotNull(Function term, boolean isnull) {
 		NewLiteral result = eval(term.getTerms().get(0));
 		if (result == OBDAVocabulary.NULL) {
 			if (isnull) {
@@ -622,7 +629,7 @@ public class ExpressionEvaluator {
 		}
 	}
 
-	private static NewLiteral evalIsTrue(Function term) {
+	private NewLiteral evalIsTrue(Function term) {
 		NewLiteral teval = eval(term.getTerm(0));
 		if (teval instanceof Function) {
 			Function f = (Function) teval;
@@ -643,7 +650,7 @@ public class ExpressionEvaluator {
 	}
 	
 	
-	private static NewLiteral evalNot(Function term) {
+	private NewLiteral evalNot(Function term) {
 		NewLiteral teval = eval(term.getTerm(0));
 		if (teval instanceof Function) {
 			Function f = (Function) teval;
@@ -663,7 +670,7 @@ public class ExpressionEvaluator {
 		return term;
 	}
 
-	public static NewLiteral evalEqNeq(Function term, boolean eq) {
+	public NewLiteral evalEqNeq(Function term, boolean eq) {
 		/*
 		 * Evaluate the first term
 		 */
@@ -798,12 +805,16 @@ public class ExpressionEvaluator {
 					}
 				} else if (pred1.equals(pred2)) {
 					Function neweq = null;
-					if (eq) {
-						neweq = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
-						return evalEqNeq(neweq, true);
+					if (pred1 instanceof URITemplatePredicate) {
+						return evalUriTemplateEqNeq(f1, f2, eq);
 					} else {
-						neweq = fac.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
-						return evalEqNeq(neweq, false);
+						if (eq) {
+							neweq = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
+							return evalEqNeq(neweq, true);
+						} else {
+							neweq = fac.getNEQFunction(f1.getTerm(0), f2.getTerm(0));
+							return evalEqNeq(neweq, false);
+						}
 					}
 				} else if (!pred1.equals(pred2)) {
 					if (eq) {
@@ -825,7 +836,110 @@ public class ExpressionEvaluator {
 		}
 	}
 
-	public static NewLiteral evalAndOr(Function term, boolean and) {
+	private NewLiteral evalUriTemplateEqNeq(Function uriFunction1, Function uriFunction2, boolean isEqual) {
+		int arityForFunction1 = uriFunction1.getArity();
+		int arityForFunction2 = uriFunction2.getArity();		
+		if (arityForFunction1 == 1) {
+			if (arityForFunction2 == 1) {
+				return evalUriFunctionsWithSingleTerm(uriFunction1, uriFunction2, isEqual);
+			} else if (arityForFunction2 > 1) {
+				Function newUriFunction1 = getUriFunctionWithParameters(uriFunction1);
+				return evalUriFunctionsWithMultipleTerms(newUriFunction1, uriFunction2, isEqual);
+			}
+		} else if (arityForFunction1 > 1) {
+			if (arityForFunction2 == 1) {
+				Function newUriFunction2 = getUriFunctionWithParameters(uriFunction2);
+				return evalUriFunctionsWithMultipleTerms(newUriFunction2, uriFunction1, isEqual);
+			} else if (arityForFunction2 > 1) {
+				return evalUriFunctionsWithMultipleTerms(uriFunction1, uriFunction2, isEqual);
+			}
+		}
+		return null;
+	}
+	
+	private NewLiteral evalUriFunctionsWithSingleTerm(Function uriFunction1, Function uriFunction2, boolean isEqual) {
+		NewLiteral term1 = uriFunction1.getTerm(0);
+		NewLiteral term2 = uriFunction2.getTerm(0);
+		if (!(term1 instanceof ValueConstant)) {
+			return null;
+		}
+		if (term2 instanceof Variable) {
+			if (isEqual) {
+				return fac.getEQAtom(term2, term1);
+			} else {
+				return fac.getNEQAtom(term2, term1);
+			}
+		} else if (term2 instanceof ValueConstant) {
+			if (term1.equals(term2)) {
+				if (isEqual) {
+					return fac.getTrue();
+				} else {
+					return fac.getFalse();
+				}
+			} else {
+				if (isEqual) {
+					return fac.getFalse();
+				} else {
+					return fac.getTrue();
+				}
+			}
+		}
+		return null;
+	}
+
+	private NewLiteral evalUriFunctionsWithMultipleTerms(Function uriFunction1, Function uriFunction2, boolean isEqual) {
+		Map<Variable, NewLiteral> theta = Unifier.getMGU(uriFunction1, uriFunction2);
+		if (theta == null) {
+			if (isEqual) {
+				return fac.getTrue();
+			} else {
+				return fac.getFalse();
+			}
+		} else {
+			boolean isEmpty = (theta.size() == 0);
+			if (isEmpty) {
+				if (isEqual) {
+					return fac.getFalse();
+				} else {
+					return fac.getTrue();
+				}
+			} else {
+				Function result = null;
+				List<Function> temp = new ArrayList<Function>();
+				Set<Variable> keys = theta.keySet();
+				for (Variable var : keys) {
+					result = createEqNeqFilter(var, theta.get(var), isEqual);
+					temp.add(result);
+					if (temp.size() == 2) {
+						result = createAndFilter(temp.get(0), temp.get(1));
+						temp.clear();
+						temp.add(result);
+					}
+				}
+				return result;
+			}				
+		}
+	}
+
+	private Function getUriFunctionWithParameters(Function uriFunction) {
+		ValueConstant uriString = (ValueConstant) uriFunction.getTerm(0);
+		URI uri = URI.create(uriString.getValue());
+		return uriTemplateMatcher.generateURIFunction(uri);
+	}
+	
+	public Function createEqNeqFilter(Variable var, NewLiteral value, boolean isEqual) {
+		if (isEqual) {
+			return fac.getEQFunction(var, value);
+		} else {
+			return fac.getNEQFunction(var, value);
+		}
+	}
+		
+	private Function createAndFilter(Function function1, Function function2) {
+		return fac.getANDFunction(function1, function2);
+	}
+
+	public NewLiteral evalAndOr(Function term, boolean and) {
 		NewLiteral teval1 = eval(term.getTerm(0));
 		NewLiteral teval2 = eval(term.getTerm(1));
 
