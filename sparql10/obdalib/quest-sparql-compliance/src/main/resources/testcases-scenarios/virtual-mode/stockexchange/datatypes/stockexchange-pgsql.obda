@@ -24,9 +24,9 @@ owl:Thing, :Offer, :PhysicalPerson, :Transaction, :Investor, :StockTrader, :Lega
 
 [SourceDeclaration]
 sourceUri	RandBStockExchange
-connectionUrl	
-username	fish
-password	fish
+connectionUrl jdbc:postgresql://obdalin.inf.unibz.it/stockexchange
+username	postgres
+password	postgres
 driverClass	org.postgresql.Driver
 
 [MappingDeclaration] @collection [[
