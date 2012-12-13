@@ -23,7 +23,7 @@
       :dawg-langMatches-basic
       :lang-case-insensitive-eq
       :lang-case-insensitive-ne
-      :sameTerm-simple :sameTerm-eq :sameTerm-not-eq
+      #:sameTerm-simple :sameTerm-eq :sameTerm-not-eq # WON'T FIX
     ).
 
 :dawg-isLiteral-1 a mf:QueryEvaluationTest ;
