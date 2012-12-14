@@ -342,21 +342,18 @@ public class ExpressionEvaluator {
 			Predicate predicate = function.getFunctionSymbol();
 			NewLiteral parameter = function.getTerm(0);
 			if (predicate instanceof DataTypePredicate) {
-				/*
-				 * The return type for str() function is always a literal 
-				 */
 				String datatype = predicate.toString();
 				if (datatype.equals(OBDAVocabulary.RDFS_LITERAL_URI)) {
 					return fac.getFunctionalTerm(
-							fac.getDataTypePredicateLiteral(),
+							fac.getDataTypePredicateString(),
 							fac.getVariable(parameter.toString()));
 				} else if (datatype.equals(OBDAVocabulary.XSD_STRING_URI)) {
 					return fac.getFunctionalTerm(
-							fac.getDataTypePredicateLiteral(),
+							fac.getDataTypePredicateString(),
 							fac.getVariable(parameter.toString()));
 				} else {
 					return fac.getFunctionalTerm(
-							fac.getDataTypePredicateLiteral(),
+							fac.getDataTypePredicateString(),
 							fac.getFunctionalTerm(
 									OBDAVocabulary.QUEST_CAST,
 									fac.getVariable(parameter.toString()),
@@ -494,7 +491,7 @@ public class ExpressionEvaluator {
 
 		// Create a default return constant: blank language with literal type.
 		NewLiteral emptyconstant = fac.getFunctionalTerm(
-				fac.getDataTypePredicateLiteral(), fac.getValueConstant("", COL_TYPE.LITERAL));
+				fac.getDataTypePredicateString(), fac.getValueConstant("", COL_TYPE.STRING));
 
 		if (!(innerTerm instanceof Function)) {
 			return emptyconstant;
@@ -514,18 +511,13 @@ public class ExpressionEvaluator {
 		if (function.getTerms().size() != 2) {
 			return emptyconstant;
 		} else {
-			/* 
-			 * Returns the language tag as: 
-			 *    (1) language variable (with literal type) or 
-			 *    (2) language constant (with literal type).
-			 */
 			NewLiteral parameter = function.getTerm(1);
 			if (parameter instanceof Variable) {
-				return fac.getFunctionalTerm(fac.getDataTypePredicateLiteral(),
+				return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
 						parameter.clone());
 			} else if (parameter instanceof Constant) {
-				return fac.getFunctionalTerm(fac.getDataTypePredicateLiteral(),
-						fac.getValueConstant(((Constant) parameter).getValue(),COL_TYPE.LITERAL));
+				return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+						fac.getValueConstant(((Constant) parameter).getValue(),COL_TYPE.STRING));
 			}
 		}
 		return term;
