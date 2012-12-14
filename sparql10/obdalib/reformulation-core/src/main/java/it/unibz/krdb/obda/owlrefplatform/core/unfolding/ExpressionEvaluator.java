@@ -342,28 +342,28 @@ public class ExpressionEvaluator {
 			Predicate predicate = function.getFunctionSymbol();
 			NewLiteral parameter = function.getTerm(0);
 			if (predicate instanceof DataTypePredicate) {
+				/*
+				 * The return type for str() function is always a literal 
+				 */
 				String datatype = predicate.toString();
 				if (datatype.equals(OBDAVocabulary.RDFS_LITERAL_URI)) {
 					return fac.getFunctionalTerm(
-							fac.getDataTypePredicateString(),
+							fac.getDataTypePredicateLiteral(),
 							fac.getVariable(parameter.toString()));
 				} else if (datatype.equals(OBDAVocabulary.XSD_STRING_URI)) {
 					return fac.getFunctionalTerm(
-							fac.getDataTypePredicateString(),
+							fac.getDataTypePredicateLiteral(),
 							fac.getVariable(parameter.toString()));
 				} else {
-					return fac
-							.getFunctionalTerm(
-									fac.getDataTypePredicateString(),
-									fac.getFunctionalTerm(
-											OBDAVocabulary.QUEST_CAST,
-											fac.getVariable(parameter
-													.toString()),
-											fac.getValueConstant(OBDAVocabulary.XSD_STRING_URI)));
+					return fac.getFunctionalTerm(
+							fac.getDataTypePredicateLiteral(),
+							fac.getFunctionalTerm(
+									OBDAVocabulary.QUEST_CAST,
+									fac.getVariable(parameter.toString()),
+									fac.getValueConstant(OBDAVocabulary.XSD_STRING_URI)));
 				}
 			} else if (predicate instanceof URITemplatePredicate) {
-				return fac.getFunctionalTerm(fac.getDataTypePredicateLiteral(),
-						function.clone());
+				return fac.getFunctionalTerm(fac.getDataTypePredicateLiteral(), function.clone());
 			} else if (predicate instanceof BNodePredicate) {
 				return fac.getNULL();
 			}
@@ -492,8 +492,9 @@ public class ExpressionEvaluator {
 	private NewLiteral evalLang(Function term) {
 		NewLiteral innerTerm = term.getTerm(0);
 
+		// Create a default return constant: blank language with literal type.
 		NewLiteral emptyconstant = fac.getFunctionalTerm(
-				fac.getDataTypePredicateString(), fac.getValueConstant("", COL_TYPE.STRING));
+				fac.getDataTypePredicateLiteral(), fac.getValueConstant("", COL_TYPE.LITERAL));
 
 		if (!(innerTerm instanceof Function)) {
 			return emptyconstant;
@@ -513,13 +514,18 @@ public class ExpressionEvaluator {
 		if (function.getTerms().size() != 2) {
 			return emptyconstant;
 		} else {
+			/* 
+			 * Returns the language tag as: 
+			 *    (1) language variable (with literal type) or 
+			 *    (2) language constant (with literal type).
+			 */
 			NewLiteral parameter = function.getTerm(1);
 			if (parameter instanceof Variable) {
-				return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
+				return fac.getFunctionalTerm(fac.getDataTypePredicateLiteral(),
 						parameter.clone());
 			} else if (parameter instanceof Constant) {
-				return fac.getFunctionalTerm(fac.getDataTypePredicateString(),
-						fac.getValueConstant(((Constant) parameter).getValue(),COL_TYPE.STRING));
+				return fac.getFunctionalTerm(fac.getDataTypePredicateLiteral(),
+						fac.getValueConstant(((Constant) parameter).getValue(),COL_TYPE.LITERAL));
 			}
 		}
 		return term;
