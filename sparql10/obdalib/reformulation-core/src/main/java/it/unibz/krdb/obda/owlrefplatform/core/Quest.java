@@ -83,7 +83,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 
 	/* The active ABox repository, might be null */
 	protected RDBMSSIRepositoryManager dataRepository = null;
-	
+
 	// /* The query answering engine */
 	// private TechniqueWrapper techwrapper = null;
 
@@ -612,11 +612,10 @@ public class Quest implements Serializable, RepositoryChangedListener {
 					unfoldingOBDAModel.getMappings(sourceId), metadata);
 			unfoldingProgram = analyzer.constructDatalogProgram();
 
-			
 			/*
 			 * Normalizing language tags. Making all LOWER CASE
 			 */
-	
+
 			for (CQIE mapping : unfoldingProgram.getRules()) {
 				Function head = mapping.getHead();
 				for (NewLiteral term : head.getTerms()) {
@@ -624,10 +623,10 @@ public class Quest implements Serializable, RepositoryChangedListener {
 						continue;
 					Function typedTerm = (Function) term;
 					Predicate type = typedTerm.getFunctionSymbol();
-					
-					
-					
-					if (typedTerm.getTerms().size() != 2 || !type.getName().toString().equals(OBDAVocabulary.RDFS_LITERAL_URI))
+
+					if (typedTerm.getTerms().size() != 2
+							|| !type.getName().toString()
+									.equals(OBDAVocabulary.RDFS_LITERAL_URI))
 						continue;
 					/*
 					 * changing the language, its always the second inner term
@@ -635,32 +634,34 @@ public class Quest implements Serializable, RepositoryChangedListener {
 					 */
 					NewLiteral originalLangTag = typedTerm.getTerm(1);
 					NewLiteral normalizedLangTag = null;
-	
+
 					if (originalLangTag instanceof Constant) {
-						ValueConstant originalLangConstant = (ValueConstant)originalLangTag;
-						normalizedLangTag = fac.getValueConstant(originalLangConstant.getValue().toLowerCase(), originalLangConstant.getType());
+						ValueConstant originalLangConstant = (ValueConstant) originalLangTag;
+						normalizedLangTag = fac.getValueConstant(
+								originalLangConstant.getValue().toLowerCase(),
+								originalLangConstant.getType());
 					} else {
 						normalizedLangTag = originalLangTag;
-	
+
 					}
-	
+
 					typedTerm.setTerm(1, normalizedLangTag);
-	
+
 				}
 			}
-			
-			
+
 			/*
 			 * Normalizing equalities
 			 */
-	
+
 			unfoldingProgram = DatalogNormalizer
 					.pushEqualities(unfoldingProgram);
 
 			/***
 			 * Adding ABox as facts in the unfolding program
+			 * This feature is disabled for the current release
 			 */
-			if (unfoldingMode.equals(QuestConstants.VIRTUAL)) {
+			if (false && unfoldingMode.equals(QuestConstants.VIRTUAL)) {
 				ABoxToFactConverter.addFacts(this.aboxIterator,
 						unfoldingProgram, this.equivalenceMaps);
 			}
@@ -773,38 +774,52 @@ public class Quest implements Serializable, RepositoryChangedListener {
 
 			}
 
-			// /*
-			// * Transforming body of mappings with 2 atoms into JOINs
-			// */
-			// for (int i = 0; i < unfoldingProgram.getRules().size(); i++) {
-			// /* Looking for mappings with exactly 2 data atoms */
-			// CQIE mapping = currentMappingRules.get(i);
-			// int dataAtoms = 0;
-			// for (Atom subAtom : mapping.getBody()) {
-			// if (subAtom.isDataFunction()) {
-			// dataAtoms += 1;
-			//
-			// }
-			// }
-			// if (dataAtoms != 2) {
-			// continue;
-			// }
-			//
-			// /*
-			// * This mapping can be transformed into a normal join with ON
-			// * conditions. Doing so.
-			// */
-			// List<NewLiteral> oldbody = new LinkedList<NewLiteral>();
-			// oldbody.addAll(mapping.getBody());
-			// Atom joinAtom = fac.getFunctionalTerm(
-			// OBDAVocabulary.SPARQL_JOIN, oldbody).asAtom();
-			// CQIE newmapping = fac.getCQIE(mapping.getHead(), joinAtom);
-			//
-			// unfoldingProgram.removeRule(mapping);
-			// unfoldingProgram.appendRule(newmapping);
-			// i -= 1;
-			//
-			// }
+			/*
+			 * Transforming body of mappings with 2 atoms into JOINs
+			 */
+			for (int i = 0; i < unfoldingProgram.getRules().size(); i++) {
+				/* Looking for mappings with exactly 2 data atoms */
+				CQIE mapping = currentMappingRules.get(i);
+				int dataAtoms = 0;
+				
+				LinkedList dataAtomsList = new LinkedList();
+				LinkedList otherAtomsList = new LinkedList();
+				
+				for (Atom subAtom : mapping.getBody()) {
+					if (subAtom.isDataFunction() || subAtom.isAlgebraFunction()) {
+						dataAtoms += 1;
+						dataAtomsList.add(subAtom);
+					} else {
+					otherAtomsList.add(subAtom);
+					}
+				}
+				if (dataAtoms == 1) {
+					continue;
+				}
+
+				/*
+				 * This mapping can be transformed into a normal join with ON
+				 * conditions. Doing so.
+				 */
+				Function foldedJoinAtom = null;
+				
+				while (dataAtomsList.size() > 1) {
+					foldedJoinAtom = fac.getFunctionalTerm(
+							OBDAVocabulary.SPARQL_JOIN, (NewLiteral)dataAtomsList.remove(0), (NewLiteral) dataAtomsList.remove(0));
+					dataAtomsList.add(0,foldedJoinAtom);
+				}
+						
+				List<Atom> newBodyMapping = new LinkedList<Atom>();
+				newBodyMapping.add(foldedJoinAtom.asAtom());
+				newBodyMapping.addAll(otherAtomsList);
+				
+				CQIE newmapping = fac.getCQIE(mapping.getHead(), newBodyMapping);
+
+				unfoldingProgram.removeRule(mapping);
+				unfoldingProgram.appendRule(newmapping);
+				i -= 1;
+
+			}
 
 			/*
 			 * Adding "triple(x,y,z)" mappings for support of unbounded
@@ -995,11 +1010,9 @@ public class Quest implements Serializable, RepositoryChangedListener {
 	public UriTemplateMatcher getUriTemplateMatcher() {
 		return uriTemplateMatcher;
 	}
-	
-	
-	public void repositoryChanged()
-	{
-		//clear cache
+
+	public void repositoryChanged() {
+		// clear cache
 		this.querycache.clear();
 	}
 }

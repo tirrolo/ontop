@@ -97,7 +97,7 @@ public class SQL99DialectAdapter implements SQLDialectAdapter {
 	public String sqlCast(String value, int type) {
 		String strType = null;
 		if (type == Types.VARCHAR) {
-			strType = "CHAR";
+			strType = "VARCHAR";
 		} else {
 			throw new RuntimeException("Unsupported SQL type");
 		}

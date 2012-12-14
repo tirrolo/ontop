@@ -284,10 +284,11 @@ public class TMappingProcessor implements Serializable {
 	 *         described above.
 	 */
 	public DatalogProgram normalizeConstants(DatalogProgram originalMappings) {
-		int freshVarCount = 0;
 		DatalogProgram newProgram = fac.getDatalogProgram();
 		newProgram.setQueryModifiers(originalMappings.getQueryModifiers());
 		for (CQIE currentMapping : originalMappings.getRules()) {
+			int freshVarCount = 0;
+
 			Atom head = currentMapping.getHead().clone();
 			List<Atom> newBody = new LinkedList<Atom>();
 			for (Atom currentAtom : currentMapping.getBody()) {

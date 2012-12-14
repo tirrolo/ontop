@@ -338,7 +338,7 @@ public class DatalogNormalizer {
 	 */
 	private static void addMinimalEqualityToLeftJoin(Function leftJoin) {
 		int booleanAtoms = 0;
-		boolean isLeftJoin = leftJoin.isAlgebraFunction() && (leftJoin.getPredicate() == OBDAVocabulary.SPARQL_LEFTJOIN);
+		boolean isLeftJoin = leftJoin.isAlgebraFunction();
 		for (NewLiteral term: leftJoin.getTerms()) {
 			Function f = (Function)term;
 			if (f.isAlgebraFunction()) {
