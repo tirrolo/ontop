@@ -1,5 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
 
+import java.sql.Types;
+
 public class DB2SQLDialectAdapter extends SQL99DialectAdapter {
 
 	@Override
@@ -22,4 +24,16 @@ public class DB2SQLDialectAdapter extends SQL99DialectAdapter {
 	public String sqlSlice(long limit, long offset) {
 		return String.format("OFFSET %d ROWS\nFETCH FIRST %d ROWS ONLY", offset, limit);
 	}
+
+	@Override
+	public String sqlCast(String value, int type) {
+		String strType = null;
+		if (type == Types.VARCHAR) {
+			strType = "VARCHAR(666)";
+		} else {
+			throw new RuntimeException("Unsupported SQL type");
+		}
+		return "CAST(" + value + " AS " + strType + ")";
+	}
+
 }
