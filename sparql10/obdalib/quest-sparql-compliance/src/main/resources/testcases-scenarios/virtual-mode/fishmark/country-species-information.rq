@@ -9,11 +9,11 @@ WHERE {
    ?c fd:country_Saltwater ?marine .
    ?c fd:country_Status ?occurrence .
    ?c fd:country_C_Code ?cf .
-   ?x fd:species_Genus "Coregonus"^^xsd:string .
-   ?x fd:species_Species "clupeaformis"^^xsd:string .
+   ?x fd:species_Genus "Coregonus" .
+   ?x fd:species_Species "clupeaformis" .
    ?x fd:species_FamCode ?f .
    ?f fd:families_Family  ?family .
    ?f fd:families_Order ?order .
-   ?cf fd:countref_PAESE "Italy"^^xsd:string .
+   ?cf fd:countref_PAESE "Italy" .
    ?cf fd:countref_Factbook ?factbook .
 }

@@ -3,7 +3,7 @@ PREFIX : <http://fishdelish.cs.man.ac.uk/rdf/vocab/resource/>
 
 SELECT ?type ?species ?genus ?country
 WHERE {
-   ?nameID :comnames_ComName "Aal"^^xsd:string .
+   ?nameID :comnames_ComName "Aal" .
    ?nameID :comnames_NameType ?type .
    ?nameID :comnames_SpecCode ?code .
    ?nameID :comnames_C_Code ?ccode .

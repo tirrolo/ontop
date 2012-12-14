@@ -5,10 +5,10 @@ SELECT ?genus ?species ?occurrence ?countryAquaculture
 WHERE {
    ?x fd:species_Genus ?genus .
    ?x fd:species_Species ?species .
-   ?x fd:species_UsedforAquaculture "commercial"^^xsd:string .
+   ?x fd:species_UsedforAquaculture "commercial" .
    ?c fd:country_SpecCode ?x.
    ?c fd:country_Status ?occurrence .
    ?c fd:country_C_Code ?cf .
    ?c fd:country_Aquaculture ?countryAquaculture .
-   ?cf fd:countref_PAESE "Indonesia"^^xsd:string .  
+   ?cf fd:countref_PAESE "Indonesia" .  
 }

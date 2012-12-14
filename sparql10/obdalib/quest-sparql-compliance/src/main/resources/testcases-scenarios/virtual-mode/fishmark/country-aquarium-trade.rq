@@ -8,7 +8,7 @@ WHERE {
    ?x fd:species_Aquarium ?aquarium .
    ?c fd:country_SpecCode ?x.
    ?c fd:country_Status ?occurrence .
-   ?c fd:country_LiveExport "ornamental"^^xsd:string .
+   ?c fd:country_LiveExport "ornamental" .
    ?c fd:country_C_Code ?cf .
-   ?cf fd:countref_PAESE "Indonesia"^^xsd:string .  
+   ?cf fd:countref_PAESE "Indonesia" .  
 }

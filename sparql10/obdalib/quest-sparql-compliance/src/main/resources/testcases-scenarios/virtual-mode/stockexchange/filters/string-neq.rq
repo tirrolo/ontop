@@ -3,5 +3,5 @@ PREFIX : <http://www.owl-ontologies.com/Ontology1207768242.owl#>
 SELECT DISTINCT $x $street 
 WHERE { 
    $x a :Address; :inStreet $street; :inCity $city. 
-   FILTER ( $city != "Bolzano"^^<http://www.w3.org/2001/XMLSchema#string> ). 
+   FILTER ( $city != "Bolzano" ). 
 }

@@ -12,7 +12,7 @@ WHERE {
    ?f fd:families_Family  ?family .
    ?f fd:families_Order ?order .
    ?c fd:country_SpecCode ?x.
-   ?c fd:country_Status "introduced"^^xsd:string .
+   ?c fd:country_Status "introduced" .
    ?c fd:country_C_Code ?cf .
-   ?cf fd:countref_PAESE "Malta"^^xsd:string .   
+   ?cf fd:countref_PAESE "Malta" .   
 }

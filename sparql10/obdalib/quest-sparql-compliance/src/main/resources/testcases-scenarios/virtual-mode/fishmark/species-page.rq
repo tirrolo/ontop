@@ -5,9 +5,9 @@ SELECT ?common ?code ?refno ?author ?demerspelag ?anacat
                ?family ?order ?class ?entered ?pic ?picid ?description 
                ?refauthor ?refyear ?collaborator  ?comments
 WHERE {
-   ?x :species_Genus "Aboma"^^xsd:string .
+   ?x :species_Genus "Aboma" .
    ?x :species_SpecCode ?code.
-   ?x :species_Species "etheostoma"^^xsd:string .
+   ?x :species_Species "etheostoma" .
    ?x :species_Comments ?comments .
    OPTIONAL {?x :species_Author ?author}.
    OPTIONAL {?x :species_FBname ?common}.

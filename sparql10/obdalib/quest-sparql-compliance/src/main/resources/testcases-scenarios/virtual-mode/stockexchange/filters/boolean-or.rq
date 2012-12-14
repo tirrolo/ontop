@@ -6,5 +6,5 @@ SELECT DISTINCT * WHERE {      $x a :Address .
 		$x :inCountry $country. 
 		$x :inState $state. 
 		$x :hasNumber $number.
- FILTER ( $street = "Via Marconi"^^<http://www.w3.org/2001/XMLSchema#string> || $city = "Bolzano"^^<http://www.w3.org/2001/XMLSchema#string> ).}
+ FILTER ( $street = "Via Marconi" || $city = "Bolzano" ).}
 

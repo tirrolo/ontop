@@ -12,6 +12,6 @@ WHERE {
    ?c fd:country_SpecCode ?x.
    ?c fd:country_Status ?occurrence .
    ?c fd:country_C_Code ?cf .
-   ?c fd:country_Aquaculture "commercial"^^xsd:string .
-   ?cf fd:countref_PAESE "Lithuania"^^xsd:string .  
+   ?c fd:country_Aquaculture "commercial" .
+   ?cf fd:countref_PAESE "Lithuania" .  
 }

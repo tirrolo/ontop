@@ -17,5 +17,5 @@ WHERE {
    ?c fd:country_Status ?occurrence .
    ?c fd:country_C_Code ?cf .
    ?c fd:country_Game 1 .
-   ?cf fd:countref_PAESE "Italy"^^xsd:string .  
+   ?cf fd:countref_PAESE "Italy" .  
 }

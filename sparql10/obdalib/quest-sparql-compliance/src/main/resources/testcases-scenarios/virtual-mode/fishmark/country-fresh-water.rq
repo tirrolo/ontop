@@ -15,5 +15,5 @@ WHERE {
    ?c fd:country_Status ?occurrence .
    ?c fd:country_Freshwater 1 .
    ?c fd:country_C_Code ?cf .
-   ?cf fd:countref_PAESE "Malta"^^xsd:string .     
+   ?cf fd:countref_PAESE "Malta" .     
 }

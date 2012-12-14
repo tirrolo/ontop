@@ -4,7 +4,7 @@ PREFIX fd: <http://fishdelish.cs.man.ac.uk/rdf/vocab/resource/>
 SELECT ?species ?author ?family 
 WHERE {
    ?code fd:species_Species ?species .
-   ?code fd:species_Genus "Acanthicus"^^xsd:string .
+   ?code fd:species_Genus "Acanthicus" .
    ?code fd:species_Author ?author .
    ?code fd:species_FamCode ?fcode .
    ?fcode fd:families_Family ?family .
