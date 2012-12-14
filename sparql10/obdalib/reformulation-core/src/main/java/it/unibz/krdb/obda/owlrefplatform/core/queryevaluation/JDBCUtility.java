@@ -166,7 +166,7 @@ public class JDBCUtility implements Serializable {
 				endlocation = datetime.length();
 			bf.replace(dotlocation, endlocation, "");
 		}
-		if (driver == Driver.H2 && bf.length() > 19) {
+		if ((driver == Driver.H2 || driver == Driver.SQLSERVER) && bf.length() > 19) {
 			bf.delete(19, bf.length());
 		}
 		bf.insert(0, "'");
