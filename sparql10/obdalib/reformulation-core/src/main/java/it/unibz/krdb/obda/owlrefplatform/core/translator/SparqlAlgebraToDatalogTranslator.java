@@ -1119,8 +1119,8 @@ public class SparqlAlgebraToDatalogTranslator {
 		Function constantFunction = null;
 		if (expr instanceof NodeValueString) {
 			constantFunction = ofac.getFunctionalTerm(
-					ofac.getDataTypePredicateLiteral(),
-					ofac.getValueConstant(expr.getString(), COL_TYPE.LITERAL));
+					ofac.getDataTypePredicateString(),
+					ofac.getValueConstant(expr.getString(), COL_TYPE.STRING));
 		} else if (expr instanceof NodeValueInteger) {
 			constantFunction = ofac.getFunctionalTerm(ofac
 					.getDataTypePredicateInteger(), ofac.getValueConstant(
@@ -1148,7 +1148,7 @@ public class SparqlAlgebraToDatalogTranslator {
 			if (node instanceof Node_Literal) {
 				constantFunction = ofac.getFunctionalTerm(ofac
 						.getDataTypePredicateLiteral(), ofac.getValueConstant(
-						node.getLiteralLexicalForm(), COL_TYPE.LITERAL));
+						node.getLiteralLexicalForm(), COL_TYPE.STRING));
 			} else if (node instanceof Node_URI) {
 				constantFunction = ofac.getFunctionalTerm(ofac
 						.getUriTemplatePredicate(1), ofac.getValueConstant(
