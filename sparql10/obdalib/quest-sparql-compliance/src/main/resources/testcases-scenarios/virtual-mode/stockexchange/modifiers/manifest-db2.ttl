@@ -9,7 +9,7 @@
     rdfs:label "StockExchange Modifiers Queries" ;
     mf:entries
     ( 
-      :slice-test
+      :slice-test	# DB2 from 9.7.3 supports LIMIT and OFFSET
       :limit-test
       :offset-test
       :limit0-offsetn

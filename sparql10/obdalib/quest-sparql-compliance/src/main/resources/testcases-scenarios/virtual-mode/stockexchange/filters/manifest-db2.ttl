@@ -240,7 +240,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <double-eq.rq> ] ;
+            [ qt:query <double-eq-DB2.rq> ] ;
     mf:result <double-eq.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -250,7 +250,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <double-neq.rq> ] ;
+            [ qt:query <double-neq-DB2.rq> ] ;
     mf:result <double-neq.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -270,7 +270,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <double-gte.rq> ] ;
+            [ qt:query <double-gte-DB2.rq> ] ;
     mf:result <double-gte.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -280,7 +280,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <double-lt.rq> ] ;
+            [ qt:query <double-lt-DB2.rq> ] ;
     mf:result <double-lt.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -300,7 +300,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <datetime-eq.rq> ] ;
+            [ qt:query <datetime-eq-DB2.rq> ] ;
     mf:result <datetime-eq.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -310,7 +310,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <datetime-neq.rq> ] ;
+            [ qt:query <datetime-neq-DB2.rq> ] ;
     mf:result <datetime-neq.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -320,7 +320,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <datetime-gt.rq> ] ;
+            [ qt:query <datetime-gt-DB2.rq> ] ;
     mf:result <datetime-gt.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -330,7 +330,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <datetime-gte.rq> ] ;
+            [ qt:query <datetime-gte-DB2.rq> ] ;
     mf:result <datetime-gte.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -340,7 +340,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <datetime-lt.rq> ] ;
+            [ qt:query <datetime-lt-DB2.rq> ] ;
     mf:result <datetime-lt.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -350,7 +350,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <datetime-lte.rq> ] ;
+            [ qt:query <datetime-lte-DB2.rq> ] ;
     mf:result <datetime-lte.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -360,7 +360,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <boolean-eq.rq> ] ;
+            [ qt:query <boolean-eq-DB2.rq> ] ;
     mf:result <boolean-eq.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
@@ -370,7 +370,7 @@
     obdat:approval obdat:Approved ;
     obdat:approvedBy <http://ceur-ws.org/Vol-943/SSWS_HPCSW2012_paper1.pdf> ;
     mf:action
-            [ qt:query <boolean-neq.rq> ] ;
+            [ qt:query <boolean-neq-DB2.rq> ] ;
     mf:result <boolean-neq.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-db2.obda> .
