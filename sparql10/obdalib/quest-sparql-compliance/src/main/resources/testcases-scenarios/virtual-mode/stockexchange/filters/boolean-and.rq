@@ -7,5 +7,5 @@ SELECT DISTINCT * WHERE {
 		$x :inCountry $country. 
 		$x :inState $state. 
 		$x :hasNumber $number.
- FILTER ( $street = "Via Marconi" && $city = "Bolzano" ).}
+ FILTER ( str($street) = "Via Marconi" && str($city) = "Bolzano" ).}
 
