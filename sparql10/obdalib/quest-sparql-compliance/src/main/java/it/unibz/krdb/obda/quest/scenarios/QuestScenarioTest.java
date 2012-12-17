@@ -128,6 +128,7 @@ public abstract class QuestScenarioTest extends TestCase {
 				throw new RuntimeException("Unexpected query type: " + query.getClass());
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			compareTupleQuerySizeResults(null, readExpectedTupleQueryResult());
 		}
 		finally {
