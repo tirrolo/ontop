@@ -1,5 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
 
+import java.sql.Types;
+
 public class Mysql2SQLDialectAdapter extends SQL99DialectAdapter {
 
 	@Override
@@ -18,7 +20,6 @@ public class Mysql2SQLDialectAdapter extends SQL99DialectAdapter {
 		sql.append(")");
 		return sql.toString();
 	}
-
 	
 	@Override
 	public String sqlQualifiedColumn(String tablename, String columnname) {
