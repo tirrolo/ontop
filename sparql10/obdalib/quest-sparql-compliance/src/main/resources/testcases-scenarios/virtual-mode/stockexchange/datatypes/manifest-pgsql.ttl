@@ -369,7 +369,7 @@
     mf:mappings <stockexchange-pgsql.obda> .
         
 :datetime-1c rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q35: Datetime YYYY-MM-DDThh:mm:ssZ with quotes" ;
+    mf:name    "Q35: Datetime YYYY-MM-DDThh:mm:ss with quotes" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <-ontop- Team> ;
     mf:action
