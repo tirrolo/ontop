@@ -399,7 +399,7 @@
     mf:mappings <stockexchange-oracle.obda> .
         
 :datetime-2c rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q38: Datetime YYYY-MM-DDThh:mm:ssZ without quotes" ;
+    mf:name    "Q38: Datetime YYYY-MM-DDThh:mm:ss without quotes" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <-ontop- Team> ;
     mf:action
@@ -429,12 +429,12 @@
     mf:mappings <stockexchange-oracle.obda> .
         
 :datetime-3c rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q41: Datetime YYYY-MM-DDThh:mm:ssZ with xsd:datetime" ;
+    mf:name    "Q41: Datetime YYYY-MM-DDThh:mm:ss with xsd:datetime" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <-ontop- Team> ;
     mf:action
             [ qt:query <datetime-3c.rq> ] ;
-    mf:result <datetime-3c.ttl> ;
+    mf:result <datetime-3c-oracle.ttl> ;
     mf:knowledgebase <stockexchange.owl> ;
     mf:mappings <stockexchange-oracle.obda> .
    

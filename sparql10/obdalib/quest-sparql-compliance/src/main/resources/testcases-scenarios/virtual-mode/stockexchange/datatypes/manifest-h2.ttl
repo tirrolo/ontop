@@ -369,7 +369,7 @@
     mf:mappings <stockexchange-h2.obda> .
         
 :datetime-1c rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q35: Datetime YYYY-MM-DDThh:mm:ssZ with quotes" ;
+    mf:name    "Q35: Datetime YYYY-MM-DDThh:mm:ss with quotes" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <-ontop- Team> ;
     mf:action
@@ -399,7 +399,7 @@
     mf:mappings <stockexchange-h2.obda> .
         
 :datetime-2c rdf:type mf:QueryEvaluationTest ;
-    mf:name    "Q38: Datetime YYYY-MM-DDThh:mm:ssZ without quotes" ;
+    mf:name    "Q38: Datetime YYYY-MM-DDThh:mm:ss without quotes" ;
     obdat:approval obdat:Approved ;
     obdat:approvedBy <-ontop- Team> ;
     mf:action
