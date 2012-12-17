@@ -270,6 +270,10 @@ public class SQLGenerator implements SQLQueryGenerator {
 			if (expressionFormat.contains("NOT %s") ) {
 				// find data type of term and evaluate accordingly
 				//int type = 8;
+				if (term instanceof Function) {
+					Function f = (Function) term;
+					if (!f.isDataTypeFunction()) return String.format(expressionFormat, column);
+				}
 				int type = getVariableDataType(term, index);
 				if (type == Types.INTEGER) return String.format("NOT %s > 0", column);
 				if (type == Types.DOUBLE) return String.format("NOT %s > 0", column);

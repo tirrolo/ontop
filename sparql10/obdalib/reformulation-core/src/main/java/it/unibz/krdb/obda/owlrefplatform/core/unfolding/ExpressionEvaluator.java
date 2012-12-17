@@ -600,7 +600,12 @@ public class ExpressionEvaluator {
 	}
 
 	public NewLiteral evalIsNullNotNull(Function term, boolean isnull) {
-		NewLiteral result = eval(term.getTerms().get(0));
+		NewLiteral innerTerm = term.getTerms().get(0);
+		if (innerTerm instanceof Function) {
+			Function f = (Function) innerTerm;
+			if (f.isDataTypeFunction()) return innerTerm;
+		}
+		NewLiteral result = eval(innerTerm);
 		if (result == OBDAVocabulary.NULL) {
 			if (isnull) {
 				return fac.getTrue();
