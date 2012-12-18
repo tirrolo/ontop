@@ -44,7 +44,9 @@ import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.RDFHandlerBase;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.AutoIRIMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,10 +95,13 @@ public class QuestDBClassicStore extends QuestDBAbstractStore {
 					"A classic repository must be created with the CLASSIC flag in the configuration.");
 
 		OWLAPI3Translator translator = new OWLAPI3Translator();
+		OWLOntologyIRIMapper iriMapper = new AutoIRIMapper(new File(tboxFile).getParentFile(), false);
+		man.addIRIMapper(iriMapper);
 		OWLOntology owlontology = man
 				.loadOntologyFromOntologyDocument(new File(tboxFile));
-		Ontology tbox = translator.mergeTranslateOntologies(Collections
-				.singleton(owlontology));
+		Set<OWLOntology> clousure = man.getImportsClosure(owlontology);
+		
+		Ontology tbox = translator.mergeTranslateOntologies(clousure);
 
 		createInstance(tbox, config);
 

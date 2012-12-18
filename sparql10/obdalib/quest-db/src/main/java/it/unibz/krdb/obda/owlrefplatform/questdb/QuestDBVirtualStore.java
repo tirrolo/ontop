@@ -17,10 +17,13 @@ import it.unibz.krdb.obda.querymanager.QueryController;
 import java.io.File;
 import java.net.URI;
 import java.util.Collections;
+import java.util.Set;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.AutoIRIMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,10 +65,14 @@ public class QuestDBVirtualStore extends QuestDBAbstractStore {
 		config.setProperty(QuestPreferences.ABOX_MODE, QuestConstants.VIRTUAL);
 
 		OWLAPI3Translator translator = new OWLAPI3Translator();
+		OWLOntologyIRIMapper iriMapper = new AutoIRIMapper(new File(tboxFile).getParentFile(), false);
+		man.addIRIMapper(iriMapper);
 		OWLOntology owlontology = man
 				.loadOntologyFromOntologyDocument(new File(tboxFile));
-		Ontology tbox = translator.mergeTranslateOntologies(Collections
-				.singleton(owlontology));
+		
+		Set<OWLOntology> clousure = man.getImportsClosure(owlontology);
+		
+		Ontology tbox = translator.mergeTranslateOntologies(clousure);
 
 		OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
 
