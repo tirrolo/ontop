@@ -9,7 +9,7 @@
         #<bsbm/manifest-db2.ttl>
         #<fishmark/manifest-db2.ttl>
         #<iLog/manifest-db2.ttl>
-        #<stockexchange/datatypes/manifest-db2.ttl>
+        <stockexchange/datatypes/manifest-db2.ttl>
         <stockexchange/filters/manifest-db2.ttl>
         <stockexchange/modifiers/manifest-db2.ttl>
         <stockexchange/simplecq/manifest-db2.ttl>
