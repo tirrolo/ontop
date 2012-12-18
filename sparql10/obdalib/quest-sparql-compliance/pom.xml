@@ -71,6 +71,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.ibm</groupId>
+			<artifactId>db2jcc4.jar</artifactId>
+			<version>10.1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-runtime</artifactId>
 		</dependency>
