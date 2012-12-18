@@ -162,11 +162,15 @@ public class JDBCUtility implements Serializable {
 			// sections (e.g., oracle,db2, postgres)
 			// so that when supported, we use it.
 			int endlocation = Math.max(zlocation, Math.max(minuslocation, pluslocation));
-			if (endlocation == -1)
+			if (endlocation == -1) {
 				endlocation = datetime.length();
+			}
 			bf.replace(dotlocation, endlocation, "");
 		}
-		if ((driver == Driver.H2 || driver == Driver.SQLSERVER) && bf.length() > 19) {
+		if ((driver == Driver.H2 
+				|| driver == Driver.SQLSERVER
+				|| driver == Driver.ORACLE 
+				|| driver == Driver.DB2) && bf.length() > 19) {
 			bf.delete(19, bf.length());
 		}
 		bf.insert(0, "'");
