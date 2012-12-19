@@ -413,14 +413,18 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 		@Override
 		public void actionCanceled() {
 			try {
-				if (statement != null) {
-					statement.close();
-				}
+				closeConnection();
 				latch.countDown();
 			} catch (Exception e) {
 				latch.countDown();
 				log.error("Error while canceling unfolding action.", e);
 				DialogUtils.showQuickErrorDialog(null, e, "Error while canceling unfolding action.");
+			}
+		}
+		
+		public void closeConnection() throws OWLException {
+			if (statement != null) {
+				statement.close();
 			}
 		}
 	}
@@ -472,14 +476,18 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 		@Override
 		public void actionCanceled() {
 			try {
-				if (statement != null) {
-					statement.close();
-				}
+				closeConnection();
 				latch.countDown();
 			} catch (Exception e) {
 				latch.countDown();
 				log.error("Error while counting.", e);
 				DialogUtils.showQuickErrorDialog(null, e, "Error while counting.");
+			}
+		}
+		
+		public void closeConnection() throws OWLException {
+			if (statement != null) {
+				statement.close();
 			}
 		}
 	}
@@ -550,16 +558,19 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 		@Override
 		public void actionCanceled() {
 			try {
-				if (statement != null) {
-					statement.cancel();
-				}
+				closeConnection();
 				latch.countDown();
 			} catch (Exception e) {
 				latch.countDown();
 				DialogUtils.showQuickErrorDialog(null, e, "Error executing query.");
 			}
 		}
-
+		
+		public void closeConnection() throws OWLException {
+			if (statement != null) {
+				statement.close();
+			}
+		}
 	}
 
 	private class CountAllTuplesAction implements OBDAProgressListener {
@@ -613,14 +624,18 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 		@Override
 		public void actionCanceled() {
 			try {
-				if (statement != null) {
-					statement.close();
-				}
+				closeConnection();
 				latch.countDown();
 			} catch (Exception e) {
 				latch.countDown();
 				log.error("Error while counting.", e);
 				DialogUtils.showQuickErrorDialog(null, e, "Error while counting.");
+			}
+		}
+		
+		public void closeConnection() throws OWLException {
+			if (statement != null) {
+				statement.close();
 			}
 		}
 	}
