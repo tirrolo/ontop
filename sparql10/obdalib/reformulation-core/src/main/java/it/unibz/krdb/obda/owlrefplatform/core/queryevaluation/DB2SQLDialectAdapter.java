@@ -27,8 +27,8 @@ public class DB2SQLDialectAdapter extends SQL99DialectAdapter {
 					// If both limit and offset is not specified.
 					return "";
 				} else {
-					// if the limit is not specified, then theres no real solution, set limit to 1000 and hope for the best
-					return String.format("LIMIT 1000\nOFFSET %d", offset);
+					// The max number of rows is specified by the development team.
+					return String.format("LIMIT 8000\nOFFSET %d", offset);
 				}
 			} else {
 				if (offset == Long.MIN_VALUE) {
