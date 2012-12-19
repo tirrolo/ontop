@@ -17,7 +17,7 @@
         <optional-filter/manifest.ttl>
          
         <type-promotion/manifest.ttl>
-        <cast/manifest.ttl>
+        # <cast/manifest.ttl>
         <boolean-effective-value/manifest.ttl>
         <bound/manifest.ttl>
         <expr-builtin/manifest.ttl>
