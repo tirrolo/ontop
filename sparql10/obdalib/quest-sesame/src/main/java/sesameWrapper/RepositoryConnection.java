@@ -56,7 +56,6 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.UnsupportedRDFormatException;
-import org.openrdf.sail.rdbms.iteration.NamespaceIteration;
 
 public class RepositoryConnection implements org.openrdf.repository.RepositoryConnection {
 
