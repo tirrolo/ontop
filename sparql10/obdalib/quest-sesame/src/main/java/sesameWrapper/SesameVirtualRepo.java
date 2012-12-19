@@ -32,8 +32,8 @@ public class SesameVirtualRepo extends SesameAbstractRepo {
 		else if (rewriting.equals("Default"))
 			pref.setCurrentValueOf(QuestPreferences.REFORMULATION_TECHNIQUE, QuestConstants.UCQBASED);
 		
-		URI obdaURI = URI.create(obdaFile);
-		URI tboxURI = URI.create(tboxFile);
+		URI obdaURI = (new File(obdaFile)).toURI(); 
+		URI tboxURI = (new File(tboxFile)).toURI(); 
 		this.virtualStore = new QuestDBVirtualStore(name, tboxURI, obdaURI, null);
 		questDBConn = virtualStore.getConnection();
 	}
