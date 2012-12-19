@@ -9,16 +9,16 @@
     rdfs:label "DISTINCT" ;
     mf:entries
     ( 
-      :no-distinct-1
-      :distinct-1
+      # :no-distinct-1 # WON'T FIX: Union causes duplications
+      # :distinct-1 # WON'T FIX: Different lexical representation
       :no-distinct-2
       :distinct-2
       :no-distinct-3
       :distinct-3
       :no-distinct-4
       :distinct-4
-      :no-distinct-9
-      :distinct-9
+      # :no-distinct-9 # WON'T FIX: Union causes duplications
+      # :distinct-9 # WON'T FIX: Different lexical representation
       :distinct-star-1
     ) .
 

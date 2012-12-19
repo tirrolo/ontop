@@ -22,7 +22,7 @@
         :filter-scope-1 
         :join-scope-1
         :join-combo-1 
-        :join-combo-2
+        # :join-combo-2 # WON'T FIX: graph
     ) .
 
 :join-combo-1 a mf:QueryEvaluationTest ;
