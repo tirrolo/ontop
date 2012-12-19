@@ -151,7 +151,15 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 						NewLiteral lang = function.getTerms().get(1);
 						sb.append(getDisplayName(var));
 						sb.append("@");
-						sb.append(((ValueConstant) lang).getValue());				
+						if (lang instanceof ValueConstant) {
+							/*
+							 * Don't pass this to getDisplayName() because language constant
+							 * is not written as @'lang-tag'
+							 */
+							sb.append(((ValueConstant) lang).getValue());
+						} else {
+							sb.append(getDisplayName(lang));
+						}
 					}
 				} else {
 					// for the other data types
