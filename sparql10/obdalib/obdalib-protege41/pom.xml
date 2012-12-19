@@ -225,6 +225,8 @@
 						<exclude>*it/unibz/krdb/obda/owlrefplatform/core/reformulation/TreeWitness*</exclude>
 						<exclude>**/TW*.java</exclude>
 						<exclude>**/LUBM*.java</exclude>
+						<exclude>**/directmapping/*.java</exclude>
+					
 					</excludes>
 					<testExcludes>
 						<exclude>**/MappingToRuleTester.java</exclude>

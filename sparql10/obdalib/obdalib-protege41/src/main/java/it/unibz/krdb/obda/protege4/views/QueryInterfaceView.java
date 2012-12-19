@@ -59,6 +59,8 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 
 	private static final Logger log = LoggerFactory.getLogger(QueryInterfaceView.class);
 	
+	private static String QUEST_START_MESSAGE = "Quest must be started before using this feature. To proceed \n * select Quest in the \"Reasoners\" menu and \n * click \"Start reasoner\" in the same menu.";
+	
 	@Override
 	protected void disposeOWLView() {
 		this.getOWLModelManager().removeOntologyChangeListener(ontologyListener);
@@ -127,8 +129,9 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 			}
 			@Override
 			public void run(String query) {
+				OBDAProgessMonitor monitor = null;
 				try {
-					OBDAProgessMonitor monitor = new OBDAProgessMonitor("Counting tuples...");
+					monitor = new OBDAProgessMonitor("Counting tuples...");
 					CountDownLatch latch = new CountDownLatch(1);
 					CountAllTuplesAction action = new CountAllTuplesAction(latch, query);
 					monitor.addProgressListener(action);
@@ -140,6 +143,8 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 					updateTablePanelStatus(result);
 				} catch (Exception e) {
 					DialogUtils.showQuickErrorDialog(QueryInterfaceView.this, e);
+				} finally {
+					monitor.stop();
 				}
 			}
 		});
@@ -149,8 +154,9 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 			private int rows = 0;
 			@Override
 			public void run(String query) {
+				OBDAProgessMonitor monitor = null;
 				try {
-					OBDAProgessMonitor monitor = new OBDAProgessMonitor("Executing queries...");
+					monitor = new OBDAProgessMonitor("Executing queries...");
 					monitor.start();
 					CountDownLatch latch = new CountDownLatch(1);
 					InternalQuery internalQuery = new InternalQuery(query);
@@ -180,6 +186,8 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 					}
 				} catch (Exception e) {
 					DialogUtils.showQuickErrorDialog(QueryInterfaceView.this, e);
+				} finally {
+					monitor.stop();
 				}
 			}
 			@Override
@@ -196,8 +204,9 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 			private long time = 0;
 			@Override
 			public void run(String query) {
+				OBDAProgessMonitor monitor = null;
 				try {
-					OBDAProgessMonitor monitor = new OBDAProgessMonitor("Rewriting query...");
+					monitor = new OBDAProgessMonitor("Rewriting query...");
 					CountDownLatch latch = new CountDownLatch(1);
 					ExpandQueryAction action = new ExpandQueryAction(latch, query);
 					monitor.addProgressListener(action);
@@ -212,6 +221,8 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 					showActionResultInTextPanel("UCQ Expansion Result", result);
 				} catch (InterruptedException e) {
 					DialogUtils.showQuickErrorDialog(QueryInterfaceView.this, e);
+				}finally {
+					monitor.stop();
 				}
 			}
 			@Override
@@ -228,8 +239,10 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 			private long time = 0;
 			@Override
 			public void run(String query) {
+				OBDAProgessMonitor monitor = null;
+
 				try {
-					OBDAProgessMonitor monitor = new OBDAProgessMonitor("Unfolding queries...");
+					monitor = new OBDAProgessMonitor("Unfolding queries...");
 					CountDownLatch latch = new CountDownLatch(1);
 					UnfoldQueryAction action = new UnfoldQueryAction(latch, query);
 					monitor.addProgressListener(action);
@@ -244,6 +257,8 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 					showActionResultInTextPanel("UCQ Unfolding Result", result);
 				} catch (InterruptedException e) {
 					DialogUtils.showQuickErrorDialog(QueryInterfaceView.this, e);
+				}finally {
+					monitor.stop();
 				}
 			}
 			@Override
@@ -270,6 +285,7 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 	}
 
 	private void showActionResultInTextPanel(String title, String result) {
+		
 		if (result == null) {
 			return;
 		}
@@ -402,8 +418,7 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 						latch.countDown();
 						JOptionPane.showMessageDialog(
 								null,
-								"This feature can only be used in conjunction with an UCQ\nenabled reasoner. " +
-								"Please, select a UCQ enabled reasoner and try again.");
+								QUEST_START_MESSAGE);
 					}
 				}
 			};
@@ -465,8 +480,7 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 						latch.countDown();
 						JOptionPane.showMessageDialog(
 								null,
-								"This feature can only be used in conjunction with an UCQ\nenabled reasoner. " +
-								"Please, select a UCQ enabled reasoner and try again.");
+								QUEST_START_MESSAGE);
 					}
 				}
 			};
@@ -547,8 +561,7 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 						latch.countDown();
 						JOptionPane.showMessageDialog(
 								null,
-								"This feature can only be used in conjunction with an UCQ\nenabled reasoner. " +
-								"Please, select a UCQ enabled reasoner and try again.");
+								QUEST_START_MESSAGE);
 					}
 				}
 			};
@@ -613,8 +626,7 @@ public class QueryInterfaceView extends AbstractOWLViewComponent implements Save
 						latch.countDown();
 						JOptionPane.showMessageDialog(
 								null,
-								"This feature can only be used in conjunction with an UCQ\nenabled reasoner. " +
-								"Please, select a UCQ enabled reasoner and try again.");
+								QUEST_START_MESSAGE);
 					}
 				}
 			};
