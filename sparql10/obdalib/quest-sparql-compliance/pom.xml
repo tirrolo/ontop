@@ -36,6 +36,12 @@
 			<groupId>inf.unibz.it.obda</groupId>
 			<artifactId>reformulation-core</artifactId>
 			<version>1.7-alpha</version>
+		</dependency> 
+		
+		<dependency>
+			<groupId>inf.unibz.it.obda</groupId>
+			<artifactId>quest-sesame</artifactId>
+			<version>1.7-alpha</version>
 		</dependency>
 
 		<dependency>
@@ -81,22 +87,47 @@
 			<artifactId>sesame-runtime</artifactId>
 		</dependency>
 
-		<dependency>
-			<!-- this includes ALL seasame -->
-			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-sparql-compliance</artifactId>
-			<version>2.6.9</version>
-		</dependency>
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-sparql-compliance</artifactId>
+            <version>2.6.9</version>
+            <type>war</type>
+        </dependency>
+                     
 
-		<dependency>
-			<!-- this includes ALL seasame -->
-			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-sparql-testsuite</artifactId>
-			<version>2.6.9</version>
-		</dependency>
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-sparql-testsuite</artifactId>
+            <version>2.6.9</version>
+        </dependency>      
 
 	</dependencies>
+                          
+	<repositories>
 
+		<repository>
+			<id>sesame-official-repository</id>
+			<url>http://repo.aduna-software.org/maven2/releases</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases> 
+			 <snapshots>
+    				<enabled>true</enabled>
+    			</snapshots>
+		</repository>
+
+		<repository>
+			<id>bolzano-nexus-public</id>
+			<url>http://obdavm.inf.unibz.it:8080/nexus/content/groups/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+	</repositories>
 
 	<build>
 		<plugins>
