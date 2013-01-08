@@ -10,6 +10,7 @@ import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.Function;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDADataSource;
 import it.unibz.krdb.obda.model.OBDALibConstants;
@@ -17,7 +18,6 @@ import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
@@ -60,7 +60,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalComboBoxButton;
@@ -542,7 +541,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 				variableSet.add(var);
 				
 				// Check if the variable has a data type definition
-				Term objectTerm = var;
+				NewLiteral objectTerm = var;
 				if (predicateObjectMap.getDataType() != null) {
 					objectTerm = dfac.getFunctionalTerm(predicateObjectMap.getDataType(), var);
 				}
@@ -558,7 +557,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		}
 		
 		// Create the head
-		List<Term> distinguishVariables = new ArrayList<Term>(variableSet);
+		List<NewLiteral> distinguishVariables = new ArrayList<NewLiteral>(variableSet);
 		int arity = distinguishVariables.size();
 		Atom head = dfac.getAtom(dfac.getPredicate(OBDALibConstants.QUERY_HEAD_URI, arity, null), distinguishVariables);
 		
@@ -568,7 +567,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 
 	private Function getUriFunctionTerm(String template) {
 		// To store the variables contained in the template string
-		List<Term> terms = new ArrayList<Term>();
+		List<NewLiteral> terms = new ArrayList<NewLiteral>();
 		
 		// Input = http://www.example.org/person/{$var1}/{$var2}
 		while (template.contains("{") && template.contains("}")) {
