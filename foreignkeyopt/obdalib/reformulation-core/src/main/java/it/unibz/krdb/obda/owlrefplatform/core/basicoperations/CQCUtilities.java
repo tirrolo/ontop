@@ -110,6 +110,10 @@ public class CQCUtilities {
 	}
 
 	public CQCUtilities(CQIE query, List<CQIE> rules) {
+		for (Atom b : query.getBody())
+			if (b.isBooleanFunction())
+				return;
+		
 		this.rules = rules;
 		if (rules != null && !rules.isEmpty()) {
 			factMap = new HashMap<Predicate, List<Atom>>();
@@ -916,6 +920,7 @@ public class CQCUtilities {
 			for (int i = 0; i < queries.size(); i++) {
 				CQIE query = queries.get(i);
 				CQCUtilities cqc = new CQCUtilities(query, rules);
+				if (cqc.rules != null)
 				for (int j = queries.size() - 1; j > i; j--) {
 					CQIE query2 = queries.get(j);
 					if (cqc.isContainedIn(query2)) {
@@ -929,6 +934,7 @@ public class CQCUtilities {
 			if (twopasses) {
 				for (int i = (queries.size() - 1); i >= 0; i--) {
 					CQCUtilities cqc = new CQCUtilities(queries.get(i), rules);
+					if (cqc.rules != null)
 					for (int j = 0; j < i; j++) {
 						if (cqc.isContainedIn(queries.get(j))) {
 							queries.remove(i);
