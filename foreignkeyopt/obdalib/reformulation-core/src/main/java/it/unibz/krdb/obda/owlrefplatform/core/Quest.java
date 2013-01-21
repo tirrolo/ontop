@@ -685,19 +685,17 @@ public class Quest implements Serializable, RepositoryChangedListener {
 			/*
 			 * Eliminating redundancy from the unfolding program
 			 */
-			unfoldingProgram = DatalogNormalizer
-					.pushEqualities(unfoldingProgram);
-
-			 List<CQIE> foreignKeyRules = DBMetadataUtil.generateFKRules(metadata);
-			    
-		   CQCUtilities.removeContainedQueriesSorted(unfoldingProgram, true);
-		//   CQCUtilities.removeContainedQueriesSorted(unfoldingProgram, foreignKeyRules, true);
-
+			unfoldingProgram = DatalogNormalizer.pushEqualities(unfoldingProgram);
+			
+			List<CQIE> foreignKeyRules = DBMetadataUtil.generateFKRules(metadata);
+				
+//			CQCUtilities.removeContainedQueriesSorted(unfoldingProgram, true);
+			unfoldingProgram = CQCUtilities.removeContainedQueriesSorted(unfoldingProgram, false, foreignKeyRules);
+			
 			/*
 			 * Adding data typing on the mapping axioms.
 			 */
-			MappingDataTypeRepair typeRepair = new MappingDataTypeRepair(
-					metadata);
+			MappingDataTypeRepair typeRepair = new MappingDataTypeRepair(metadata);
 			typeRepair.insertDataTyping(unfoldingProgram);
 
 			/*

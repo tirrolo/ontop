@@ -4,15 +4,13 @@ import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.AnonymousVariable;
-import it.unibz.krdb.obda.model.impl.AtomWrapperImpl;
-import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.VariableImpl;
 import it.unibz.krdb.obda.ontology.DataType;
@@ -24,6 +22,7 @@ import it.unibz.krdb.obda.ontology.PropertySomeDataTypeRestriction;
 import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
 import it.unibz.krdb.obda.ontology.SubDescriptionAxiom;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,18 +69,10 @@ public class CQCUtilities {
 	static Logger log = LoggerFactory.getLogger(CQCUtilities.class);
 
 	private Ontology sigma = null;
+	
+	private List<CQIE> rules = null;
 
 	final private OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
-
-	/***
-	 * Constructs a CQC utility using the given query.
-	 * 
-	 * @param query
-	 *            A conjunctive query
-	 */
-	public CQCUtilities(CQIE query) {
-		this(query, null);
-	}
 
 	/***
 	 * Constructs a CQC utility using the given query. If Sigma is not null and
@@ -115,6 +106,25 @@ public class CQCUtilities {
 				factMap.put(predicate, facts);
 			}
 			facts.add(fact);
+		}
+	}
+
+	public CQCUtilities(CQIE query, List<CQIE> rules) {
+		this.rules = rules;
+		if (rules != null && !rules.isEmpty()) {
+			factMap = new HashMap<Predicate, List<Atom>>();
+			List<Atom> generatedFacts = chaseQuery(query, rules);
+			
+			// Map the facts
+			for (Atom fact : generatedFacts) {
+				Predicate p = fact.getPredicate();
+				List<Atom> facts = factMap.get(p);
+				if (facts == null) {
+					facts = new LinkedList<Atom>();
+					factMap.put(p, facts);
+				}
+				facts.add(fact);
+			}
 		}
 	}
 
@@ -286,6 +296,37 @@ public class CQCUtilities {
 		return newquery;
 	}
 
+	/**
+	 * This method is used to chase foreign key constraint rule in which the rule
+	 * has only one atom in the body.
+	 * 
+	 * @param query
+	 * @param rules
+	 * @return
+	 */
+	public List<Atom> chaseQuery(CQIE query, List<CQIE> rules) {
+		List<Atom> facts = new ArrayList<Atom>();
+
+		CQIE canonicalQuery = getCanonicalQuery(query);
+		canonicalhead = canonicalQuery.getHead();
+		canonicalbody = canonicalQuery.getBody();
+		
+		for (Atom fact : canonicalbody) {
+			facts.add(fact);
+			for (CQIE rule : rules) {
+				Atom ruleBody = rule.getBody().get(0);
+				Map<Variable, NewLiteral> theta = Unifier.getMGU(ruleBody, fact);
+				if (theta != null && !theta.isEmpty()) {
+					Atom ruleHead = rule.getHead();
+					Atom newFact = ruleHead.clone();
+					Unifier.applyUnifierToGetFact(newFact, theta);
+					facts.add(newFact);
+				}
+			}
+		}
+		return facts;
+	}
+	
 	/***
 	 * Computes a query in which all variables have been replaced by
 	 * ValueConstants that have the no type and have the same 'name' as the
@@ -878,5 +919,76 @@ public class CQCUtilities {
 		
 		return queries;
 	}
+	
+	public static DatalogProgram removeContainedQueriesSorted(DatalogProgram program, boolean twopasses, List<CQIE> foreignKeyRules) {
+		DatalogProgram result = OBDADataFactoryImpl.getInstance().getDatalogProgram();
+		result.setQueryModifiers(program.getQueryModifiers());
+		List<CQIE> rules = new LinkedList<CQIE>();
+		rules.addAll(program.getRules());
+		rules = removeContainedQueries(rules, twopasses, foreignKeyRules, true);
+		result.appendRule(rules);
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param queriesInput
+	 * @param twopasses
+	 * @param foreignKeyRules
+	 * @param sort
+	 * @return
+	 */
+	public static List<CQIE> removeContainedQueries(List<CQIE> queriesInput, boolean twopasses, List<CQIE> foreignKeyRules, boolean sort) {
+		LinkedList<CQIE> queries = new LinkedList<CQIE>();
+		queries.addAll(queriesInput);
+		
+		int initialsize = queries.size();
+		log.debug("Optimzing w.r.t. CQC Foreign key containment. Initial size: {}:", initialsize);
 
+		double startime = System.currentTimeMillis();
+
+		Comparator<CQIE> lenghtComparator = new Comparator<CQIE>() {
+			@Override
+			public int compare(CQIE o1, CQIE o2) {
+				return o2.getBody().size() - o1.getBody().size();
+			}
+		};
+		if (sort) {
+			Collections.sort(queries, lenghtComparator);
+		}
+
+		for (int i = 0; i < queries.size(); i++) {
+			CQIE query = queries.get(i);
+			CQCUtilities cqc = new CQCUtilities(query, foreignKeyRules);
+			for (int j = queries.size() - 1; j > i; j--) {
+				CQIE query2 = queries.get(j);
+				if (cqc.isContainedIn(query2)) {
+					queries.remove(i);
+					i -= 1;
+					break;
+				}
+			}
+		}
+
+		if (twopasses) {
+			for (int i = (queries.size() - 1); i >= 0; i--) {
+				CQCUtilities cqc = new CQCUtilities(queries.get(i), foreignKeyRules);
+				for (int j = 0; j < i; j++) {
+					if (cqc.isContainedIn(queries.get(j))) {
+						queries.remove(i);
+						break;
+					}
+				}
+			}
+		}
+
+		int newsize = queries.size();
+
+		double endtime = System.currentTimeMillis();
+		double time = (endtime - startime) / 1000;
+
+		log.debug("Resulting size: {}  Time elapsed: {}", newsize, time);
+		
+		return queries;
+	}
 }
