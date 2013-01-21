@@ -118,6 +118,7 @@ public class CQCUtilities {
 			// Map the facts
 			for (Atom fact : generatedFacts) {
 				Predicate p = fact.getPredicate();
+				canonicalpredicates.add(p);
 				List<Atom> facts = factMap.get(p);
 				if (facts == null) {
 					facts = new LinkedList<Atom>();
@@ -783,17 +784,12 @@ public class CQCUtilities {
 		return true;
 	}
 
-	public static void removeContainedQueriesSorted(List<CQIE> queries, boolean twopasses) {
-		removeContainedQueriesSorted(queries, twopasses, null);
-
-	}
-
 	public static DatalogProgram removeContainedQueriesSorted(DatalogProgram program, boolean twopasses) {
 		DatalogProgram result = OBDADataFactoryImpl.getInstance().getDatalogProgram();
 		result.setQueryModifiers(program.getQueryModifiers());
 		List<CQIE> rules = new LinkedList<CQIE>();
 		rules.addAll(program.getRules());
-		rules = removeContainedQueriesSorted(rules, twopasses, null);
+		rules = removeContainedQueries(rules, twopasses, null, null, true);
 		result.appendRule(rules);
 		return result;
 	}
@@ -804,6 +800,16 @@ public class CQCUtilities {
 		List<CQIE> rules = removeContainedQueriesSorted(program.getRules(), twopasses, sigma);
 		result.appendRule(rules);
 		return result; 
+	}
+	
+	public static DatalogProgram removeContainedQueriesSorted(DatalogProgram program, boolean twopasses, List<CQIE> foreignKeyRules) {
+		DatalogProgram result = OBDADataFactoryImpl.getInstance().getDatalogProgram();
+		result.setQueryModifiers(program.getQueryModifiers());
+		List<CQIE> rules = new LinkedList<CQIE>();
+		rules.addAll(program.getRules());
+		rules = removeContainedQueriesSorted(rules, twopasses, foreignKeyRules);
+		result.appendRule(rules);
+		return result;
 	}
 
 	/***
@@ -817,8 +823,23 @@ public class CQCUtilities {
 	 * 
 	 * @param queries
 	 */
+	public static List<CQIE> removeContainedQueriesSorted(List<CQIE> queries, boolean twopasses, List<CQIE> rules) {
+		return removeContainedQueries(queries, twopasses, null, rules, true);
+	}
+	
+	/***
+	 * Removes queries that are contained syntactically, using the method
+	 * isContainedInSyntactic(CQIE q1, CQIE 2). To make the process more
+	 * efficient, we first sort the list of queries as to have longer queries
+	 * first and shorter queries last.
+	 * 
+	 * Removal of queries is done in two main double scans. The first scan goes
+	 * top-down/down-top, the second scan goes down-top/top-down
+	 * 
+	 * @param queries
+	 */
 	public static List<CQIE> removeContainedQueriesSorted(List<CQIE> queries, boolean twopasses, Ontology sigma) {
-		return removeContainedQueries(queries, twopasses, sigma, true);
+		return removeContainedQueries(queries, twopasses, sigma, null, true);
 	}
 
 	/***
@@ -832,7 +853,7 @@ public class CQCUtilities {
 	 * 
 	 * @param querieslist
 	 */
-	public static List<CQIE> removeContainedQueries(List<CQIE> queriesInput, boolean twopasses, Ontology sigma, boolean sort) {
+	public static List<CQIE> removeContainedQueries(List<CQIE> queriesInput, boolean twopasses, Ontology sigma, List<CQIE> rules, boolean sort) {
 
 		// queries = new LinkedList<CQIE>(queries);
 		LinkedList<CQIE> queries = new LinkedList<CQIE>();
@@ -856,132 +877,59 @@ public class CQCUtilities {
 			Collections.sort(queries, lenghtComparator);
 		}
 
-		// Iterator<CQIE> forwardIt = queries.iterator();
-		// while (forwardIt.hasNext()) {
-		// CQCUtilities cqc = new CQCUtilities(forwardIt.next(), sigma);
-		// Iterator<CQIE> backwardIt =
-		// ((LinkedList)queries).descendingIterator();
-		// while (backwardIt.hasNext()) {
-		// if (cqc.isContainedIn(backwardIt.next())) {
-		// forwardIt.remove();
-		// break;
-		// }
-		// }
-		// }
-		//
-		// if (twopasses) {
-		// Iterator<CQIE> backwardIterator =
-		// ((LinkedList)queries).descendingIterator();
-		// while (backwardIterator.hasNext()) {
-		// CQCUtilities cqc = new CQCUtilities(backwardIterator.next(), sigma);
-		// forwardIt = queries.iterator();
-		// while (forwardIt.hasNext()) {
-		// if (cqc.isContainedIn(forwardIt.next())) {
-		// backwardIterator.remove();
-		// break;
-		// }
-		// }
-		// }
-		// }
-
-		for (int i = 0; i < queries.size(); i++) {
-			CQIE query = queries.get(i);
-			CQCUtilities cqc = new CQCUtilities(query, sigma);
-			for (int j = queries.size() - 1; j > i; j--) {
-				CQIE query2 = queries.get(j);
-				if (cqc.isContainedIn(query2)) {
-					queries.remove(i);
-					i -= 1;
-					break;
-				}
-			}
-		}
-
-		if (twopasses) {
-			for (int i = (queries.size() - 1); i >= 0; i--) {
-				CQCUtilities cqc = new CQCUtilities(queries.get(i), sigma);
-				for (int j = 0; j < i; j++) {
-					if (cqc.isContainedIn(queries.get(j))) {
+		if (sigma != null) {
+			for (int i = 0; i < queries.size(); i++) {
+				CQIE query = queries.get(i);
+				CQCUtilities cqc = new CQCUtilities(query, sigma);
+				for (int j = queries.size() - 1; j > i; j--) {
+					CQIE query2 = queries.get(j);
+					if (cqc.isContainedIn(query2)) {
 						queries.remove(i);
+						i -= 1;
 						break;
 					}
 				}
 			}
-		}
-
-		int newsize = queries.size();
-		// int queriesremoved = initialsize - newsize;
-
-		double endtime = System.currentTimeMillis();
-		double time = (endtime - startime) / 1000;
-
-		log.debug("Resulting size: {}  Time elapsed: {}", newsize, time);
-		
-		return queries;
-	}
 	
-	public static DatalogProgram removeContainedQueriesSorted(DatalogProgram program, boolean twopasses, List<CQIE> foreignKeyRules) {
-		DatalogProgram result = OBDADataFactoryImpl.getInstance().getDatalogProgram();
-		result.setQueryModifiers(program.getQueryModifiers());
-		List<CQIE> rules = new LinkedList<CQIE>();
-		rules.addAll(program.getRules());
-		rules = removeContainedQueries(rules, twopasses, foreignKeyRules, true);
-		result.appendRule(rules);
-		return result;
-	}
-	
-	/**
-	 * 
-	 * @param queriesInput
-	 * @param twopasses
-	 * @param foreignKeyRules
-	 * @param sort
-	 * @return
-	 */
-	public static List<CQIE> removeContainedQueries(List<CQIE> queriesInput, boolean twopasses, List<CQIE> foreignKeyRules, boolean sort) {
-		LinkedList<CQIE> queries = new LinkedList<CQIE>();
-		queries.addAll(queriesInput);
-		
-		int initialsize = queries.size();
-		log.debug("Optimzing w.r.t. CQC Foreign key containment. Initial size: {}:", initialsize);
-
-		double startime = System.currentTimeMillis();
-
-		Comparator<CQIE> lenghtComparator = new Comparator<CQIE>() {
-			@Override
-			public int compare(CQIE o1, CQIE o2) {
-				return o2.getBody().size() - o1.getBody().size();
-			}
-		};
-		if (sort) {
-			Collections.sort(queries, lenghtComparator);
-		}
-
-		for (int i = 0; i < queries.size(); i++) {
-			CQIE query = queries.get(i);
-			CQCUtilities cqc = new CQCUtilities(query, foreignKeyRules);
-			for (int j = queries.size() - 1; j > i; j--) {
-				CQIE query2 = queries.get(j);
-				if (cqc.isContainedIn(query2)) {
-					queries.remove(i);
-					i -= 1;
-					break;
-				}
-			}
-		}
-
-		if (twopasses) {
-			for (int i = (queries.size() - 1); i >= 0; i--) {
-				CQCUtilities cqc = new CQCUtilities(queries.get(i), foreignKeyRules);
-				for (int j = 0; j < i; j++) {
-					if (cqc.isContainedIn(queries.get(j))) {
-						queries.remove(i);
-						break;
+			if (twopasses) {
+				for (int i = (queries.size() - 1); i >= 0; i--) {
+					CQCUtilities cqc = new CQCUtilities(queries.get(i), sigma);
+					for (int j = 0; j < i; j++) {
+						if (cqc.isContainedIn(queries.get(j))) {
+							queries.remove(i);
+							break;
+						}
 					}
 				}
 			}
 		}
+		
+		if (rules != null) {
+			for (int i = 0; i < queries.size(); i++) {
+				CQIE query = queries.get(i);
+				CQCUtilities cqc = new CQCUtilities(query, rules);
+				for (int j = queries.size() - 1; j > i; j--) {
+					CQIE query2 = queries.get(j);
+					if (cqc.isContainedIn(query2)) {
+						queries.remove(i);
+						i -= 1;
+						break;
+					}
+				}
+			}
 
+			if (twopasses) {
+				for (int i = (queries.size() - 1); i >= 0; i--) {
+					CQCUtilities cqc = new CQCUtilities(queries.get(i), rules);
+					for (int j = 0; j < i; j++) {
+						if (cqc.isContainedIn(queries.get(j))) {
+							queries.remove(i);
+							break;
+						}
+					}
+				}
+			}
+		}
 		int newsize = queries.size();
 
 		double endtime = System.currentTimeMillis();

@@ -690,7 +690,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 			List<CQIE> foreignKeyRules = DBMetadataUtil.generateFKRules(metadata);
 				
 //			CQCUtilities.removeContainedQueriesSorted(unfoldingProgram, true);
-			unfoldingProgram = CQCUtilities.removeContainedQueriesSorted(unfoldingProgram, false, foreignKeyRules);
+			unfoldingProgram = CQCUtilities.removeContainedQueriesSorted(unfoldingProgram, true, foreignKeyRules);
 			
 			/*
 			 * Adding data typing on the mapping axioms.
