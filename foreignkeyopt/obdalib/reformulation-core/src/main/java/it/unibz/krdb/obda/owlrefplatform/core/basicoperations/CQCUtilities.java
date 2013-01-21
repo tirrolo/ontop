@@ -842,6 +842,14 @@ public class CQCUtilities {
 		return removeContainedQueries(queries, twopasses, sigma, null, true);
 	}
 
+	public static List<CQIE> removeContainedQueries(List<CQIE> queriesInput, boolean twopasses, List<CQIE> rules) {
+		return removeContainedQueries(queriesInput, twopasses, null, rules, false);
+	}
+	
+	public static List<CQIE> removeContainedQueries(List<CQIE> queriesInput, boolean twopasses, Ontology sigma) {
+		return removeContainedQueries(queriesInput, twopasses, sigma, null, false);
+	}
+	
 	/***
 	 * Removes queries that are contained syntactically, using the method
 	 * isContainedInSyntactic(CQIE q1, CQIE 2). To make the process more
