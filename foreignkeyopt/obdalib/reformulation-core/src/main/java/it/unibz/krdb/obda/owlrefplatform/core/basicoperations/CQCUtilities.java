@@ -916,7 +916,7 @@ public class CQCUtilities {
 			}
 		}
 		
-		if (rules != null) {
+		if (rules != null && !rules.isEmpty()) {
 			for (int i = 0; i < queries.size(); i++) {
 				CQIE query = queries.get(i);
 				CQCUtilities cqc = new CQCUtilities(query, rules);
