@@ -733,6 +733,7 @@ public class CQCUtilities {
 		for (int i = 0; i < queries.size(); i++) {
 			for (int j = queries.size() - 1; j > i; j--) {
 				if (isContainedInSyntactic(queries.get(i), queries.get(j))) {
+					log.debug("REMOVE: " + queries.get(i));
 					queries.remove(i);
 					i = -1;
 					break;
@@ -744,6 +745,7 @@ public class CQCUtilities {
 			for (int i = queries.size() - 1; i > 0; i--) {
 				for (int j = 0; j < i; j++) {
 					if (isContainedInSyntactic(queries.get(i), queries.get(j))) {
+						log.debug("REMOVE: " + queries.get(i));
 						queries.remove(i);
 						i = +1;
 						break;
@@ -896,6 +898,7 @@ public class CQCUtilities {
 				for (int j = queries.size() - 1; j > i; j--) {
 					CQIE query2 = queries.get(j);
 					if (cqc.isContainedIn(query2)) {
+						log.debug("REMOVE (SIGMA): " + queries.get(i));
 						queries.remove(i);
 						i -= 1;
 						break;
@@ -908,6 +911,7 @@ public class CQCUtilities {
 					CQCUtilities cqc = new CQCUtilities(queries.get(i), sigma);
 					for (int j = 0; j < i; j++) {
 						if (cqc.isContainedIn(queries.get(j))) {
+							log.debug("REMOVE (SIGMA): " + queries.get(i));
 							queries.remove(i);
 							break;
 						}
@@ -924,6 +928,7 @@ public class CQCUtilities {
 				for (int j = queries.size() - 1; j > i; j--) {
 					CQIE query2 = queries.get(j);
 					if (cqc.isContainedIn(query2)) {
+						log.debug("REMOVE (FK): " + queries.get(i));
 						queries.remove(i);
 						i -= 1;
 						break;
@@ -937,6 +942,7 @@ public class CQCUtilities {
 					if (cqc.rules != null)
 					for (int j = 0; j < i; j++) {
 						if (cqc.isContainedIn(queries.get(j))) {
+							log.debug("REMOVE (FK): " + queries.get(i));
 							queries.remove(i);
 							break;
 						}
