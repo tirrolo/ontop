@@ -16,6 +16,6 @@ public interface TBoxGraph {
 
 
 	//obtain the graph built
-	public GraphImpl<Description, DefaultEdge> getGraph();
+	public GraphImpl getGraph();
 
 }
