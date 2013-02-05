@@ -22,5 +22,5 @@ public interface TBoxReasoner {
 
 	public Set<Description> getEquivalences(Description description);
 
-	public void getNode();
+	
 }

@@ -16,11 +16,13 @@ import org.jgrapht.Graphs;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 
+/** 
+ * Starting from a graph build a DAG. 
+ * Consider equivalences, redundancies and transitive reduction */
+
 public class GraphDAGImpl implements GraphDAG{
 
-	/** Starting from a graph build a DAG 
-	 * considering equivalences, redundancies and transitive reduction */
-
+	//contains the representative node with the set of equivalent mapping.
 	private Map<Description, Set<Description>> equivalencesMap = new HashMap<Description, Set<Description>>();
 
 	/***
@@ -31,26 +33,29 @@ public class GraphDAGImpl implements GraphDAG{
 	private Map<Description, Description> replacements = new HashMap<Description, Description>();
 
 	private DAGImpl dag= new DAGImpl(DefaultEdge.class);
+	
+	//graph that will be transformed in a dag
 	private GraphImpl modifiedGraph;
 
+	
 	public GraphDAGImpl (GraphImpl graph){
 		
 		modifiedGraph=(GraphImpl) graph.clone();
 		eliminateCycles();
 		eliminateRedundantEdges();
-
 		
-		System.out.println("modified graph "+modifiedGraph);
+//		System.out.println("modified graph "+modifiedGraph);
+		
 		dag= new DAGImpl( DefaultEdge.class);
 		
 		//change the graph in a dag
 		Graphs.addGraph(dag, modifiedGraph);
-		System.out.println(dag);
 		
+//		System.out.println(dag);
+		dag.setMapEquivalences(equivalencesMap);
+		dag.setReplacements(replacements);
 
 	}
-
-
 
 
 	@Override
@@ -59,9 +64,6 @@ public class GraphDAGImpl implements GraphDAG{
 		return dag;
 	}
 
-	//implement the private method for redundancies 
-	//implement the private method for equivalences 	
-	//implement the private method for transitive reduction
 
 	/***
 	 * Eliminiates redundant edges to ensure that the remaining DAG is the
@@ -72,7 +74,7 @@ public class GraphDAGImpl implements GraphDAG{
 	 * 
 	 * <p>
 	 * Compute the set of all nodes with more than 2 outgoing edges (these have
-	 * candidate redundant edges. <br>
+	 * candidate redundant edges.) <br>
 	 */
 	private void eliminateRedundantEdges() {
 		/* Compute the candidate nodes */
@@ -87,17 +89,23 @@ public class GraphDAGImpl implements GraphDAG{
 
 		/*
 		 * for each candidate x and each outgoing edge x -> y, we will check if
-		 * y appears in the
+		 * y appears in the set of redundant edges
 		 */
 
 		for (Description candidate : candidates) {
+			
 			Set<DefaultEdge> possiblyRedundantEdges = new LinkedHashSet<DefaultEdge>();
+			
 			possiblyRedundantEdges.addAll(modifiedGraph.outgoingEdgesOf(candidate));
+			
 			Set<DefaultEdge> eliminatedEdges = new HashSet<DefaultEdge>();
-			// registring the target of the possible redundant targets for this
+			
+			// registering the target of the possible redundant targets for this
 			// node
 			Set<Description> targets = new HashSet<Description>();
+			
 			Map<Description, DefaultEdge> targetEdgeMap = new HashMap<Description, DefaultEdge>();
+			
 			for (DefaultEdge edge : possiblyRedundantEdges) {
 				Description target = modifiedGraph.getEdgeTarget(edge);
 				targets.add(target);

@@ -1,12 +1,14 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import it.unibz.krdb.obda.ontology.ClassDescription;
 import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.ontology.impl.ClassImpl;
 import it.unibz.krdb.obda.ontology.impl.PropertyImpl;
+
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.DefaultEdge;
@@ -26,6 +28,9 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 	
 	private Set<ClassDescription> classes = new LinkedHashSet<ClassDescription> ();
 	private Set<Property> roles = new LinkedHashSet<Property> ();
+	
+	private Map<Description, Description> replacements = new HashMap<Description, Description>();
+	private Map<Description, Set<Description>> equivalencesMap = new HashMap<Description, Set<Description>>();
 
 	public DAGImpl(Class<? extends DefaultEdge> arg0) {
 		super(arg0);
@@ -73,6 +78,29 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 		}
 		return classes;
 
+	}
+
+	@Override
+	public Map<Description, Set<Description>> getMapEquivalences() {
+		
+		return equivalencesMap;
+	}
+
+	@Override
+	public Map<Description, Description> getReplacements() {
+		return replacements;
+	}
+
+	@Override
+	public void setMapEquivalences(Map<Description, Set<Description>> equivalences) {
+		this.equivalencesMap= equivalences;
+		
+	}
+
+	@Override
+	public void setReplacements(Map<Description, Description> replacements) {
+		this.replacements=replacements;
+		
 	}
 
 
