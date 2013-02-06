@@ -6,12 +6,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 public interface GraphDAG {
 
 
-//	//obtain nodes
-//	public void getNodes();
-//
-//	//obtain Edges
-//	public void getEdges();
-
 	//obtain the graph
 	public DAGImpl getDAG();
 

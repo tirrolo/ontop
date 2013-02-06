@@ -44,12 +44,14 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 	
 	//check if the graph is a dag
 	public boolean isaDAG(){
+		//TODO
 		return dag;
 
 	}
 
 	//check if the graph is a named description dag
 	public boolean isaNamedDAG(){
+		//TODO
 		return namedDAG;
 
 

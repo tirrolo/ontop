@@ -23,17 +23,6 @@ public class TBoxReasonerNamedImpl implements TBoxReasoner {
 	@Override
 	public Set<Set<Description>> getDirectChildren(Description desc) {
 		return null;
-//		LinkedHashSet<Set<Description>> result = new LinkedHashSet<Set<Description>>();
-//		Description node = replacements.get(desc);
-//		if (node == null)
-//			node = desc;
-//		Set<DefaultEdge> edges = dag.incomingEdgesOf(node);
-//		for (DefaultEdge edge : edges) {
-//			Description source = dag.getEdgeSource(edge);
-//			Set<Description> equivalences = getEquiavlences(source);
-//			result.add(equivalences);
-//		}
-//		return Collections.unmodifiableSet(result);
 		
 	}
 

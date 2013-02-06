@@ -66,7 +66,7 @@ public class GraphDAGImpl implements GraphDAG{
 
 
 	/***
-	 * Eliminiates redundant edges to ensure that the remaining DAG is the
+	 * Eliminates redundant edges to ensure that the remaining DAG is the
 	 * transitive reduct of the original DAG.
 	 * 
 	 * <p>

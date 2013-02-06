@@ -17,7 +17,7 @@ public class NamedDescriptionDAGImpl<V,E> implements NamedDescriptionDAG {
 	}
 	
 	@Override
-	public DAGImpl<Description, DefaultEdge> getDAG() {
+	public DAGImpl getDAG() {
 		// TODO Auto-generated method stub
 		return null;
 	}
