@@ -1,7 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 
-import it.unibz.krdb.obda.ontology.ClassDescription;
 import it.unibz.krdb.obda.ontology.Description;
+import it.unibz.krdb.obda.ontology.OClass;
 import it.unibz.krdb.obda.ontology.Property;
 
 import java.util.Map;
@@ -10,14 +10,7 @@ import java.util.Set;
 public interface DAG {
 
 
-	public boolean isaDAG();
 
-	//check if the graph is a named description dag
-	public boolean isaNamedDAG();
-	
-	public Set<Property> getRoles();
-	public Set<ClassDescription> getClasses();
-	
 	//set the map of equivalences
 	public void setMapEquivalences(Map<Description, Set<Description>> equivalences);
 		
@@ -29,6 +22,12 @@ public interface DAG {
 	
 	//return the map set of replacements
 	public Map<Description,Description> getReplacements();
+	
+	//return the named properties in the dag
+	public Set<Property> getRoles();
+	
+	//return the named classed in the dag
+	public Set<OClass> getClasses();
 	
 	
 

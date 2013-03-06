@@ -20,7 +20,7 @@ public interface TBoxReasoner {
 
 	public Set<Set<Description>> getAncestors(Description desc);
 
-	public Set<Description> getEquivalences(Description description);
+	public Set<Description> getEquivalences(Description desc);
 
 	
 }

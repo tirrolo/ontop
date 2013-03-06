@@ -54,6 +54,7 @@ public class GraphDAGImpl implements GraphDAG{
 //		System.out.println(dag);
 		dag.setMapEquivalences(equivalencesMap);
 		dag.setReplacements(replacements);
+		dag.setIsaDAG(true);
 
 	}
 
@@ -67,7 +68,7 @@ public class GraphDAGImpl implements GraphDAG{
 
 	/***
 	 * Eliminates redundant edges to ensure that the remaining DAG is the
-	 * transitive reduct of the original DAG.
+	 * transitive reduction of the original DAG.
 	 * 
 	 * <p>
 	 * This is done with an ad-hoc algorithm that functions as follows:
@@ -164,6 +165,8 @@ public class GraphDAGImpl implements GraphDAG{
 	 */
 	private void eliminateCycles() {
 		StrongConnectivityInspector<Description, DefaultEdge> inspector = new StrongConnectivityInspector<Description, DefaultEdge>(modifiedGraph);
+		
+		//each set contains vertices which together form a strongly connected component within the given graph
 		List<Set<Description>> equivalenceSets = inspector.stronglyConnectedSets();
 
 		for (Set<Description> equivalenceSet : equivalenceSets) {
@@ -184,8 +187,10 @@ public class GraphDAGImpl implements GraphDAG{
 				 */
 
 				Set<DefaultEdge> edges = new HashSet<DefaultEdge>(modifiedGraph.incomingEdgesOf(eliminatedNode));
+
 				for (DefaultEdge incEdge : edges) {
 					Description source = modifiedGraph.getEdgeSource(incEdge);
+
 					modifiedGraph.removeAllEdges(source, eliminatedNode);
 
 					if (source.equals(representative))
@@ -195,13 +200,16 @@ public class GraphDAGImpl implements GraphDAG{
 				}
 
 				edges = new HashSet<DefaultEdge>(modifiedGraph.outgoingEdgesOf(eliminatedNode));
+
 				for (DefaultEdge outEdge : edges) {
 					Description target = modifiedGraph.getEdgeTarget(outEdge);
+
 					modifiedGraph.removeAllEdges(eliminatedNode, target);
 
 					if (target.equals(representative))
 						continue;
 					modifiedGraph.addEdge(representative, target);
+
 				}
 
 				modifiedGraph.removeVertex(eliminatedNode);

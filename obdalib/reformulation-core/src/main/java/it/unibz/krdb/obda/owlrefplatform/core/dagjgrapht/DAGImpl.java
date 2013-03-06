@@ -1,6 +1,6 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
-import it.unibz.krdb.obda.ontology.ClassDescription;
 import it.unibz.krdb.obda.ontology.Description;
+import it.unibz.krdb.obda.ontology.OClass;
 import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.ontology.impl.ClassImpl;
 import it.unibz.krdb.obda.ontology.impl.PropertyImpl;
@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.jgrapht.DirectedGraph;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
@@ -26,7 +27,7 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 	boolean dag = false;
 	boolean namedDAG = false;
 	
-	private Set<ClassDescription> classes = new LinkedHashSet<ClassDescription> ();
+	private Set<OClass> classes = new LinkedHashSet<OClass> ();
 	private Set<Property> roles = new LinkedHashSet<Property> ();
 	
 	private Map<Description, Description> replacements = new HashMap<Description, Description>();
@@ -42,26 +43,53 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 		dag=true;
 	}
 	
+	//set the graph is a dag
+	public void setIsaDAG(boolean d){
+		
+		dag=d;
+		namedDAG=!d;
+
+	}
+
+	//set the graph is a named description dag
+	public void setIsaNamedDAG(boolean nd){
+		
+		namedDAG=nd;
+		dag=!nd;
+
+	}
 	//check if the graph is a dag
 	public boolean isaDAG(){
-		//TODO
 		return dag;
 
 	}
 
 	//check if the graph is a named description dag
 	public boolean isaNamedDAG(){
-		//TODO
 		return namedDAG;
 
 
 	}
 	
-	//return all roles in the graph
+	//return all named roles in the dag
 	public Set<Property> getRoles(){
 		for (Description r: this.vertexSet()){
+			
+			//check in the equivalent nodes if there are properties
+			if(replacements.containsValue(r)){
+				for (Description e: equivalencesMap.get(r))	{
+					if (e.getClass().equals(PropertyImpl.class)){
+						System.out.println("roles: "+ e +" "+ e.getClass());
+						if(!((PropertyImpl) e).isInverse())
+						roles.add((PropertyImpl)e);
+						
+				}
+				}
+			}
 			if (r.getClass().equals(PropertyImpl.class)){
-				roles.add((Property)r);
+				System.out.println("roles: "+ r +" "+ r.getClass());
+				if(!((PropertyImpl) r).isInverse())
+				roles.add((PropertyImpl)r);
 			}
 
 		}
@@ -70,17 +98,30 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 	}
 
 	
-	//return all classes in the graph
-	public Set<ClassDescription> getClasses(){
+	//return all named classes in the dag
+	public Set<OClass> getClasses(){
 		for (Description c: this.vertexSet()){
+			
+			//check in the equivalent nodes if there are named classes
+			if(replacements.containsValue(c)){
+				for (Description e: equivalencesMap.get(c))	{
+					if (e.getClass().equals(ClassImpl.class)){
+						System.out.println("classes: "+ e +" "+ e.getClass());
+						classes.add((ClassImpl)e);
+				}
+				}
+			}
+			
 			if (c.getClass().equals(ClassImpl.class)){
-				classes.add((ClassDescription)c);
+				System.out.println("classes: "+ c+ " "+ c.getClass());
+				classes.add((ClassImpl)c);
 			}
 
 		}
 		return classes;
 
 	}
+
 
 	@Override
 	public Map<Description, Set<Description>> getMapEquivalences() {

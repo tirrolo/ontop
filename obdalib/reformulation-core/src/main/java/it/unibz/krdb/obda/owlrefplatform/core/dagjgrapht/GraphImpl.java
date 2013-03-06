@@ -1,6 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 import it.unibz.krdb.obda.ontology.ClassDescription;
 import it.unibz.krdb.obda.ontology.Description;
+import it.unibz.krdb.obda.ontology.OClass;
 import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.ontology.impl.ClassImpl;
 import it.unibz.krdb.obda.ontology.impl.PropertyImpl;
@@ -21,7 +22,7 @@ import org.jgrapht.graph.DefaultEdge;
 
 public class GraphImpl extends DefaultDirectedGraph<Description,DefaultEdge> implements Graph {
 
-	private Set<ClassDescription> classes = new LinkedHashSet<ClassDescription> ();
+	private Set<OClass> classes = new LinkedHashSet<OClass> ();
 
 	private Set<Property> roles = new LinkedHashSet<Property> ();
 
@@ -44,7 +45,8 @@ public class GraphImpl extends DefaultDirectedGraph<Description,DefaultEdge> imp
 	public Set<Property> getRoles(){
 		for (Description r: this.vertexSet()){
 			if (r.getClass().equals(PropertyImpl.class)){
-				roles.add((Property)r);
+				if(!((PropertyImpl) r).isInverse())
+				roles.add((PropertyImpl)r);
 			}
 
 		}
@@ -53,11 +55,11 @@ public class GraphImpl extends DefaultDirectedGraph<Description,DefaultEdge> imp
 	}
 
 	
-	//return all classes in the graph
-	public Set<ClassDescription> getClasses(){
+	//return all named classes in the graph
+	public Set<OClass> getClasses(){
 		for (Description c: this.vertexSet()){
 			if (c.getClass().equals(ClassImpl.class)){
-				classes.add((ClassDescription)c);
+				classes.add((ClassImpl)c);
 			}
 
 		}

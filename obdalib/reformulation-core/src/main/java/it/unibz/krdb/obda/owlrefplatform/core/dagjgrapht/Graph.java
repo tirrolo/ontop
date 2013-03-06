@@ -1,6 +1,6 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 
-import it.unibz.krdb.obda.ontology.ClassDescription;
+import it.unibz.krdb.obda.ontology.OClass;
 import it.unibz.krdb.obda.ontology.Property;
 
 import java.util.Set;
@@ -14,7 +14,7 @@ public interface Graph {
 
 
 	public Set<Property> getRoles();
-	public Set<ClassDescription> getClasses();
+	public Set<OClass> getClasses();
 
 
 }

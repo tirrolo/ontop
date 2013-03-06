@@ -7,7 +7,7 @@ public interface GraphDAG {
 
 
 	//obtain the graph
-	public DAGImpl getDAG();
+	public DAG getDAG();
 
 
 }

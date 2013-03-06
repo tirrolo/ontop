@@ -11,7 +11,7 @@ public interface NamedDescriptionDAG {
 
 
 
-	public void constructor (TBoxReasonerNamedImpl r);
+//	public void constructor (DAG d);
 	public DAGImpl getDAG();
 
 }

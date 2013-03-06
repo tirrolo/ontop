@@ -35,6 +35,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 		Description node = dag.getReplacements().get(desc);
 		if (node == null)
 			node = desc;
+		System.out.println("node "+node +"dag "+ dag);
 		Set<DefaultEdge> edges = dag.incomingEdgesOf(node);
 		for (DefaultEdge edge : edges) {
 			Description source = dag.getEdgeSource(edge);
@@ -68,21 +69,19 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 	@Override
 	public Set<Set<Description>> getDescendants(Description desc) {
 		LinkedHashSet<Set<Description>> result = new LinkedHashSet<Set<Description>>();
-		Description node = dag.getReplacements().get(desc);
-		if (node == null)
-			node = desc;
-
-		if(getDirectChildren(desc).isEmpty())
+		Set<Set<Description>> children;
+		children= getDirectChildren(desc);
+		if(children.isEmpty())
 			return result;
 		else{
-			result.addAll(getDirectChildren(desc));
-			for (Set<Description> child : getDirectChildren(desc)){
+			result.addAll(children);
+			for (Set<Description> child : children){
 
 				result.addAll(getDescendants(child.iterator().next()));
 			}
 
 
-			return result;
+			return Collections.unmodifiableSet(result);
 		}
 	}	
 
@@ -94,21 +93,19 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 	@Override
 	public Set<Set<Description>> getAncestors(Description desc) {
 		LinkedHashSet<Set<Description>> result = new LinkedHashSet<Set<Description>>();
-		Description node = dag.getReplacements().get(desc);
-		if (node == null)
-			node = desc;
-
-		if(getDirectParents(desc).isEmpty())
+		Set<Set<Description>> parents;
+		parents=getDirectParents(desc);
+		if(parents.isEmpty())
 			return result;
 		else{
-			result.addAll(getDirectParents(desc));
-			for (Set<Description> child : getDirectParents(desc)){
+			result.addAll(parents);
+			for (Set<Description> child : parents){
 
 				result.addAll(getAncestors(child.iterator().next()));
 			}
 
 
-			return result;
+			return Collections.unmodifiableSet(result);
 		}
 	}
 
