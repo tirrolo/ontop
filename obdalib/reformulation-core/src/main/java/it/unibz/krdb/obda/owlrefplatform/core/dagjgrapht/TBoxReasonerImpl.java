@@ -153,6 +153,14 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 		return Collections.unmodifiableSet(equivalences);
 	}
 
+	public Set<Set <Description>> getNodes(){
+		LinkedHashSet<Set<Description>> result = new LinkedHashSet<Set<Description>>();
+		for (Description vertex: dag.vertexSet()){
+			result.add(getEquivalences(vertex,false));
+		}
+		return null;
+		
+	}
 
 	@Override
 	public DAGImpl getDAG() {

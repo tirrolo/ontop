@@ -1,6 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jgrapht.graph.DefaultEdge;
@@ -16,7 +17,8 @@ public interface SemanticIndexEngine {
 
 
 
-//	public void construct(DAG dag);
 	public int getIndex(Description d);
 	public List<Interval> getIntervals(Description d);
+	public Map<Description, Integer> getIndexes();
+	public Map<Description, SemanticIndexRange> getIntervals();
 }
