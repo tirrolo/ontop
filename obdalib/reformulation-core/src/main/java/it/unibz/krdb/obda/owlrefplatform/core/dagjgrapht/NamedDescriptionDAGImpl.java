@@ -116,13 +116,17 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 			//add edge between the first of his ancestor that it's still present and it's child
 			
 			Set<DefaultEdge> edges = new HashSet<DefaultEdge>(namedDag.incomingEdgesOf(vertex));
+			
+			//I do a copy of the dag not to remove edges that I still need to consider in the loops
+			DAGImpl copyDAG=(DAGImpl) namedDag.clone();
 			for (DefaultEdge incEdge : edges) {
+				
 				Description source = namedDag.getEdgeSource(incEdge);
 				namedDag.removeAllEdges(source, vertex);
 				
-				edges = new HashSet<DefaultEdge>(namedDag.outgoingEdgesOf(vertex));
+				edges = new HashSet<DefaultEdge>(copyDAG.outgoingEdgesOf(vertex));
 				for (DefaultEdge outEdge : edges) {
-					Description target = namedDag.getEdgeTarget(outEdge);
+					Description target = copyDAG.getEdgeTarget(outEdge);
 					namedDag.removeAllEdges(vertex, target);
 					
 		
@@ -135,7 +139,7 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 			
 			
 			namedDag.removeVertex(vertex);
-			System.out.println(vertex+ " "+namedDag);
+//			System.out.println(vertex+ " "+namedDag);
 			}
 			
 			

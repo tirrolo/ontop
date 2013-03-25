@@ -1,8 +1,5 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 
-import it.unibz.krdb.obda.ontology.Description;
-
-import org.jgrapht.graph.DefaultEdge;
 
 
 /**Interface for a DAG with only the named description. */

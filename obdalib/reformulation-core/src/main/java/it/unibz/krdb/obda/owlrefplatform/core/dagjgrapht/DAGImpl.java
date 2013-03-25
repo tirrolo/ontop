@@ -79,16 +79,16 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 			if(replacements.containsValue(r)){
 				for (Description e: equivalencesMap.get(r))	{
 					if (e.getClass().equals(PropertyImpl.class)){
-						System.out.println("roles: "+ e +" "+ e.getClass());
-						if(!((PropertyImpl) e).isInverse())
+//						System.out.println("roles: "+ e +" "+ e.getClass());
+						//if(!((PropertyImpl) e).isInverse())
 						roles.add((PropertyImpl)e);
 						
 				}
 				}
 			}
 			if (r.getClass().equals(PropertyImpl.class)){
-				System.out.println("roles: "+ r +" "+ r.getClass());
-				if(!((PropertyImpl) r).isInverse())
+//				System.out.println("roles: "+ r +" "+ r.getClass());
+				//if(!((PropertyImpl) r).isInverse())
 				roles.add((PropertyImpl)r);
 			}
 
@@ -106,14 +106,14 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 			if(replacements.containsValue(c)){
 				for (Description e: equivalencesMap.get(c))	{
 					if (e.getClass().equals(ClassImpl.class)){
-						System.out.println("classes: "+ e +" "+ e.getClass());
+//						System.out.println("classes: "+ e +" "+ e.getClass());
 						classes.add((ClassImpl)e);
 				}
 				}
 			}
 			
 			if (c.getClass().equals(ClassImpl.class)){
-				System.out.println("classes: "+ c+ " "+ c.getClass());
+//				System.out.println("classes: "+ c+ " "+ c.getClass());
 				classes.add((ClassImpl)c);
 			}
 
