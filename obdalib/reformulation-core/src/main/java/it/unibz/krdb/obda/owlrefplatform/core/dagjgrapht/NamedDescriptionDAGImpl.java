@@ -25,7 +25,7 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 
 	//use class TBoxReasoneNamed to find descendants and ancestors of a node
 	public NamedDescriptionDAGImpl(DAGImpl d) {
-		System.out.println(d);
+//		System.out.println(d);
 		//take classes and roles from the DAG
 		namedDag=(DAGImpl) d.clone();
 		namedClasses= namedDag.getClasses();
@@ -40,9 +40,7 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 			
 			continue;
 		}
-		System.out.println("v: "+vertex);
-		System.out.println("R: "+replacements);
-		System.out.println(replacements.get(vertex) != null);
+		
 		//if it's not representative delete
 		if(replacements.get(vertex) != null){
 			namedDag.removeVertex(vertex);
