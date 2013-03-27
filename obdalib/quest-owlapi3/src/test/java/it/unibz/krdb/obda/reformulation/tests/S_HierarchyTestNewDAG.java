@@ -45,22 +45,22 @@ public class S_HierarchyTestNewDAG extends TestCase {
 		/**Graph B->A->ER C->ES->A->ER */
 		input.add("src/test/resources/test/newDag/inverseAncestor4.owl");
 		
-		/**NamedGraph1 B-> A */
-		output.add("src/test/resources/test/newDag/namedAncestors1.owl");
-		/**NamedGraph1 B-> A */
-		output.add("src/test/resources/test/newDag/namedAncestors2.owl");
-		/**NamedGraph1 B-> A and C-> A */
-		output.add("src/test/resources/test/newDag/namedAncestors3.owl");
-		/**NamedGraph1 B-> A and C-> A */
-		output.add("src/test/resources/test/newDag/namedAncestors4.owl");
-		/**NamedGraph1 B-> A */
-		output.add("src/test/resources/test/newDag/namedAncestors1.owl");
-		/**NamedGraph1 B-> A */
-		output.add("src/test/resources/test/newDag/namedAncestors2.owl");
-		/**NamedGraph1 B-> A and C-> A */
-		output.add("src/test/resources/test/newDag/namedAncestors3.owl");
-		/**NamedGraph1 B-> A and C-> A */
-		output.add("src/test/resources/test/newDag/namedAncestors4.owl");
+//		/**NamedGraph1 B-> A */
+//		output.add("src/test/resources/test/newDag/namedAncestors1.owl");
+//		/**NamedGraph1 B-> A */
+//		output.add("src/test/resources/test/newDag/namedAncestors2.owl");
+//		/**NamedGraph1 B-> A and C-> A */
+//		output.add("src/test/resources/test/newDag/namedAncestors3.owl");
+//		/**NamedGraph1 B-> A and C-> A */
+//		output.add("src/test/resources/test/newDag/namedAncestors4.owl");
+//		/**NamedGraph1 B-> A */
+//		output.add("src/test/resources/test/newDag/namedAncestors1.owl");
+//		/**NamedGraph1 B-> A */
+//		output.add("src/test/resources/test/newDag/namedAncestors2.owl");
+//		/**NamedGraph1 B-> A and C-> A */
+//		output.add("src/test/resources/test/newDag/namedAncestors3.owl");
+//		/**NamedGraph1 B-> A and C-> A */
+//		output.add("src/test/resources/test/newDag/namedAncestors4.owl");
 	
 	}
 	
@@ -70,15 +70,15 @@ public class S_HierarchyTestNewDAG extends TestCase {
 		//for each file in the input
 		for (int i=0; i<input.size(); i++){
 			String fileInput=input.get(i);
-			String fileOutput=output.get(i);
+//			String fileOutput=output.get(i);
 		
-		DAGImpl dag1= InputOWL.createGraph(fileInput);
-//		DAGImpl dag2= InputOWL.createGraph(fileOutput);
+		DAGImpl dag1= InputOWL.createDAG(fileInput);
+//		DAGImpl dag2= InputOWL.createDAG(fileOutput);
 		
 		//transform in a named graph
 		NamedDescriptionDAGImpl transform = new NamedDescriptionDAGImpl(dag1);
 		DAGImpl dag2= transform.getDAG();
-		log.debug("Input number {}", i );
+		log.debug("Input number {}", i+1 );
 		log.info("First dag {}", dag1);
 		log.info("Second dag {}", dag2);
 		
@@ -87,6 +87,8 @@ public class S_HierarchyTestNewDAG extends TestCase {
 		assertTrue(checkforNamedVertexesOnly(dag2));
 		assertTrue(testDescendants(dag2,dag1,true));
 		assertTrue(testAncestors(dag2,dag1,true));
+		
+		
 		
 		
 		

@@ -26,7 +26,7 @@ public class InputOWL {
 		return o;
 	}
 	
-	public static DAGImpl createGraph(String file) throws Exception{
+	public static DAGImpl createDAG(String file) throws Exception{
 		
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.loadOntologyFromOntologyDocument((new File(file)));
@@ -45,6 +45,24 @@ public class InputOWL {
 		DAGImpl dag=change2.getDAG();
 		
 		return dag;
+	}
+	
+public static GraphImpl createGraph(String file) throws Exception{
+		
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLOntology ontology = manager.loadOntologyFromOntologyDocument((new File(file)));
+
+		OWLAPI3Translator translator = new OWLAPI3Translator();
+		Ontology o = translator.translate(ontology);
+		
+		//generate Graph
+		TBoxGraphImpl change= new TBoxGraphImpl(o);
+		
+		GraphImpl graph = change.getGraph();
+		
+		
+		
+		return graph;
 	}
 
 }
