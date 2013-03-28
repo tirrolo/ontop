@@ -128,7 +128,6 @@
                 <owl:someValuesFrom rdf:resource="&owl;Thing"/>
             </owl:Restriction>
         </owl:equivalentClass>
-        <rdfs:subClassOf rdf:resource="http://www.kro.com/ontologies/A"/>
     </owl:Class>
 </rdf:RDF>
 

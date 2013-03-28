@@ -30,40 +30,40 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 
 	public void setUp(){
 
-//				/** C = B -> ER -> A*/
-//				input.add("src/test/resources/test/newDag/equivalents1.owl");
-//				/** B -> A -> ER=C */
-//				input.add("src/test/resources/test/newDag/equivalents2.owl");
-//		/** C->B = ER -> A*/
-//		input.add("src/test/resources/test/newDag/equivalents3.owl");
-//				/** ER-> A=B=C */
-//				input.add("src/test/resources/test/newDag/equivalents4.owl");
-//				/** C=ER=A->B */
-//				input.add("src/test/resources/test/newDag/equivalents5.owl");
-//				/** D-> ER=C=B -> A*/
-//				input.add("src/test/resources/test/newDag/equivalents6.owl");
-//				/** P-> ER=B -> A  C=L ->ES-> ER */
-//				input.add("src/test/resources/test/newDag/equivalents7.owl");
-				/** B->A=ET->ER C->ES=D->A*/
-				input.add("src/test/resources/test/newDag/equivalents8.owl");
-				
-				/** C = B -> ER- -> A*/
-				input.add("src/test/resources/test/newDag/inverseEquivalents1.owl");
-				/** B -> A -> ER- = C */
-				input.add("src/test/resources/test/newDag/inverseEquivalents2.owl");
-				/** C->B = ER- -> A*/
-				input.add("src/test/resources/test/newDag/inverseEquivalents3.owl");
-				/** ER- -> A=B=C */
-				input.add("src/test/resources/test/newDag/inverseEquivalents4.owl");
-				/** C=ER- =A->B */
-				input.add("src/test/resources/test/newDag/inverseEquivalents5.owl");
-				/** D-> ER- =C=B -> A*/
-				input.add("src/test/resources/test/newDag/inverseEquivalents6.owl");
-				/** P-> ER- =B -> A  C=L ->ES- -> ER- */
-				input.add("src/test/resources/test/newDag/inverseEquivalents7.owl");
-				/** B->A=ET- ->ER- C->ES- = D->A*/
-				input.add("src/test/resources/test/newDag/inverseEquivalents8.owl");
-				
+		/** C = B -> ER -> A*/
+		input.add("src/test/resources/test/newDag/equivalents1.owl");
+		/** B -> A -> ER=C */
+		input.add("src/test/resources/test/newDag/equivalents2.owl");
+		/** C->B = ER -> A*/
+		input.add("src/test/resources/test/newDag/equivalents3.owl");
+		/** ER-> A=B=C */
+		input.add("src/test/resources/test/newDag/equivalents4.owl");
+		/** C=ER=A->B */
+		input.add("src/test/resources/test/newDag/equivalents5.owl");
+		/** D-> ER=C=B -> A*/
+		input.add("src/test/resources/test/newDag/equivalents6.owl");
+		/** P-> ER=B -> A  C=L ->ES-> ER */
+		input.add("src/test/resources/test/newDag/equivalents7.owl");
+		/** B->A=ET->ER C->ES=D->A*/
+		input.add("src/test/resources/test/newDag/equivalents8.owl");
+
+		/** C = B -> ER- -> A*/
+		input.add("src/test/resources/test/newDag/inverseEquivalents1.owl");
+		/** B -> A -> ER- = C */
+		input.add("src/test/resources/test/newDag/inverseEquivalents2.owl");
+		/** C->B = ER- -> A*/
+		input.add("src/test/resources/test/newDag/inverseEquivalents3.owl");
+		/** ER- -> A=B=C */
+		input.add("src/test/resources/test/newDag/inverseEquivalents4.owl");
+		/** C=ER- =A->B */
+		input.add("src/test/resources/test/newDag/inverseEquivalents5.owl");
+		/** D-> ER- =C=B -> A*/
+		input.add("src/test/resources/test/newDag/inverseEquivalents6.owl");
+		/** P-> ER- =B -> A  C=L ->ES- -> ER- */
+		input.add("src/test/resources/test/newDag/inverseEquivalents7.owl");
+		/** B->A=ET- ->ER- C->ES- = D->A*/
+		input.add("src/test/resources/test/newDag/inverseEquivalents8.owl");
+
 
 
 	}
@@ -82,17 +82,17 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 			log.info("First graph {}", graph1);
 			log.info("Second dag {}", dag2);
 
-//			assertTrue(testDescendants(graph1,dag2,false));
-//			assertTrue(testDescendants(dag2,graph1,false));
-//			assertTrue(testChildren(graph1,dag2,false));
-//			assertTrue(testChildren(dag2, graph1,false));
-//			assertTrue(testAncestors(graph1,dag2,false));
-//			assertTrue(testAncestors(dag2,graph1,false));
-//			assertTrue(testParents(graph1,dag2,false));
-//			assertTrue(testParents(dag2, graph1,false));
-//			assertTrue(checkVertexReduction(graph1, dag2));
+			assertTrue(testDescendants(graph1,dag2,false));
+			assertTrue(testDescendants(dag2,graph1,false));
+			assertTrue(testChildren(graph1,dag2,false));
+			assertTrue(testChildren(dag2, graph1,false));
+			assertTrue(testAncestors(graph1,dag2,false));
+			assertTrue(testAncestors(dag2,graph1,false));
+			assertTrue(testParents(graph1,dag2,false));
+			assertTrue(testParents(dag2, graph1,false));
+			assertTrue(checkVertexReduction(graph1, dag2));
 			assertTrue(checkEdgeReduction(graph1, dag2));
-			
+
 
 		}
 
@@ -118,7 +118,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 
 					log.debug("descendants {} ", setd2);
 
-		
+
 
 				}
 			}
@@ -200,7 +200,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 		return result;
 
 	}
-	
+
 	private boolean testChildren(GraphImpl d1, DAGImpl d2, boolean named){
 		boolean result = false;
 		TBoxReasonerImpl reasonerd1= new TBoxReasonerImpl(d1);
@@ -252,7 +252,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 		return result;
 
 	}
-	
+
 	private boolean testChildren( DAGImpl d1, GraphImpl d2, boolean named){
 		boolean result = false;
 		TBoxReasonerImpl reasonerd1= new TBoxReasonerImpl(d1);
@@ -299,7 +299,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 		return result;
 
 	}
-	
+
 	private boolean testAncestors(GraphImpl d1, DAGImpl d2, boolean named){
 		boolean result = false;
 		TBoxReasonerImpl reasonerd1= new TBoxReasonerImpl(d1);
@@ -355,7 +355,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 		return result;
 
 	}
-	
+
 	private boolean testAncestors( DAGImpl d1, GraphImpl d2, boolean named){
 		boolean result = false;
 		TBoxReasonerImpl reasonerd1= new TBoxReasonerImpl(d1);
@@ -404,7 +404,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 		return result;
 
 	}
-	
+
 	private boolean testParents(GraphImpl d1, DAGImpl d2, boolean named){
 		boolean result = false;
 		TBoxReasonerImpl reasonerd1= new TBoxReasonerImpl(d1);
@@ -457,7 +457,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 		return result;
 
 	}
-	
+
 	private boolean testParents( DAGImpl d1, GraphImpl d2, boolean named){
 		boolean result = false;
 		TBoxReasonerImpl reasonerd1= new TBoxReasonerImpl(d1);
@@ -504,19 +504,19 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 		return result;
 
 	}
-	
+
 	private boolean checkVertexReduction(GraphImpl d1, DAGImpl d2){
-		
+
 		//number of vertexes in the graph
 		int numberVertexesD1= d1.vertexSet().size();
 		//number of vertexes in the dag
 		int numberVertexesD2 = d2.vertexSet().size();
-		
+
 		//number of vertexes in the equivalent mapping
 		int numberEquivalents=0;
-		
+
 		TBoxReasonerImpl reasonerd2= new TBoxReasonerImpl(d2);
-		
+
 		Set<Set<Description>> nodesd2= reasonerd2.getNodes();
 		Set<Description> set2 = new HashSet<Description>();
 		Iterator<Set<Description>> it1 =nodesd2.iterator();
@@ -525,44 +525,44 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 			numberEquivalents += equivalents.size()-1;
 			set2.addAll(equivalents);	
 		}
-		
+
 		log.info("vertex dag {}", numberVertexesD2);
 		log.info("equivalents {} ", numberEquivalents);
-		
+
 		return numberVertexesD1== set2.size() & numberEquivalents== (numberVertexesD1-numberVertexesD2);
-		
+
 	}
-	
-	 private boolean checkEdgeReduction(GraphImpl d1, DAGImpl d2){
-			//number of edges in the graph
-			int numberEdgesD1= d1.edgeSet().size();
-			//number of edges in the dag
-			int numberEdgesD2 = d2.edgeSet().size();
-			
-			//number of edges between the equivalent nodes
-			int numberEquivalents=0;
-			
-			TBoxReasonerImpl reasonerd2= new TBoxReasonerImpl(d2);
-			
-			Set<Set<Description>> nodesd2= reasonerd2.getNodes();
-			Set<Description> set2 = new HashSet<Description>();
-			Iterator<Set<Description>> it1 =nodesd2.iterator();
-			while (it1.hasNext()) {
-				Set<Description> equivalents=it1.next();
-				
-				//two nodes have two edges, three nodes have three edges...
-				if(equivalents.size()>=2){
+
+	private boolean checkEdgeReduction(GraphImpl d1, DAGImpl d2){
+		//number of edges in the graph
+		int numberEdgesD1= d1.edgeSet().size();
+		//number of edges in the dag
+		int numberEdgesD2 = d2.edgeSet().size();
+
+		//number of edges between the equivalent nodes
+		int numberEquivalents=0;
+
+		TBoxReasonerImpl reasonerd2= new TBoxReasonerImpl(d2);
+
+		Set<Set<Description>> nodesd2= reasonerd2.getNodes();
+		Set<Description> set2 = new HashSet<Description>();
+		Iterator<Set<Description>> it1 =nodesd2.iterator();
+		while (it1.hasNext()) {
+			Set<Description> equivalents=it1.next();
+
+			//two nodes have two edges, three nodes have three edges...
+			if(equivalents.size()>=2){
 				numberEquivalents += equivalents.size();
 				set2.addAll(equivalents);
-				}
 			}
-			
-			log.info("edges graph {}", numberEdgesD1);
-			log.info("edges dag {}", numberEdgesD2);
-			log.info("equivalents {} ", numberEquivalents);
-			
-			return numberEdgesD1== (numberEquivalents+ numberEdgesD2);
-			
-	 }
+		}
+
+		log.info("edges graph {}", numberEdgesD1);
+		log.info("edges dag {}", numberEdgesD2);
+		log.info("equivalents {} ", numberEquivalents);
+
+		return numberEdgesD1== (numberEquivalents+ numberEdgesD2);
+
+	}
 
 }
