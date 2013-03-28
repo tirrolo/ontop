@@ -48,14 +48,7 @@
 
     <!-- http://www.kro.com/ontologies/T -->
 
-    <owl:ObjectProperty rdf:about="http://www.kro.com/ontologies/T">
-        <rdfs:domain>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.kro.com/ontologies/R"/>
-                <owl:someValuesFrom rdf:resource="&owl;Thing"/>
-            </owl:Restriction>
-        </rdfs:domain>
-    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://www.kro.com/ontologies/T"/>
     
 
 
