@@ -517,7 +517,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 
 		TBoxReasonerImpl reasonerd2= new TBoxReasonerImpl(d2);
 
-		Set<Set<Description>> nodesd2= reasonerd2.getNodes();
+		Set<Set<Description>> nodesd2= reasonerd2.getNodes(false);
 		Set<Description> set2 = new HashSet<Description>();
 		Iterator<Set<Description>> it1 =nodesd2.iterator();
 		while (it1.hasNext()) {
@@ -544,8 +544,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 
 		TBoxReasonerImpl reasonerd2= new TBoxReasonerImpl(d2);
 
-		Set<Set<Description>> nodesd2= reasonerd2.getNodes();
-		Set<Description> set2 = new HashSet<Description>();
+		Set<Set<Description>> nodesd2= reasonerd2.getNodes(false);
 		Iterator<Set<Description>> it1 =nodesd2.iterator();
 		while (it1.hasNext()) {
 			Set<Description> equivalents=it1.next();
@@ -553,7 +552,6 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 			//two nodes have two edges, three nodes have three edges...
 			if(equivalents.size()>=2){
 				numberEquivalents += equivalents.size();
-				set2.addAll(equivalents);
 			}
 		}
 

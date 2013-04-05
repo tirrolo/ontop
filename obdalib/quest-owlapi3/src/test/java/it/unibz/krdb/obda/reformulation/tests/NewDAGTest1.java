@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.reformulation.tests;
 
+import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
 import it.unibz.krdb.obda.owlrefplatform.core.dag.TBoxDAGImpl;
@@ -35,5 +36,12 @@ public class NewDAGTest1 extends TestCase {
 
 		log.info("Generating dag");
 		TBoxDAGImpl dag = new TBoxDAGImpl(o);
+		
+		System.out.println(dag.getDag().edgeSet());
+		for (Description d: dag.getDag().vertexSet()){
+		System.out.println("parents "+d+" "+dag.getDirectParents(d));
+		System.out.println("children "+d+" "+dag.getDirectChildren(d));
+		}
+
 	}
 }
