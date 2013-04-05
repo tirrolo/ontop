@@ -34,7 +34,6 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 		replacements = namedDag.getReplacements();
 				
 		for( Description vertex: d.vertexSet()){
-			
 				//if the node in in the list keep it
 		if(namedClasses.contains(vertex) | property.contains(vertex)){
 			
@@ -108,7 +107,6 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 			}
 			
 			namedDag.removeVertex(vertex);
-
 			}
 			else{
 			//add edge between the first of his ancestor that it's still present and it's child
@@ -151,7 +149,7 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 		
 		namedDag.setMapEquivalences(equivalencesMap);
 		namedDag.setReplacements(replacements);
-		namedDag.setIsaDAG(true);
+		namedDag.setIsaNamedDAG(true);
 		
 	}
 	

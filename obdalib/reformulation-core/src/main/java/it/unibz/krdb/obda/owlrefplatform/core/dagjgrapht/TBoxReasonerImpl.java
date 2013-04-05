@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
@@ -87,12 +88,15 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 		}
 		else //direct children over a graph
 		{
+			
+
 
 			//get equivalences of the current node
 			Set<Description> equivalenceSet= getEquivalences(desc, false);
 			Set<DefaultEdge> edges = graph.incomingEdgesOf(desc);
 			for (DefaultEdge edge : edges) {
 				Description source = graph.getEdgeSource(edge);
+				
 				
 				//I don't want to consider as children the equivalent node of the current node desc
 				if(equivalenceSet.contains(source)){
@@ -104,6 +108,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 				if (!equivalences.isEmpty())
 				result.add(equivalences);
 			}
+			
 			
 			 //I want to consider the children of the equivalent nodes
 			for (Description e: equivalenceSet){
@@ -125,9 +130,12 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 				}
 				}
 					
+			
+		
+			}
 			}
 			
-		}
+		
 		return Collections.unmodifiableSet(result);
 	}
 
@@ -208,7 +216,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 
 	}
 
-	/**recursive function 
+	/**traverse the graph 
 	return the descendants starting from the given node of the dag
 	 @param named when it's true only the descendants that are named classes or property 
 	 are returned
@@ -291,7 +299,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 	}
 
 
-	/** recursive function 
+	/** traverse the graph
 	return the ancestors starting from the given node of the dag
 	 @param named when it's true only the ancestors that are named classes or property 
 	 are returned
@@ -454,16 +462,16 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 		}
 	}
 
-	public Set<Set <Description>> getNodes(){
+	public Set<Set <Description>> getNodes(boolean named){
 		LinkedHashSet<Set<Description>> result = new LinkedHashSet<Set<Description>>();
 		if(dag!=null){
 		for (Description vertex: dag.vertexSet()){
-			result.add(getEquivalences(vertex,false));
+			result.add(getEquivalences(vertex,named));
 		}
 		}
 		else{
 			for (Description vertex: graph.vertexSet()){
-				result.add(getEquivalences(vertex,false));
+				result.add(getEquivalences(vertex,named));
 			}
 			}
 		

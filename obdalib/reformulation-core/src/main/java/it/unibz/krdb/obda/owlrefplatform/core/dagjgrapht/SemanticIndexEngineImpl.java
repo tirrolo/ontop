@@ -58,6 +58,7 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 
 			Description vertex = e.getVertex();
 
+			
 			if (newComponent) {
 				reference = vertex;
 				newComponent = false;
@@ -69,7 +70,7 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 
 
 		}
-
+		
 		public void connectedComponentFinished(ConnectedComponentTraversalEvent e) {
 			//merge all the interval for the current root of the graph
 			mergeRangeNode(reference);
@@ -119,6 +120,8 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 		//test with a reversed graph so that the smallest index will be given to the higher ancestor
 		DirectedGraph<Description, DefaultEdge> reversed =
 				new EdgeReversedGraph<Description, DefaultEdge>(namedDag);
+		
+		//A topological sort is a permutation p of the vertices of a graph such that an edge (i,j) implies that i appears before j in p
 		orderIterator =
 				new TopologicalOrderIterator<Description, DefaultEdge>(reversed);
 

@@ -45,7 +45,7 @@ public class GraphImpl extends DefaultDirectedGraph<Description,DefaultEdge> imp
 	public Set<Property> getRoles(){
 		for (Description r: this.vertexSet()){
 			if (r.getClass().equals(PropertyImpl.class)){
-				if(!((PropertyImpl) r).isInverse())
+//				if(!((PropertyImpl) r).isInverse())
 				roles.add((PropertyImpl)r);
 			}
 

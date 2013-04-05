@@ -39,6 +39,7 @@ public class GraphDAGImpl implements GraphDAG{
 
 	
 	public GraphDAGImpl (GraphImpl graph){
+		System.out.println(graph);
 		
 		modifiedGraph=(GraphImpl) graph.clone();
 		eliminateCycles();
@@ -219,6 +220,11 @@ public class GraphDAGImpl implements GraphDAG{
 
 	}
 
+	
+	
+	
+	
+	
 
 
 
