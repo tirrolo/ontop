@@ -3,6 +3,7 @@ package it.unibz.krdb.obda.reformulation.tests;
 import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAG;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDescriptionDAG;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDescriptionDAGImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 
@@ -76,7 +77,7 @@ public class S_HierarchyTestNewDAG extends TestCase {
 			//		DAGImpl dag2= InputOWL.createDAG(fileOutput);
 
 			//transform in a named graph
-			NamedDescriptionDAGImpl transform = new NamedDescriptionDAGImpl(dag1);
+			NamedDescriptionDAG transform = new NamedDescriptionDAGImpl(dag1);
 			DAGImpl dag2= transform.getDAG();
 			log.debug("Input number {}", i+1 );
 			log.info("First dag {}", dag1);

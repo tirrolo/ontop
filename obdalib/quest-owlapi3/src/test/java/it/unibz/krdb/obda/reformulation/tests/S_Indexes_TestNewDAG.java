@@ -111,6 +111,7 @@ private boolean testIndexes( DAGImpl dag){
 		int index= indexes.get(vertex);
 		for(Description parent: Graphs.successorListOf(dag, vertex)){
 			result=ranges.get(parent).contained(new SemanticIndexRange(index,index));
+			
 			if(result)
 				break;
 		}
@@ -119,10 +120,14 @@ private boolean testIndexes( DAGImpl dag){
 			break;
 	}
 	
+	
 	return result;
 	
 
 }
+
+
+
 
 
 
