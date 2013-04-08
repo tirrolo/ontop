@@ -71,25 +71,25 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 
 	}
 	
-	//return all named roles in the dag
+	//return all property not inverse in the dag
 	public Set<Property> getRoles(){
 		for (Description r: this.vertexSet()){
 			
 			//check in the equivalent nodes if there are properties
 			if(replacements.containsValue(r)){
 				for (Description e: equivalencesMap.get(r))	{
-					if (e.getClass().equals(PropertyImpl.class)){
+					if (e instanceof Property){
 //						System.out.println("roles: "+ e +" "+ e.getClass());
-						//if(!((PropertyImpl) e).isInverse())
-						roles.add((PropertyImpl)e);
+						if(!((Property) e).isInverse())
+						roles.add((Property)e);
 						
 				}
 				}
 			}
-			if (r.getClass().equals(PropertyImpl.class)){
+			if (r instanceof Property){
 //				System.out.println("roles: "+ r +" "+ r.getClass());
-				//if(!((PropertyImpl) r).isInverse())
-				roles.add((PropertyImpl)r);
+				if(!((Property) r).isInverse())
+				roles.add((Property)r);
 			}
 
 		}
@@ -105,16 +105,16 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 			//check in the equivalent nodes if there are named classes
 			if(replacements.containsValue(c)){
 				for (Description e: equivalencesMap.get(c))	{
-					if (e.getClass().equals(ClassImpl.class)){
+					if (e instanceof OClass){
 //						System.out.println("classes: "+ e +" "+ e.getClass());
-						classes.add((ClassImpl)e);
+						classes.add((OClass)e);
 				}
 				}
 			}
 			
-			if (c.getClass().equals(ClassImpl.class)){
+			if (c instanceof OClass){
 //				System.out.println("classes: "+ c+ " "+ c.getClass());
-				classes.add((ClassImpl)c);
+				classes.add((OClass)c);
 			}
 
 		}

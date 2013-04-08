@@ -66,6 +66,7 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 	
 			//delete from equivalencesMap
 			Set<Description> equivalences =equivalencesMap.get(vertex);
+			equivalencesMap.remove(vertex);
 			if(equivalences!=null){
 			equivalences.remove(vertex);
 			
@@ -73,6 +74,7 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 			Iterator<Description> e=equivalences.iterator();
 			Description reference=  e.next();
 			replacements.remove(reference);
+			if(equivalences.size()>1)
 			equivalencesMap.put(reference, equivalences);
 			
 			while(e.hasNext()){

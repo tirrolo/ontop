@@ -31,22 +31,19 @@ public class GraphImpl extends DefaultDirectedGraph<Description,DefaultEdge> imp
 	public GraphImpl(Class<? extends DefaultEdge> arg0) {
 		super(arg0);
 
-		initialize();
+		
 	}
 
 
-	private void initialize(){
 
-
-	}
 
 
 	//return all roles in the graph
 	public Set<Property> getRoles(){
 		for (Description r: this.vertexSet()){
-			if (r.getClass().equals(PropertyImpl.class)){
-//				if(!((PropertyImpl) r).isInverse())
-				roles.add((PropertyImpl)r);
+			if (r instanceof Property){
+				if(!((Property) r).isInverse())
+				roles.add((Property)r);
 			}
 
 		}
@@ -58,8 +55,8 @@ public class GraphImpl extends DefaultDirectedGraph<Description,DefaultEdge> imp
 	//return all named classes in the graph
 	public Set<OClass> getClasses(){
 		for (Description c: this.vertexSet()){
-			if (c.getClass().equals(ClassImpl.class)){
-				classes.add((ClassImpl)c);
+			if (c instanceof OClass){
+				classes.add((OClass)c);
 			}
 
 		}

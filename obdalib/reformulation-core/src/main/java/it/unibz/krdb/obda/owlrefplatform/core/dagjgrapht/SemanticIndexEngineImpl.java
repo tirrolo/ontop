@@ -14,6 +14,8 @@ import org.jgrapht.event.TraversalListenerAdapter;
 import org.jgrapht.event.VertexTraversalEvent;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
+import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.traverse.GraphIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
 
@@ -28,7 +30,7 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 	private Map< Description, Integer> indexes = new HashMap<Description, Integer>();
 	private Map< Description, SemanticIndexRange> ranges = new HashMap<Description, SemanticIndexRange>();
 
-	//listener on the topological sort of the graph
+	//listener on the depth first sort of the graph
 	public class IndexListener extends TraversalListenerAdapter<Description, DefaultEdge> {
 
 
@@ -115,16 +117,16 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 
 	}
 	private void construct(){
-		TopologicalOrderIterator<Description, DefaultEdge> orderIterator;
+		GraphIterator<Description, DefaultEdge> orderIterator;
 
 		//test with a reversed graph so that the smallest index will be given to the higher ancestor
 		DirectedGraph<Description, DefaultEdge> reversed =
 				new EdgeReversedGraph<Description, DefaultEdge>(namedDag);
 		
-		//A topological sort is a permutation p of the vertices of a graph such that an edge (i,j) implies that i appears before j in p
+		//A depth first sort 
 		orderIterator =
-				new TopologicalOrderIterator<Description, DefaultEdge>(reversed);
-
+				new DepthFirstIterator<Description, DefaultEdge>(reversed);
+		
 		//add Listener to create the indexes and ranges
 		orderIterator.addTraversalListener(new IndexListener(reversed));
 
