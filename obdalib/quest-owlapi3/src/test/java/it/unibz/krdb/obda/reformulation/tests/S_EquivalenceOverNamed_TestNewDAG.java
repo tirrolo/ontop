@@ -2,7 +2,6 @@ package it.unibz.krdb.obda.reformulation.tests;
 
 import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphDAGImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDescriptionDAGImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
@@ -14,7 +13,6 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,12 +85,12 @@ public class S_EquivalenceOverNamed_TestNewDAG extends TestCase {
 
 			assertTrue(testDescendants(graph1,namedDag2,true));
 			assertTrue(testDescendants(namedDag2,graph1,true));
-//			assertTrue(testChildren(graph1,namedDag2,true));
-//			assertTrue(testChildren(namedDag2, graph1,true));
+			assertTrue(testChildren(graph1,namedDag2,true));
+			assertTrue(testChildren(namedDag2, graph1,true));
 			assertTrue(testAncestors(graph1,namedDag2,true));
 			assertTrue(testAncestors(namedDag2,graph1,true));
-//			assertTrue(testParents(graph1,namedDag2,true));
-//			assertTrue(testParents(namedDag2, graph1,true));
+			assertTrue(testParents(graph1,namedDag2,true));
+			assertTrue(testParents(namedDag2, graph1,true));
 			assertTrue(checkVertexReduction(graph1, namedDag2, true));
 			//check only if the number of edges is smaller
 			assertTrue(checkEdgeReduction(graph1, namedDag2, true));

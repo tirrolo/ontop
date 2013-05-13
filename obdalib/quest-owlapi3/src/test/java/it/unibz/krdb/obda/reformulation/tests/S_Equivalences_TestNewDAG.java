@@ -4,7 +4,6 @@ import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphDAGImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDescriptionDAGImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 
 import java.util.ArrayList;
@@ -77,7 +76,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 
 			//transform in a dag
 			GraphDAGImpl transform= new GraphDAGImpl(graph1);
-			DAGImpl dag2= transform.getDAG();
+			DAGImpl dag2= (DAGImpl) transform.getDAG();
 			log.debug("Input number {}", i+1 );
 			log.info("First graph {}", graph1);
 			log.info("Second dag {}", dag2);

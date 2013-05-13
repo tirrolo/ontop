@@ -14,6 +14,7 @@ public interface Graph {
 
 
 	public Set<Property> getRoles();
+	
 	public Set<OClass> getClasses();
 
 

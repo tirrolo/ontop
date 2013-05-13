@@ -141,8 +141,8 @@ public class TBoxGraphImpl implements TBoxGraph{
 
 	}
 
-
-	public  GraphImpl  getGraph(){
+@Override
+	public  Graph  getGraph(){
 
 		return graph;
 	}

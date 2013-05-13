@@ -4,17 +4,13 @@ import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.ontology.OClass;
 import it.unibz.krdb.obda.ontology.Property;
 
-import it.unibz.krdb.obda.ontology.Ontology;
-
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.alg.NeighborIndex;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
@@ -38,8 +34,8 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 	
 
 
-	public TBoxReasonerImpl(DAGImpl dag){
-		this.dag=dag;
+	public TBoxReasonerImpl(DAG dag){
+		this.dag=(DAGImpl) dag;
 		namedClasses= dag.getClasses();
 		property = dag.getRoles();
 
@@ -47,8 +43,8 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 	}
 	
 	//reasoner on the graph (cycles admitted)
-	public TBoxReasonerImpl(GraphImpl graph){
-		this.graph=graph;
+	public TBoxReasonerImpl(Graph graph){
+		this.graph=(GraphImpl) graph;
 		namedClasses= graph.getClasses();
 		property = graph.getRoles();
 		
@@ -93,7 +89,9 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 
 			//get equivalences of the current node
 			Set<Description> equivalenceSet= getEquivalences(desc, false);
-			Set<DefaultEdge> edges = graph.incomingEdgesOf(desc);
+			//I want to consider also the children of the equivalent nodes
+			for (Description n: equivalenceSet){
+			Set<DefaultEdge> edges = graph.incomingEdgesOf(n);
 			for (DefaultEdge edge : edges) {
 				Description source = graph.getEdgeSource(edge);
 				
@@ -102,43 +100,79 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 				if(equivalenceSet.contains(source)){
 					continue;
 				}
-				Set<Description> equivalences =getEquivalences(source,named);
+				Set<Description> equivalences =getEquivalences(source,false);
+				
+				if(named){ //if true I search only for the named nodes
+					
+					Set<Description> namedEquivalences= getEquivalences(source, true);
+					
+					if (!namedEquivalences.isEmpty())
+						result.add(namedEquivalences);
+					else{
+					for (Description node: equivalences){
+						//I search for the first named description
+						if(!namedEquivalences.contains(node) ){
+							
+							result.addAll( getNamedChildren(node));
+						}	
+					}
+					}
+				}
 
+				else{
 				
 				if (!equivalences.isEmpty())
 				result.add(equivalences);
+				}
 			}
+			}
+		}
 			
 			
-			 //I want to consider the children of the equivalent nodes
-			for (Description e: equivalenceSet){
-				if(!e.equals(desc))
-				{
-					Set<DefaultEdge> edgesEquivalentNode = graph.incomingEdgesOf(e);
-					for (DefaultEdge edge : edgesEquivalentNode) {
-						Description source = graph.getEdgeSource(edge);
-						
-						//I don't want to consider as children the equivalent node of the current node desc
-						if(equivalenceSet.contains(source)){
-							continue;
-						}
-						Set<Description> equivalences =getEquivalences(source,named);
 
-						
-						if (!equivalences.isEmpty())
-						result.add(equivalences);
-				}
-				}
-					
-			
-		
-			}
-			}
-			
-		
 		return Collections.unmodifiableSet(result);
 	}
+	
+	//private method that searches for the first named children
 
+	private Set<Set<Description>> getNamedChildren(Description desc) {
+		LinkedHashSet<Set<Description>> result = new LinkedHashSet<Set<Description>>();
+		
+		//get equivalences of the current node
+		Set<Description> equivalenceSet= getEquivalences(desc, false);
+		//I want to consider also the children of the equivalent nodes
+		
+		Set<DefaultEdge> edges = graph.incomingEdgesOf(desc);
+		for (DefaultEdge edge : edges) {
+			Description source = graph.getEdgeSource(edge);
+			
+			
+			//I don't want to consider as children the equivalent node of the current node desc
+			if(equivalenceSet.contains(source)){
+				continue;
+			}
+			Set<Description> equivalences =getEquivalences(source,false);
+			
+				
+				Set<Description> namedEquivalences= getEquivalences(source, true);
+				
+				if (!namedEquivalences.isEmpty())
+					result.add(namedEquivalences);
+				else{
+				for (Description node: equivalences){
+					//I search for the first named description
+					if(!namedEquivalences.contains(node) ){
+						
+						result.addAll( getNamedChildren(node));
+					}	
+				}
+				}
+		}
+
+		return result;
+			
+		
+	}
 	/**return the direct parents starting from the given node of the dag
 	 *  @param named when it's true only the parents that correspond to named classes or property
 	 *  are returned 
@@ -148,7 +182,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 	public Set<Set<Description>> getDirectParents(Description desc, boolean named) {
 		
 		LinkedHashSet<Set<Description>> result = new LinkedHashSet<Set<Description>>();
-		if(dag!=null){ //direct children over a dag
+		if(dag!=null){ //direct parents over a dag
 		
 			//take the representative node
 		Description node = dag.getReplacements().get(desc);
@@ -169,53 +203,93 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 		}
 		
 		}
-		else //direct children over a graph
+		else //direct parents over a graph
 		{
 
 			//get equivalences of the current node
 			Set<Description> equivalenceSet= getEquivalences(desc, false);
+			
+				//I want to consider also the parents of the equivalent nodes
+				for (Description n: equivalenceSet){
+					Set<DefaultEdge> edges = graph.outgoingEdgesOf(n);
+					for (DefaultEdge edge : edges) {
+						Description target = graph.getEdgeTarget(edge);
+					
+					
+					//I don't want to consider as parents the equivalent node of the current node desc
+					if(equivalenceSet.contains(target)){
+						continue;
+					}
+					Set<Description> equivalences =getEquivalences(target,false);
+					
+					if(named){ //if true I search only for the named nodes
+						
+						Set<Description> namedEquivalences= getEquivalences(target, true);
+						if (!namedEquivalences.isEmpty())
+							result.add(namedEquivalences);
+						else{
+						for (Description node: equivalences){
+							//I search for the first named description
+							if(!namedEquivalences.contains(node) ){
+								
+								result.addAll(getNamedParents(node));
+							}	
+						}
+						}
+						
+					}
+					else{
+					
+					if (!equivalences.isEmpty())
+					result.add(equivalences);
+					}
+				}
+				}
+			}
+				
+				
+
+			return Collections.unmodifiableSet(result);
+		}
+
+	//private method that search for the first named parents
+		private Set<Set<Description>> getNamedParents(Description desc) {
+			LinkedHashSet<Set<Description>> result = new LinkedHashSet<Set<Description>>();
+			
+			//get equivalences of the current node
+			Set<Description> equivalenceSet= getEquivalences(desc, false);
+			//I want to consider also the parents of the equivalent nodes
+			
 			Set<DefaultEdge> edges = graph.outgoingEdgesOf(desc);
 			for (DefaultEdge edge : edges) {
 				Description target = graph.getEdgeTarget(edge);
 				
-				//I don't want to consider as parent the equivalent node of the current node desc 
-				if(equivalenceSet.contains(target)){
 				
+				//I don't want to consider as parents the equivalent node of the current node desc
+				if(equivalenceSet.contains(target)){
 					continue;
 				}
-				Set<Description> equivalences =getEquivalences(target,named);
-
+				Set<Description> equivalences =getEquivalences(target,false);
 				
-				if (!equivalences.isEmpty())
-				result.add(equivalences);
-			}
-			
-			 //I want to consider the parent of the equivalent nodes
-			for (Description e: equivalenceSet){
-				if(!e.equals(desc))
-				{
-					Set<DefaultEdge> edgesEquivalentNode = graph.outgoingEdgesOf(e);
-					for (DefaultEdge edge : edgesEquivalentNode) {
-						Description target = graph.getEdgeTarget(edge);
-						
-						//I don't want to consider as parent the equivalent node of the current node desc
-						if(equivalenceSet.contains(target)){
-							continue;
-						}
-						Set<Description> equivalences =getEquivalences(target,named);
-
-						
-						if (!equivalences.isEmpty())
-						result.add(equivalences);
-				}
-				}
 					
-			}
+					Set<Description> namedEquivalences= getEquivalences(target, true);
+					
+					if (!namedEquivalences.isEmpty())
+						result.add(namedEquivalences);
+					else{
+					for (Description node: equivalences){
+						//I search for the first named description
+						if(!namedEquivalences.contains(node) ){
+							
+							result.addAll(getNamedParents(node));
+						}	
+					}
+					}
+				}
+			return result;
+				
+			
 		}
-		return Collections.unmodifiableSet(result);
-
-	}
-
 	/**traverse the graph 
 	return the descendants starting from the given node of the dag
 	 @param named when it's true only the descendants that are named classes or property 

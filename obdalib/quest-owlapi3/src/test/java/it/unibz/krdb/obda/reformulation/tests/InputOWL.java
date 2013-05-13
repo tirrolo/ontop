@@ -37,12 +37,12 @@ public class InputOWL {
 		//generate Graph
 		TBoxGraphImpl change= new TBoxGraphImpl(o);
 		
-		GraphImpl graph = change.getGraph();
+		GraphImpl graph = (GraphImpl) change.getGraph();
 		
 		//generate DAG
 		GraphDAGImpl change2 = new GraphDAGImpl(graph);
 		
-		DAGImpl dag=change2.getDAG();
+		DAGImpl dag=(DAGImpl) change2.getDAG();
 		
 		return dag;
 	}
@@ -58,7 +58,7 @@ public static GraphImpl createGraph(String file) throws Exception{
 		//generate Graph
 		TBoxGraphImpl change= new TBoxGraphImpl(o);
 		
-		GraphImpl graph = change.getGraph();
+		GraphImpl graph = (GraphImpl) change.getGraph();
 		
 		
 		

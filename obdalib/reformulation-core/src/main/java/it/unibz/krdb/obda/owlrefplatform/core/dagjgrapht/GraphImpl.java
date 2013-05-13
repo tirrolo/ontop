@@ -1,10 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
-import it.unibz.krdb.obda.ontology.ClassDescription;
 import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.ontology.OClass;
 import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.impl.ClassImpl;
-import it.unibz.krdb.obda.ontology.impl.PropertyImpl;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -15,12 +12,16 @@ import org.jgrapht.graph.DefaultEdge;
 
 /** Use to build a simple graph.
  * 
- * We probably don't need this class we can simply used DefaultDirectedGraph<V,E>
  * A directed graph multiple edges are not permitted, but loops are. 
  *
  */
 
 public class GraphImpl extends DefaultDirectedGraph<Description,DefaultEdge> implements Graph {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6784249753145034915L;
 
 	private Set<OClass> classes = new LinkedHashSet<OClass> ();
 

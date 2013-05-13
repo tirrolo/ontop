@@ -37,7 +37,7 @@ public class S_NewGraphTest  extends TestCase{
 
 		// Loading the OWL file
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology = manager.loadOntologyFromOntologyDocument((new File(roleowlfile)));
+		OWLOntology ontology = manager.loadOntologyFromOntologyDocument((new File(owlfile)));
 
 		log.info("Translating");
 
@@ -48,7 +48,7 @@ public class S_NewGraphTest  extends TestCase{
 		TBoxGraphImpl change= new TBoxGraphImpl(o);
 		
 		log.info("Get the graph");
-		GraphImpl graph = change.getGraph();
+		GraphImpl graph = (GraphImpl) change.getGraph();
 		System.out.println(graph);
 		
 		log.info("See information");
@@ -62,7 +62,7 @@ public class S_NewGraphTest  extends TestCase{
 		GraphDAGImpl change2 = new GraphDAGImpl(graph);
 		
 		log.info("Get dag");
-		DAGImpl dag=change2.getDAG();
+		DAGImpl dag=(DAGImpl) change2.getDAG();
 		System.out.println(dag);
 		System.out.println(dag.getReplacements());
 		System.out.println(dag.getMapEquivalences());

@@ -1,5 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 
+import it.unibz.krdb.obda.ontology.Description;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,9 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import it.unibz.krdb.obda.ontology.Description;
-
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
@@ -22,7 +21,7 @@ import org.jgrapht.graph.DefaultEdge;
 
 public class GraphDAGImpl implements GraphDAG{
 
-	//contains the representative node with the set of equivalent mapping.
+	//contains the representative node with the set of equivalent mappings.
 	private Map<Description, Set<Description>> equivalencesMap = new HashMap<Description, Set<Description>>();
 
 	/***
@@ -34,14 +33,13 @@ public class GraphDAGImpl implements GraphDAG{
 
 	private DAGImpl dag= new DAGImpl(DefaultEdge.class);
 	
-	//graph that will be transformed in a dag
+	//graph transformed in a dag
 	private GraphImpl modifiedGraph;
 
 	
-	public GraphDAGImpl (GraphImpl graph){
-		System.out.println(graph);
+	public GraphDAGImpl (Graph graph){
 		
-		modifiedGraph=(GraphImpl) graph.clone();
+		modifiedGraph=(GraphImpl) ((GraphImpl) graph).clone();
 		eliminateCycles();
 		eliminateRedundantEdges();
 		
@@ -52,7 +50,6 @@ public class GraphDAGImpl implements GraphDAG{
 		//change the graph in a dag
 		Graphs.addGraph(dag, modifiedGraph);
 		
-//		System.out.println(dag);
 		dag.setMapEquivalences(equivalencesMap);
 		dag.setReplacements(replacements);
 		dag.setIsaDAG(true);
@@ -61,7 +58,7 @@ public class GraphDAGImpl implements GraphDAG{
 
 
 	@Override
-	public DAGImpl getDAG() {
+	public DAG getDAG() {
 
 		return dag;
 	}

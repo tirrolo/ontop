@@ -16,11 +16,10 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
-import org.jgrapht.traverse.TopologicalOrderIterator;
 
 
 /** Build the indexes for the DAG
- * create a map with the index and and the intervals for each node in the graph
+ * create a map with the index and the intervals for each node in the graph
  * 
  * 
  */
@@ -60,7 +59,7 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 
 			Description vertex = e.getVertex();
 
-			
+
 			if (newComponent) {
 				reference = vertex;
 				newComponent = false;
@@ -72,7 +71,7 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 
 
 		}
-		
+
 		public void connectedComponentFinished(ConnectedComponentTraversalEvent e) {
 			//merge all the interval for the current root of the graph
 			mergeRangeNode(reference);
@@ -80,8 +79,8 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 		}
 	}
 
- /**  Merge the indexes of the current connected component 
-  * @param Description d  is the root node */
+	/**  Merge the indexes of the current connected component 
+	 * @param Description d  is the root node */
 	private void mergeRangeNode(Description d) {
 
 		DirectedGraph<Description, DefaultEdge> reversed =
@@ -90,7 +89,7 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 		for (Description ch : Graphs.successorListOf(reversed, d)) {
 			if (ch != d) {
 				mergeRangeNode(ch);
-				
+
 				//merge the index of the node with the index of his child
 				ranges.get(d).addRange(ranges.get(ch));
 			}
@@ -101,15 +100,15 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 	}
 
 	/**
-	 * Assign indexes for the named DAG
+	 * Assign indexes for the named DAG, use a depth first listener over the DAG 
 	 * @param reasoner used to know ancestors and descendants of the dag
 	 */
 
 
-	public SemanticIndexEngineImpl(TBoxReasonerImpl reasoner) {
+	public SemanticIndexEngineImpl(TBoxReasoner reasoner) {
 
-		
-		namedDag=reasoner.getDAG();
+
+		namedDag=(DAGImpl) reasoner.getDAG();
 		if (namedDag.isaNamedDAG())
 		{
 			construct();
@@ -122,21 +121,21 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 		//test with a reversed graph so that the smallest index will be given to the higher ancestor
 		DirectedGraph<Description, DefaultEdge> reversed =
 				new EdgeReversedGraph<Description, DefaultEdge>(namedDag);
-		
+
 		//A depth first sort 
 		orderIterator =
 				new DepthFirstIterator<Description, DefaultEdge>(reversed);
-		
+
 		//add Listener to create the indexes and ranges
 		orderIterator.addTraversalListener(new IndexListener(reversed));
 
-		System.out.println("\nIndexing:");
+		//		System.out.println("\nIndexing:");
 		while (orderIterator.hasNext()) {
 			orderIterator.next();
 
 		}
-		System.out.println(indexes);
-		System.out.println(ranges);
+		//		System.out.println(indexes);
+		//		System.out.println(ranges);
 
 	}
 
@@ -153,7 +152,7 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 		return ranges.get(d).getIntervals();
 
 	}
-	
+
 	@Override
 	public Map<Description, Integer> getIndexes() {
 		return indexes;

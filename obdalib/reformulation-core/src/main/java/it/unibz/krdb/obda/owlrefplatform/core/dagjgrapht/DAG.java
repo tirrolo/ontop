@@ -1,12 +1,18 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 
 import it.unibz.krdb.obda.ontology.Description;
+
+
 import it.unibz.krdb.obda.ontology.OClass;
 import it.unibz.krdb.obda.ontology.Property;
 
 import java.util.Map;
 import java.util.Set;
 
+
+/** 
+ * Interface to the DAG
+ *  */
 public interface DAG {
 
 
@@ -22,6 +28,12 @@ public interface DAG {
 	
 	//return the map set of replacements
 	public Map<Description,Description> getReplacements();
+	
+	//set the graph is a dag
+	public void setIsaDAG(boolean d);
+	
+	//check if the graph is a dag
+	public boolean isaDAG();
 	
 	//return the named properties in the dag
 	public Set<Property> getRoles();

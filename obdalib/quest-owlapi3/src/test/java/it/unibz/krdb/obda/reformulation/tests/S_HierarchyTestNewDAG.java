@@ -1,7 +1,6 @@
 package it.unibz.krdb.obda.reformulation.tests;
 
 import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAG;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDescriptionDAG;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDescriptionDAGImpl;
@@ -10,11 +9,10 @@ import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 import java.util.ArrayList;
 import java.util.Set;
 
-import org.openjena.atlas.logging.Log;
+import junit.framework.TestCase;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import junit.framework.TestCase;
 
 public class S_HierarchyTestNewDAG extends TestCase {
 	ArrayList<String> input= new ArrayList<String>();
@@ -78,7 +76,7 @@ public class S_HierarchyTestNewDAG extends TestCase {
 
 			//transform in a named graph
 			NamedDescriptionDAG transform = new NamedDescriptionDAGImpl(dag1);
-			DAGImpl dag2= transform.getDAG();
+			DAGImpl dag2= (DAGImpl) transform.getDAG();
 			log.debug("Input number {}", i+1 );
 			log.info("First dag {}", dag1);
 			log.info("Second dag {}", dag2);

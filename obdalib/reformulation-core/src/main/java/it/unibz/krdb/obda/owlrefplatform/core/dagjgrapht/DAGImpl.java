@@ -2,35 +2,41 @@ package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.ontology.OClass;
 import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.impl.ClassImpl;
-import it.unibz.krdb.obda.ontology.impl.PropertyImpl;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
 /** Use to build a DAG and a named DAG.
+ * Build on top of the SimpleDirectedGraph
  * 
- * We probably don't need this class we can simply used SimpleDirectedGraph<V,E> A directed graph. 
+ *  
  * @author Sarah
  *
  */
 
 public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> implements DAG {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4466539952784531284L;
+	
 	boolean dag = false;
 	boolean namedDAG = false;
 	
 	private Set<OClass> classes = new LinkedHashSet<OClass> ();
 	private Set<Property> roles = new LinkedHashSet<Property> ();
 	
+	//map between an element  and the representative between the equivalent elements
 	private Map<Description, Description> replacements = new HashMap<Description, Description>();
+	
+	//map of the equivalent elements of an element
 	private Map<Description, Set<Description>> equivalencesMap = new HashMap<Description, Set<Description>>();
 
 	public DAGImpl(Class<? extends DefaultEdge> arg0) {
@@ -41,6 +47,13 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 	public DAGImpl(EdgeFactory<Description,DefaultEdge> ef) {
 		super(ef);
 		dag=true;
+	}
+	
+	public DAGImpl(EdgeFactory<Description,DefaultEdge> ef,  Map<Description, Description> replacement, Map<Description, Set<Description>> equivalences) {
+		super(ef);
+		dag=true;
+		replacements= replacement;
+		equivalencesMap= equivalences; 
 	}
 	
 	//set the graph is a dag
@@ -71,7 +84,7 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 
 	}
 	
-	//return all property not inverse in the dag
+	//return all property (not inverse) in the dag
 	public Set<Property> getRoles(){
 		for (Description r: this.vertexSet()){
 			

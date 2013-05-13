@@ -7,8 +7,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 public interface NamedDescriptionDAG {
 
 
-
-//	public void constructor (DAG d);
-	public DAGImpl getDAG();
+	public DAG getDAG();
 
 }
