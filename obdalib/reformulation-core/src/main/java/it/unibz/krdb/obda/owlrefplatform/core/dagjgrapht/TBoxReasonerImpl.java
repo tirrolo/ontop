@@ -299,6 +299,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 	public Set<Set<Description>> getDescendants(Description desc, boolean named){
 		LinkedHashSet<Set<Description>> result = new LinkedHashSet<Set<Description>>();
 		if(dag!=null){
+			System.out.println(dag.getReplacements());
 			Description node = dag.getReplacements().get(desc);
 			if (node == null)
 				node = desc;
@@ -306,7 +307,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 			 DirectedGraph<Description, DefaultEdge> reversed =
 			            new EdgeReversedGraph<Description, DefaultEdge>(dag);
 			 
-			iterator= new BreadthFirstIterator<Description, DefaultEdge>(reversed, node);
+			 iterator= new BreadthFirstIterator<Description, DefaultEdge>(reversed, node);
 			
 			//I don't want to consider the current node
 			iterator.next();

@@ -28,6 +28,10 @@ public class S_TestTransitiveReduction extends TestCase {
 
 	public void setUp(){
 		
+		input.add("src/test/resources/test/dag/test-role-hierarchy.owl");
+//		input.add("src/test/resources/test/stockexchange-unittest.owl");
+		input.add("src/test/resources/test/dag/role-equivalence.owl");
+		
 		/** C -> B  -> A  C->A*/
 		input.add("src/test/resources/test/newDag/transitive.owl");
 		/** C -> B  -> A  C->D ->A C->A */
@@ -76,9 +80,9 @@ public class S_TestTransitiveReduction extends TestCase {
 		for (int i=0; i<input.size(); i++){
 			String fileInput=input.get(i);
 
-			GraphImpl graph1= InputOWL.createGraph(fileInput);
+			GraphImpl graph1= S_InputOWL.createGraph(fileInput);
 
-			DAGImpl dag2= InputOWL.createDAG(fileInput);
+			DAGImpl dag2= S_InputOWL.createDAG(fileInput);
 
 
 			log.debug("Input number {}", i+1 );
@@ -127,15 +131,25 @@ public class S_TestTransitiveReduction extends TestCase {
 
 			
 			Set<Description> equivalents=it2.next();
+			log.info("equivalents {} ", equivalents);
+			
+			
 			
 			//check if there are redundant edges
 			for (Description vertex: equivalents){
-				if(g1.incomingEdgesOf(vertex).size()!= g1.inDegreeOf(vertex))
+				if(g1.incomingEdgesOf(vertex).size()!= g1.inDegreeOf(vertex)) //check that there anren't two edges pointing twice to the same nodes
 					numberRedundants +=g1.inDegreeOf(vertex)- g1.incomingEdgesOf(vertex).size();
-				
+				log.info("in graph {} ", g1.containsVertex(vertex));
+				log.info("in dag {} ", d2.containsVertex(vertex));
+				log.info("vertex {} ", d2.vertexSet());
+				System.out.println(vertex);
 				//descendants of the vertex
 				Set<Set<Description>> descendants=reasonerd2.getDescendants(vertex, false);
 				Set<Set<Description>> children=reasonerd2.getDirectChildren(vertex, false);
+
+				log.info("descendants{} ", descendants);
+				log.info("children {} ", children);
+
 				for(DefaultEdge edge: g1.incomingEdgesOf(vertex)){
 					Description source=g1.getEdgeSource(edge);
 					for(Set<Description> descendant:descendants){

@@ -49,12 +49,6 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 		dag=true;
 	}
 	
-	public DAGImpl(EdgeFactory<Description,DefaultEdge> ef,  Map<Description, Description> replacement, Map<Description, Set<Description>> equivalences) {
-		super(ef);
-		dag=true;
-		replacements= replacement;
-		equivalencesMap= equivalences; 
-	}
 	
 	//set the graph is a dag
 	public void setIsaDAG(boolean d){

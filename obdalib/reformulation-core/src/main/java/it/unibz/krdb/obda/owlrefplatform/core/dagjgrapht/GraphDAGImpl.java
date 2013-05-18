@@ -39,7 +39,22 @@ public class GraphDAGImpl implements GraphDAG{
 	
 	public GraphDAGImpl (Graph graph){
 		
-		modifiedGraph=(GraphImpl) ((GraphImpl) graph).clone();
+		
+		modifiedGraph= new GraphImpl( DefaultEdge.class);
+		
+		
+		//clone all the vertex and edges from dag
+		
+		for (Description v: ((GraphImpl)graph).vertexSet()){
+			modifiedGraph.addVertex(v);
+		}
+		 for (DefaultEdge e : ((GraphImpl)graph).edgeSet()) {
+	            Description s = ((GraphImpl)graph).getEdgeSource(e);
+	            Description t = ((GraphImpl)graph).getEdgeTarget(e);
+	            
+	           
+	            modifiedGraph.addEdge(s, t, e);
+	        }
 		eliminateCycles();
 		eliminateRedundantEdges();
 		
@@ -52,6 +67,7 @@ public class GraphDAGImpl implements GraphDAG{
 		
 		dag.setMapEquivalences(equivalencesMap);
 		dag.setReplacements(replacements);
+		System.out.println("rep"+replacements);
 		dag.setIsaDAG(true);
 
 	}

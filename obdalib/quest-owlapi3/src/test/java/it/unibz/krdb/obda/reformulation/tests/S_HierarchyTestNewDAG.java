@@ -26,6 +26,8 @@ public class S_HierarchyTestNewDAG extends TestCase {
 
 	public void setUp(){
 
+		input.add("src/test/resources/test/dag/test-role-hierarchy.owl");
+		input.add("src/test/resources/test/dag/role-equivalence.owl");
 
 		/**Graph1 B-> ER -> A */
 		input.add("src/test/resources/test/newDag/ancestor1.owl");
@@ -44,22 +46,7 @@ public class S_HierarchyTestNewDAG extends TestCase {
 		/**Graph B->A->ER C->ES->A->ER */
 		input.add("src/test/resources/test/newDag/inverseAncestor4.owl");
 
-		//		/**NamedGraph1 B-> A */
-		//		output.add("src/test/resources/test/newDag/namedAncestors1.owl");
-		//		/**NamedGraph1 B-> A */
-		//		output.add("src/test/resources/test/newDag/namedAncestors2.owl");
-		//		/**NamedGraph1 B-> A and C-> A */
-		//		output.add("src/test/resources/test/newDag/namedAncestors3.owl");
-		//		/**NamedGraph1 B-> A and C-> A */
-		//		output.add("src/test/resources/test/newDag/namedAncestors4.owl");
-		//		/**NamedGraph1 B-> A */
-		//		output.add("src/test/resources/test/newDag/namedAncestors1.owl");
-		//		/**NamedGraph1 B-> A */
-		//		output.add("src/test/resources/test/newDag/namedAncestors2.owl");
-		//		/**NamedGraph1 B-> A and C-> A */
-		//		output.add("src/test/resources/test/newDag/namedAncestors3.owl");
-		//		/**NamedGraph1 B-> A and C-> A */
-		//		output.add("src/test/resources/test/newDag/namedAncestors4.owl");
+
 
 	}
 
@@ -69,9 +56,8 @@ public class S_HierarchyTestNewDAG extends TestCase {
 		//for each file in the input
 		for (int i=0; i<input.size(); i++){
 			String fileInput=input.get(i);
-			//			String fileOutput=output.get(i);
 
-			DAGImpl dag1= InputOWL.createDAG(fileInput);
+			DAGImpl dag1= S_InputOWL.createDAG(fileInput);
 			//		DAGImpl dag2= InputOWL.createDAG(fileOutput);
 
 			//transform in a named graph

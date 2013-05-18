@@ -28,7 +28,10 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 	}
 
 	public void setUp(){
-
+		
+		input.add("src/test/resources/test/dag/test-role-hierarchy.owl");
+		input.add("src/test/resources/test/stockexchange-unittest.owl");
+		input.add("src/test/resources/test/dag/role-equivalence.owl");
 		/** C = B -> ER -> A*/
 		input.add("src/test/resources/test/newDag/equivalents1.owl");
 		/** B -> A -> ER=C */
@@ -72,7 +75,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 		for (int i=0; i<input.size(); i++){
 			String fileInput=input.get(i);
 
-			GraphImpl graph1= InputOWL.createGraph(fileInput);
+			GraphImpl graph1= S_InputOWL.createGraph(fileInput);
 
 			//transform in a dag
 			GraphDAGImpl transform= new GraphDAGImpl(graph1);
@@ -558,7 +561,7 @@ public class S_Equivalences_TestNewDAG extends TestCase{
 		log.info("edges dag {}", numberEdgesD2);
 		log.info("equivalents {} ", numberEquivalents);
 
-		return numberEdgesD1== (numberEquivalents+ numberEdgesD2);
+		return numberEdgesD1 >= (numberEquivalents+ numberEdgesD2);
 
 	}
 

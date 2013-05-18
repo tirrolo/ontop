@@ -28,6 +28,7 @@ public class S_Indexes_TestNewDAG extends TestCase {
 	
 public void setUp(){
 		
+	input.add("src/test/resources/test/stockexchange-unittest.owl");
 		/** C -> B  -> A  C->A*/
 		input.add("src/test/resources/test/newDag/transitive.owl");
 		/** C -> B  -> A  C->D ->A C->A */
@@ -74,7 +75,7 @@ public void testIndexes() throws Exception{
 	for (int i=0; i<input.size(); i++){
 		String fileInput=input.get(i);
 
-		DAGImpl dag= InputOWL.createDAG(fileInput);
+		DAGImpl dag= S_InputOWL.createDAG(fileInput);
 
 
 		//add input named graph
@@ -115,6 +116,9 @@ private boolean testIndexes( DAGImpl dag){
 		if(!result)
 			break;
 	}
+	
+	log.info("indexes {}", indexes);
+	log.info("ranges {}", ranges);
 	
 	
 	return result;

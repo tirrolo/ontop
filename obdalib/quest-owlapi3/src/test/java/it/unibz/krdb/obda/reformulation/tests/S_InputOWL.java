@@ -13,7 +13,7 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-public class InputOWL {
+public class S_InputOWL {
 	
 	
 	public static Ontology createOWL(String file) throws Exception{

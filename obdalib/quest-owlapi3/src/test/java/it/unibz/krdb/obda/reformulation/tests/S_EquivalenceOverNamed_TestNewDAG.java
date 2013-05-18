@@ -28,7 +28,9 @@ public class S_EquivalenceOverNamed_TestNewDAG extends TestCase {
 	}
 
 	public void setUp(){
-
+		
+		input.add("src/test/resources/test/dag/test-role-hierarchy.owl");
+		input.add("src/test/resources/test/stockexchange-unittest.owl");
 		/** C = B -> ER -> A*/
 		input.add("src/test/resources/test/newDag/equivalents1.owl");
 		/** B -> A -> ER=C */
@@ -72,10 +74,9 @@ public class S_EquivalenceOverNamed_TestNewDAG extends TestCase {
 		for (int i=0; i<input.size(); i++){
 			String fileInput=input.get(i);
 
-			GraphImpl graph1= InputOWL.createGraph(fileInput);
+			GraphImpl graph1= S_InputOWL.createGraph(fileInput);
 
-			DAGImpl dag2= InputOWL.createDAG(fileInput);
-
+			DAGImpl dag2= S_InputOWL.createDAG(fileInput);
 			//transform in a named graph
 			NamedDescriptionDAGImpl transform = new NamedDescriptionDAGImpl(dag2);
 			DAGImpl namedDag2= transform.getDAG();
@@ -95,12 +96,13 @@ public class S_EquivalenceOverNamed_TestNewDAG extends TestCase {
 			//check only if the number of edges is smaller
 			assertTrue(checkEdgeReduction(graph1, namedDag2, true));
 			assertTrue(checkforNamedVertexesOnly(namedDag2));
-
+		
 			
 		}
 	}
 
 			private boolean testDescendants(GraphImpl d1, DAGImpl d2, boolean named){
+				
 				boolean result = false;
 				TBoxReasonerImpl reasonerd1= new TBoxReasonerImpl(d1);
 				TBoxReasonerImpl reasonerd2= new TBoxReasonerImpl(d2);
@@ -128,8 +130,12 @@ public class S_EquivalenceOverNamed_TestNewDAG extends TestCase {
 						setd1	=reasonerd1.getDescendants(vertex, named);
 						log.info("vertex {}", vertex);
 						log.debug("descendants {} ", setd1);
+						for(Description v: d2.vertexSet()){
+					
+						}
 						setd2	=reasonerd2.getDescendants(vertex, named);
 						log.debug("descendants {} ", setd2);
+						
 
 
 					}
@@ -518,6 +524,8 @@ public class S_EquivalenceOverNamed_TestNewDAG extends TestCase {
 						}
 					}
 				}
+				else 
+					numberVertexesD1= d1.vertexSet().size();
 				
 				//number of vertexes in the dag
 				int numberVertexesD2 = d2.vertexSet().size();
@@ -571,7 +579,7 @@ public class S_EquivalenceOverNamed_TestNewDAG extends TestCase {
 				log.info("edges dag {}", numberEdgesD2);
 				log.info("equivalents {} ", numberEquivalents);
 
-				return numberEdgesD1> (numberEquivalents+ numberEdgesD2);
+				return numberEdgesD1>= (numberEquivalents+ numberEdgesD2);
 
 			}
 			
