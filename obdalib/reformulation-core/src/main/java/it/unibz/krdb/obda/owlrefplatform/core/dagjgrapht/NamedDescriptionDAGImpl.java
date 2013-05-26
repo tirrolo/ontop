@@ -55,7 +55,7 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 		Map<Description, Description> replacementsDag= dag.getReplacements();
 		for(Description vertex: ((DAGImpl) dag).vertexSet() ){
 			if(equivalencesDag.containsKey(vertex)){
-				System.out.println("vv");
+
 				HashSet<Description> equivalents= new HashSet<Description>();
 				for(Description equivalent: equivalencesDag.get(vertex)){
 					equivalents.add(equivalent);
@@ -65,13 +65,12 @@ public class NamedDescriptionDAGImpl implements NamedDescriptionDAG {
 			
 		}		
 		for(Description eliminateNode: replacementsDag.keySet()){
-			System.out.println("nn");
-		Description referent=replacementsDag.get(eliminateNode);
+
+			Description referent=replacementsDag.get(eliminateNode);
 			replacements.put(eliminateNode, referent );
 		
 		}
 		
-		System.out.println("rep "+replacementsDag);
 		
 		for( Description vertex: ((DAGImpl) dag).vertexSet()){
 			

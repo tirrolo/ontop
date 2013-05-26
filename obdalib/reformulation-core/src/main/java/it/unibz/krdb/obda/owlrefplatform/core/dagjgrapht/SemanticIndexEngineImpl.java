@@ -145,11 +145,21 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 
 
 	}
+	
+	public void setIndex(Description d, int index) {
+		indexes.put(d, index);
+
+	}
 
 	@Override
 	public List<Interval> getIntervals(Description d) {
 
 		return ranges.get(d).getIntervals();
+
+	}
+	
+	public void setRange(Description d, SemanticIndexRange range) {
+		ranges.put(d, range);
 
 	}
 
@@ -166,6 +176,8 @@ public class SemanticIndexEngineImpl implements SemanticIndexEngine{
 		return ranges;
 
 	}
+	
+	
 
 
 }

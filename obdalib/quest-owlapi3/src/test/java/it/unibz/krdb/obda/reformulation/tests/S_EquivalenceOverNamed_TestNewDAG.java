@@ -29,6 +29,7 @@ public class S_EquivalenceOverNamed_TestNewDAG extends TestCase {
 
 	public void setUp(){
 		
+		input.add("src/test/resources/test/dag/test-equivalence-roles-inverse.owl");
 		input.add("src/test/resources/test/dag/test-role-hierarchy.owl");
 		input.add("src/test/resources/test/stockexchange-unittest.owl");
 		/** C = B -> ER -> A*/
@@ -554,21 +555,37 @@ public class S_EquivalenceOverNamed_TestNewDAG extends TestCase {
 			}
 
 			private boolean checkEdgeReduction(GraphImpl d1, DAGImpl d2, boolean named){
+				
 				//number of edges in the graph
 				int  numberEdgesD1= d1.edgeSet().size();
+				System.out.println(numberEdgesD1);
+				System.out.println(d1.edgeSet());
 				//number of edges in the dag
 				int numberEdgesD2 = d2.edgeSet().size();
 
 				//number of edges between the equivalent nodes
 				int numberEquivalents=0;
-
+				
+				if(named){
+					TBoxReasonerImpl reasonerd1= new TBoxReasonerImpl(d1);
+				for(Description vertex: d1.vertexSet()){
+					if(!(d1.getClasses().contains(vertex)| d1.getRoles().contains(vertex))){
+						if(d1.inDegreeOf(vertex)>=1| d1.outDegreeOf(vertex)>=1){
+					numberEdgesD1 -=1;
+					
+					}
+				
+				}
+				}
+				}
+				
 				TBoxReasonerImpl reasonerd2= new TBoxReasonerImpl(d2);
 
 				Set<Set<Description>> nodesd2= reasonerd2.getNodes(named);
 				Iterator<Set<Description>> it1 =nodesd2.iterator();
 				while (it1.hasNext()) {
 					Set<Description> equivalents=it1.next();
-
+					System.out.println(equivalents);
 					//two nodes have two edges, three nodes have three edges...
 					if(equivalents.size()>=2){
 						numberEquivalents += equivalents.size();

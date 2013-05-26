@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.StrongConnectivityInspector;
+import org.jgrapht.graph.AbstractBaseGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 /** 
@@ -55,7 +56,7 @@ public class GraphDAGImpl implements GraphDAG{
 	           
 	            modifiedGraph.addEdge(s, t, e);
 	        }
-		eliminateCycles();
+		eliminateCycles(graph);
 		eliminateRedundantEdges();
 		
 //		System.out.println("modified graph "+modifiedGraph);
@@ -64,11 +65,16 @@ public class GraphDAGImpl implements GraphDAG{
 		
 		//change the graph in a dag
 		Graphs.addGraph(dag, modifiedGraph);
-		
+
 		dag.setMapEquivalences(equivalencesMap);
 		dag.setReplacements(replacements);
-		System.out.println("rep"+replacements);
 		dag.setIsaDAG(true);
+		
+for(Description vertex: ((GraphImpl) graph).vertexSet()){
+			
+			if(!dag.containsVertex(vertex))
+				System.out.println(vertex);
+			}
 
 	}
 
@@ -177,11 +183,14 @@ public class GraphDAGImpl implements GraphDAG{
 	 * StrongConnectivityInspector from JGraphT.
 	 * 
 	 */
-	private void eliminateCycles() {
+	private void eliminateCycles(Graph graph) {
+		
+		
 		StrongConnectivityInspector<Description, DefaultEdge> inspector = new StrongConnectivityInspector<Description, DefaultEdge>(modifiedGraph);
 		
 		//each set contains vertices which together form a strongly connected component within the given graph
 		List<Set<Description>> equivalenceSets = inspector.stronglyConnectedSets();
+
 
 		for (Set<Description> equivalenceSet : equivalenceSets) {
 			if (equivalenceSet.size() < 2)
@@ -230,17 +239,10 @@ public class GraphDAGImpl implements GraphDAG{
 
 			}
 		}
-
+		
 	}
 
-	
-	
-	
-	
-	
-
-
-
+		
 
 
 }

@@ -152,6 +152,14 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 		this.replacements=replacements;
 		
 	}
+	
+	@Override
+	public Description getNode(Description node){
+		if(replacements.containsKey(node))
+			node= replacements.get(node);
+		return node;
+		
+	}
 
 
 

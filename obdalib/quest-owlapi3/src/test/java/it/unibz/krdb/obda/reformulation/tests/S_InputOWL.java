@@ -1,5 +1,6 @@
 package it.unibz.krdb.obda.reformulation.tests;
 
+import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
 import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
@@ -44,6 +45,7 @@ public class S_InputOWL {
 		
 		DAGImpl dag=(DAGImpl) change2.getDAG();
 		
+
 		return dag;
 	}
 	

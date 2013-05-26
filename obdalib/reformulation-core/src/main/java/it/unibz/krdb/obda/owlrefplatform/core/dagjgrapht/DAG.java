@@ -41,6 +41,9 @@ public interface DAG {
 	//return the named classed in the dag
 	public Set<OClass> getClasses();
 	
+	//return the node considering replacements
+	public Description getNode(Description node);
+	
 	
 
 

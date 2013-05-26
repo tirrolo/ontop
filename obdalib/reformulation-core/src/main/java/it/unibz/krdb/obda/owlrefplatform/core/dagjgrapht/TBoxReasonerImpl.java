@@ -1,8 +1,15 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 
+import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
+import it.unibz.krdb.obda.ontology.Axiom;
+import it.unibz.krdb.obda.ontology.ClassDescription;
 import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.ontology.OClass;
+import it.unibz.krdb.obda.ontology.Ontology;
+import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.Property;
+import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
+import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,6 +40,28 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 	private Set<Property> property;
 	
 
+	public TBoxReasonerImpl(Ontology ontology, boolean named){
+		
+		//generate Graph
+		TBoxGraphImpl change= new TBoxGraphImpl(ontology);
+		
+		GraphImpl graph = (GraphImpl) change.getGraph();
+		
+		//generate DAG
+		GraphDAGImpl change2 = new GraphDAGImpl(graph);
+		
+		dag=(DAGImpl) change2.getDAG();
+
+		
+		if(named) //generate namedDAG
+		{
+			NamedDescriptionDAGImpl transform = new NamedDescriptionDAGImpl(dag);
+			dag= transform.getDAG();	
+		}
+		
+		namedClasses= dag.getClasses();
+		property = dag.getRoles();
+	}
 
 	public TBoxReasonerImpl(DAG dag){
 		this.dag=(DAGImpl) dag;
@@ -299,7 +328,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 	public Set<Set<Description>> getDescendants(Description desc, boolean named){
 		LinkedHashSet<Set<Description>> result = new LinkedHashSet<Set<Description>>();
 		if(dag!=null){
-			System.out.println(dag.getReplacements());
+
 			Description node = dag.getReplacements().get(desc);
 			if (node == null)
 				node = desc;
@@ -558,6 +587,84 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 	public DAGImpl getDAG() {
 
 		return dag;
+	}
+	
+	public static Ontology getSigmaOntology(DAG dag) {
+
+		OntologyFactory descFactory = new OntologyFactoryImpl();
+		Ontology sigma = descFactory.createOntology(OBDADataFactoryImpl.getIRI("sigma"));
+
+		AbstractGraphIterator<Description, DefaultEdge> iterator= new BreadthFirstIterator<Description, DefaultEdge>((DAGImpl)dag);
+		OntologyFactory fac = OntologyFactoryImpl.getInstance();
+
+		while (iterator.hasNext()) {
+			Description node = iterator.next();
+			//edges with parents
+			for(DefaultEdge edge: ((DAGImpl) dag).outgoingEdgesOf(node))
+			if (((DAGImpl) dag).getEdgeSource(edge) instanceof ClassDescription) {
+				ClassDescription sub = (ClassDescription)((DAGImpl) dag).getEdgeSource(edge);
+				ClassDescription superp = (ClassDescription) ((DAGImpl) dag).getEdgeTarget(edge);
+				if (superp instanceof PropertySomeRestriction)
+					continue;
+
+				Axiom ax = fac.createSubClassAxiom(sub, superp);
+				sigma.addEntities(ax.getReferencedEntities());
+				sigma.addAssertion(ax);
+			} else {
+				Property sub = (Property) ((DAGImpl) dag).getEdgeSource(edge);
+				Property superp = (Property) ((DAGImpl) dag).getEdgeTarget(edge);
+
+				Axiom ax = fac.createSubPropertyAxiom(sub, superp);
+				sigma.addEntities(ax.getReferencedEntities());
+
+				sigma.addAssertion(ax);
+			}
+			Set<Description> equivalents = dag.getMapEquivalences().get(node);
+			for(Description equivalent:equivalents){
+				if(equivalent!=node){
+					if (node instanceof ClassDescription) {
+						ClassDescription sub = (ClassDescription) node;
+						ClassDescription superp = (ClassDescription) equivalent;
+						if (superp instanceof PropertySomeRestriction)
+							continue;
+
+						Axiom ax = fac.createSubClassAxiom(sub, superp);
+						sigma.addEntities(ax.getReferencedEntities());
+						sigma.addAssertion(ax);
+					} else {
+						Property sub = (Property) node;
+						Property superp = (Property) equivalent;
+
+						Axiom ax = fac.createSubPropertyAxiom(sub, superp);
+						sigma.addEntities(ax.getReferencedEntities());
+
+						sigma.addAssertion(ax);
+					}
+					
+					if (equivalent instanceof ClassDescription) {
+						ClassDescription sub = (ClassDescription) equivalent;
+						ClassDescription superp = (ClassDescription) node;
+						if (superp instanceof PropertySomeRestriction)
+							continue;
+
+						Axiom ax = fac.createSubClassAxiom(sub, superp);
+						sigma.addEntities(ax.getReferencedEntities());
+						sigma.addAssertion(ax);
+					} else {
+						Property sub = (Property) equivalent;
+						Property superp = (Property) node;
+
+						Axiom ax = fac.createSubPropertyAxiom(sub, superp);
+						sigma.addEntities(ax.getReferencedEntities());
+
+						sigma.addAssertion(ax);
+					}
+				}
+			}
+		}
+
+		
+		return sigma;
 	}
 
 
