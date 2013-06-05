@@ -1,5 +1,7 @@
 package it.unibz.krdb.obda.protege4.gui.action;
 
+import it.unibz.krdb.obda.gui.swing.utils.OBDAProgessMonitor;
+import it.unibz.krdb.obda.gui.swing.utils.OBDAProgressListener;
 import it.unibz.krdb.obda.model.OBDADataSource;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
@@ -36,6 +38,9 @@ public class BootstrapAction extends ProtegeAction {
 	private OWLModelManager owlManager;
 	private OBDAModelManager modelManager;
 	private DirectMappingBootstrapper dm = null;
+	private OWLOntology currentOnto;
+	private OBDAModel currentModel;
+	private OBDADataSource currentSource;
 	
 	private Logger log = LoggerFactory.getLogger(BootstrapAction.class);
 	
@@ -55,8 +60,8 @@ public class BootstrapAction extends ProtegeAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		OWLOntology currentOnto = owlManager.getActiveOntology();
-		OBDAModel currentModel = modelManager.getActiveOBDAModel();
+		 currentOnto = owlManager.getActiveOntology();
+		 currentModel = modelManager.getActiveOBDAModel();
 		
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel("Choose a datasource to bootstrap: "), BorderLayout.NORTH);
@@ -64,23 +69,59 @@ public class BootstrapAction extends ProtegeAction {
 		for (OBDADataSource source : currentModel.getSources())
 			options.add(source.getSourceID().toString());
 		JComboBox combo = new JComboBox(options.toArray());
-		int index = combo.getSelectedIndex();
+		panel.add(combo);
+		int res = JOptionPane.showOptionDialog(workspace, panel, "Bootstrapping", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+		if (res == JOptionPane.OK_OPTION) {
+			int index = combo.getSelectedIndex();
 
-		OBDADataSource currentSource = currentModel.getSources().get(index);
-		if (currentSource != null) {
-			try {
-				dm = new DirectMappingBootstrapper(currentOnto, currentModel,
-						currentSource);
-				currentModel = dm.getModel();
-				currentOnto = dm.getOntology();
-				currentModel.fireSourceParametersUpdated();
-				
-			} catch (Exception ex) {
-				log.error(ex.getMessage(), ex);
-				JOptionPane.showMessageDialog(null,	"ERROR occured during bootstrapping. ");
+			currentSource = currentModel.getSources().get(index);
+			if (currentSource != null) {
+				Thread th = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							OBDAProgessMonitor monitor = new OBDAProgessMonitor(
+									"Bootstrapping ontology and mappings from datasource...");
+							BootstrapperThread t = new BootstrapperThread();
+							monitor.addProgressListener(t);
+							monitor.start();
+							t.run(currentOnto, currentModel, currentSource);
+							currentModel = dm.getModel();
+							currentOnto = dm.getOntology();
+							currentModel.fireSourceParametersUpdated();
+							monitor.stop();
+
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+							JOptionPane
+									.showMessageDialog(null,
+											"Error occured during bootstrapping data source.");
+						}
+					}
+				});
+				th.start();
+				JOptionPane.showMessageDialog(this.workspace,
+						"Task is completed.", "Done",
+						JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 	}
 
+	private class BootstrapperThread implements OBDAProgressListener {
+
+		
+		@Override
+		public void actionCanceled() throws Exception {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void run(OWLOntology currentOnto, OBDAModel currentModel, OBDADataSource currentSource) throws Exception
+		{
+			dm = new DirectMappingBootstrapper(currentOnto,
+					currentModel, currentSource);
+		}
+		
+	}
 	
 }
