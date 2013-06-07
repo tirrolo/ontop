@@ -80,7 +80,7 @@ public class DirectMappingAxiom {
 		String Condition = "";
 
 		for (Attribute pk : pks)
-			Column += Table + ".\"" + pk.getName() + "\", ";
+			Column += Table + ".\"" + pk.getName() + "\" AS "+this.table.getName()+"_"+pk.getName()+", ";
 
 		// refferring object
 		List<Attribute> attr = fks.get(key);
@@ -93,7 +93,7 @@ public class DirectMappingAxiom {
 			if (i == 0)
 				Table += ", \"" + tableRef + "\"";
 			String columnRef = ref.getColumnReference();
-			Column += "\"" + tableRef + "\".\"" + columnRef + "\"";
+			Column += "\"" + tableRef + "\".\"" + columnRef + "\" AS "+tableRef+"_"+columnRef;
 
 			Condition += "\"" + tableRef + "\".\"" + columnRef + "\"";
 
@@ -146,11 +146,10 @@ public class DirectMappingAxiom {
 		// Object Atoms
 		// Foreign key reference
 		for (int i = 0; i < table.countAttribute(); i++) {
-			if (table.getAttribute(i + 1).isForeignKey()){
-			//	if (table.getAttribute(i + 1).hasName(fk)) {
-					Attribute att = table.getAttribute(i + 1);
-					Reference ref = att.getReference();
-					if (ref.getReferenceName().equals(fk)){
+			if (table.getAttribute(i + 1).isForeignKey()) {
+				Attribute att = table.getAttribute(i + 1);
+				Reference ref = att.getReference();
+				if (ref.getReferenceName().equals(fk)) {
 					String pkTableReference = ref.getTableReference();
 					TableDefinition tdRef = (TableDefinition) obda_md
 							.getDefinition(pkTableReference);
@@ -211,16 +210,15 @@ public class DirectMappingAxiom {
 	 * TODO replace URI predicate to BNode predicate for tables without PKs
 	 * 		in the following method after 'else'
 	 */
-	
 	private NewLiteral generateSubject(OBDADataFactory df, TableDefinition td, boolean ref){
 		String tableName = "";
-//		if (ref)
-//			tableName = percentEncode(td.getName())+".";
+		if (ref)
+			tableName = percentEncode(td.getName())+"_";
 		
 		if(td.getPrimaryKeys().size()>0){
 			Predicate uritemple = df.getUriPredicate();
 			List<NewLiteral> terms = new ArrayList<NewLiteral>();
-			terms.add(df.getValueConstant(subjectTemple(td,td.getPrimaryKeys().size())));
+			terms.add(df.getValueConstant(subjectTemple(td,td.getPrimaryKeys().size(), ref)));
 			for(int i=0;i<td.getPrimaryKeys().size();i++){
 				terms.add(df.getVariable(tableName + td.getPrimaryKeys().get(i).getName()));
 			}
@@ -239,7 +237,7 @@ public class DirectMappingAxiom {
 	}
 	
 	
-	private String subjectTemple(TableDefinition td, int numPK){
+	private String subjectTemple(TableDefinition td, int numPK, boolean ref){
 		/*
 		 * It is hard to generate a uniform temple since the number of PK differs
 		 * For example, the subject uri temple with one pk should be like:
@@ -247,11 +245,14 @@ public class DirectMappingAxiom {
 		 * For table with more than one pk columns, there will be a ";" between column names 
 		 */
 
+		String tableName = "";
+		if (ref)
+			tableName = td.getName()+"_";
 		String temp = new String(baseuri);
 		temp+=percentEncode(td.getName());
 		temp+="/";
 		for(int i=0;i<numPK;i++){
-			temp+=percentEncode("{"+td.getPrimaryKeys().get(i).getName())+"};";
+			temp+=percentEncode("{"+ tableName+td.getPrimaryKeys().get(i).getName())+"};";
 		}
 		
 		//remove the last "." which is not neccesary
