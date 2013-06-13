@@ -80,6 +80,14 @@ public class TBoxGraphImpl implements TBoxGraph{
 				graph.addEdge(child, parent);
 				graph.addEdge(childInv, parentInv);
 				
+				//add also edges between the existential
+				ClassDescription existsParent = descFactory.getPropertySomeRestriction(parent.getPredicate(), parent.isInverse());
+				ClassDescription existChild = descFactory.getPropertySomeRestriction(child.getPredicate(), child.isInverse());
+				ClassDescription existsParentInv = descFactory.getPropertySomeRestriction(parent.getPredicate(), !parent.isInverse());
+				ClassDescription existChildInv = descFactory.getPropertySomeRestriction(child.getPredicate(), !child.isInverse());
+				graph.addEdge(existChild, existsParent);
+				graph.addEdge(existChildInv, existsParentInv);
+				
 			}
 		}
 

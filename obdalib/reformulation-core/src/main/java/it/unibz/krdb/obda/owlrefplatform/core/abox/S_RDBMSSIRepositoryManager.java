@@ -493,30 +493,37 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		this.ontology = ontology;
 
 		log.debug("Ontology: {}", ontology.toString());
+		
+		//build the dag
 
 		reasonerDag = new TBoxReasonerImpl(ontology,false);
 		
 		dag=reasonerDag.getDAG();
 		
+		
+		//build the namedDag (or pureIsa)
 		NamedDescriptionDAGImpl transform = new NamedDescriptionDAGImpl(dag);
 		
 		pureIsa = transform.getDAG();
 		
 		reasonerIsa = new TBoxReasonerImpl(pureIsa);
+		
 
-		aboxDependencies = TBoxReasonerImpl.getSigmaOntology(dag);
+		//to be checked
+		aboxDependencies = TBoxReasonerImpl.getSigma(ontology);
 
+		//create the indexes
 		engine= new SemanticIndexEngineImpl(reasonerIsa);
 		
 
 		/***
 		 * Copying the equivalences that might bet lost from the translation
 		 */
-		Map<Description,Description> isaEquivalences =pureIsa.getReplacements();
-		for (Description d : dag.getReplacements().keySet()) {
-			isaEquivalences.put(d, dag.getReplacements().get(d));
-		}
-		pureIsa.setReplacements(isaEquivalences);
+//		Map<Description,Description> isaEquivalences =pureIsa.getReplacements();
+//		for (Description d : dag.getReplacements().keySet()) {
+//			isaEquivalences.put(d, dag.getReplacements().get(d));
+//		}
+//		pureIsa.setReplacements(isaEquivalences);
 
 		// try {
 		// GraphGenerator.dumpISA(dag, "no-cycles");
@@ -1751,6 +1758,9 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 //		dag = new DAG(res_classes, res_roles,
 //				new HashMap<Description, Description>(), res_allnodes);
 //		pureIsa = DAGConstructor.filterPureISA(dag);
+		
+		System.out.println("ENTERED IN LOADMETADATA!!!!!!!!!!");
+		System.exit(0);
 	}
 
 	@Override
@@ -1810,16 +1820,21 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 			while (!childrenQueue.isEmpty()) {
 				
+				
 				Set<Description> children = childrenQueue.poll();
-				for(Description child:children)
-				{
+				Description firstChild=children.iterator().next();
+				Description child=dag.getReplacements().get(firstChild);
+				if(child==null)
+					child=firstChild;
+				if(child.equals(node))
+					continue;
 				if ((child instanceof Property)
 						&& ((Property) child).isInverse()) {
 					roleInverseChildren.add(child);
 				} else {
 					childrenQueue.addAll((reasonerDag.getDirectChildren(child, false)));
 				}
-				}
+				
 			}
 
 			/* Removing redundant nodes */
@@ -3288,7 +3303,7 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			}
 
 			String uri = description.toString();
-
+//			if(engine.getIntervals(node)!= null)
 			for (Interval it : engine.getIntervals(node)) {
 				stm.setString(1, uri);
 				stm.setInt(2, engine.getIndex(node));
@@ -3922,5 +3937,7 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			hash = (f.getPredicate().hashCode() + f.getTerms().size());
 		return hash;
 	}
+
+
 
 }

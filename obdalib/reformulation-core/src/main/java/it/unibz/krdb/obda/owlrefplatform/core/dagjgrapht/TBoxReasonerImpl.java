@@ -10,7 +10,12 @@ import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.Property;
 import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
+import it.unibz.krdb.obda.ontology.impl.SubClassAxiomImpl;
+import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGEdgeIterator;
+import it.unibz.krdb.obda.owlrefplatform.core.dag.Edge;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAG;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -18,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
@@ -51,7 +57,6 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 		GraphDAGImpl change2 = new GraphDAGImpl(graph);
 		
 		dag=(DAGImpl) change2.getDAG();
-
 		
 		if(named) //generate namedDAG
 		{
@@ -589,84 +594,288 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 		return dag;
 	}
 	
-	public static Ontology getSigmaOntology(DAG dag) {
+//	public Ontology getSigmaOntology() {
+//
+//		OntologyFactory descFactory = new OntologyFactoryImpl();
+//		Ontology sigma = descFactory.createOntology(OBDADataFactoryImpl.getIRI("sigma"));
+//
+//		AbstractGraphIterator<Description, DefaultEdge> iterator= new BreadthFirstIterator<Description, DefaultEdge>((DAGImpl)dag);
+//		OntologyFactory fac = OntologyFactoryImpl.getInstance();
+//
+//		while (iterator.hasNext()) {
+//			Description node = iterator.next();
+//			//edges with parents
+//			for(DefaultEdge edge: ((DAGImpl) dag).outgoingEdgesOf(node))
+//			if (((DAGImpl) dag).getEdgeSource(edge) instanceof ClassDescription) {
+//				ClassDescription sub = (ClassDescription)((DAGImpl) dag).getEdgeSource(edge);
+//				ClassDescription superp = (ClassDescription) ((DAGImpl) dag).getEdgeTarget(edge);
+//				if (superp instanceof PropertySomeRestriction)
+//					continue;
+//
+//				Axiom ax = fac.createSubClassAxiom(sub, superp);
+//				sigma.addEntities(ax.getReferencedEntities());
+//				sigma.addAssertion(ax);
+//			} else {
+//				Property sub = (Property) ((DAGImpl) dag).getEdgeSource(edge);
+//				Property superp = (Property) ((DAGImpl) dag).getEdgeTarget(edge);
+//
+//				Axiom ax = fac.createSubPropertyAxiom(sub, superp);
+//				sigma.addEntities(ax.getReferencedEntities());
+//
+//				sigma.addAssertion(ax);
+//			}
+//			Set<Description> equivalents = dag.getMapEquivalences().get(node);
+//			for(Description equivalent:equivalents){
+//				if(equivalent!=node){
+//					if (node instanceof ClassDescription) {
+//						ClassDescription sub = (ClassDescription) node;
+//						ClassDescription superp = (ClassDescription) equivalent;
+//						if (superp instanceof PropertySomeRestriction)
+//							continue;
+//
+//						Axiom ax = fac.createSubClassAxiom(sub, superp);
+//						sigma.addEntities(ax.getReferencedEntities());
+//						sigma.addAssertion(ax);
+//					} else {
+//						Property sub = (Property) node;
+//						Property superp = (Property) equivalent;
+//
+//						Axiom ax = fac.createSubPropertyAxiom(sub, superp);
+//						sigma.addEntities(ax.getReferencedEntities());
+//
+//						sigma.addAssertion(ax);
+//					}
+//					
+//					if (equivalent instanceof ClassDescription) {
+//						ClassDescription sub = (ClassDescription) equivalent;
+//						ClassDescription superp = (ClassDescription) node;
+//						if (superp instanceof PropertySomeRestriction)
+//							continue;
+//
+//						Axiom ax = fac.createSubClassAxiom(sub, superp);
+//						sigma.addEntities(ax.getReferencedEntities());
+//						sigma.addAssertion(ax);
+//					} else {
+//						Property sub = (Property) equivalent;
+//						Property superp = (Property) node;
+//
+//						Axiom ax = fac.createSubPropertyAxiom(sub, superp);
+//						sigma.addEntities(ax.getReferencedEntities());
+//
+//						sigma.addAssertion(ax);
+//					}
+//				}
+//			}
+//		}
+//
+//		
+//		return sigma;
+//	}
 
-		OntologyFactory descFactory = new OntologyFactoryImpl();
-		Ontology sigma = descFactory.createOntology(OBDADataFactoryImpl.getIRI("sigma"));
-
-		AbstractGraphIterator<Description, DefaultEdge> iterator= new BreadthFirstIterator<Description, DefaultEdge>((DAGImpl)dag);
+	public  void getChainDAG() {
+		if(dag!= null){
+		Collection<Description> nodes = new HashSet<Description>(dag.vertexSet());
 		OntologyFactory fac = OntologyFactoryImpl.getInstance();
-
-		while (iterator.hasNext()) {
-			Description node = iterator.next();
-			//edges with parents
-			for(DefaultEdge edge: ((DAGImpl) dag).outgoingEdgesOf(node))
-			if (((DAGImpl) dag).getEdgeSource(edge) instanceof ClassDescription) {
-				ClassDescription sub = (ClassDescription)((DAGImpl) dag).getEdgeSource(edge);
-				ClassDescription superp = (ClassDescription) ((DAGImpl) dag).getEdgeTarget(edge);
-				if (superp instanceof PropertySomeRestriction)
-					continue;
-
-				Axiom ax = fac.createSubClassAxiom(sub, superp);
-				sigma.addEntities(ax.getReferencedEntities());
-				sigma.addAssertion(ax);
-			} else {
-				Property sub = (Property) ((DAGImpl) dag).getEdgeSource(edge);
-				Property superp = (Property) ((DAGImpl) dag).getEdgeTarget(edge);
-
-				Axiom ax = fac.createSubPropertyAxiom(sub, superp);
-				sigma.addEntities(ax.getReferencedEntities());
-
-				sigma.addAssertion(ax);
+		HashSet<Description> processedNodes = new HashSet<Description>();
+		for (Description node : nodes) {
+			if (!(node instanceof PropertySomeRestriction) || processedNodes.contains(node)) {
+				continue;
 			}
-			Set<Description> equivalents = dag.getMapEquivalences().get(node);
-			for(Description equivalent:equivalents){
-				if(equivalent!=node){
-					if (node instanceof ClassDescription) {
-						ClassDescription sub = (ClassDescription) node;
-						ClassDescription superp = (ClassDescription) equivalent;
-						if (superp instanceof PropertySomeRestriction)
-							continue;
 
-						Axiom ax = fac.createSubClassAxiom(sub, superp);
-						sigma.addEntities(ax.getReferencedEntities());
-						sigma.addAssertion(ax);
-					} else {
-						Property sub = (Property) node;
-						Property superp = (Property) equivalent;
+			/*
+			 * Adding a cycle between exists R and exists R- for each R.
+			 */
 
-						Axiom ax = fac.createSubPropertyAxiom(sub, superp);
-						sigma.addEntities(ax.getReferencedEntities());
+			PropertySomeRestriction existsR = (PropertySomeRestriction) node;
+			PropertySomeRestriction existsRin = fac.createPropertySomeRestriction(existsR.getPredicate(), !existsR.isInverse());
+			Description existsNode = node;
+			Description existsInvNode = dag.getNode(existsRin);
+			Set<Set<Description>> childrenExist = new HashSet<Set<Description>>(getDirectChildren(existsNode, false));
+			Set<Set<Description>> childrenExistInv = new HashSet<Set<Description>>(getDirectChildren(existsInvNode, false));
 
-						sigma.addAssertion(ax);
-					}
-					
-					if (equivalent instanceof ClassDescription) {
-						ClassDescription sub = (ClassDescription) equivalent;
-						ClassDescription superp = (ClassDescription) node;
-						if (superp instanceof PropertySomeRestriction)
-							continue;
-
-						Axiom ax = fac.createSubClassAxiom(sub, superp);
-						sigma.addEntities(ax.getReferencedEntities());
-						sigma.addAssertion(ax);
-					} else {
-						Property sub = (Property) equivalent;
-						Property superp = (Property) node;
-
-						Axiom ax = fac.createSubPropertyAxiom(sub, superp);
-						sigma.addEntities(ax.getReferencedEntities());
-
-						sigma.addAssertion(ax);
-					}
-				}
+			for (Set<Description> children : childrenExist) {
+//				for(Description child:children){
+//				DAGOperations.addParentEdge(child, existsInvNode);
+				Description firstChild=children.iterator().next();
+				Description child=dag.getReplacements().get(firstChild);
+				if(child==null)
+					child=firstChild;
+				if(!child.equals(existsNode))
+				dag.addEdge(child, existsInvNode);
+				
+//				}
 			}
+			for (Set<Description> children : childrenExistInv) {
+//				for(Description child:children){
+//				DAGOperations.addParentEdge(child, existsNode);
+				Description firstChild=children.iterator().next();
+				Description child=dag.getReplacements().get(firstChild);
+				if(child==null)
+					child=firstChild;
+				if(!child.equals(existsNode))
+				dag.addEdge(child, existsNode);
+				
+//				}
+			}
+			
+			Set<Set<Description>> parentExist = new HashSet<Set<Description>>(getDirectParents(existsNode,false));
+			Set<Set<Description>> parentsExistInv = new HashSet<Set<Description>>(getDirectParents(existsInvNode,false));
+
+			for (Set<Description> parents : parentExist) {
+				Description firstParent=parents.iterator().next();
+				Description parent=dag.getReplacements().get(firstParent);
+				if(parent==null)
+					parent=firstParent;
+				if(!parent.equals(existsInvNode))
+				dag.addEdge( existsInvNode, parent);
+				
+//				}
+			}
+			
+			for (Set<Description> parents : parentsExistInv) {
+				Description firstParent=parents.iterator().next();
+				Description parent=dag.getReplacements().get(firstParent);
+				if(parent==null)
+					parent=firstParent;
+				if(!parent.equals(existsInvNode))
+				dag.addEdge( existsNode, parent);
+				
+//				}
+			}
+
+			processedNodes.add(existsInvNode);
+			processedNodes.add(existsNode);
 		}
 
+		/* Collapsing the cycles */
+
+//		dag.clean();
 		
+		}
+		else //if graph
+		{
+			Collection<Description> nodes = new HashSet<Description>(graph.vertexSet());
+			OntologyFactory fac = OntologyFactoryImpl.getInstance();
+			HashSet<Description> processedNodes = new HashSet<Description>();
+			for (Description node : nodes) {
+				if (!(node instanceof PropertySomeRestriction) || processedNodes.contains(node)) {
+					continue;
+				}
+
+				/*
+				 * Adding a cycle between exists R and exists R- for each R.
+				 */
+
+				PropertySomeRestriction existsR = (PropertySomeRestriction) node;
+				PropertySomeRestriction existsRin = fac.createPropertySomeRestriction(existsR.getPredicate(), !existsR.isInverse());
+				Description existsNode = node;
+				Description existsInvNode = existsRin;
+				Set<Set<Description>> childrenExist = new HashSet<Set<Description>>(getDirectChildren(existsNode, false));
+				Set<Set<Description>> childrenExistInv = new HashSet<Set<Description>>(getDirectChildren(existsInvNode, false));
+
+				for (Set<Description> children : childrenExist) {
+					for(Description child:children){
+//					DAGOperations.addParentEdge(child, existsInvNode);
+					graph.addEdge(child, existsInvNode);
+					
+					}
+				}
+				for (Set<Description> children : childrenExistInv) {
+					for(Description child:children){
+//					DAGOperations.addParentEdge(child, existsNode);
+					graph.addEdge(child, existsNode);
+					
+					}
+				}
+				
+				Set<Set<Description>> parentExist = new HashSet<Set<Description>>(getDirectParents(existsNode,false));
+				Set<Set<Description>> parentsExistInv = new HashSet<Set<Description>>(getDirectParents(existsInvNode,false));
+
+				for (Set<Description> parents : parentExist) {
+					for(Description parent:parents){
+//					DAGOperations.addParentEdge(existsInvNode, parent);
+					graph.addEdge( existsInvNode, parent);
+					
+					}
+				}
+				
+				for (Set<Description> parents : parentsExistInv) {
+					for(Description parent:parents){
+//					DAGOperations.addParentEdge(existsNode,parent);
+					graph.addEdge( existsNode, parent);
+					
+					}
+				}
+
+				processedNodes.add(existsInvNode);
+				processedNodes.add(existsNode);
+			}
+
+			/* Collapsing the cycles */
+
+//			dag.clean();
+			
+		}
+			
+	}
+	
+//	public Ontology getSigmaOntology() {
+//		OntologyFactory descFactory = new OntologyFactoryImpl();
+//
+//		Ontology sigma = descFactory.createOntology(OBDADataFactoryImpl.getIRI("sigma"));
+//
+////		DAGEdgeIterator edgeiterator = new DAGEdgeIterator(dag);
+//		OntologyFactory fac = OntologyFactoryImpl.getInstance();
+//		for(DefaultEdge edge: dag.edgeSet()){
+////		while (edgeiterator.hasNext()) {
+////			Edge edge = edgeiterator.next();
+//			if (dag.getEdgeSource(edge) instanceof ClassDescription) {
+//				ClassDescription sub = (ClassDescription) dag.getEdgeSource(edge);
+//				ClassDescription superp = (ClassDescription) dag.getEdgeTarget(edge);
+//				if (superp instanceof PropertySomeRestriction)
+//					continue;
+//
+//				Axiom ax = fac.createSubClassAxiom(sub, superp);
+//				sigma.addEntities(ax.getReferencedEntities());
+//				sigma.addAssertion(ax);
+//			} else {
+//				Property sub = (Property) dag.getEdgeSource(edge);
+//				Property superp = (Property) dag.getEdgeTarget(edge);
+//
+//				Axiom ax = fac.createSubPropertyAxiom(sub, superp);
+//				sigma.addEntities(ax.getReferencedEntities());
+//
+//				sigma.addAssertion(ax);
+//			}
+//		}
+//
+//		return sigma;
+//	}
+//	
+	
+	public static Ontology getSigma(Ontology ontology) {
+		OntologyFactory descFactory = new OntologyFactoryImpl();
+		Ontology sigma = descFactory.createOntology(OBDADataFactoryImpl.getIRI(""));
+		sigma.addConcepts(ontology.getConcepts());
+		sigma.addRoles(ontology.getRoles());
+		for (Axiom assertion : ontology.getAssertions()) {
+
+			if (assertion instanceof SubClassAxiomImpl) {
+				SubClassAxiomImpl inclusion = (SubClassAxiomImpl) assertion;
+				Description parent = inclusion.getSuper();
+				Description child = inclusion.getSub();
+				if (parent instanceof PropertySomeRestriction) {
+					continue;
+				}
+			}
+
+			sigma.addAssertion(assertion);
+		}
+
+		sigma.saturate();
 		return sigma;
 	}
 
-
+	
 
 }

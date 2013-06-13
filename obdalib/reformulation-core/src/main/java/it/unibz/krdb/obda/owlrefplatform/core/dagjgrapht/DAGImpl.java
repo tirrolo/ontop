@@ -84,6 +84,7 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 			
 			//check in the equivalent nodes if there are properties
 			if(replacements.containsValue(r)){
+			if(equivalencesMap.get(r)!=null){
 				for (Description e: equivalencesMap.get(r))	{
 					if (e instanceof Property){
 //						System.out.println("roles: "+ e +" "+ e.getClass());
@@ -92,6 +93,7 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 						
 				}
 				}
+			}
 			}
 			if (r instanceof Property){
 //				System.out.println("roles: "+ r +" "+ r.getClass());
@@ -111,12 +113,15 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 			
 			//check in the equivalent nodes if there are named classes
 			if(replacements.containsValue(c)){
+			if(equivalencesMap.get(c)!=null){
+				
 				for (Description e: equivalencesMap.get(c))	{
 					if (e instanceof OClass){
 //						System.out.println("classes: "+ e +" "+ e.getClass());
 						classes.add((OClass)e);
 				}
 				}
+			}
 			}
 			
 			if (c instanceof OClass){
@@ -157,6 +162,9 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 	public Description getNode(Description node){
 		if(replacements.containsKey(node))
 			node= replacements.get(node);
+		else
+		if(!this.vertexSet().contains(node))
+			node=null;
 		return node;
 		
 	}

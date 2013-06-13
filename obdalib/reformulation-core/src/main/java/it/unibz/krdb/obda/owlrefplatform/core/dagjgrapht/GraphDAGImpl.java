@@ -1,6 +1,9 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 
 import it.unibz.krdb.obda.ontology.Description;
+import it.unibz.krdb.obda.ontology.OClass;
+import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
+import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGNode;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +51,7 @@ public class GraphDAGImpl implements GraphDAG{
 		
 		for (Description v: ((GraphImpl)graph).vertexSet()){
 			modifiedGraph.addVertex(v);
+			
 		}
 		 for (DefaultEdge e : ((GraphImpl)graph).edgeSet()) {
 	            Description s = ((GraphImpl)graph).getEdgeSource(e);
@@ -70,12 +74,6 @@ public class GraphDAGImpl implements GraphDAG{
 		dag.setReplacements(replacements);
 		dag.setIsaDAG(true);
 		
-for(Description vertex: ((GraphImpl) graph).vertexSet()){
-			
-			if(!dag.containsVertex(vertex))
-				System.out.println(vertex);
-			}
-
 	}
 
 
@@ -197,13 +195,26 @@ for(Description vertex: ((GraphImpl) graph).vertexSet()){
 				continue;
 			Iterator<Description> iterator = equivalenceSet.iterator();
 			Description representative = iterator.next();
+			Description notRepresentative = null;
+			if(representative instanceof PropertySomeRestriction ) //I want to consider a named class as representative element
+				for (Description equivalent: equivalenceSet) {
+					if (equivalent instanceof OClass) {
+						notRepresentative =representative;
+						representative=equivalent;
+						replacements.put(notRepresentative, representative);
+						equivalencesMap.put(notRepresentative, equivalenceSet);
+						break;
+					}
+				}
 			equivalencesMap.put(representative, equivalenceSet);
 
 			while (iterator.hasNext()) {
 				Description eliminatedNode = iterator.next();
+				if(eliminatedNode.equals(representative) & notRepresentative!=null)
+					eliminatedNode=notRepresentative;
 				replacements.put(eliminatedNode, representative);
 				equivalencesMap.put(eliminatedNode, equivalenceSet);
-
+				
 				/*
 				 * Re-pointing all links to and from the eliminated node to the
 				 * representative node
