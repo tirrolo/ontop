@@ -68,11 +68,6 @@ public class ValueConstantImpl extends AbstractLiteral implements ValueConstant 
 	}
 
 	@Override
-	public String getValue() {
-		return value;
-	}
-
-	@Override
 	public String getLanguage() {
 		return language;
 	}
@@ -101,6 +96,12 @@ public class ValueConstantImpl extends AbstractLiteral implements ValueConstant 
 		return bf.toString();
 	}
 
+	@Override
+	public String getValue()
+	{
+		return value;
+	}
+	
 	@Override
 	public Set<Variable> getReferencedVariables() {
 		return new LinkedHashSet<Variable>();

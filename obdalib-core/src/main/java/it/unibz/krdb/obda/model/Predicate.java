@@ -63,4 +63,7 @@ public interface Predicate extends Cloneable, Serializable {
 	boolean isArithmeticPredicate();
 	
 	boolean isDataTypePredicate();
+	
+	boolean isStringOpPredicate();
+	
 }

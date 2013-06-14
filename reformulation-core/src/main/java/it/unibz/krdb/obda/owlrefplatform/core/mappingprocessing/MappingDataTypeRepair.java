@@ -11,7 +11,7 @@ import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.URITemplatePredicate;
+import it.unibz.krdb.obda.model.URIPredicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
@@ -77,7 +77,7 @@ public class MappingDataTypeRepair {
 			if (term instanceof Function) {
 				Function function = (Function) term;
 
-				if (function.getFunctionSymbol() instanceof URITemplatePredicate
+				if (function.getFunctionSymbol() instanceof URIPredicate
 						|| function.getFunctionSymbol() instanceof BNodePredicate) {
 					// NO-OP for object properties
 					continue;

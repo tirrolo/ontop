@@ -139,4 +139,9 @@ public class AtomWrapperImpl implements Atom {
 	public boolean isDataTypeFunction() {
 		return this.f.isDataTypeFunction();
 	}
+
+	@Override
+	public boolean isStringOpFunction() {
+		return this.f.isStringOpFunction();
+	}
 }

@@ -16,6 +16,7 @@ import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.model.StringOperationPredicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.AlgebraOperatorPredicateImpl;
@@ -302,6 +303,7 @@ public class Unifier {
 				 * check in the inner terms, else we can give it to the MGU
 				 * calculator directly
 				 */
+				
 				Function fterm1 = (Function) term1;
 				Function fterm2 = (Function) term2;
 				if (!fterm1.getFunctionSymbol().equals(
@@ -314,6 +316,15 @@ public class Unifier {
 				int innerarity = fterm1.getTerms().size();
 				List<NewLiteral> innerterms1 = fterm1.getTerms();
 				List<NewLiteral> innerterms2 = fterm2.getTerms();
+				
+				if (fterm1.getTerm(0) instanceof Function && fterm2.getTerm(0) instanceof Function)
+				{
+					//return getMGU(fterm1, fterm2);
+					innerarity = fterm1.getTerm(0).asAtom().getTerms().size();
+					innerterms1 = fterm1.getTerm(0).asAtom().getTerms();
+					innerterms2 = fterm2.getTerm(0).asAtom().getTerms();
+				}
+				
 				for (int innertermidx = 0; innertermidx < innerarity; innertermidx++) {
 
 					NewLiteral innerterm1 = innerterms1.get(innertermidx);

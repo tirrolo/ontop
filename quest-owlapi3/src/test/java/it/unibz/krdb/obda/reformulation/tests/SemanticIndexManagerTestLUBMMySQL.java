@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import sesameWrapper.SemanticIndexManager;
 
+
 /***
  * Tests if QuestOWL can be initialized on top of an existing semantic index
  * created by the SemanticIndexManager.

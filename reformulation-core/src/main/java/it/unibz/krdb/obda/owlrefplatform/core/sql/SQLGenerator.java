@@ -14,8 +14,9 @@ import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
+import it.unibz.krdb.obda.model.StringOperationPredicate;
 import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.URITemplatePredicate;
+import it.unibz.krdb.obda.model.URIPredicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
@@ -757,7 +758,11 @@ public class SQLGenerator implements SQLQueryGenerator {
 				 * New template based URI building functions
 				 */
 
-				mainColumn = getSQLStringForTemplateFunction(ov, index);
+				NewLiteral firstTerm = ov.getTerm(0);
+				if (firstTerm instanceof ValueConstant || firstTerm instanceof Variable)
+					mainColumn = getSQLString(firstTerm, index, false);
+				else
+					mainColumn = getSQLStringForTemplateFunction(firstTerm.asAtom(), index);
 
 			} else if (functionString.equals(OBDAVocabulary.QUEST_BNODE)) {
 				/***
@@ -925,6 +930,10 @@ public class SQLGenerator implements SQLQueryGenerator {
 				}
 				for (int termIndex = 1; termIndex < size; termIndex++) {
 					NewLiteral currentTerm = ov.getTerms().get(termIndex);
+					if (currentTerm instanceof ValueConstant) {
+						vex.add(jdbcutil.getSQLLexicalForm((ValueConstant)currentTerm));
+						continue;
+					}
 					String repl = "";
 					if (isStringColType(currentTerm, index)) {
 						repl = replace1 + (getSQLString(currentTerm, index, false)) + replace2;
@@ -963,6 +972,13 @@ public class SQLGenerator implements SQLQueryGenerator {
 			 */
 			URIConstant uc = (URIConstant) t;
 			return jdbcutil.getSQLLexicalForm(uc.getURI().toString());
+		} else if (t instanceof ValueConstant) {
+			ValueConstant uc = (ValueConstant) t;
+			/*
+			 * The function is of the form uri("http://some.uri/"), i.e., a
+			 * concrete URI, we return the string representing that URI.
+			 */
+			return jdbcutil.getSQLLexicalForm(uc.toString());
 		}
 
 		/*
@@ -990,7 +1006,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 		if (term instanceof Function) {
 			Function function = (Function) term;
 			Predicate functionSymbol = function.getFunctionSymbol();
-			if (functionSymbol instanceof URITemplatePredicate) {
+			if (functionSymbol instanceof URIPredicate) {
 				/*
 				 * A URI function always returns a string, thus it is a string column type.
 				 */
@@ -1164,7 +1180,12 @@ public class SQLGenerator implements SQLQueryGenerator {
 			} else {
 				return result;
 			}
-			
+
+		} else if (functionSymbol instanceof StringOperationPredicate) {
+			if (functionSymbol.equals(OBDAVocabulary.QUEST_CONCAT)) {
+				return getSQLStringForTemplateFunction(function, index);
+			}
+
 		} else {
 			String functionName = functionSymbol.toString();
 			if (functionName.equals(OBDAVocabulary.QUEST_CAST_STR)) {

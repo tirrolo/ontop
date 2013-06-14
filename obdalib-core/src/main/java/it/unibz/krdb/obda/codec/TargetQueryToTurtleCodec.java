@@ -10,7 +10,7 @@ import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.URITemplatePredicate;
+import it.unibz.krdb.obda.model.URIPredicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
@@ -159,27 +159,38 @@ public class TargetQueryToTurtleCodec extends ObjectToTextCodec<OBDAQuery> {
 					sb.append("^^");
 					sb.append(fname);
 				}
-			} else if (functionSymbol instanceof URITemplatePredicate) {
-				String template = ((ValueConstant) function.getTerms().get(0)).getValue();
+			} else if (functionSymbol instanceof URIPredicate) {
 				
-				// Utilize the String.format() method so we replaced placeholders '{}' with '%s'
-				String templateFormat = template.replace("{}", "%s");
-				List<String> varNames = new ArrayList<String>();
-				for (NewLiteral innerTerm : function.getTerms()) {
-					if (innerTerm instanceof Variable) {
-						varNames.add(getDisplayName(innerTerm));
+				String originalUri = "";
+				
+				// URI(const)
+				if (function.getTerm(0) instanceof ValueConstant) {
+					 originalUri = ((ValueConstant) function.getTerm(0)).getValue();
+				} else {
+					// URI(CONCAT(...))
+					NewLiteral concat = function.getTerm(0);
+					if (concat instanceof FunctionalTermImpl) {
+						for (NewLiteral lit : ((FunctionalTermImpl) concat).getTerms()) {
+							if (lit instanceof ValueConstant)
+								originalUri += ((ValueConstant) lit).getValue();
+							else if (lit instanceof Variable)
+								originalUri += "{"+lit.toString()+"}";
+						}
 					}
 				}
-				String originalUri = String.format(templateFormat, varNames.toArray());
-				String shortenUri = getAbbreviatedName(originalUri, false); // shorten the URI if possible
+				
+				//shorten the URI if possible
+				String shortenUri = getAbbreviatedName(originalUri, false); 
 				if (!shortenUri.equals(originalUri)) {
 					sb.append(shortenUri);
 				} else {
-					// If the URI can't be shorten then use the full URI within brackets
+					// If the URI can't be shorten then use the full URI
+					// within brackets
 					sb.append("<");
 					sb.append(originalUri);
 					sb.append(">");
-				}				
+				}
+				
 			} else { // for any ordinary function symbol
 				sb.append(fname);
 				sb.append("(");

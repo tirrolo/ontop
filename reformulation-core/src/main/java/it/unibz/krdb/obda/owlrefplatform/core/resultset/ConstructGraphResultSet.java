@@ -103,7 +103,7 @@ public class ConstructGraphResultSet implements GraphResultSet {
 			constant = tupleResultSet.getConstant(columnName);
 		} else if (node instanceof Node_URI) {
 			String uriString = ((Node_URI) node).getURI();
-			constant = dfac.getURIConstant(OBDADataFactoryImpl.getIRI(uriString));
+			constant = dfac.getValueConstant(uriString);
 					//URI.create(uriString));
 		} else if (node instanceof Node_Literal) {
 			String value = ((Node_Literal) node).getLiteralValue().toString();

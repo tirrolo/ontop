@@ -6,9 +6,9 @@ public class BNodePredicateImpl extends PredicateImpl implements BNodePredicate 
 
 	private static final long serialVersionUID = -1546325236776439443L;
 
-	public BNodePredicateImpl(int arity) {
+	public BNodePredicateImpl() {
 		// TODO: BAD CODE! Predicate shouldn't store the arity and the type.
-		super(OBDADataFactoryImpl.getIRI(OBDAVocabulary.QUEST_BNODE), arity, null);
+		super(OBDADataFactoryImpl.getIRI(OBDAVocabulary.QUEST_BNODE), 1, null);
 	}
 
 	@Override

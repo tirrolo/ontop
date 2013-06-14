@@ -561,6 +561,31 @@ public class QuestStatement implements OBDAStatement {
 				obdaException.setStackTrace(e1.getStackTrace());
 				throw obdaException;
 			}
+			
+			//optimization where we push in equalities and call the evaluator 
+			//to remove any atoms that can already be evaluated true/false
+			try{
+				for (CQIE cq : programAfterUnfolding.getRules()) {
+					log.debug("Before pushing equalities: \n{}", cq);
+					DatalogNormalizer.pushEqualities(cq, false);
+				}
+				
+				ExpressionEvaluator evaluator = new ExpressionEvaluator();
+				evaluator.setUriTemplateMatcher(questInstance.getUriTemplateMatcher());
+				evaluator.evaluateExpressions(programAfterUnfolding);
+
+				log.debug("Boolean expression evaluated: \n{}", programAfterUnfolding);
+				log.debug("Partial evaluation ended.");
+				
+			} catch (Exception e1) {
+				log.debug(e1.getMessage(), e1);
+
+				OBDAException obdaException = new OBDAException(
+						"Error optimizing CQs. \n"+ e1.getMessage());
+				obdaException.setStackTrace(e1.getStackTrace());
+				throw obdaException;
+			}
+			
 
 			try {
 				signature = getSignature(query);

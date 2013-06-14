@@ -168,8 +168,8 @@ public class QuestResultset implements OBDAResultSet {
 				if (type == COL_TYPE.OBJECT) {
 				//	URI value = getURI(name);
 					IRI irivalue = getIRI(name);
-				//	result = fac.getURIConstant(value);
-					result = fac.getURIConstant(irivalue);
+					result = fac.getURIConstant(irivalue.toString());
+					//result = fac.getValueConstant(irivalue.toString());
 					
 				} else if (type == COL_TYPE.BNODE) {
 					String rawLabel = set.getString(name);

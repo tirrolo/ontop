@@ -68,7 +68,7 @@ public class R2RMLReader {
 
 	public static void main(String args[])
 	{
-		String file = "C:/Project/Test Cases/mapping.ttl";
+		String file = "C:/Project/Test Cases/mapping3.ttl";
 	//	"C:/Project/Timi/Workspace/obdalib-parent/quest-rdb2rdf-compliance/src/main/resources/D014/r2rmla.ttl";
 	//"C:/Project/Timi/Workspace/obdalib-parent/quest-rdb2rdf-compliance/src/main/resources/D004/WRr2rmlb.ttl";
 	

@@ -74,4 +74,6 @@ public interface Function extends NewLiteral {
 	boolean isArithmeticFunction();
 	
 	boolean isDataTypeFunction();
+	
+	boolean isStringOpFunction();
 }

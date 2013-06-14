@@ -22,7 +22,7 @@ grammar Turtle;
 @header {
 package it.unibz.krdb.obda.parser;
 
-import it.unibz.krdb.obda.model.Atom;
+import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.OBDADataFactory;
@@ -45,6 +45,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
+
+import com.hp.hpl.jena.iri.IRI;
+import com.hp.hpl.jena.iri.IRIFactory;
 
 import org.antlr.runtime.BitSet;
 import org.antlr.runtime.MismatchedSetException;
@@ -119,6 +122,8 @@ private Set<NewLiteral> variableSet = new HashSet<NewLiteral>();
 /** A factory to construct the predicates and terms */
 private static final OBDADataFactory dfac = OBDADataFactoryImpl.getInstance();
 
+private static IRIFactory iriFactory = IRIFactory.iriImplementation();
+
 private String error = "";
 
 public String getError() {
@@ -169,17 +174,17 @@ parse returns [CQIE value]
     t1=triplesStatement {
       int arity = variableSet.size();
       List<NewLiteral> distinguishVariables = new ArrayList<NewLiteral>(variableSet);
-      Atom head = dfac.getAtom(dfac.getPredicate(OBDALibConstants.QUERY_HEAD_URI, arity, null), distinguishVariables);
+      Function head = dfac.getAtom(dfac.getPredicate(OBDALibConstants.QUERY_HEAD_URI, arity, null), distinguishVariables);
       
       // Create a new rule
-      List<Atom> triples = $t1.value;
+      List<Function> triples = $t1.value;
       $value = dfac.getCQIE(head, triples);
     }
     (t2=triplesStatement)* EOF {
-      List<Atom> additionalTriples = $t2.value;
+      List<Function> additionalTriples = $t2.value;
       if (additionalTriples != null) {
         // If there are additional triple statements then just add to the existing body
-        List<Atom> existingBody = $value.getBody();
+        List<Function> existingBody = $value.getBody();
         existingBody.addAll(additionalTriples);
       }
     }
@@ -189,7 +194,7 @@ directiveStatement
   : directive PERIOD
   ;
 
-triplesStatement returns [List<Atom> value]
+triplesStatement returns [List<Function> value]
   : triples WS* PERIOD { $value = $triples.value; }
   ;
 
@@ -212,22 +217,23 @@ prefixID
     }
   ;
 
-triples returns [List<Atom> value]
+triples returns [List<Function> value]
   : subject { subject = $subject.value; } predicateObjectList {
       $value = $predicateObjectList.value;
     }
   ;
 
-predicateObjectList returns [List<Atom> value]
+predicateObjectList returns [List<Function> value]
 @init {
-   $value = new LinkedList<Atom>();
+   $value = new LinkedList<Function>();
 }
   : v1=verb l1=objectList {
       for (NewLiteral object : $l1.value) {
-        Atom atom = null;
-        if ($v1.value.equals(RDF_TYPE_URI)) {
-          URIConstant c = (URIConstant) object;  // it has to be a URI constant
-          Predicate predicate = dfac.getClassPredicate(c.getURI());
+        Function atom = null;
+        String p = $v1.value.toString();
+        if (p.equals(OBDAVocabulary.RDF_TYPE)) {
+          ValueConstant c = (ValueConstant) object;  // it has to be a URI constant
+          Predicate predicate = dfac.getClassPredicate(c.getValue());
           atom = dfac.getAtom(predicate, subject);
         } else {
           Predicate predicate = dfac.getPredicate($v1.value, 2, null); // the data type cannot be determined here!
@@ -238,10 +244,11 @@ predicateObjectList returns [List<Atom> value]
     } 
     (SEMI v2=verb l2=objectList {
       for (NewLiteral object : $l2.value) {
-        Atom atom = null;
-        if ($v2.value.equals(RDF_TYPE_URI)) {
-          URIConstant c = (URIConstant) object;  // it has to be a URI constant
-          Predicate predicate = dfac.getClassPredicate(c.getURI());
+        Function atom = null;
+        String p = $v2.value.toString();
+        if (p.equals(OBDAVocabulary.RDF_TYPE)) {
+          ValueConstant c = (ValueConstant) object;  // it has to be a URI constant
+          Predicate predicate = dfac.getClassPredicate(c.getValue());
           atom = dfac.getAtom(predicate, subject);
         } else {
           Predicate predicate = dfac.getPredicate($v2.value, 2, null); // the data type cannot be determined here!
@@ -252,9 +259,9 @@ predicateObjectList returns [List<Atom> value]
     })*
   ;
   
-verb returns [URI value]
+verb returns [IRI value]
   : predicate { $value = $predicate.value; }
-  | 'a' { $value = RDF_TYPE_URI; }
+  | 'a' { $value = iriFactory.construct(OBDAVocabulary.RDF_TYPE);  }
   ;
 
 objectList returns [List<NewLiteral> value]
@@ -265,19 +272,19 @@ objectList returns [List<NewLiteral> value]
   ;
 
 subject returns [NewLiteral value]
-  : resource { $value = dfac.getURIConstant($resource.value); }
+  : resource { $value = dfac.getValueConstant($resource.value.toString()); }
   | variable { $value = $variable.value; }
   | function { $value = $function.value; }
   | uriTemplateFunction { $value = $uriTemplateFunction.value; }
 //  | blank
   ;
 
-predicate returns [URI value]
+predicate returns [IRI value]
   : resource { $value = $resource.value; }
   ;
 
 object returns [NewLiteral value]
-  : resource { $value = dfac.getURIConstant($resource.value); }
+  : resource { $value = dfac.getValueConstant($resource.value.toString()); }
   | function { $value = $function.value; }
   | literal  { $value = $literal.value; }
   | variable { $value = $variable.value; }
@@ -286,9 +293,9 @@ object returns [NewLiteral value]
 //  | blank
   ;
 
-resource returns [URI value]
-  : uriref { $value = URI.create($uriref.value); }
-  | qname { $value = URI.create($qname.value); }
+resource returns [IRI value]
+  : uriref { $value = iriFactory.construct($uriref.value); }
+  | qname { $value = iriFactory.construct($qname.value); }
   ;
 
 uriref returns [String value]
@@ -319,7 +326,7 @@ function returns [Function value]
   : resource LPAREN terms RPAREN {
       String functionName = $resource.value.toString();
       int arity = $terms.value.size();
-      Predicate functionSymbol = dfac.getPredicate(URI.create(functionName), arity);
+      Predicate functionSymbol = dfac.getPredicate(iriFactory.construct(functionName), arity);
       $value = dfac.getFunctionalTerm(functionSymbol, $terms.value);
     }
   ;
@@ -395,7 +402,7 @@ uriTemplateFunction returns [Function value]
         }
         template = template.replaceFirst(prefixPlaceHolder, uri);
       }
-      
+      int lastIndex = 0;
       while (template.contains("{") && template.contains("}")) {
         // scan the input string if it contains "{" ... "}"
         int start = template.indexOf("{");
@@ -405,24 +412,24 @@ uriTemplateFunction returns [Function value]
         String placeHolder = Pattern.quote(template.substring(start, end+1));
         template = template.replaceFirst(placeHolder, "[]"); // change the placeholder string temporarly
         
+         //extract the constant part of the uri
+        String uriConst = template.substring(lastIndex, start);
+        terms.add(dfac.getValueConstant(uriConst));
+        
         // extract the variable name only, e.g., "{?var}" --> "var"
         try {
        	  String variableName = placeHolder.substring(4, placeHolder.length()-3);
        	  if (variableName.equals("")) {
        	    throw new RuntimeException("Variable name must have at least 1 character");
        	  }
+       	  lastIndex = end-variableName.length();
           terms.add(dfac.getVariable(variableName));
         } catch (IndexOutOfBoundsException e) {
        	  throw new RuntimeException("Variable name must have at least 1 character");
         }
       }
-      // replace the placeholder string to the original. The current string becomes the template
-      template = template.replace("[]", "{}");
-      ValueConstant uriTemplate = dfac.getValueConstant(template);
-      
-      // the URI template is always on the first position in the term list
-      terms.add(0, uriTemplate);
-      $value = dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(terms.size()), terms);
+      //create uritemplate of concats
+      value = dfac.getFunctionalTerm(dfac.getUriPredicate(), dfac.getFunctionalTerm(dfac.getConcatPredicate(terms.size()), terms));                         
     }
   ;
 

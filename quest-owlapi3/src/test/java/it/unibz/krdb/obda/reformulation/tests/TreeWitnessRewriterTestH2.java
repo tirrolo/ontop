@@ -67,10 +67,9 @@ public class TreeWitnessRewriterTestH2 extends TestCase {
 
 	List<TestQuery> testQueries = new LinkedList<TestQuery>();
 
-	final String testCase = "bsbm";
-	final String owlfile = "src/test/resources/test/treewitness/" + testCase + ".owl";  // bsbm LUBM-ex-20  stockexchange adolena
-	final String obdafile = "src/test/resources/test/treewitness" + testCase + ".obda";
-	final String qfile = "src/test/resources/test/treewitness/" + testCase + ".q";
+	final String owlfile = "src/test/resources/test/treewitness/stockexchange.owl";  // bsbm LUBM-ex-20 adolena
+	final String obdafile = "src/test/resources/test/treewitness/stockexchange.obda";
+	final String qfile = "src/test/resources/test/treewitness/stockexchange.q";
 	
 	/* These are the distinct tuples that we know each query returns */
 	final int[] tuples = {

@@ -893,7 +893,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 					if (templateStrings.contains("(.+)")) {
 						continue;
 					}
-					Function templateFunction = fac.getFunctionalTerm(fac.getUriTemplatePredicate(1), fac.getVariable("x"));
+					Function templateFunction = fac.getFunctionalTerm(fac.getUriPredicate(), fac.getVariable("x"));
 					Pattern matcher = Pattern.compile("(.+)");
 					getUriTemplateMatcher().put(matcher, templateFunction);
 					templateStrings.add("(.+)");
@@ -1139,12 +1139,17 @@ public class Quest implements Serializable, RepositoryChangedListener {
 				 * uri(Class))
 				 */
 				terms.add(currenthead.getTerm(0));
-				Function rdfTypeConstant = fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
-						fac.getURIConstant(OBDADataFactoryImpl.getIRI(OBDAVocabulary.RDF_TYPE)));
+
+				Function rdfTypeConstant = fac.getFunctionalTerm(fac
+						.getUriPredicate(), fac
+						.getValueConstant(OBDAVocabulary.RDF_TYPE));
+
 				terms.add(rdfTypeConstant);
 
-				IRI classname = currenthead.getFunctionSymbol().getName();
-				terms.add(fac.getFunctionalTerm(fac.getUriTemplatePredicate(1), fac.getURIConstant(classname)));
+
+				String classname = currenthead.getFunctionSymbol().toString();
+				terms.add(fac.getFunctionalTerm(fac.getUriPredicate(),
+						fac.getValueConstant(classname)));
 				newhead = fac.getAtom(pred, terms);
 
 			} else if (currenthead.getArity() == 2) {
@@ -1154,8 +1159,13 @@ public class Quest implements Serializable, RepositoryChangedListener {
 				 */
 				terms.add(currenthead.getTerm(0));
 
-				IRI propname = currenthead.getFunctionSymbol().getName();
-				Function propconstant = fac.getFunctionalTerm(fac.getUriTemplatePredicate(1), fac.getURIConstant(propname));
+
+				String propname = currenthead.getFunctionSymbol().toString();
+				Function propconstant = fac.getFunctionalTerm(fac
+						.getUriPredicate(), fac
+						.getValueConstant(propname));
+
+
 				terms.add(propconstant);
 				terms.add(currenthead.getTerm(1));
 				newhead = fac.getAtom(pred, terms);

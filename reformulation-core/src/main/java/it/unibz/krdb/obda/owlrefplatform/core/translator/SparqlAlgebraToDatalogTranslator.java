@@ -736,7 +736,7 @@ public class SparqlAlgebraToDatalogTranslator {
 				predicate = OBDAVocabulary.QUEST_TRIPLE_PRED;
 
 				Function rdfTypeConstant = ofac.getFunctionalTerm(ofac
-						.getUriTemplatePredicate(1), ofac.getURIConstant(irifac.construct(OBDAVocabulary.RDF_TYPE)));
+						.getUriPredicate(), ofac.getValueConstant(OBDAVocabulary.RDF_TYPE));
 						//ofac.getURIConstant(URI.create(OBDAVocabulary.RDF_TYPE)));
 				terms.add(rdfTypeConstant);
 				terms.add(ofac.getVariable(((Var) o).getVarName()));
@@ -1182,9 +1182,9 @@ public class SparqlAlgebraToDatalogTranslator {
 						.getDataTypePredicateLiteral(), ofac.getValueConstant(
 						node.getLiteralLexicalForm(), COL_TYPE.STRING));
 			} else if (node instanceof Node_URI) {
-				constantFunction = ofac.getFunctionalTerm(ofac
-						.getUriTemplatePredicate(1), ofac.getValueConstant(
-						node.toString(), COL_TYPE.OBJECT));
+				constantFunction = uriTemplateMatcher.generateURIFunction(irifac.construct(node.toString()));
+//				 = ofac.getFunctionalTerm(ofac
+//						.getUriPredicate(), ofac.getValueConstant(node.toString()));
 			} else {
 				throw new RuntimeException("Unsupported node: "
 						+ expr.toString());

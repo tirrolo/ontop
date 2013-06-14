@@ -4,6 +4,7 @@ import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
+import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 
@@ -60,7 +61,7 @@ public class UriTemplateMatcher {
 			if (baseParameter instanceof Constant) {
 				/*
 				 * This is a general tempalte function of the form
-				 * uri("http://....", var1, var2,...) <p> we need to match var1,
+				 * uri(concat("http://....", var1, var2,...)) <p> we need to match var1,
 				 * var2, etc with substrings from the subjectURI
 				 */
 				List<NewLiteral> values = new LinkedList<NewLiteral>();
@@ -69,13 +70,30 @@ public class UriTemplateMatcher {
 					String value = matcher.group(i + 1);
 					values.add(ofac.getValueConstant(value));
 				}
-				functionURI = ofac.getFunctionalTerm(ofac.getUriTemplatePredicate(values.size()), values);
+				functionURI = ofac.getFunctionalTerm(ofac.getUriPredicate(), 
+						ofac.getFunctionalTerm(ofac.getConcatPredicate(values.size()), values));
+			} else if (baseParameter instanceof Function) {
+				//concat(string, var,...)
+				int i = 1;
+				List<NewLiteral> values = new LinkedList<NewLiteral>();
+				for (NewLiteral temp: ((Function) baseParameter).getTerms()) {
+					String value = "";
+					if (temp instanceof Variable)
+					{	value = matcher.group(i); i++; 
+					values.add(ofac.getValueConstant(value));
+					}
+					else 
+						values.add(temp);
+				}
+				
+				functionURI = ofac.getFunctionalTerm(ofac.getUriPredicate(), 
+						ofac.getFunctionalTerm(ofac.getConcatPredicate(values.size()), values));
 			} else if (baseParameter instanceof Variable) {
 				/*
 				 * This is a direct mapping to a column, uri(x)
 				 * we need to match x with the subjectURI
 				 */
-				functionURI = ofac.getFunctionalTerm(ofac.getUriTemplatePredicate(1), 
+				functionURI = ofac.getFunctionalTerm(ofac.getUriPredicate(), 
 						ofac.getValueConstant(subjectUri.toString()));
 			}
 			break;

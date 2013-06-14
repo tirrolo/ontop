@@ -162,7 +162,8 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 					sb_t.append(",");
 				}
 				NewLiteral t = terms.get(i);
-				sb_t.append(t.toString());
+				if (t!=null)
+					sb_t.append(t.toString());
 			}
 			StringBuffer sb_name = new StringBuffer();
 
@@ -241,6 +242,7 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 	public Set<Variable> getReferencedVariables() {
 		Set<Variable> vars = new LinkedHashSet<Variable>();
 		for (NewLiteral t : terms) {
+			if(t!=null)
 			for (Variable v : t.getReferencedVariables())
 				vars.add(v);
 		}
@@ -327,5 +329,10 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function, Lis
 	@Override
 	public boolean isDataTypeFunction() {
 		return this.functor.isDataTypePredicate();
+	}
+	
+	@Override 
+	public boolean isStringOpFunction() {
+		return this.functor.isStringOpPredicate();
 	}
 }

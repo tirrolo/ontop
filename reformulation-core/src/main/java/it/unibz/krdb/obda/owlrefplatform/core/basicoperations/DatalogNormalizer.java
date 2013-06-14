@@ -1,7 +1,6 @@
 package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
 
 import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
-import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.Constant;
@@ -9,15 +8,14 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
+import it.unibz.krdb.obda.model.ValueConstant;
+import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -103,7 +101,7 @@ public class DatalogNormalizer {
 	public static CQIE unfoldJoinTrees(CQIE query, boolean clone) {
 		if (clone)
 			query = query.clone();
-		List body = query.getBody();
+		List<Function> body = query.getBody();
 		unfoldJoinTrees(body, true);
 		return query;
 	}
@@ -150,7 +148,7 @@ public class DatalogNormalizer {
 	public static CQIE foldJoinTrees(CQIE query, boolean clone) {
 		if (clone)
 			query = query.clone();
-		List body = query.getBody();
+		List<Function> body = query.getBody();
 		foldJoinTrees(body, false);
 		return query;
 	}
@@ -228,7 +226,7 @@ public class DatalogNormalizer {
 		if (clone)
 			result = result.clone();
 
-		List body = result.getBody();
+		List<Function> body = result.getBody();
 		Map<Variable, NewLiteral> mgu = new HashMap<Variable, NewLiteral>();
 
 		/* collecting all equalities as substitutions */
@@ -279,12 +277,11 @@ public class DatalogNormalizer {
 		Map<Variable, NewLiteral> substitutions = new HashMap<Variable, NewLiteral>();
 		int[] newVarCounter = { 1 };
 
-		Set<Function> booleanAtoms = new HashSet<Function>();
+		//Set<Function> booleanAtoms = new HashSet<Function>();
 		List<Function> equalities = new LinkedList<Function>();
 		pullOutEqualities(query.getBody(), substitutions, equalities,
 				newVarCounter, false);
-		List body = query.getBody();
-		body.addAll(equalities);
+		query.getBody().addAll(equalities);
 
 		/*
 		 * All new variables have been generated, the substitutions also, we
@@ -296,7 +293,7 @@ public class DatalogNormalizer {
 
 	}
 
-	private static BranchDepthSorter sorter = new BranchDepthSorter();
+	//private static BranchDepthSorter sorter = new BranchDepthSorter();
 
 	/***
 	 * Compares two atoms by the depth of their JOIN/LEFT JOIN branches. This is
@@ -306,31 +303,31 @@ public class DatalogNormalizer {
 	 * @author mariano
 	 * 
 	 */
-	private static class BranchDepthSorter implements Comparator<Function> {
-
-		public int getDepth(Function term) {
-			int max = 0;
-			if (term.isDataFunction() || term.isBooleanFunction() || term.isDataTypeFunction()) {
-				return 0;
-			} else {
-				List<NewLiteral> innerTerms = term.getTerms();
-
-				for (NewLiteral innerTerm : innerTerms) {
-					int depth = getDepth((Function) innerTerm);
-					max = Math.max(max, depth);
-				}
-				max += 1;
-			}
-
-			//System.out.println("MAX: " + max);
-			return max;
-		}
-
-		@Override
-		public int compare(Function arg0, Function arg1) {
-			return getDepth(arg1) - getDepth(arg0);
-		}
-	}
+//	private static class BranchDepthSorter implements Comparator<Function> {
+//
+//		public int getDepth(Function term) {
+//			int max = 0;
+//			if (term.isDataFunction() || term.isBooleanFunction() || term.isDataTypeFunction()) {
+//				return 0;
+//			} else {
+//				List<NewLiteral> innerTerms = term.getTerms();
+//
+//				for (NewLiteral innerTerm : innerTerms) {
+//					int depth = getDepth((Function) innerTerm);
+//					max = Math.max(max, depth);
+//				}
+//				max += 1;
+//			}
+//
+//			//System.out.println("MAX: " + max);
+//			return max;
+//		}
+//
+//		@Override
+//		public int compare(Function arg0, Function arg1) {
+//			return getDepth(arg1) - getDepth(arg0);
+//		}
+//	}
 
 	/***
 	 * Adds a trivial equality to a LeftJoin in case the left join doesn't have
@@ -404,8 +401,10 @@ public class DatalogNormalizer {
 							newVarCounter, false);
 
 			} else if (atom.isBooleanFunction()) {
-				continue;
-
+			//	if (atom.getFunctionSymbol().equals(OBDAVocabulary.IS_NOT_NULL) && subterms.get(0) instanceof ValueConstant)
+			//		{currentTerms.remove(i); i--;}
+			//	else
+						continue;
 			}
 
 			// rename/substitute variables
@@ -482,7 +481,7 @@ public class DatalogNormalizer {
 	// Saturate equalities list to explicitly state JOIN conditions and therefore avoid having 
 	// to rely on DBMS for nested JOIN optimisations (PostgreSQL case for BSBM Q3)
 	private static void saturateEqualities(Set<Function> boolSet) {
-		List<Set> equalitySets = new ArrayList();
+		List<Set<NewLiteral>> equalitySets = new ArrayList<Set<NewLiteral>>();
 		Iterator<Function> iter = boolSet.iterator();
 		while (iter.hasNext()) {
 			Function eq = iter.next();
@@ -491,14 +490,14 @@ public class DatalogNormalizer {
 			NewLiteral v1 = eq.getTerm(0);
 			NewLiteral v2 = eq.getTerm(1);
 			if (equalitySets.size() == 0) {
-				Set firstSet = new LinkedHashSet();
+				Set<NewLiteral> firstSet = new LinkedHashSet<NewLiteral>();
 				firstSet.add(v1);
 				firstSet.add(v2);
 				equalitySets.add(firstSet);
 				continue;
 			}
 			for (int k = 0; k < equalitySets.size(); k++) {
-				Set set = equalitySets.get(k);
+				Set<NewLiteral> set = equalitySets.get(k);
 				if (set.contains(v1)) {
 					set.add(v2);
 					continue;
@@ -508,7 +507,7 @@ public class DatalogNormalizer {
 					continue;
 				}
 				if (k == equalitySets.size() - 1) {
-					Set newSet = new LinkedHashSet();
+					Set<NewLiteral> newSet = new LinkedHashSet<NewLiteral>();
 					newSet.add(v1);
 					newSet.add(v2);
 					equalitySets.add(newSet);
@@ -519,7 +518,7 @@ public class DatalogNormalizer {
 		}
 
 		for (int k = 0; k < equalitySets.size(); k++){
-			List varList = new ArrayList(equalitySets.get(k));
+			List<NewLiteral> varList = new ArrayList<NewLiteral>(equalitySets.get(k));
 			for (int i = 0; i < varList.size() - 1; i++) {
 			for (int j = i+1; j < varList.size(); j++) {
 				Function equality = fac.getEQFunction((NewLiteral)varList.get(i), (NewLiteral)varList.get(j));
@@ -848,8 +847,8 @@ public class DatalogNormalizer {
 	public static void pullOutLeftJoinConditions(CQIE query) {
 		Set<Function> booleanAtoms = new HashSet<Function>();
 		Set<Function> tempBooleans = new HashSet<Function>();
-		List body = query.getBody();
-		Function f = (Function) body.get(0);
+		List<Function> body = query.getBody();
+		//Function f = (Function) body.get(0);
 		pullOutLJCond(body, booleanAtoms, false, tempBooleans, false);
 		body.addAll(booleanAtoms);
 	}
@@ -867,7 +866,7 @@ public class DatalogNormalizer {
 			throw new RuntimeException(
 					"Unexpected term found while normalizing (pulling out conditions) the query.");
 
-		Function f = (Function) firstT;
+		//Function f = (Function) firstT;
 
 		for (int i = 0; i < currentTerms.size(); i++) {
 			NewLiteral term = (NewLiteral) currentTerms.get(i);

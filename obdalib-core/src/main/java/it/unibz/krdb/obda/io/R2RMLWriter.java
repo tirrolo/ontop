@@ -9,6 +9,7 @@ import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.model.StringOperationPredicate;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
@@ -139,14 +140,14 @@ public class R2RMLWriter {
 		out.write("<"+mapping.getId()+">\n\t a rr:TriplesMap;\n");
 		
 		//write sql table
-		out.write("\trr:logicalTable "+getSQL(childSql));
+		out.write("\n\trr:logicalTable "+getSQL(childSql));
 	
 		
 		//write subjectMap
-		out.write("\trr:subjectMap ["+getSubjectMap(targetQuery)+" ];\n");
+		out.write("\n\trr:subjectMap ["+getSubjectMap(targetQuery)+" ];\n");
 		
 		//write predobjmap
-		out.write("\trr:predicateObjectMap [\n"+ getJoinPredicate(targetQuery) + getJoinObject(sql,refMap) + "\t].\n\n");
+		out.write("\n\trr:predicateObjectMap [\n"+ getJoinPredicate(targetQuery) + getJoinObject(sql,refMap) + "\t].\n\n");
 		
 		
 	}
@@ -259,19 +260,19 @@ public class R2RMLWriter {
 				Function atom = (FunctionalTermImpl) term;
 			int arity = atom.getTerms().size();
 			
-			
 			if (arity == 1) {
-			
+				
+				if (atom.getTerm(0) instanceof Function)
+					if (getTemplate(atom).startsWith("\"http://example.com/base/") && atom.getTerm(0).getReferencedVariables().size()==1)
+						subject += " rr:column \"" + atom.getTerm(0).getReferencedVariables().toArray()[0] + "\";";
+					else
+						subject += " rr:template " + getTemplate(atom);
 				// constant - arity 1
-				if (!atom.getPredicate().isClass())
+				else if (!atom.getFunctionSymbol().isClass())
 					subject += " rr:constant " + removeJoinKeyword(atom.getTerm(0))+ ";\n";
 				
-			} else if (arity == 2 || atom.getPredicate().equals(OBDAVocabulary.RDFS_LITERAL_LANG)) {
+			} else if (arity == 2 || atom.getFunctionSymbol().equals(OBDAVocabulary.RDFS_LITERAL_LANG)) {
 				
-				// column - arity 2 - base prefix + {} + 1 var
-				 if (atom.getTerm(0).toString().equals("\"http://example.com/base/{}\""))
-					 subject += " rr:column \"\\\""+ removeJoinKeyword(atom.getTerm(1))+"\\\"\"";
-				 else //template - arity 2
 					 subject += " rr:template " + getTemplate(atom);
 				
 			} else if (arity > 2) { 
@@ -283,7 +284,7 @@ public class R2RMLWriter {
 				// bnode				
 				subject += ";  rr:termType rr:BlankNode ";
 			}
-			if (atom.getPredicate().equals(OBDAVocabulary.RDFS_LITERAL_LANG))
+			if (atom.getFunctionSymbol().equals(OBDAVocabulary.RDFS_LITERAL_LANG))
 				subject += "; rr:termType rr:Literal ";
 			
 
@@ -306,25 +307,16 @@ public class R2RMLWriter {
 	
 	private String getTemplate(Function atom)
 	{
-		String temp = atom.getTerm(0).toString();
-		String newtemp = "";
-		//copy uri part
-		int oldidx=0;
-		
-		int i=1;
-		while(temp.contains("{}"))
+		String newtemp = "\"";
+		NewLiteral concat = atom.getTerm(0);
+		for (NewLiteral term : concat.asAtom().getTerms())
 		{
-			int idx = temp.indexOf("{}");
-			newtemp+= temp.substring(oldidx, idx);
-			
-			oldidx = idx+2;
-			newtemp += "{\\\""+removeJoinKeyword(atom.getTerm(i)) + "\\\"}";
-			i++;
-			temp = temp.replaceFirst("[{]", "[");
-			
+			if (term instanceof ValueConstant)
+				newtemp += ((ValueConstant)term).getValue();
+			if (term instanceof Variable)
+				newtemp += "{\\\""+((Variable)term).getName() + "\\\"}";
 		}
-			
-		newtemp += temp.substring(oldidx, temp.length());
+		newtemp+="\"";
 		return newtemp;
 	}
 
@@ -388,8 +380,8 @@ public class R2RMLWriter {
 			{
 				String lang ="", templ ="";
 				
-				if (fobj.getTerm(0).toString().startsWith("\"http"))
-					templ = " rr:template "+getTemplate((Function)obj);
+				if (fobj.getTerm(0) instanceof Function)
+					templ = " rr:template "+getTemplate(fobj);
 				else
 					templ = " rr:column \"\\\""+fobj.getTerm(0).toString()+"\\\"\"";
 				
@@ -400,7 +392,7 @@ public class R2RMLWriter {
 						if (!((ValueConstant)(fobj.getTerm(size-1))).toString().equals(OBDAVocabulary.NULL.toString()))
 						 lang = ";  rr:language "+ fobj.getTerm(size-1).toString();
 					}
-					object = "\t\t rr:objectMap \t[ "+templ+ lang+" ]";
+					object = "\t\t rr:objectMap \t[ "+templ+ lang+"; rr:termType rr:Literal ]";
 				}
 				else 
 				{
@@ -428,7 +420,7 @@ public class R2RMLWriter {
 	
 	public static void main(String args[])
 	{
-		String file = "C:/Project/Test Cases/mapping2.ttl";
+		String file = "C:/Project/Test Cases/mapping9.ttl";
 		//"C:/Project/Timi/Workspace/obdalib-parent/quest-rdb2rdf-compliance/src/main/resources/D004/r2rmlb.ttl";
 		R2RMLReader reader = new R2RMLReader(file);
 		R2RMLWriter writer = new R2RMLWriter(reader.readModel(URI.create("blah")),URI.create("blah"));

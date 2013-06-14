@@ -1738,7 +1738,9 @@ public class DatalogParser extends Parser {
                   } else if (functionName.equals(OBDAVocabulary.XSD_BOOLEAN_URI)) {
                 	functionSymbol = dfac.getDataTypePredicateBoolean();
                   } else if (functionName.equals(OBDAVocabulary.QUEST_URI)) {
-                    functionSymbol = dfac.getUriTemplatePredicate(arity);
+                    functionSymbol = dfac.getUriPredicate();
+                  } else if (functionName.equals(OBDAVocabulary.QUEST_CONCAT)) {
+                      functionSymbol = dfac.getConcatPredicate(arity);
                   } else {
                     functionSymbol = dfac.getPredicate(OBDADataFactoryImpl.getIRI(functionName), arity);
                   }

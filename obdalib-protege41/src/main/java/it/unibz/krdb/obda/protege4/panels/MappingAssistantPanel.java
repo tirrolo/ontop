@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+ package it.unibz.krdb.obda.protege4.panels;
 
 import it.unibz.krdb.obda.exception.DuplicateMappingException;
 import it.unibz.krdb.obda.gui.swing.treemodel.IncrementalResultSetTableModel;
@@ -628,7 +628,7 @@ public class MappingAssistantPanel extends javax.swing.JPanel implements Datasou
 		}
 		ValueConstant uriTemplate = dfac.getValueConstant(sb.toString()); // complete URI template
 		terms.add(0, uriTemplate);
-		return dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(terms.size()), terms);
+		return dfac.getFunctionalTerm(dfac.getUriPredicate());//terms.size()), terms);
 	}
 
 	// Column placeholder pattern

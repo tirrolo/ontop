@@ -329,11 +329,11 @@ public class R2RMLParser {
 			// System.out.println(parsedString);
 			//uriconstant
 			if(parsedString.startsWith("http://"))
-				objectAtom = fac.getURIConstant(OBDADataFactoryImpl.getIRI(parsedString));
+				objectAtom = fac.getValueConstant(parsedString);
 			else
 			{
 				//valueconstant
-				Predicate pred = fac.getUriTemplatePredicate(1);
+				Predicate pred = fac.getUriPredicate();
 				NewLiteral newlit = fac.getValueConstant(trim(parsedString));
 				objectAtom = fac.getFunctionalTerm(pred, newlit);
 			}
@@ -512,8 +512,6 @@ public class R2RMLParser {
 		if (!string.contains("{"))
 			if (!string.startsWith("http://")) 
 			{	string = baseuri + "{" + string + "}";
-				if (type == 2)
-					string = "\"" + string + "\"";
 			}
 			else
 			{
@@ -525,52 +523,53 @@ public class R2RMLParser {
 		string = string.replace("\\{", "[");
 		string = string.replace("\\}", "]");
 		
+		int cont = 0;
 		while (string.contains("{") ) {
 			int end = string.indexOf("}");
 			int begin = string.lastIndexOf("{", end);
 			
+			if (cont != begin) {
+				String str = string.substring(cont, begin);
+				terms.add(fac.getValueConstant(str));
+			}
+			
 			String var = trim(string.substring(begin + 1, end));
+			cont = end+1;
 			
 			//trim for making variable
 			terms.add(fac.getVariable(joinCond+(var)));
 			
 			
-			string = string.replace("{\"" + var + "\"}", "[]");
-			string = string.replace("{" + var + "}", "[]");
+			string = string.replace("{\"" + var + "\"}", "[\""+var+"\"]");
+			string = string.replace("{" + var + "}", "["+var+"]");
 		}
-		string = string.replace("[", "{");
-		string = string.replace("]", "}");
-	
 
-		NewLiteral uriTemplate = null;
 		Predicate pred = null;
 		switch (type) {
 		//constant uri
 		case 0:
-			uriTemplate = fac.getURIConstant(string);
-			pred = fac.getUriTemplatePredicate(terms.size());
-			break;
+			NewLiteral uriTemplate = fac.getValueConstant(string);
+			terms.add(0, uriTemplate);
+			pred = fac.getUriPredicate();//terms.size());
+			return fac.getFunctionalTerm(pred, terms);
 		// URI or IRI
 		case 1:
-			uriTemplate = fac.getValueConstant(string);
-			pred = fac.getUriTemplatePredicate(terms.size());
-			break;
+			pred = fac.getUriPredicate();//terms.size());
+			return fac.getFunctionalTerm(pred, fac.getFunctionalTerm(fac.getConcatPredicate(terms.size()), terms));
 		// BNODE
 		case 2:
-			uriTemplate = fac.getBNodeConstant(string);
-			pred = fac.getBNodeTemplatePredicate(terms.size());
-			break;
+			pred = fac.getBNodePredicate();
+			return fac.getFunctionalTerm(pred, fac.getFunctionalTerm(fac.getConcatPredicate(terms.size()), terms));
 		// LITERAL
 		case 3:
-			uriTemplate = fac.getValueConstant(string);
 			pred = OBDAVocabulary.RDFS_LITERAL_LANG;//lang?
-			terms.add(OBDAVocabulary.NULL);
-			break;
+			List<NewLiteral> literalList = new ArrayList<NewLiteral>(2);
+			NewLiteral concat =  fac.getFunctionalTerm(fac.getConcatPredicate(terms.size()), terms);
+			literalList.add(concat);
+			literalList.add(OBDAVocabulary.NULL);
+			return fac.getFunctionalTerm(pred, literalList);
 		}
-
-		// the URI template is always on the first position in the term list
-		terms.add(0, uriTemplate);
-		return fac.getFunctionalTerm(pred, terms);
+		return null;
 
 	}
 

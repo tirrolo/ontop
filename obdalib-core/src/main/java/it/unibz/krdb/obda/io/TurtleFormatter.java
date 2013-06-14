@@ -5,7 +5,7 @@ import it.unibz.krdb.obda.model.DataTypePredicate;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.URITemplatePredicate;
+import it.unibz.krdb.obda.model.URIPredicate;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.model.impl.TermUtil;
@@ -70,7 +70,7 @@ public class TurtleFormatter extends CQFormatter {
                     NewLiteral var = function.getTerms().get(0);
                     return String.format("%s^^%s", TermUtil.toString(var), getAbbreviatedName(functionSymbol.toString(), false));
                 }
-            } else if (functionSymbol instanceof URITemplatePredicate) {
+            } else if (functionSymbol instanceof URIPredicate) {
                 NewLiteral uriTemplateConstant = function.getTerms().get(0);
                 String uriTemplate = getAbbreviatedName(TermUtil.toString(uriTemplateConstant), true);
                 StringBuffer template = new StringBuffer(uriTemplate);

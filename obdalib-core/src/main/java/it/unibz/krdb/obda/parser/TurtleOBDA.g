@@ -160,37 +160,32 @@ private String removeBrackets(String text) {
 
 private NewLiteral construct(String text) {
    NewLiteral toReturn = null;
-   final String PLACEHOLDER = "{}"; 
-   List<NewLiteral> terms = new LinkedList<NewLiteral>();
-   List<FormatString> tokens = parse(text);
-   int size = tokens.size();
-   if (size == 1) {
-      FormatString token = tokens.get(0);
-      if (token instanceof FixedString) {
-         toReturn = dfac.getURIConstant(token.toString());
-      } else if (token instanceof ColumnString) {
-         ValueConstant uriTemplate = dfac.getValueConstant(PLACEHOLDER); // a single URI template
-         Variable column = dfac.getVariable(token.toString());
-         terms.add(0, uriTemplate);
-         terms.add(column);
-         toReturn = dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(terms.size()), terms);
-      }
-   } else {
-      StringBuffer sb = new StringBuffer();
-      for(FormatString token : tokens) {
-         if (token instanceof FixedString) { // if part of URI template
-            sb.append(token.toString());
-         } else if (token instanceof ColumnString) {
-            sb.append(PLACEHOLDER);
-            Variable column = dfac.getVariable(token.toString());
-            terms.add(column);
-         }
-      }
-      ValueConstant uriTemplate = dfac.getValueConstant(sb.toString()); // complete URI template
-      terms.add(0, uriTemplate);
-      toReturn = dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(terms.size()), terms);
-   }
-   return toReturn;
+       List<NewLiteral> terms = new LinkedList<NewLiteral>();
+       List<FormatString> tokens = parse(text);
+       int size = tokens.size();
+       if (size == 1) {
+          FormatString token = tokens.get(0);
+          if (token instanceof FixedString) {
+             toReturn = dfac.getValueConstant(token.toString());
+          } else if (token instanceof ColumnString) {
+             Variable column = dfac.getVariable(token.toString());
+             this.variableSet.add(column);
+             terms.add(column);
+             toReturn = dfac.getFunctionalTerm(dfac.getUriPredicate(), dfac.getFunctionalTerm(dfac.getConcatPredicate(terms.size()), terms));
+          }
+       } else {
+          for(FormatString token : tokens) {
+             if (token instanceof FixedString) { // if part of URI template
+                terms.add(dfac.getValueConstant(token.toString()));
+             } else if (token instanceof ColumnString) {
+                Variable column = dfac.getVariable(token.toString());
+                this.variableSet.add(column);
+                terms.add(column);
+             }
+          }
+          toReturn = dfac.getFunctionalTerm(dfac.getUriPredicate(), dfac.getFunctionalTerm(dfac.getConcatPredicate(terms.size()), terms));
+       }
+       return toReturn;
 }
 
 // Column placeholder pattern
@@ -305,8 +300,8 @@ predicateObjectList returns [List<Function> value]
         Function atom = null;
         String p = $v1.value.toString();
         if (p.equals(OBDAVocabulary.RDF_TYPE)) {
-          URIConstant c = (URIConstant) object;  // it has to be a URI constant
-          Predicate predicate = dfac.getClassPredicate(c.getURI());
+          ValueConstant c = (ValueConstant) object;  // it has to be a URI constant
+          Predicate predicate = dfac.getClassPredicate(c.getValue());
           atom = dfac.getAtom(predicate, subject);
         } else {
           Predicate predicate = dfac.getPredicate($v1.value, 2, null); // the data type cannot be determined here!
@@ -320,8 +315,8 @@ predicateObjectList returns [List<Function> value]
         Function atom = null;
         String p = $v2.value.toString();
         if (p.equals(OBDAVocabulary.RDF_TYPE)) {
-          URIConstant c = (URIConstant) object;  // it has to be a URI constant
-          Predicate predicate = dfac.getClassPredicate(c.getURI());
+          ValueConstant c = (ValueConstant) object;  // it has to be a URI constant
+          Predicate predicate = dfac.getClassPredicate(c.getValue());
           atom = dfac.getAtom(predicate, subject);
         } else {
           Predicate predicate = dfac.getPredicate($v2.value, 2, null); // the data type cannot be determined here!
@@ -353,9 +348,9 @@ subject returns [NewLiteral value]
 predicate returns [IRI value]
   : resource { 
       NewLiteral nl = $resource.value;
-      if (nl instanceof URIConstant) {
-        URIConstant c = (URIConstant) nl;
-        $value = c.getURI();
+      if (nl instanceof ValueConstant) {
+        ValueConstant c = (ValueConstant) nl;
+        $value = iriFactory.construct(c.getValue());
       } else {
         throw new RuntimeException("Unsupported predicate syntax: " + nl.toString());
       }
@@ -418,26 +413,29 @@ typedLiteral returns [Function value]
   | variable REFERENCE resource {
       Variable var = $variable.value;
       String functionName = $resource.value.toString();
+      
+      // XXX: A hack to remove double-quotes from toString()
+      functionName = functionName.substring(1, functionName.length()-1);
       Predicate functionSymbol = null;
       if (functionName.equals(OBDAVocabulary.RDFS_LITERAL_URI)) {
-          functionSymbol = dfac.getDataTypePredicateLiteral();
+    	functionSymbol = dfac.getDataTypePredicateLiteral();
       } else if (functionName.equals(OBDAVocabulary.XSD_STRING_URI)) {
-          functionSymbol = dfac.getDataTypePredicateString();
+    	functionSymbol = dfac.getDataTypePredicateString();
       } else if (functionName.equals(OBDAVocabulary.XSD_INTEGER_URI) || functionName.equals(OBDAVocabulary.XSD_INT_URI)) {
-          functionSymbol = dfac.getDataTypePredicateInteger();
+     	functionSymbol = dfac.getDataTypePredicateInteger();
       } else if (functionName.equals(OBDAVocabulary.XSD_DECIMAL_URI)) {
-          functionSymbol = dfac.getDataTypePredicateDecimal();
+    	functionSymbol = dfac.getDataTypePredicateDecimal();
       } else if (functionName.equals(OBDAVocabulary.XSD_DOUBLE_URI)) {
-          functionSymbol = dfac.getDataTypePredicateDouble();
+    	functionSymbol = dfac.getDataTypePredicateDouble();
       } else if (functionName.equals(OBDAVocabulary.XSD_DATETIME_URI)) {
-          functionSymbol = dfac.getDataTypePredicateDateTime();
+    	functionSymbol = dfac.getDataTypePredicateDateTime();
       } else if (functionName.equals(OBDAVocabulary.XSD_BOOLEAN_URI)) {
-          functionSymbol = dfac.getDataTypePredicateBoolean();
+    	functionSymbol = dfac.getDataTypePredicateBoolean();
       } else {
-          throw new RecognitionException();
+        throw new RecognitionException();
       }
       $value = dfac.getFunctionalTerm(functionSymbol, var);
-     }
+    }
   ;
 
 language returns [NewLiteral value]
@@ -488,6 +486,9 @@ dataTypeString returns [NewLiteral value]
   :  stringLiteral REFERENCE resource {
       ValueConstant constant = $stringLiteral.value;
       String functionName = $resource.value.toString();
+      
+      // XXX: A hack to remove double-quotes from toString()
+      functionName = functionName.substring(1, functionName.length()-1);
       Predicate functionSymbol = null;
       if (functionName.equals(OBDAVocabulary.RDFS_LITERAL_URI)) {
     	functionSymbol = dfac.getDataTypePredicateLiteral();

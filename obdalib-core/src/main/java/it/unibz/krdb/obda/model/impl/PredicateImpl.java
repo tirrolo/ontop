@@ -5,6 +5,7 @@ import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.DataTypePredicate;
 import it.unibz.krdb.obda.model.NumericalOperationPredicate;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.model.StringOperationPredicate;
 
 import com.hp.hpl.jena.iri.IRI;
 
@@ -113,5 +114,10 @@ public class PredicateImpl implements Predicate {
 	@Override
 	public boolean isDataTypePredicate() {
 		return this instanceof DataTypePredicate;
+	}
+	
+	@Override
+	public boolean isStringOpPredicate() {
+		return this instanceof StringOperationPredicate;
 	}
 }

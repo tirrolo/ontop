@@ -1,7 +1,6 @@
 package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
 
 import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
-import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.BNodePredicate;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.CQIE;
@@ -9,29 +8,27 @@ import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.DataTypePredicate;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
+import it.unibz.krdb.obda.model.IRIOperationPredicate;
 import it.unibz.krdb.obda.model.NewLiteral;
-import it.unibz.krdb.obda.model.NonBooleanOperationPredicate;
 import it.unibz.krdb.obda.model.NumericalOperationPredicate;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OperationPredicate;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.URITemplatePredicate;
+import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
+import it.unibz.krdb.obda.model.StringOperationPredicate;
+import it.unibz.krdb.obda.model.URIPredicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.UriTemplateMatcher;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.hp.hpl.jena.iri.IRIFactory;
 
 public class ExpressionEvaluator {
 
@@ -97,10 +94,12 @@ public class ExpressionEvaluator {
 		Predicate p = expr.getFunctionSymbol();
 		if (p instanceof BooleanOperationPredicate) {
 			return evalBoolean(expr);
-		} else if (p instanceof NonBooleanOperationPredicate) {
-			return evalNonBoolean(expr);
+		} else if (p instanceof IRIOperationPredicate) {
+			return evalIRIOperation(expr);
 		} else if (p instanceof NumericalOperationPredicate) {
 			return evalNumericalOperation(expr);
+		} else if (p instanceof URIPredicate) {
+			return expr;
 		} else if (p instanceof DataTypePredicate) {
 			if (p == OBDAVocabulary.XSD_BOOLEAN) {
 				if (expr.getTerm(0) instanceof Constant) {
@@ -179,6 +178,24 @@ public class ExpressionEvaluator {
 		return expr;
 	}
 
+//	private NewLiteral evalStringOperation(Function expr) {
+//		//no variables
+//		if (expr.getReferencedVariables().isEmpty())
+//		{
+//			if (expr.getFunctionSymbol() == OBDAVocabulary.QUEST_CONCAT)
+//				return evalConcat(expr);
+//		}
+//		return expr;
+//	}
+//
+//	private NewLiteral evalConcat(Function expr)
+//	{
+//		String concat = "";
+//		for (NewLiteral term: expr.getTerms())
+//			concat += term.toString();
+//		return fac.getValueConstant(concat);
+//	}
+	
 	private void setRegexFlag(boolean b) {
 		regexFlag = b;
 	}
@@ -232,7 +249,7 @@ public class ExpressionEvaluator {
 		}
 	}
 
-	private NewLiteral evalNonBoolean(Function term) {
+	private NewLiteral evalIRIOperation(Function term) {
 		Predicate pred = term.getFunctionSymbol();
 		if (pred == OBDAVocabulary.SPARQL_STR) {
 			return evalStr(term);
@@ -308,7 +325,7 @@ public class ExpressionEvaluator {
 		if (teval instanceof Function) {
 			Function function = (Function) teval;
 			Predicate predicate = function.getFunctionSymbol();
-			if (predicate instanceof URITemplatePredicate) {
+			if (predicate instanceof URIPredicate) {
 				return fac.getTrue();
 			} else {
 				return fac.getFalse();
@@ -325,7 +342,7 @@ public class ExpressionEvaluator {
 		if (teval instanceof Function) {
 			Function function = (Function) teval;
 			Predicate predicate = function.getFunctionSymbol();
-			if (predicate instanceof URITemplatePredicate) {
+			if (predicate instanceof URIPredicate) {
 				return fac.getTrue();
 			} else {
 				return fac.getFalse();
@@ -361,7 +378,7 @@ public class ExpressionEvaluator {
 									fac.getVariable(parameter.toString()),
 									fac.getValueConstant(OBDAVocabulary.XSD_STRING_URI)));
 				}
-			} else if (predicate instanceof URITemplatePredicate) {
+			} else if (predicate instanceof URIPredicate) {
 				return fac.getFunctionalTerm(fac.getDataTypePredicateLiteral(), function.clone());
 			} else if (predicate instanceof BNodePredicate) {
 				return fac.getNULL();
@@ -386,22 +403,22 @@ public class ExpressionEvaluator {
 	private NewLiteral getDatatype(Predicate predicate, NewLiteral lit)
 	{
 		if (predicate instanceof DataTypePredicate) {
-			return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+			return fac.getFunctionalTerm(fac.getUriPredicate(),
 					fac.getValueConstant(predicate.toString(),
 							COL_TYPE.OBJECT));
 		} else if (predicate instanceof BNodePredicate) {
 			return null;
-		} else if (predicate instanceof URITemplatePredicate) {
+		} else if (predicate instanceof URIPredicate) {
 			return null;
 		} else if (predicate instanceof AlgebraOperatorPredicate){
-			return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+			return fac.getFunctionalTerm(fac.getUriPredicate(),
 					fac.getValueConstant(OBDAVocabulary.XSD_BOOLEAN_URI,
 							COL_TYPE.OBJECT));
 		} else if (predicate instanceof OperationPredicate){
 			if (predicate instanceof BooleanOperationPredicate)
 			{
 				//return boolean uri
-				return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+				return fac.getFunctionalTerm(fac.getUriPredicate(),
 						fac.getValueConstant(OBDAVocabulary.XSD_BOOLEAN_URI,
 								COL_TYPE.OBJECT));
 			}
@@ -415,11 +432,11 @@ public class ExpressionEvaluator {
 					NewLiteral arg2 = func.getTerm(1);
 					Predicate pred2 = getDatatypePredicate(arg2);
 					if (pred1.equals(pred2) || (isDouble(pred1) && isNumeric(pred2))) {
-						return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1),
+						return fac.getFunctionalTerm(fac.getUriPredicate(),
 								fac.getValueConstant(pred1.toString(),
 										COL_TYPE.OBJECT));
 					} else if (isNumeric(pred1) && isDouble(pred2)) {
-						return fac.getFunctionalTerm(fac.getUriTemplatePredicate(1), 
+						return fac.getFunctionalTerm(fac.getUriPredicate(), 
 								fac.getValueConstant(pred2.toString(),
 										COL_TYPE.OBJECT));
 					} else {
@@ -431,7 +448,7 @@ public class ExpressionEvaluator {
 					return null;
 				}
 			}
-		} else if (predicate instanceof NonBooleanOperationPredicate){
+		} else if (predicate instanceof IRIOperationPredicate){
 			return null;
 		}
 		return null;
@@ -810,8 +827,8 @@ public class ExpressionEvaluator {
 					}
 				} else if (pred1.equals(pred2)) {
 					Function neweq = null;
-					if (pred1 instanceof URITemplatePredicate) {
-						return evalUriTemplateEqNeq(f1, f2, eq);
+					if (pred1 instanceof URIPredicate) {
+						return evalUriEqNeq(f1, f2, eq);
 					} else {
 						if (eq) {
 							neweq = fac.getEQFunction(f1.getTerm(0), f2.getTerm(0));
@@ -841,32 +858,71 @@ public class ExpressionEvaluator {
 		}
 	}
 
-	private NewLiteral evalUriTemplateEqNeq(Function uriFunction1, Function uriFunction2, boolean isEqual) {
-		int arityForFunction1 = uriFunction1.getArity();
-		int arityForFunction2 = uriFunction2.getArity();		
-		if (arityForFunction1 == 1) {
-			if (arityForFunction2 == 1) {
-				return evalUriFunctionsWithSingleTerm(uriFunction1, uriFunction2, isEqual);
-			} else if (arityForFunction2 > 1) {
-				Function newUriFunction1 = getUriFunctionWithParameters(uriFunction1);
-				return evalUriFunctionsWithMultipleTerms(newUriFunction1, uriFunction2, isEqual);
-			}
-		} else if (arityForFunction1 > 1) {
-			if (arityForFunction2 == 1) {
-				Function newUriFunction2 = getUriFunctionWithParameters(uriFunction2);
-				return evalUriFunctionsWithMultipleTerms(newUriFunction2, uriFunction1, isEqual);
-			} else if (arityForFunction2 > 1) {
-				return evalUriFunctionsWithMultipleTerms(uriFunction1, uriFunction2, isEqual);
-			}
-		}
-		return null;
-	}
-	
-	private NewLiteral evalUriFunctionsWithSingleTerm(Function uriFunction1, Function uriFunction2, boolean isEqual) {
+	private NewLiteral evalUriEqNeq(Function uriFunction1, Function uriFunction2, boolean isEqual) {
 		NewLiteral term1 = uriFunction1.getTerm(0);
 		NewLiteral term2 = uriFunction2.getTerm(0);
-		if (!(term1 instanceof ValueConstant)) {
-			return null;
+		if (term2 instanceof Function){
+			if (term1 instanceof Function)
+			{
+				//two concats
+				Function concat1 = (Function)term1;
+				Function concat2 = (Function)term2;
+				int size1 = concat1.getTerms().size();
+				
+				if (size1 != concat2.getTerms().size())
+				{	if (isEqual) {
+						return fac.getFalse();
+					} else {
+						return fac.getTrue();
+					}
+				}
+				else { //same term size
+					List<NewLiteral> ands = new ArrayList<NewLiteral>();
+					for (int i=0; i<size1; i++)
+					{
+						NewLiteral conterm1 = concat1.getTerm(i);
+						NewLiteral conterm2 = concat2.getTerm(i);
+						if (conterm1 instanceof Variable || conterm2 instanceof Variable)
+						{
+							if (isEqual)
+								ands.add(fac.getEQAtom(conterm1, conterm2));
+							else
+								ands.add(fac.getNEQAtom(conterm1, conterm2));
+						}
+						else
+						{
+							boolean match = (conterm1.toString().equals(conterm2.toString()));
+							if (!match)
+							if (isEqual) {
+								return fac.getFalse();
+							} else {
+								return fac.getTrue();
+							}
+						}
+					}
+					if (ands.size()>1)
+						return fac.getANDAtom(ands);
+					else
+						return ands.get(0);
+				}
+					
+			}
+			else {
+				//term1 valueconst, term2 function
+				if (((Function)term2).isStringOpFunction())
+				{	if (isEqual) {
+						return fac.getFalse();
+					} else {
+						return fac.getTrue();
+					}
+				} else {
+					if (isEqual) {
+						return fac.getEQAtom(term2, term1);
+					} else {
+						return fac.getNEQAtom(term2, term1);
+					}
+				}
+			}
 		}
 		if (term2 instanceof Variable) {
 			if (isEqual) {
@@ -875,7 +931,24 @@ public class ExpressionEvaluator {
 				return fac.getNEQAtom(term2, term1);
 			}
 		} else if (term2 instanceof ValueConstant) {
-			if (term1.equals(term2)) {
+			if (term1 instanceof Function)
+			{
+				//term2 valueconst, term1 function
+				if (((Function)term1).isStringOpFunction())
+				{	if (isEqual) {
+						return fac.getFalse();
+					} else {
+						return fac.getTrue();
+					}
+				} else {
+					if (isEqual) {
+						return fac.getEQAtom(term2, term1);
+					} else {
+						return fac.getNEQAtom(term2, term1);
+					}
+				}
+			}
+			else if (term1.equals(term2)) {
 				if (isEqual) {
 					return fac.getTrue();
 				} else {
@@ -889,10 +962,36 @@ public class ExpressionEvaluator {
 				}
 			}
 		}
+		 else if (term1 instanceof ValueConstant) {
+				if (term2 instanceof Function)
+				{
+					if (isEqual) {
+						return fac.getEQAtom(term1, term2);
+					} else {
+						return fac.getNEQAtom(term1, term2);
+					}
+				}
+				else if (term1.equals(term2)) {
+					if (isEqual) {
+						return fac.getTrue();
+					} else {
+						return fac.getFalse();
+					}
+				} else {
+					if (isEqual) {
+						return fac.getFalse();
+					} else {
+						return fac.getTrue();
+					}
+				}
+		 }
 		return null;
+		
 	}
-
-	private NewLiteral evalUriFunctionsWithMultipleTerms(Function uriFunction1, Function uriFunction2, boolean isEqual) {
+	
+	
+	
+	private NewLiteral evalConcatEqNeq(Function uriFunction1, Function uriFunction2, boolean isEqual) {		
 		Map<Variable, NewLiteral> theta = Unifier.getMGU(uriFunction1, uriFunction2);
 		if (theta == null) {
 			if (isEqual) {
@@ -927,7 +1026,7 @@ public class ExpressionEvaluator {
 	}
 
 	private Function getUriFunctionWithParameters(Function uriFunction) {
-		ValueConstant uriString = (ValueConstant) uriFunction.getTerm(0);
+		Constant uriString = (Constant) uriFunction.getTerm(0);
 		return uriTemplateMatcher.generateURIFunction(OBDADataFactoryImpl.getIRI(uriString.getValue()));
 	}
 	

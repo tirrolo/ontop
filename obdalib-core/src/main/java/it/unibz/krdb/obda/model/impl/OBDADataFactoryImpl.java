@@ -394,15 +394,20 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 	public Predicate getDataTypePredicateBoolean() {
 		return OBDAVocabulary.XSD_BOOLEAN;
 	}
-
+	
 	@Override
-	public Predicate getUriTemplatePredicate(int arity) {
-		return new URITemplatePredicateImpl(arity);
+	public Predicate getUriPredicate() {
+		return new URIPredicateImpl();
 	}
 
 	@Override
-	public Predicate getBNodeTemplatePredicate(int arity) {
-		return new BNodePredicateImpl(arity);
+	public Predicate getBNodePredicate() {
+		return new BNodePredicateImpl();
+	}
+	
+	@Override
+	public Predicate getConcatPredicate(int arity) {
+		return OBDAVocabulary.QUEST_CONCAT;
 	}
 
 	@Override
@@ -639,9 +644,9 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 		case BOOLEAN:
 			return getDataTypePredicateBoolean();
 		case OBJECT:
-			return getUriTemplatePredicate(1);
+			return getUriPredicate();
 		case BNODE:
-			return getBNodeTemplatePredicate(1);
+			return getBNodePredicate();
 		default:
 			throw new RuntimeException("Cannot get URI for unsupported type: " + type);
 		}

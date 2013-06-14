@@ -187,10 +187,14 @@ public class OBDAVocabulary {
 
 	// The name of the function that creates URI's in Quest
 	public static final String QUEST_URI = "URI";
-
+	
 	public static final String QUEST_URI_LEGACY = "http://obda.org/quest#uri";
 
-	// The name of the function that creates URI's in Quest
+	public static final String strQUEST_CONCAT = "CONCAT";
+	
+	public static final Predicate QUEST_CONCAT = new StringOperationPredicateImpl(fact.construct(strQUEST_CONCAT));
+	
+	// The name of the function that creates bnodes in Quest
 	public static final String QUEST_BNODE = "BNODE";
 
 	public static final String QUEST_TRIPLE_STR = "triple";
@@ -250,13 +254,13 @@ public class OBDAVocabulary {
 	public static final Predicate SPARQL_LANGMATCHES = new BooleanOperationPredicateImpl(
 			fact.construct(SPARQL_LANGMATCHES_URI), 2);
 
-	public static final Predicate SPARQL_STR = new NonBooleanOperationPredicateImpl(
+	public static final Predicate SPARQL_STR = new IRIOperationPredicateImpl(
 			fact.construct(SPARQL_STR_URI));
 
-	public static final Predicate SPARQL_DATATYPE = new NonBooleanOperationPredicateImpl(
+	public static final Predicate SPARQL_DATATYPE = new IRIOperationPredicateImpl(
 			fact.construct(SPARQL_DATATYPE_URI));
 
-	public static final Predicate SPARQL_LANG = new NonBooleanOperationPredicateImpl(
+	public static final Predicate SPARQL_LANG = new IRIOperationPredicateImpl(
 			fact.construct(SPARQL_LANG_URI));
 
 	public static final Predicate SPARQL_REGEX = new BooleanOperationPredicateImpl(

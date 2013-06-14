@@ -2101,9 +2101,9 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 			// Mapping head
 
 			Function head = dfac.getAtom(dfac.getPredicate(ifac.construct("m"), 1), dfac.getVariable("X"));
-			Function body1 = dfac.getAtom(classuri, dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(1), dfac.getVariable("X")));
+			Function body1 = dfac.getAtom(classuri, dfac.getFunctionalTerm(dfac.getUriPredicate(), dfac.getVariable("X")));
 
-			Function body2 = dfac.getAtom(classuri, dfac.getFunctionalTerm(dfac.getBNodeTemplatePredicate(1), dfac.getVariable("X")));
+			Function body2 = dfac.getAtom(classuri, dfac.getFunctionalTerm(dfac.getBNodePredicate(), dfac.getVariable("X")));
 
 			/*
 			 * This target query is shared by all mappings for this class
@@ -2300,11 +2300,19 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 		Function subjectTerm;
 		if (type1 == COL_TYPE.OBJECT) {
 
-			subjectTerm = dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(1), dfac.getVariable("X"));
+
+			subjectTerm = dfac.getFunctionalTerm(
+					dfac.getUriPredicate(), dfac.getVariable("X"));
+
+			subjectTerm = dfac.getFunctionalTerm(dfac.getUriPredicate(), dfac.getVariable("X"));
 
 		} else if (type1 == COL_TYPE.BNODE) {
 
-			subjectTerm = dfac.getFunctionalTerm(dfac.getBNodeTemplatePredicate(1), dfac.getVariable("X"));
+
+			subjectTerm = dfac.getFunctionalTerm(
+					dfac.getBNodePredicate(), dfac.getVariable("X"));
+
+			subjectTerm = dfac.getFunctionalTerm(dfac.getBNodePredicate(), dfac.getVariable("X"));
 
 		} else {
 			throw new RuntimeException("Unsupported object type: " + type1);
@@ -2314,11 +2322,19 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager {
 		Function objectTerm;
 		if (type2 == COL_TYPE.BNODE) {
 
-			objectTerm = dfac.getFunctionalTerm(dfac.getBNodeTemplatePredicate(1), dfac.getVariable("Y"));
+
+			objectTerm = dfac.getFunctionalTerm(
+					dfac.getBNodePredicate(), dfac.getVariable("Y"));
+
+			objectTerm = dfac.getFunctionalTerm(dfac.getBNodePredicate(), dfac.getVariable("Y"));
 
 		} else if (type2 == COL_TYPE.OBJECT) {
 
-			objectTerm = dfac.getFunctionalTerm(dfac.getUriTemplatePredicate(1), dfac.getVariable("Y"));
+
+			objectTerm = dfac.getFunctionalTerm(
+					dfac.getUriPredicate(), dfac.getVariable("Y"));
+
+			objectTerm = dfac.getFunctionalTerm(dfac.getUriPredicate(), dfac.getVariable("Y"));
 
 		} else if (type2 == COL_TYPE.LITERAL) {
 

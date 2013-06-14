@@ -45,7 +45,7 @@ public interface OBDADataFactory extends Serializable {
 
 	@Deprecated
 	public Predicate getPredicate(String uri, int arity);
-
+	
 	public Predicate getPredicate(IRI name, int arity, COL_TYPE[] types);
 
 	public Predicate getPredicate(String uri, int arity, COL_TYPE[] types);
@@ -90,9 +90,11 @@ public interface OBDADataFactory extends Serializable {
 	 * Built-in function predicates
 	 */
 
-	public Predicate getUriTemplatePredicate(int arity);
+	public Predicate getUriPredicate();
 
-	public Predicate getBNodeTemplatePredicate(int arity);
+	public Predicate getBNodePredicate();
+	
+	public Predicate getConcatPredicate(int arity);
 
 	/*
 	 * Boolean atoms
