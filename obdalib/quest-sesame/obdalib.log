@@ -1,0 +1,8 @@
+23:23:36.172 |-DEBUG in i.u.k.obda.model.impl.OBDAModelImpl - OBDA model is initialized!
+23:23:36.998 |-DEBUG in i.u.k.obda.owlapi3.OWLAPI3Translator - Load ontologies called. Translating ontologies.
+23:23:37.064 |-WARN  in i.u.k.obda.owlapi3.OWLAPI3Translator - WARNING. The current ontology is not in the OWL 2 QL profile.
+23:23:37.104 |-WARN  in i.u.k.obda.owlapi3.OWLAPI3Translator - Axiom not yet supported by Quest: SubClassOf(<http://www.owl-ontologies.com/Ontology1207768242.owl#Acquisition> ObjectComplementOf(<http://www.owl-ontologies.com/Ontology1207768242.owl#Offer>))
+23:23:37.122 |-WARN  in i.u.k.obda.owlapi3.OWLAPI3Translator - Axiom not yet supported by Quest: SubClassOf(<http://www.owl-ontologies.com/Ontology1207768242.owl#PhysicalPerson> ObjectComplementOf(<http://www.owl-ontologies.com/Ontology1207768242.owl#LegalPerson>))
+23:23:37.138 |-DEBUG in i.u.k.obda.owlapi3.OWLAPI3Translator - Ontology loaded: [Ontology info. Axioms: 125 Classes: 17 Properties: 39]
+23:23:37.139 |-DEBUG in i.u.k.obda.model.impl.OBDAModelImpl - OBDA model is initialized!
+23:23:37.390 |-DEBUG in i.u.k.obda.model.impl.OBDAModelImpl - OBDA model is reset

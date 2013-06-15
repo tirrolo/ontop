@@ -86,6 +86,7 @@ public class S_SigmaTBoxOptimizer {
 					if(descendant==null)
 						descendant=firstDescendant;
 					Axiom axiom = null;
+					if(!descendant.equals(node)){
 					/*
 					 * Creating subClassOf or subPropertyOf axioms
 					 */
@@ -99,6 +100,7 @@ public class S_SigmaTBoxOptimizer {
 				}
 
 			}
+					}
 			}
 			Set<Description> equivalents = reasonerIsa.getEquivalences(node, false);
 
@@ -189,14 +191,27 @@ public class S_SigmaTBoxOptimizer {
 			return false;
 		}
 		
-		if (sigmaChain.getReplacements().get(parent) != null)
+		Set<Set<Description>> spChildren= reasonerSigmaChain.getDirectChildren(sp, false);
+		Set<Description> scEquivalent=reasonerSigmaChain.getEquivalences(sc, false);
+		Set<Set<Description>> scChildren= reasonerSigmaChain.getDescendants(sc, false);
+		Set<Set<Description>> tcChildren= reasonerIsaChain.getDescendants(tc,false);
+		
+		if (sigmaChain.getReplacements().get(parent) != null){
 			sp = sigmaChain.getNode(sigmaChain.getReplacements().get(parent));
-		if (sigmaChain.getReplacements().get(child) != null)
+			spChildren= reasonerSigmaChain.getDirectChildren(sp, false);
+		}
+		if (sigmaChain.getReplacements().get(child) != null){
 			sc = sigmaChain.getNode(sigmaChain.getReplacements().get(child));
-		if (isaChain.getReplacements().get(child) != null)
+			scEquivalent=reasonerSigmaChain.getEquivalences(sc, false);
+			scChildren=reasonerSigmaChain.getDescendants(sc, false); 
+			
+		}
+		if (isaChain.getReplacements().get(child) != null){
 			tc = sigmaChain.getNode(isaChain.getReplacements().get(child));
+			reasonerSigmaChain.getDescendants(tc,false);
+		}
 
-		boolean redundant = reasonerSigmaChain.getDirectChildren(sp, false).contains(reasonerSigmaChain.getEquivalences(sc, false)) && reasonerSigmaChain.getDescendants(sc, false).containsAll(reasonerSigmaChain.getDescendants(tc,false));
+		boolean redundant =spChildren.contains(scEquivalent) && scChildren.containsAll(tcChildren);
 		return (redundant);
 
 	}

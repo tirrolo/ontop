@@ -30,6 +30,7 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
@@ -192,7 +193,7 @@ public class StockExchangeTestH2 extends TestCase {
 		}
 	}
 	
-	private void runTests(Properties p) throws Exception {
+	private void runTests(Properties p) throws Exception  {
 
 		// Creating a new instance of the reasoner
 		QuestOWLFactory factory = new QuestOWLFactory();

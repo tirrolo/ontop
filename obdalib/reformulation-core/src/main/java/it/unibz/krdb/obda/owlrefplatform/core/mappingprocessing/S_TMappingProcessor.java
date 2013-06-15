@@ -64,7 +64,8 @@ public class S_TMappingProcessor implements Serializable {
 		dag = reasoner.getDAG();
 		NamedDescriptionDAGImpl namedDagConstructor= new NamedDescriptionDAGImpl(dag);
 		pureIsa =namedDagConstructor.getDAG();
-		aboxDependencies = TBoxReasonerImpl.getSigma(tbox);
+		aboxDependencies =  reasoner.getSigmaOntology();
+		
 
 	}
 
@@ -413,41 +414,6 @@ public class S_TMappingProcessor implements Serializable {
 			}
 			}
 			
-			for (Description descendant : reasoner.getEquivalences(currentProperty, false)) {
-				/*
-				 * adding the mappings of the children as own mappings, the new
-				 * mappings use the current predicate instead of the childs
-				 * predicate and, if the child is inverse and the current is
-				 * positive, it will also invert the terms in the head
-				 *
-				 */
-				if(descendant.equals(currentProperty))
-					continue;
-				Property childproperty = (Property) descendant;
-				List<CQIE> childMappings = originalMappings.getRules(childproperty.getPredicate());
-
-				boolean requiresInverse = (currentProperty.isInverse() != childproperty.isInverse());
-
-				for (CQIE childmapping : childMappings) {
-					CQIE newmapping = null;
-					Atom newMappingHead = null;
-					Atom oldMappingHead = childmapping.getHead();
-					if (!requiresInverse) {
-						newMappingHead = fac.getAtom(currentPredicate, oldMappingHead.getTerms());
-					} else {
-						NewLiteral term0 = oldMappingHead.getTerms().get(1);
-						NewLiteral term1 = oldMappingHead.getTerms().get(0);
-						newMappingHead = fac.getAtom(currentPredicate, term0, term1);
-					}
-					newmapping = fac.getCQIE(newMappingHead, childmapping.getBody());
-
-					if (optimize)
-					  mergeMappingsWithCQC(currentNodeMappings, newmapping);
-					else 
-						currentNodeMappings.add(newmapping);
-				}
-
-			}
 			
 
 
@@ -555,54 +521,7 @@ public class S_TMappingProcessor implements Serializable {
 				}
 				}}
 			
-			for (Description descendant : reasoner.getEquivalences(currentProperty, false)) {
-		
-				if(descendant.equals(currentProperty))
-					continue;
-					
-				/*
-				 * adding the mappings of the children as own mappings, the new
-				 * mappings. There are three cases, when the child is a named
-				 * class, or when it is an \exists P or \exists \inv P.
-				 */
-				ClassDescription childDescription = (ClassDescription) descendant;
-				Predicate childPredicate = null;
-				boolean isClass = true;
-				boolean isInverse = false;
-				if (childDescription instanceof OClass) {
-					childPredicate = ((OClass) childDescription).getPredicate();
-				} else if (childDescription instanceof PropertySomeRestriction) {
-					childPredicate = ((PropertySomeRestriction) childDescription).getPredicate();
-					isInverse = ((PropertySomeRestriction) childDescription).isInverse();
-					isClass = false;
-				} else {
-					throw new RuntimeException("Unknown type of node in DAG: " + descendant);
-				}
-
-				List<CQIE> desendantMappings = originalMappings.getRules(childPredicate);
-
-				for (CQIE childmapping : desendantMappings) {
-					CQIE newmapping = null;
-					Atom newMappingHead = null;
-					Atom oldMappingHead = childmapping.getHead();
-
-					if (isClass) {
-						newMappingHead = fac.getAtom(currentPredicate, oldMappingHead.getTerms());
-					} else {
-						if (!isInverse) {
-							newMappingHead = fac.getAtom(currentPredicate, oldMappingHead.getTerms().get(0));
-						} else {
-							newMappingHead = fac.getAtom(currentPredicate, oldMappingHead.getTerms().get(1));
-						}
-					}
-					newmapping = fac.getCQIE(newMappingHead, childmapping.getBody());
-					
-					if (optimize)
-					mergeMappingsWithCQC(currentNodeMappings, newmapping);
-					else
-						currentNodeMappings.add(newmapping);
-				}
-				}
+			
 			
 			
 				// TODO HACK! Remove when the API of DAG is clean, the following

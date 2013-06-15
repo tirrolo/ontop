@@ -343,17 +343,30 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 			 
 			 iterator= new BreadthFirstIterator<Description, DefaultEdge>(reversed, node);
 			
-			//I don't want to consider the current node
-			iterator.next();
+//			I don't want to consider the current node
+			Description startNode=iterator.next();
+			Set<Description> sourcesStart =getEquivalences(startNode, named);
+			Set<Description> sourcesStartnoNode= new HashSet<Description>();
+			for(Description equivalent: sourcesStart){
+				if(equivalent.equals(startNode))
+					continue;
+				sourcesStartnoNode.add(equivalent);
+				
+			}
 			
+			
+			if(!sourcesStartnoNode.isEmpty())
+			result.add(sourcesStartnoNode);
  
 			//iterate over the subsequent nodes, they are all descendant of desc
 			while(iterator.hasNext()){
 				Description child=iterator.next();
+				
 					
 				//add the node and its equivalent nodes		
 				
 				Set<Description> sources =getEquivalences(child, named);
+			
 				
 				if(!sources.isEmpty())
 				result.add(sources);
@@ -378,7 +391,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 			Description node=iterator.next();
 
 			//I don't want to add between the descendants a node equivalent to the starting node
-					if(equivalenceSet.contains(node))
+					if(node.equals(current))
 						continue;
 				
 					
@@ -425,7 +438,19 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 			iterator= new BreadthFirstIterator<Description, DefaultEdge>(dag, node);
 			
 			//I don't want to consider the current node
-			iterator.next();
+			Description startNode=iterator.next();
+			Set<Description> sourcesStart =getEquivalences(startNode, named);
+			Set<Description> sourcesStartnoNode= new HashSet<Description>();
+			for(Description equivalent: sourcesStart){
+				if(equivalent.equals(startNode))
+					continue;
+				sourcesStartnoNode.add(equivalent);
+				
+			}
+			
+			
+			if(!sourcesStartnoNode.isEmpty())
+			result.add(sourcesStartnoNode);
 			
  
 			//iterate over the subsequent nodes, they are all ancestor of desc
@@ -435,6 +460,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 				//add the node and its equivalent nodes		
 				
 				Set<Description> sources =getEquivalences(parent, named);
+				
 				
 				if(!sources.isEmpty())
 				result.add(sources);
@@ -457,7 +483,7 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 			Description node=iterator.next();
 
 			//I don't want to add between the ancestors a node equivalent to the starting node
-					if(equivalenceSet.contains(node))
+					if(current.equals(node))
 						continue;
 				
 					
@@ -749,7 +775,8 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 
 		/* Collapsing the cycles */
 
-//		dag.clean();
+		dag.eliminateCycles();
+		dag.eliminateRedundantEdges();
 		
 		}
 		else //if graph
@@ -819,43 +846,106 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 			
 	}
 	
-//	public Ontology getSigmaOntology() {
-//		OntologyFactory descFactory = new OntologyFactoryImpl();
-//
-//		Ontology sigma = descFactory.createOntology(OBDADataFactoryImpl.getIRI("sigma"));
-//
-////		DAGEdgeIterator edgeiterator = new DAGEdgeIterator(dag);
-//		OntologyFactory fac = OntologyFactoryImpl.getInstance();
+
+	public Ontology getSigmaOntology() {
+		OntologyFactory descFactory = new OntologyFactoryImpl();
+
+		Ontology sigma = descFactory.createOntology(OBDADataFactoryImpl.getIRI("sigma"));
+
+//		DAGEdgeIterator edgeiterator = new DAGEdgeIterator(dag);
+		OntologyFactory fac = OntologyFactoryImpl.getInstance();
 //		for(DefaultEdge edge: dag.edgeSet()){
-////		while (edgeiterator.hasNext()) {
-////			Edge edge = edgeiterator.next();
-//			if (dag.getEdgeSource(edge) instanceof ClassDescription) {
-//				ClassDescription sub = (ClassDescription) dag.getEdgeSource(edge);
-//				ClassDescription superp = (ClassDescription) dag.getEdgeTarget(edge);
-//				if (superp instanceof PropertySomeRestriction)
-//					continue;
-//
-//				Axiom ax = fac.createSubClassAxiom(sub, superp);
-//				sigma.addEntities(ax.getReferencedEntities());
-//				sigma.addAssertion(ax);
-//			} else {
-//				Property sub = (Property) dag.getEdgeSource(edge);
-//				Property superp = (Property) dag.getEdgeTarget(edge);
-//
-//				Axiom ax = fac.createSubPropertyAxiom(sub, superp);
-//				sigma.addEntities(ax.getReferencedEntities());
-//
-//				sigma.addAssertion(ax);
-//			}
+//		while (edgeiterator.hasNext()) {
+//			Edge edge = edgeiterator.next();
+			for(Description node:dag.vertexSet()){
+				for (Set<Description> descendants: getDescendants(node, false)){
+						Description firstDescendant=descendants.iterator().next();
+						Description descendant= dag.getReplacements().get(firstDescendant);
+						if(descendant==null)
+							descendant=firstDescendant;
+						Axiom axiom = null;
+						/*
+						 * Creating subClassOf or subPropertyOf axioms
+						 */
+						if(!descendant.equals(node)){
+						if (descendant instanceof ClassDescription) {
+							ClassDescription sub = (ClassDescription)descendant;
+							ClassDescription superp = (ClassDescription) node;
+							if (superp instanceof PropertySomeRestriction)
+								continue;
+
+							Axiom ax = fac.createSubClassAxiom(sub, superp);
+							sigma.addEntities(ax.getReferencedEntities());
+							sigma.addAssertion(ax);
+						} else {
+							Property sub = (Property) descendant;
+							Property superp = (Property) node;
+
+							Axiom ax = fac.createSubPropertyAxiom(sub, superp);
+							sigma.addEntities(ax.getReferencedEntities());
+
+							sigma.addAssertion(ax);
+						}
+					
+						}
+				}
+				for(Description equivalent: getEquivalences(node, false)){
+					if(!equivalent.equals(node)){
+						Axiom ax = null;
+						if (node instanceof ClassDescription) {
+							ClassDescription sub = (ClassDescription)node;
+							ClassDescription superp = (ClassDescription) equivalent;
+							if (!(superp instanceof PropertySomeRestriction)){
+								ax = fac.createSubClassAxiom(sub, superp);
+								sigma.addEntities(ax.getReferencedEntities());
+								sigma.addAssertion(ax);
+							}
+							
+						} else {
+							Property sub = (Property)node;
+							Property superp = (Property) equivalent;
+
+							ax = fac.createSubPropertyAxiom(sub, superp);
+							sigma.addEntities(ax.getReferencedEntities());
+							sigma.addAssertion(ax);
+							
+						}
+						
+						if (equivalent instanceof ClassDescription) {
+							ClassDescription sub = (ClassDescription)equivalent;
+							ClassDescription superp = (ClassDescription) node;
+							if (!(superp instanceof PropertySomeRestriction)){
+							 ax = fac.createSubClassAxiom(sub, superp);
+							 sigma.addEntities(ax.getReferencedEntities());
+								sigma.addAssertion(ax);
+							}
+							
+						} else {
+							Property sub = (Property) equivalent;
+							Property superp = (Property) node;
+
+							ax = fac.createSubPropertyAxiom(sub, superp);
+							sigma.addEntities(ax.getReferencedEntities());
+							sigma.addAssertion(ax);
+							
+						}
+						
+						
+					}
+				
+			}
+			}
 //		}
-//
-//		return sigma;
-//	}
-//	
+			
+
+		return sigma;
+	}
+			
+	
 	
 	public static Ontology getSigma(Ontology ontology) {
 		OntologyFactory descFactory = new OntologyFactoryImpl();
-		Ontology sigma = descFactory.createOntology(OBDADataFactoryImpl.getIRI(""));
+		Ontology sigma = descFactory.createOntology(OBDADataFactoryImpl.getIRI("sigma"));
 		sigma.addConcepts(ontology.getConcepts());
 		sigma.addRoles(ontology.getRoles());
 		for (Axiom assertion : ontology.getAssertions()) {

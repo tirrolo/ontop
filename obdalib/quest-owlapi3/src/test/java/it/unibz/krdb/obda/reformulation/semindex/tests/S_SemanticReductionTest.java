@@ -22,7 +22,7 @@ public class S_SemanticReductionTest extends TestCase {
 //		DAG isa = DAGConstructor.getISADAG(ontology);
 //		isa.index();
 		SemanticIndexEngineImpl engine= new SemanticIndexEngineImpl(reasonerIsa);
-		S_SigmaTBoxOptimizer reduction = new S_SigmaTBoxOptimizer(ontology, TBoxReasonerImpl.getSigma(ontology));
+		S_SigmaTBoxOptimizer reduction = new S_SigmaTBoxOptimizer(ontology, reasonerIsa.getSigmaOntology());
 		List<Axiom> rv = reduction.reduce();
 		assertEquals(0, rv.size());
 	}
@@ -33,7 +33,7 @@ public class S_SemanticReductionTest extends TestCase {
 //		DAG isa = DAGConstructor.getISADAG(ontology);
 //		isa.index();
 		SemanticIndexEngineImpl engine= new SemanticIndexEngineImpl(reasonerIsa);
-		S_SigmaTBoxOptimizer reduction = new S_SigmaTBoxOptimizer(ontology, TBoxReasonerImpl.getSigma(ontology));
+		S_SigmaTBoxOptimizer reduction = new S_SigmaTBoxOptimizer(ontology, reasonerIsa.getSigmaOntology());
 		List<Axiom> rv = reduction.reduce();
 		assertEquals(0, rv.size());
 	}
@@ -44,7 +44,7 @@ public class S_SemanticReductionTest extends TestCase {
 //		isa.index();
 		TBoxReasonerImpl reasonerIsa= new TBoxReasonerImpl(ontology,false);
 		SemanticIndexEngineImpl engine= new SemanticIndexEngineImpl(reasonerIsa);
-		S_SigmaTBoxOptimizer reduction = new S_SigmaTBoxOptimizer(ontology, TBoxReasonerImpl.getSigma(ontology));
+		S_SigmaTBoxOptimizer reduction = new S_SigmaTBoxOptimizer(ontology,reasonerIsa.getSigmaOntology());
 		List<Axiom> rv = reduction.reduce();
 		assertEquals(1, rv.size());
 	}
@@ -55,7 +55,7 @@ public class S_SemanticReductionTest extends TestCase {
 //		isa.index();
 		TBoxReasonerImpl reasonerIsa= new TBoxReasonerImpl(ontology,false);
 		SemanticIndexEngineImpl engine= new SemanticIndexEngineImpl(reasonerIsa);
-		S_SigmaTBoxOptimizer reduction = new S_SigmaTBoxOptimizer(ontology, TBoxReasonerImpl.getSigma(ontology));
+		S_SigmaTBoxOptimizer reduction = new S_SigmaTBoxOptimizer(ontology, reasonerIsa.getSigmaOntology());
 		List<Axiom> rv = reduction.reduce();
 		assertEquals(0, rv.size());
 	}
@@ -75,7 +75,7 @@ public class S_SemanticReductionTest extends TestCase {
 		SemanticIndexEngineImpl engine= new SemanticIndexEngineImpl(reasonerIsa);
 		S_SigmaTBoxOptimizer reduction = new S_SigmaTBoxOptimizer(ontology,OntologyFactoryImpl.getInstance().createOntology());
 		List<Axiom> rv = reduction.reduce();
-		//System.out.println(rv);
+		System.out.println(rv);
 		assertEquals(45, rv.size());
 	}
 	

@@ -392,6 +392,7 @@ public class S_EquivalenceTBoxOptimizer {
 					if(descendant==null)
 						descendant=firstDescendant;
 					Axiom axiom = null;
+					if(!descendant.equals(node)){
 					/*
 					 * Creating subClassOf or subPropertyOf axioms
 					 */
@@ -405,6 +406,7 @@ public class S_EquivalenceTBoxOptimizer {
 					}
 					optimalTBox.addEntities(axiom.getReferencedEntities());
 					optimalTBox.addAssertion(axiom);
+					}
 				
 				
 			}

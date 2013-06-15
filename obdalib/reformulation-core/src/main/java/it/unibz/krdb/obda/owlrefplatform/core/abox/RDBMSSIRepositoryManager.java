@@ -499,6 +499,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 		pureIsa = DAGConstructor.filterPureISA(dag);
 		aboxDependencies = DAGConstructor.getSigmaOntology(dag);
+		log.debug("Assertions aboxdependencies: "+ aboxDependencies);
 
 		pureIsa.clean();
 		pureIsa.index();

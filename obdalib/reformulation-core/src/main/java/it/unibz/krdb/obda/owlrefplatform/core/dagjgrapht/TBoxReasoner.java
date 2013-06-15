@@ -1,6 +1,7 @@
 package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
 
 import it.unibz.krdb.obda.ontology.Description;
+import it.unibz.krdb.obda.ontology.Ontology;
 
 import java.util.Set;
 
@@ -23,6 +24,8 @@ public interface TBoxReasoner {
 	public Set<Description> getEquivalences(Description desc, boolean named);
 	
 	public DAG getDAG ();
+
+	public Ontology getSigmaOntology();
 
 	
 }

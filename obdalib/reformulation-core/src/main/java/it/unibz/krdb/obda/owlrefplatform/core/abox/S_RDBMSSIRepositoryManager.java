@@ -92,7 +92,7 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 	private static final long serialVersionUID = -6494667662327970606L;
 
 	private final static Logger log = LoggerFactory
-			.getLogger(RDBMSSIRepositoryManager.class);
+			.getLogger(S_RDBMSSIRepositoryManager.class);
 
 	public final static String index_table = "IDX";
 
@@ -510,7 +510,8 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		
 
 		//to be checked
-		aboxDependencies = TBoxReasonerImpl.getSigma(ontology);
+		aboxDependencies =  reasonerDag.getSigmaOntology();
+		log.debug("Assertions aboxdependencies: "+ aboxDependencies);
 
 		//create the indexes
 		engine= new SemanticIndexEngineImpl(reasonerIsa);
@@ -519,11 +520,11 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		/***
 		 * Copying the equivalences that might bet lost from the translation
 		 */
-//		Map<Description,Description> isaEquivalences =pureIsa.getReplacements();
-//		for (Description d : dag.getReplacements().keySet()) {
-//			isaEquivalences.put(d, dag.getReplacements().get(d));
-//		}
-//		pureIsa.setReplacements(isaEquivalences);
+		Map<Description,Description> isaEquivalences =pureIsa.getReplacements();
+		for (Description d : dag.getReplacements().keySet()) {
+			isaEquivalences.put(d, dag.getReplacements().get(d));
+		}
+		pureIsa.setReplacements(isaEquivalences);
 
 		// try {
 		// GraphGenerator.dumpISA(dag, "no-cycles");
@@ -1325,8 +1326,8 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 */
 			Description d = ofac.createPropertySomeRestriction(p, false);
 			Description dagNode = dag.getNode(d);
-			parents = reasonerDag.getAncestors(dagNode, false);
-			parents.add(reasonerDag.getEquivalences(dagNode, false));
+			parents = reasonerDag.getAncestors(dagNode, false); //get ancestors has already the equivalences of dagNode
+//			parents.add(reasonerDag.getEquivalences(dagNode, false));
 			
 			
 			for (Set<Description> parent : parents) {
@@ -1346,7 +1347,7 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			d = ofac.createPropertySomeRestriction(p, true);
 			dagNode = dag.getNode(d);
 			parents = reasonerDag.getAncestors(dagNode, false);
-			parents.add(reasonerDag.getEquivalences(dagNode, false));
+//			parents.add(reasonerDag.getEquivalences(dagNode, false));
 			
 			
 			for (Set<Description> parent : parents) {
@@ -1869,6 +1870,8 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		Map<Description, Set<Description>> classExistsMaps = new HashMap<Description, Set<Description>>();
 		
 		for (Description node : dag.getClasses()) {
+			if(dag.getReplacements().containsKey(node))
+				continue;
 			classNodesMaps.add(node);
 			Set<Description> existChildren = classExistsMaps.get(node);
 			if (existChildren == null) {
@@ -1878,6 +1881,14 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			}
 
 			/* Collecting Exists R children */
+			//consider also the equivalent of the node
+			for (Description child : reasonerDag.getEquivalences(node, false)) {
+				
+				if (child instanceof PropertySomeRestrictionImpl& !(child.equals(node))) {
+					existChildren.add(child);
+				}
+				
+			}
 			for (Set<Description> children : reasonerDag.getDescendants(node, false)) {
 				for (Description child:children){
 				if (child instanceof PropertySomeRestrictionImpl) {
@@ -3244,12 +3255,13 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 * we always prefer the pureISA node since it can have extra data
 			 * (indexes)
 			 */
-			Description node2 = pureIsa.getNode(description);
-			if (node2 != null) {
-				node = node2;
-			}
+//			Description node2 = pureIsa.getNode(description);
+//			if (node2 != null) {
+//				node = node2;
+//			}
 
 			String uri = description.toString();
+			
 
 			for (Interval it : engine.getIntervals(node)) {
 
@@ -3259,7 +3271,10 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			}
 		}
 
-		for (Description node : dag.getRoles()) {
+		for (Description node : ((DAGImpl) dag).vertexSet()) {
+			if(!(node instanceof Property)){
+				continue;
+			}
 			Property description = (Property) node;
 
 			/*
@@ -3297,10 +3312,10 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 * we always prefer the pureISA node since it can have extra data
 			 * (indexes)
 			 */
-			Description node2 = pureIsa.getNode(description);
-			if (node2 != null) {
-				node = node2;
-			}
+//			Description node2 = pureIsa.getNode(description);
+//			if (node2 != null) {
+//				node = node2;
+//			}
 
 			String uri = description.toString();
 //			if(engine.getIntervals(node)!= null)
@@ -3315,17 +3330,20 @@ public class S_RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		}
 		stm.executeBatch();
 
-		for (Description node : dag.getRoles()) {
+		for (Description node : ((DAGImpl) dag).vertexSet()) {
+			if(!(node instanceof Property)){
+				continue;
+			}
 			Property description = (Property) node;
 
 			/*
 			 * we always prefer the pureISA node since it can have extra data
 			 * (indexes)
 			 */
-			Description node2 = pureIsa.getNode(description);
-			if (node2 != null) {
-				node = node2;
-			}
+//			Description node2 = pureIsa.getNode(description);
+//			if (node2 != null) {
+//				node = node2;
+//			}
 
 			String uri = description.toString();
 
