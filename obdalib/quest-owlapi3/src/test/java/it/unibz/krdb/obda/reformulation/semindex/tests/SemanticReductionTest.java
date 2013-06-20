@@ -3,8 +3,8 @@ package it.unibz.krdb.obda.reformulation.semindex.tests;
 import it.unibz.krdb.obda.ontology.Axiom;
 import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAG;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGConstructor;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.SigmaTBoxOptimizer;
 
 import java.util.List;
@@ -16,36 +16,41 @@ public class SemanticReductionTest extends TestCase {
 
 	public void test_2_0_0() throws Exception {
 		Ontology ontology = helper.load_onto("test_2_0_0");
-		DAG isa = DAGConstructor.getISADAG(ontology);
-		isa.index();
-		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, DAGConstructor.getSigmaOntology(ontology));
+		TBoxReasonerImpl reasonerIsa= new TBoxReasonerImpl(ontology,false);
+//		DAG isa = DAGConstructor.getISADAG(ontology);
+//		isa.index();
+		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, reasonerIsa.getSigmaOntology());
 		List<Axiom> rv = reduction.reduce();
 		assertEquals(0, rv.size());
 	}
 
 	public void test_2_0_1() throws Exception {
 		Ontology ontology = helper.load_onto("test_2_0_1");
-		DAG isa = DAGConstructor.getISADAG(ontology);
-		isa.index();
-		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, DAGConstructor.getSigmaOntology(ontology));
+		TBoxReasonerImpl reasonerIsa= new TBoxReasonerImpl(ontology,false);
+//		DAG isa = DAGConstructor.getISADAG(ontology);
+//		isa.index();
+		
+		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, reasonerIsa.getSigmaOntology());
 		List<Axiom> rv = reduction.reduce();
 		assertEquals(0, rv.size());
 	}
 
 	public void test_2_1_0() throws Exception {
 		Ontology ontology = helper.load_onto("test_2_1_0");
-		DAG isa = DAGConstructor.getISADAG(ontology);
-		isa.index();
-		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, DAGConstructor.getSigmaOntology(ontology));
+//		DAG isa = DAGConstructor.getISADAG(ontology);
+//		isa.index();
+		TBoxReasonerImpl reasonerIsa= new TBoxReasonerImpl(ontology,false);
+		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology,reasonerIsa.getSigmaOntology());
 		List<Axiom> rv = reduction.reduce();
 		assertEquals(1, rv.size());
 	}
 
 	public void test_1_2_0() throws Exception {
 		Ontology ontology = helper.load_onto("test_1_2_0");
-		DAG isa = DAGConstructor.getISADAG(ontology);
-		isa.index();
-		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, DAGConstructor.getSigmaOntology(ontology));
+//		DAG isa = DAGConstructor.getISADAG(ontology);
+//		isa.index();
+		TBoxReasonerImpl reasonerIsa= new TBoxReasonerImpl(ontology,false);
+		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, reasonerIsa.getSigmaOntology());
 		List<Axiom> rv = reduction.reduce();
 		assertEquals(0, rv.size());
 	}
@@ -60,11 +65,11 @@ public class SemanticReductionTest extends TestCase {
 		 */
 
 		Ontology ontology = helper.load_onto("equivalence-test");
-		DAG isa = DAGConstructor.getISADAG(ontology);
-		isa.index();
-		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology, OntologyFactoryImpl.getInstance().createOntology());
+		TBoxReasonerImpl reasonerIsa= new TBoxReasonerImpl(ontology,false);
+		DAGImpl dag= reasonerIsa.getDAG();
+		SigmaTBoxOptimizer reduction = new SigmaTBoxOptimizer(ontology,OntologyFactoryImpl.getInstance().createOntology());
 		List<Axiom> rv = reduction.reduce();
-		//System.out.println(rv);
+		System.out.println(rv);
 		assertEquals(45, rv.size());
 	}
 	

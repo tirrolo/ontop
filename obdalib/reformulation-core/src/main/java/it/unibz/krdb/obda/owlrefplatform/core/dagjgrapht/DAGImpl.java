@@ -166,6 +166,7 @@ public class DAGImpl extends SimpleDirectedGraph <Description,DefaultEdge> imple
 	}
 	
 	@Override
+	//return the node considering also the equivalent nodes
 	public Description getNode(Description node){
 		if(replacements.containsKey(node))
 			node= replacements.get(node);

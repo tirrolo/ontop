@@ -242,7 +242,7 @@ public class VirtualABoxMaterializer {
 
 		private Iterator<Predicate> predicates;
 		private Collection<OBDADataSource> sources;
-		private Map<OBDADataSource, Quest> questInstances;
+		private Map<OBDADataSource,Quest> questInstances;
 
 		private Predicate currentPredicate = null;
 		private VirtualTripleIterator currentIterator = null;

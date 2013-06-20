@@ -8,10 +8,9 @@ import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAG;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGConstructor;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGNode;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.SemanticIndexRange;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAG;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
+
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -89,10 +88,11 @@ public class SemanticIndexHelper {
 
     public DAG load_dag(String ontoname) throws Exception {
 
-        return DAGConstructor.getISADAG(load_onto(ontoname));
+    	TBoxReasonerImpl reasoner=new TBoxReasonerImpl(load_onto(ontoname),false);
+        return reasoner.getDAG();
     }
 
-    public List<List<DAGNode>> get_results(String resname) {
+    public List<List<Description>> get_results(String resname) {
         String resfile = owlloc + resname + ".si";
         File results = new File(resfile);
         Document doc = null;
@@ -111,10 +111,10 @@ public class SemanticIndexHelper {
         }
 
         doc.getDocumentElement().normalize();
-        List<DAGNode> cls = get_dag_type(doc, "classes");
-        List<DAGNode> roles = get_dag_type(doc, "rolles");
+        List<Description> cls = get_dag_type(doc, "classes");
+        List<Description> roles = get_dag_type(doc, "rolles");
 
-        List<List<DAGNode>> rv = new ArrayList<List<DAGNode>>(2);
+        List<List<Description>> rv = new ArrayList<List<Description>>(2);
         rv.add(cls);
         rv.add(roles);
         return rv;
@@ -127,8 +127,8 @@ public class SemanticIndexHelper {
      * @param type type of DAGNodes to extract
      * @return a list of DAGNodes
      */
-    private List<DAGNode> get_dag_type(Document doc, String type) {
-        List<DAGNode> rv = new LinkedList<DAGNode>();
+    private List<Description> get_dag_type(Document doc, String type) {
+        List<Description> rv = new LinkedList<Description>();
         Node root = doc.getElementsByTagName(type).item(0);
         NodeList childNodes = root.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
@@ -171,18 +171,18 @@ public class SemanticIndexHelper {
                 }
 
 
-                DAGNode _node = new DAGNode(description);
+                Description _node = description;
 
-                _node.setIndex(idx);
-                _node.setRange(new SemanticIndexRange());
+//                _node.setIndex(idx);
+//                _node.setRange(new SemanticIndexRange());
 
-                String[] range = node.getAttribute("range").split(",");
-                for (int j = 0; j < range.length; j++) {
-                    String[] interval = range[j].split(":");
-                    int start = Integer.parseInt(interval[0]);
-                    int end = Integer.parseInt(interval[1]);
-                    _node.getRange().addInterval(start, end);
-                }
+//                String[] range = node.getAttribute("range").split(",");
+//                for (int j = 0; j < range.length; j++) {
+//                    String[] interval = range[j].split(":");
+//                    int start = Integer.parseInt(interval[0]);
+//                    int end = Integer.parseInt(interval[1]);
+//                    _node.getRange().addInterval(start, end);
+//                }
                 rv.add(_node);
             }
         }

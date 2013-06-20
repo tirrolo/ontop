@@ -34,12 +34,15 @@ import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
 import it.unibz.krdb.obda.ontology.impl.OntologyImpl;
 import it.unibz.krdb.obda.ontology.impl.PropertySomeRestrictionImpl;
 import it.unibz.krdb.obda.ontology.impl.PunningException;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAG;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGConstructor;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGNode;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGOperations;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.SemanticIndexRange;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.SemanticIndexRange.Interval;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAG;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDescriptionDAGImpl;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.SemanticIndexEngine;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.SemanticIndexEngineImpl;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.SemanticIndexRange;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.SemanticIndexRange.Interval;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasoner;
+import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.RuleEmptynessIndex;
 
 import java.io.BufferedWriter;
@@ -416,6 +419,12 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 	private DAG pureIsa;
 
+	private TBoxReasoner reasonerDag;
+	
+	private TBoxReasoner reasonerIsa;
+	
+	private SemanticIndexEngine engine;
+	
 	private Ontology aboxDependencies;
 
 	private Ontology ontology;
@@ -484,32 +493,38 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		this.ontology = ontology;
 
 		log.debug("Ontology: {}", ontology.toString());
+		
+		//build the dag
 
-		dag = DAGConstructor.getISADAG(ontology);
+		reasonerDag = new TBoxReasonerImpl(ontology,false);
+		
+		dag=reasonerDag.getDAG();
+		
+		
+		//build the namedDag (or pureIsa)
+		NamedDescriptionDAGImpl transform = new NamedDescriptionDAGImpl(dag);
+		
+		pureIsa = transform.getDAG();
+		
+		reasonerIsa = new TBoxReasonerImpl(pureIsa);
+		
 
-		// USE THE DAG GRAPHS FOR DEBUGGING
-		//
-		// try {
-		// GraphGenerator.dumpISA(dag, "given");
-		// } catch (IOException e1) {
-		// e1.printStackTrace();
-		// }
-
-		dag.clean();
-
-		pureIsa = DAGConstructor.filterPureISA(dag);
-		aboxDependencies = DAGConstructor.getSigmaOntology(dag);
+		//to be checked
+		aboxDependencies =  reasonerDag.getSigmaOntology();
 		log.debug("Assertions aboxdependencies: "+ aboxDependencies);
 
-		pureIsa.clean();
-		pureIsa.index();
+		//create the indexes
+		engine= new SemanticIndexEngineImpl(reasonerIsa);
+		
 
 		/***
 		 * Copying the equivalences that might bet lost from the translation
 		 */
-		for (Description d : dag.equi_mappings.keySet()) {
-			pureIsa.equi_mappings.put(d, dag.equi_mappings.get(d));
+		Map<Description,Description> isaEquivalences =pureIsa.getReplacements();
+		for (Description d : dag.getReplacements().keySet()) {
+			isaEquivalences.put(d, dag.getReplacements().get(d));
 		}
+		pureIsa.setReplacements(isaEquivalences);
 
 		// try {
 		// GraphGenerator.dumpISA(dag, "no-cycles");
@@ -684,8 +699,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 					Predicate propPred = dfac.getDataPropertyPredicate(ifac.construct(prop));
 					Property propDesc = ofac.createProperty(propPred);
-					DAGNode node = pureIsa.getRoleNode(propDesc);
-					int idx = node.getIndex();
+					Description node = pureIsa.getNode(propDesc);
+					int idx = engine.getIndex(node);
 
 					switch (attributeType) {
 					case LITERAL:
@@ -754,8 +769,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 					Predicate propPred = dfac.getObjectPropertyPredicate(ifac.construct(prop));
 					Property propDesc = ofac.createProperty(propPred);
 
-					if (dag.equi_mappings.containsKey(propDesc)) {
-						Property desc = (Property) dag.equi_mappings
+					if (dag.getReplacements().containsKey(propDesc)) {
+						Property desc = (Property) dag.getReplacements()
 								.get(propDesc);
 						if (desc.isInverse()) {
 							String tmp = uri1;
@@ -767,8 +782,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 							c2isBNode = tmpIsBnode;
 						}
 					}
-					DAGNode node = pureIsa.getRoleNode(propDesc);
-					int idx = node.getIndex();
+					Description node = pureIsa.getNode(propDesc);
+					int idx = engine.getIndex(node);
 
 					out.append(String.format(role_insert_str,
 							getQuotedString(uri1), getQuotedString(uri2), idx,
@@ -790,8 +805,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 				Predicate clsPred = ((ClassAssertion) ax).getConcept();
 				ClassDescription clsDesc = ofac.createClass(clsPred);
-				DAGNode node = pureIsa.getClassNode(clsDesc);
-				int idx = node.getIndex();
+				Description node = pureIsa.getNode(clsDesc);
+				int idx = engine.getIndex(node);
 
 				out.append(String.format(cls_insert_str, getQuotedString(uri),
 						idx, c1isBNode));
@@ -1170,8 +1185,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 	private boolean isInverse(Predicate role) {
 		Property property = ofac.createProperty(role);
-		if (dag.equi_mappings.containsKey(property)) {
-			Property desc = (Property) dag.equi_mappings.get(property);
+		if (dag.getReplacements().containsKey(property)) {
+			Property desc = (Property) dag.getReplacements().get(property);
 			if (desc.isInverse()) {
 				return true;
 			}
@@ -1183,11 +1198,11 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		Integer idxc = indexes.get(concept);
 		if (idxc == null) {
 			ClassDescription description = ofac.createClass(concept);
-			DAGNode node = pureIsa.getClassNode(description);
+			Description node = pureIsa.getNode(description);
 			if (node == null) {
 				log.error("Found class without node: " + concept);
 			}
-			idxc = new Integer(node.getIndex());
+			idxc = new Integer(engine.getIndex(node));
 			indexes.put(concept, idxc);
 		}
 		return idxc.intValue();
@@ -1262,17 +1277,17 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 * Dealing with emptyness of upper level roles in the hierarchy
 			 */
 
-			DAGNode node = dag.get(ofac.createProperty(p));
-			Set<DAGNode> parents = new HashSet<DAGNode>(node.getAncestors());
+			Description node = dag.getNode(ofac.createProperty(p));
 			
-			Set<DAGNode> equivalents = new HashSet<DAGNode>();
-			for (DAGNode parent: parents) 
-				equivalents.addAll(parent.getEquivalents());
+			//get ancestors has also the equivalent nodes
+			Set<Set<Description>> parents = reasonerDag.getAncestors(node, false);
 			
-			parents.addAll(equivalents);
 			
-			for (DAGNode parent : parents) {
-				Description desc = parent.getDescription();
+			for (Set<Description> parent : parents) 
+			{
+				for(Description desc: parent)
+				{
+					
 				Property parentProp = (Property) desc;
 				Predicate parentP = parentProp.getPredicate();
 				boolean inverse = parentProp.isInverse();
@@ -1298,6 +1313,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 				assertNonEmptyness(headDL);
 				assertNonEmptyness(headTriple);
+				
+				}
 			}
 
 			/*
@@ -1308,46 +1325,42 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 * First domain (inverse false for \exists R)
 			 */
 			Description d = ofac.createPropertySomeRestriction(p, false);
-			DAGNode dagNode = dag.get(d);
-			parents = new HashSet<DAGNode>(dagNode.getAncestors());
-			parents.addAll(dagNode.getEquivalents());
+			Description dagNode = dag.getNode(d);
+			parents = reasonerDag.getAncestors(dagNode, false); //get ancestors has already the equivalences of dagNode
+//			parents.add(reasonerDag.getEquivalences(dagNode, false));
 			
-			equivalents = new HashSet<DAGNode>();
-			for (DAGNode parent: parents) 
-				equivalents.addAll(parent.getEquivalents());
 			
-			parents.addAll(equivalents);
-			
-			for (DAGNode parent : parents) {
+			for (Set<Description> parent : parents) {
 				// DL style head
-				ClassDescription classDescription = (ClassDescription) parent
-						.getDescription();
+				for(Description desc:parent)
+				{
+				ClassDescription classDescription = (ClassDescription) desc;
 
 				assertNonEmptynessOfClassExpression(typePredicate, typeObject,
 						fsubject, classDescription);
+				}
 			}
 
 			/*
 			 * First range (inverse true for \exists R^-)
 			 */
 			d = ofac.createPropertySomeRestriction(p, true);
-			dagNode = dag.get(d);
-			parents = new HashSet<DAGNode>(dagNode.getAncestors());
-			parents.addAll(dagNode.getEquivalents());
+			dagNode = dag.getNode(d);
+			parents = reasonerDag.getAncestors(dagNode, false);
+//			parents.add(reasonerDag.getEquivalences(dagNode, false));
 			
-			equivalents = new HashSet<DAGNode>();
-			for (DAGNode parent: parents) 
-				equivalents.addAll(parent.getEquivalents());
 			
-			parents.addAll(equivalents);
-			
-			for (DAGNode parent : parents) {
+			for (Set<Description> parent : parents) {
 				// DL style head
-				ClassDescription classDescription = (ClassDescription) parent
-						.getDescription();
+				for(Description desc:parent)
+				{
+					
+				
+				ClassDescription classDescription = (ClassDescription) desc;
 
 				assertNonEmptynessOfClassExpression(typePredicate, typeObject,
 						fsubject, classDescription);
+				}
 			}
 
 		} else if (assertion instanceof UnaryAssertion) {
@@ -1393,21 +1406,18 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 * class
 			 */
 
-			DAGNode node = dag.get(ofac.createClass(p));
-			Set<DAGNode> parents = new HashSet<DAGNode>(node.getAncestors());
-			Set<DAGNode> equivalents = new HashSet<DAGNode>();
-			for (DAGNode parent: parents) 
-				equivalents.addAll(parent.getEquivalents());
+			Description node = dag.getNode(ofac.createClass(p));
+			Set<Set<Description>> parents = reasonerDag.getAncestors(node, false);
 			
-			parents.addAll(equivalents);
-			
-			for (DAGNode parent : parents) {
+			for (Set<Description> parent : parents) {
 				// DL style head
-				ClassDescription classDescription = (ClassDescription) parent
-						.getDescription();
+				for(Description desc:parent)
+				{
+				ClassDescription classDescription = (ClassDescription) desc;
 
 				assertNonEmptynessOfClassExpression(typePredicate, typeObject,
 						fsubject, classDescription);
+				}
 			}
 
 		}
@@ -1520,8 +1530,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		Integer idxc = indexes.get(attribute);
 		if (idxc == null) {
 			Property propDesc = ofac.createProperty(attribute);
-			DAGNode node = pureIsa.getRoleNode(propDesc);
-			idxc = new Integer(node.getIndex());
+			Description node = pureIsa.getNode(propDesc);
+			idxc = new Integer(engine.getIndex(node));
 			indexes.put(attribute, idxc);
 		}
 		return idxc.intValue();
@@ -1650,16 +1660,17 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 	private COL_TYPE getAttributeType(Predicate attribute) {
 		PropertySomeRestriction role = ofac.getPropertySomeRestriction(
 				attribute, true);
-		DAGNode roleNode = dag.get(role);
-		Set<DAGNode> ancestors = roleNode.getAncestors();
-
-		for (DAGNode node : ancestors) {
-			Description desc = node.getDescription();
-			if (desc instanceof DataType) {
-				DataType datatype = (DataType) desc;
-				return datatype.getPredicate().getType(0); // TODO Put some
-															// check for
-															// multiple types
+		Description roleNode = dag.getNode(role);
+		Set<Set<Description>> ancestors = reasonerDag.getAncestors(roleNode, false);
+		for (Set<Description> node : ancestors) {
+			for(Description desc: node)
+			{
+				if (desc instanceof DataType) {
+					DataType datatype = (DataType) desc;
+					return datatype.getPredicate().getType(0); // TODO Put some
+																// check for
+																// multiple types
+				}
 			}
 		}
 		return COL_TYPE.LITERAL;
@@ -1672,88 +1683,85 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 	@Override
 	public void loadMetadata(Connection conn) throws SQLException {
-		log.debug("Checking if SemanticIndex exists in DB");
-
-		Map<Description, DAGNode> res_classes = new HashMap<Description, DAGNode>();
-		Map<Description, DAGNode> res_roles = new HashMap<Description, DAGNode>();
-		Map<Description, DAGNode> res_allnodes = new HashMap<Description, DAGNode>();
-		Statement st = conn.createStatement();
-		ResultSet res_rows = st.executeQuery(select_query);
-		while (res_rows.next()) {
-			String uri = res_rows.getString(1);
-			int idx = res_rows.getInt(2);
-			int start_idx = res_rows.getInt(3);
-			int end_idx = res_rows.getInt(4);
-			int type = res_rows.getInt(5);
-
-			Predicate p;
-			if (type == CLASS_TYPE) {
-
-				boolean exists = false;
-				boolean inverse = false;
-
-				// ExistentialNode
-				if (uri.startsWith("E")) {
-					exists = true;
-					uri = uri.substring(1);
-				}
-				// Inverse
-				if (uri.endsWith("-")) {
-					uri = uri.substring(0, uri.length() - 2);
-					inverse = true;
-				}
-				ClassDescription description;
-
-				if (exists) {
-					p = dfac.getPredicate(ifac.construct(uri), 2);
-					description = ofac.getPropertySomeRestriction(p, inverse);
-				} else {
-					p = dfac.getClassPredicate(ifac.construct(uri));
-					description = ofac.createClass(p);
-				}
-
-				if (res_classes.containsKey(description)) {
-					res_classes.get(description).getRange()
-							.addInterval(start_idx, end_idx);
-				} else {
-					DAGNode node = new DAGNode(description);
-					node.setIndex(idx);
-					node.setRange(new SemanticIndexRange(start_idx, end_idx));
-					res_classes.put(description, node);
-					res_allnodes.put(description, node);
-				}
-
-			} else if (type == ROLE_TYPE) {
-
-				Property description;
-				boolean inverse = false;
-
-				// Inverse
-				if (uri.endsWith("-")) {
-					uri = uri.substring(0, uri.length() - 2);
-					inverse = true;
-				}
-				p = dfac.getObjectPropertyPredicate(ifac.construct(uri));
-				description = ofac.createProperty(p, inverse);
-
-				if (res_roles.containsKey(description)) {
-					res_roles.get(description).getRange()
-							.addInterval(start_idx, end_idx);
-				} else {
-					DAGNode node = new DAGNode(description);
-					node.setIndex(idx);
-					node.setRange(new SemanticIndexRange(start_idx, end_idx));
-					res_roles.put(description, node);
-					res_allnodes.put(description, node);
-				}
-			}
-		}
-		res_rows.close();
-		st.close();
-
-		dag = new DAG(res_classes, res_roles,
-				new HashMap<Description, Description>(), res_allnodes);
-		pureIsa = DAGConstructor.filterPureISA(dag);
+//		log.debug("Checking if SemanticIndex exists in DB");
+//
+//		Set<Description> res_classes = new HashSet<Description>();
+//		Set<Description> res_roles = new HashSet<Description>();
+//		Set<Description> res_allnodes = new HashSet<Description>();
+//		Statement st = conn.createStatement();
+//		ResultSet res_rows = st.executeQuery(select_query);
+//		while (res_rows.next()) {
+//			String uri = res_rows.getString(1);
+//			int idx = res_rows.getInt(2);
+//			int start_idx = res_rows.getInt(3);
+//			int end_idx = res_rows.getInt(4);
+//			int type = res_rows.getInt(5);
+//
+//			Predicate p;
+//			if (type == CLASS_TYPE) {
+//
+//				boolean exists = false;
+//				boolean inverse = false;
+//
+//				// ExistentialNode
+//				if (uri.startsWith("E")) {
+//					exists = true;
+//					uri = uri.substring(1);
+//				}
+//				// Inverse
+//				if (uri.endsWith("-")) {
+//					uri = uri.substring(0, uri.length() - 2);
+//					inverse = true;
+//				}
+//				ClassDescription description;
+//
+//				if (exists) {
+//					p = dfac.getPredicate(ifac.construct(uri), 2);
+//					description = ofac.getPropertySomeRestriction(p, inverse);
+//				} else {
+//					p = dfac.getClassPredicate(ifac.construct(uri));
+//					description = ofac.createClass(p);
+//				}
+//
+//				if (!res_classes.contains(description)) {
+//						
+//					res_classes.add(description);
+//					res_allnodes.add(description);
+//				}
+//
+//			} else if (type == ROLE_TYPE) {
+//
+//				Property description;
+//				boolean inverse = false;
+//
+//				// Inverse
+//				if (uri.endsWith("-")) {
+//					uri = uri.substring(0, uri.length() - 2);
+//					inverse = true;
+//				}
+//				p = dfac.getObjectPropertyPredicate(ifac.construct(uri));
+//				description = ofac.createProperty(p, inverse);
+//
+//				if (!res_roles.contains(description)) {
+//					
+//				} else {
+//					DAGNode node = new DAGNode(description);
+//					node.setIndex(idx);
+//					node.setRange(new SemanticIndexRange(start_idx, end_idx));
+//					res_roles.put(description, node);
+//					res_allnodes.put(description, node);
+//				}
+//			}
+//		}
+//		res_rows.close();
+//		st.close();
+//
+//		dag = new DAG(res_classes, res_roles,
+//				new HashMap<Description, Description>(), res_allnodes);
+//		pureIsa = DAGConstructor.filterPureISA(dag);
+		
+		System.out.println("ENTERED IN LOADMETADATA!!!!!!!!!!");
+		System.exit(0);
 	}
 
 	@Override
@@ -1773,8 +1781,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		 * Collecting relevant nodes for each role. For a Role P, the relevant
 		 * nodes are, the DAGNode for P, and the top most inverse children of P
 		 */
-		DAGOperations.buildAncestors(dag);
-		DAGOperations.buildDescendants(dag);
+
 
 		// try {
 		// GraphGenerator.dumpISA(dag,"sidag");
@@ -1782,23 +1789,23 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		// // e.printStackTrace();
 		// }
 
-		Set<DAGNode> roleNodes = new HashSet<DAGNode>();
-		Map<DAGNode, List<DAGNode>> roleInverseMaps = new HashMap<DAGNode, List<DAGNode>>();
+		Set<Description> roleNodes = new HashSet<Description>();
+		Map<Description, List<Description>> roleInverseMaps = new HashMap<Description, List<Description>>();
 
 		Set<Predicate> roles = ontology.getRoles();
 		for (Predicate rolepred : roles) {
 
-			DAGNode node = dag.getRoleNode(ofac.createProperty(rolepred));
+			Description node = dag.getNode(ofac.createProperty(rolepred));
 			// We only map named roles
-			if (!(node.getDescription() instanceof Property)
-					|| ((Property) node.getDescription()).isInverse()) {
+			if (!(node instanceof Property)
+					|| ((Property) node).isInverse()) {
 				continue;
 			}
 			roleNodes.add(node);
 
-			List<DAGNode> roleInverseChildren = roleInverseMaps.get(node);
+			List<Description> roleInverseChildren = roleInverseMaps.get(node);
 			if (roleInverseChildren == null) {
-				roleInverseChildren = new LinkedList<DAGNode>();
+				roleInverseChildren = new LinkedList<Description>();
 				roleInverseMaps.put(node, roleInverseChildren);
 			}
 
@@ -1808,29 +1815,37 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 * 
 			 * Collecting the top most allows us to avoid redundancy elimination
 			 */
-			Queue<DAGNode> childrenQueue = new LinkedList<DAGNode>();
-			childrenQueue.addAll(node.getChildren());
-			childrenQueue.addAll(node.getEquivalents());
+			Queue<Set<Description>> childrenQueue = new LinkedList<Set<Description>>();
+			childrenQueue.addAll(reasonerDag.getDirectChildren(node, false));
+			childrenQueue.add(reasonerDag.getEquivalences(node, false));
 
 			while (!childrenQueue.isEmpty()) {
-				DAGNode child = childrenQueue.poll();
-				if ((child.getDescription() instanceof Property)
-						&& ((Property) child.getDescription()).isInverse()) {
+				
+				
+				Set<Description> children = childrenQueue.poll();
+				Description firstChild=children.iterator().next();
+				Description child=dag.getReplacements().get(firstChild);
+				if(child==null)
+					child=firstChild;
+				if(child.equals(node))
+					continue;
+				if ((child instanceof Property)
+						&& ((Property) child).isInverse()) {
 					roleInverseChildren.add(child);
 				} else {
-					childrenQueue.addAll(child.getChildren());
+					childrenQueue.addAll((reasonerDag.getDirectChildren(child, false)));
 				}
+				
 			}
 
 			/* Removing redundant nodes */
 
-			HashSet<DAGNode> inverseRedundants = new HashSet<DAGNode>();
-			for (DAGNode inverseNode : roleInverseChildren) {
-				Property role = ((Property) inverseNode.getDescription());
-				for (DAGNode possibleRedundantNode : roleInverseChildren) {
-					Property possibleRedundantRole = ((Property) possibleRedundantNode
-							.getDescription());
-					if (dag.getRoleNode(role).getDescendants()
+			HashSet<Description> inverseRedundants = new HashSet<Description>();
+			for (Description inverseNode : roleInverseChildren) {
+				Property role = ((Property) inverseNode);
+				for (Description possibleRedundantNode : roleInverseChildren) {
+					Property possibleRedundantRole = ((Property) possibleRedundantNode);
+					if (reasonerDag.getDescendants(role, false)
 							.contains(possibleRedundantRole))
 						inverseRedundants.add(possibleRedundantNode);
 				}
@@ -1845,31 +1860,40 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		 * isa P
 		 * 
 		 * Here we cannot collect only the top most, so we do it in two passes.
-		 * First we callect all exsts R children, then we remove redundant ones.
+		 * First we collect all exists R children, then we remove redundant ones.
 		 */
 
 		// TODO this part can be optimized if we know some existing dependencies
 		// (e.g., coming from given mappings)
 
-		Set<DAGNode> classNodesMaps = new HashSet<DAGNode>();
-		Map<DAGNode, Set<DAGNode>> classExistsMaps = new HashMap<DAGNode, Set<DAGNode>>();
-		for (DAGNode node : dag.getClasses()) {
-			// we only map named classes
-			if (!(node.getDescription() instanceof OClass)) {
+		Set<Description> classNodesMaps = new HashSet<Description>();
+		Map<Description, Set<Description>> classExistsMaps = new HashMap<Description, Set<Description>>();
+		
+		for (Description node : dag.getClasses()) {
+			if(dag.getReplacements().containsKey(node))
 				continue;
-			}
 			classNodesMaps.add(node);
-
-			Set<DAGNode> existChildren = classExistsMaps.get(node);
+			Set<Description> existChildren = classExistsMaps.get(node);
 			if (existChildren == null) {
-				existChildren = new HashSet<DAGNode>();
+				
+				existChildren = new HashSet<Description>();
 				classExistsMaps.put(node, existChildren);
 			}
 
 			/* Collecting Exists R children */
-			for (DAGNode child : node.getDescendants()) {
-				if (child.getDescription() instanceof PropertySomeRestrictionImpl) {
+			//consider also the equivalent of the node
+			for (Description child : reasonerDag.getEquivalences(node, false)) {
+				
+				if (child instanceof PropertySomeRestrictionImpl& !(child.equals(node))) {
 					existChildren.add(child);
+				}
+				
+			}
+			for (Set<Description> children : reasonerDag.getDescendants(node, false)) {
+				for (Description child:children){
+				if (child instanceof PropertySomeRestrictionImpl) {
+					existChildren.add(child);
+				}
 				}
 			}
 
@@ -1878,33 +1902,34 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			 * role hierarchy )
 			 */
 			// Set<DAGNode> existChildren = classExistsMaps.get(node);
-			Set<DAGNode> redundantNodes = new HashSet<DAGNode>();
-			for (DAGNode existsnode : existChildren) {
+			Set<Description> redundantNodes = new HashSet<Description>();
+			for (Description existsnode : existChildren) {
 				/* Here we have ES */
-				PropertySomeRestriction existsDesc = (PropertySomeRestriction) existsnode
-						.getDescription();
+				PropertySomeRestriction existsDesc = (PropertySomeRestriction) existsnode;
 				Property role = ofac.createProperty(existsDesc.getPredicate(),
 						existsDesc.isInverse());
-				DAGNode roleNode = dag.getRoleNode(role);
+				Description roleNode = dag.getNode(role);
 
-				for (DAGNode possiblyRedundantNode : existChildren) {
+				for (Description possiblyRedundantNode : existChildren) {
 					/* Here we have ER */
-					PropertySomeRestriction existsDesc2 = (PropertySomeRestriction) possiblyRedundantNode
-							.getDescription();
+					PropertySomeRestriction existsDesc2 = (PropertySomeRestriction) possiblyRedundantNode;
 					Property role2 = ofac
 							.createProperty(existsDesc2.getPredicate(),
 									existsDesc2.isInverse());
-					DAGNode roleNode2 = dag.getRoleNode(role2);
+					Description roleNode2 = dag.getNode(role2);
 
-					if (roleNode.getDescendants().contains(roleNode2))
+					for(Set<Description> descendants: reasonerDag.getDescendants(roleNode, false)){
+						if(descendants.contains(roleNode2))
 						/*
 						 * The DAG implies that R ISA S, so we remove ER
 						 */
 						redundantNodes.add(possiblyRedundantNode);
+					}
 				}
 			}
 			existChildren.removeAll(redundantNodes);
 		}
+		
 
 		/*
 		 * We collected all classes and properties that need mappings, and the
@@ -1922,16 +1947,16 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 		Map<Predicate, List<OBDAMappingAxiom>> mappings = new HashMap<Predicate, List<OBDAMappingAxiom>>();
 
-		for (DAGNode roleNode : roleNodes) {
+		for (Description roleNode : roleNodes) {
 
 			// Get the description of the role node, i.e., a Property object.
-			Property property = (Property) roleNode.getDescription();
+			Property property = (Property) roleNode;
 
 			// Get the property predicate
 			Predicate role = property.getPredicate();
 
 			// Get the indexed node (from the pureIsa dag)
-			DAGNode indexedNode = pureIsa.getRoleNode(property);
+			Description indexedNode = pureIsa.getNode(property);
 
 			// We need to make sure we make no mappings for Auxiliary roles
 			// introduced by the Ontology translation process.
@@ -2227,9 +2252,9 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		 * Creating mappings for each concept
 		 */
 
-		for (DAGNode classNode : classNodesMaps) {
+		for (Description classNode : classNodesMaps) {
 
-			Predicate classuri = ((OClass) classNode.getDescription())
+			Predicate classuri = ((OClass) classNode)
 					.getPredicate();
 
 			List<OBDAMappingAxiom> currentMappings = new LinkedList<OBDAMappingAxiom>();
@@ -2276,10 +2301,10 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			/*
 			 * Getting the indexed node (from the pureIsa dag)
 			 */
-			DAGNode indexedNode = pureIsa.getClassNode((OClass) classNode
-					.getDescription());
+			Description indexedNode = pureIsa.getNode((OClass) classNode);
+			
 
-			List<Interval> intervals = indexedNode.getRange().getIntervals();
+			List<Interval> intervals = engine.getIntervals(indexedNode);
 
 			if (intervals.size() > 1)
 				sql1.append("(");
@@ -2599,7 +2624,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		return dfac.getCQIE(head, bodyAtoms);
 	}
 
-	private String constructSourceQuery(Predicate predicate, DAGNode node,
+	private String constructSourceQuery(Predicate predicate, Description node,
 			COL_TYPE type1, COL_TYPE type2) {
 		StringBuffer sql = new StringBuffer();
 		switch (type2) {
@@ -2663,7 +2688,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		/*
 		 * Generating the interval conditions for semantic index
 		 */
-		List<Interval> intervals = node.getRange().getIntervals();
+		List<Interval> intervals = engine.getIntervals(node);
 		if (intervals.size() > 1)
 			sql.append("(");
 		
@@ -3218,47 +3243,54 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 
 		String insert_query = this.insert_query.replace("?", "%s");
 
-		for (DAGNode node : dag.getClasses()) {
+		for (Description node : ((DAGImpl) dag).vertexSet()) {
+			if(!(node instanceof ClassDescription)){
+				continue;
+			}
 
-			ClassDescription description = (ClassDescription) node
-					.getDescription();
+			ClassDescription description = (ClassDescription) node;
+					
 
 			/*
 			 * we always prefer the pureISA node since it can have extra data
 			 * (indexes)
 			 */
-			DAGNode node2 = pureIsa.getClassNode(description);
-			if (node2 != null) {
-				node = node2;
-			}
+//			Description node2 = pureIsa.getNode(description);
+//			if (node2 != null) {
+//				node = node2;
+//			}
 
 			String uri = description.toString();
+			
 
-			for (Interval it : node.getRange().getIntervals()) {
+			for (Interval it : engine.getIntervals(node)) {
 
 				out.append(String.format(insert_query, getQuotedString(uri),
-						node.getIndex(), it.getStart(), it.getEnd(), CLASS_TYPE));
+						engine.getIndex(node), it.getStart(), it.getEnd(), CLASS_TYPE));
 				out.append(";\n");
 			}
 		}
 
-		for (DAGNode node : dag.getRoles()) {
-			Property description = (Property) node.getDescription();
+		for (Description node : ((DAGImpl) dag).vertexSet()) {
+			if(!(node instanceof Property)){
+				continue;
+			}
+			Property description = (Property) node;
 
 			/*
 			 * we always prefer the pureISA node since it can have extra data
 			 * (indexes)
 			 */
-			DAGNode node2 = pureIsa.getRoleNode(description);
+			Description node2 = pureIsa.getNode(description);
 			if (node2 != null) {
 				node = node2;
 			}
 
 			String uri = description.toString();
 
-			for (Interval it : node.getRange().getIntervals()) {
+			for (Interval it : engine.getIntervals(node)) {
 				out.append(String.format(insert_query, getQuotedString(uri),
-						node.getIndex(), it.getStart(), it.getEnd(), ROLE_TYPE));
+						engine.getIndex(node), it.getStart(), it.getEnd(), ROLE_TYPE));
 				out.append(";\n");
 			}
 		}
@@ -3270,25 +3302,26 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 	public void insertMetadata(Connection conn) throws SQLException {
 
 		PreparedStatement stm = conn.prepareStatement(insert_query);
-		for (DAGNode node : dag.getClasses()) {
-
-			ClassDescription description = (ClassDescription) node
-					.getDescription();
+		for (Description node : ((DAGImpl) dag).vertexSet()) {
+			if(!(node instanceof ClassDescription)){
+				continue;
+			}
+			ClassDescription description = (ClassDescription) node;
 
 			/*
 			 * we always prefer the pureISA node since it can have extra data
 			 * (indexes)
 			 */
-			DAGNode node2 = pureIsa.getClassNode(description);
-			if (node2 != null) {
-				node = node2;
-			}
+//			Description node2 = pureIsa.getNode(description);
+//			if (node2 != null) {
+//				node = node2;
+//			}
 
 			String uri = description.toString();
-
-			for (Interval it : node.getRange().getIntervals()) {
+//			if(engine.getIntervals(node)!= null)
+			for (Interval it : engine.getIntervals(node)) {
 				stm.setString(1, uri);
-				stm.setInt(2, node.getIndex());
+				stm.setInt(2, engine.getIndex(node));
 				stm.setInt(3, it.getStart());
 				stm.setInt(4, it.getEnd());
 				stm.setInt(5, CLASS_TYPE);
@@ -3297,23 +3330,26 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 		}
 		stm.executeBatch();
 
-		for (DAGNode node : dag.getRoles()) {
-			Property description = (Property) node.getDescription();
+		for (Description node : ((DAGImpl) dag).vertexSet()) {
+			if(!(node instanceof Property)){
+				continue;
+			}
+			Property description = (Property) node;
 
 			/*
 			 * we always prefer the pureISA node since it can have extra data
 			 * (indexes)
 			 */
-			DAGNode node2 = pureIsa.getRoleNode(description);
-			if (node2 != null) {
-				node = node2;
-			}
+//			Description node2 = pureIsa.getNode(description);
+//			if (node2 != null) {
+//				node = node2;
+//			}
 
 			String uri = description.toString();
 
-			for (Interval it : node.getRange().getIntervals()) {
+			for (Interval it : engine.getIntervals(node)) {
 				stm.setString(1, uri);
-				stm.setInt(2, node.getIndex());
+				stm.setInt(2, engine.getIndex(node));
 				stm.setInt(3, it.getStart());
 				stm.setInt(4, it.getEnd());
 				stm.setInt(5, ROLE_TYPE);
@@ -3550,8 +3586,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 						// Predicate propPred =
 						// attributeABoxAssertion.getAttribute();
 						Property propDesc = ofac.createProperty(attribute);
-						DAGNode node = pureIsa.getRoleNode(propDesc);
-						idx = node.getIndex();
+						Description node = pureIsa.getNode(propDesc);
+						idx = engine.getIndex(node);
 						indexes.put(attribute, idx);
 					} else {
 						idx = idxc;
@@ -3617,8 +3653,8 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 					Predicate propPred = roleABoxAssertion.getRole();
 					Property propDesc = ofac.createProperty(propPred);
 
-					if (dag.equi_mappings.containsKey(propDesc)) {
-						Property desc = (Property) dag.equi_mappings
+					if (dag.getReplacements().containsKey(propDesc)) {
+						Property desc = (Property) dag.getReplacements()
 								.get(propDesc);
 						if (desc.isInverse()) {
 							String tmp = uri1;
@@ -3631,9 +3667,9 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 					Integer idxc = indexes.get(propPred);
 					if (idxc == null) {
 
-						DAGNode node = pureIsa.getRoleNode(propDesc);
+						Description node = pureIsa.getNode(propDesc);
 						if (node == null) {
-							Property desc = (Property) dag.equi_mappings
+							Property desc = (Property) dag.getReplacements()
 									.get(propDesc);
 
 							if (desc == null) {
@@ -3642,10 +3678,10 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 							}
 							Property desinv = ofac.createProperty(
 									desc.getPredicate(), !desc.isInverse());
-							DAGNode node2 = (pureIsa.getRoleNode(desinv));
-							idx = node2.getIndex();
+							Description node2 = (pureIsa.getNode(desinv));
+							idx = engine.getIndex(node2);
 						} else {
-							idx = node.getIndex();
+							idx = engine.getIndex(node);
 						}
 						indexes.put(roleABoxAssertion.getRole(), idx);
 					} else {
@@ -3669,14 +3705,14 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 					if (idxc == null) {
 						Predicate clsPred = cassertion.getConcept();
 						ClassDescription clsDesc = ofac.createClass(clsPred);
-						DAGNode node = pureIsa.getClassNode(clsDesc);
+						Description node = pureIsa.getNode(clsDesc);
 						if (node == null) {
 							String cls = cassertion.getConcept().getName()
 									.toString();
 							log.error("Found class without node: "
 									+ cls.toString());
 						}
-						idx = node.getIndex();
+						idx = engine.getIndex(node);
 						indexes.put(pred, idx);
 					} else {
 						idx = idxc;
@@ -3919,5 +3955,7 @@ public class RDBMSSIRepositoryManager implements RDBMSDataRepositoryManager,
 			hash = (f.getPredicate().hashCode() + f.getTerms().size());
 		return hash;
 	}
+
+
 
 }

@@ -35,9 +35,9 @@ public class QuestOWLStatement implements OWLStatement {
 	private QuestStatement st;
 	private QuestOWLConnection conn;
 
-	public QuestOWLStatement(QuestStatement st, QuestOWLConnection conn) {
+	public QuestOWLStatement(QuestStatement questStatement, QuestOWLConnection conn) {
 		this.conn = conn;
-		this.st = st;
+		this.st = questStatement;
 	}
 	
 	public QuestStatement getQuestStatement() {
