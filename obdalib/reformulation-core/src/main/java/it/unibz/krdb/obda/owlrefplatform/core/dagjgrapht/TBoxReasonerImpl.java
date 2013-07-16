@@ -344,7 +344,9 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 			 iterator= new BreadthFirstIterator<Description, DefaultEdge>(reversed, node);
 			
 //			I don't want to consider the current node
-			Description startNode=iterator.next();
+			Description start=iterator.next();
+			 
+			 Description startNode=desc;
 			Set<Description> sourcesStart =getEquivalences(startNode, named);
 			Set<Description> sourcesStartnoNode= new HashSet<Description>();
 			for(Description equivalent: sourcesStart){
@@ -438,7 +440,9 @@ public class TBoxReasonerImpl implements TBoxReasoner{
 			iterator= new BreadthFirstIterator<Description, DefaultEdge>(dag, node);
 			
 			//I don't want to consider the current node
-			Description startNode=iterator.next();
+			Description start=iterator.next();
+		
+			 Description startNode=desc;
 			Set<Description> sourcesStart =getEquivalences(startNode, named);
 			Set<Description> sourcesStartnoNode= new HashSet<Description>();
 			for(Description equivalent: sourcesStart){

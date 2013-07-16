@@ -35,9 +35,9 @@ public class S_TestTransitiveReduction extends TestCase {
 		input.add("src/test/resources/test/dag/role-equivalence.owl");
 		
 		/** C -> B  -> A  C->A*/
-		input.add("src/test/resources/test/newDag/transitive.owl");
+//		input.add("src/test/resources/test/newDag/transitive.owl");
 		/** C -> B  -> A  C->D ->A C->A */
-		input.add("src/test/resources/test/newDag/transitive2.owl");
+//		input.add("src/test/resources/test/newDag/transitive2.owl");
 
 		/** C = B -> ER -> A*/
 		input.add("src/test/resources/test/newDag/equivalents1.owl");
@@ -158,7 +158,8 @@ public class S_TestTransitiveReduction extends TestCase {
 				for(DefaultEdge edge: g1.incomingEdgesOf(vertex)){
 					Description source=g1.getEdgeSource(edge);
 					for(Set<Description> descendant:descendants){
-					if (!children.contains(descendant) & descendant.contains(source))
+
+					if (!children.contains(descendant) & ! equivalents.contains(descendant.iterator().next()) &descendant.contains(source))
 						numberRedundants +=1;	
 					}
 					
