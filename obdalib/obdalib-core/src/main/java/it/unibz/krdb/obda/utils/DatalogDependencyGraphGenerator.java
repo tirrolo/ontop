@@ -144,18 +144,14 @@ public class DatalogDependencyGraphGenerator {
 
 		for (Function bodyAtom : rule.getBody()) {
 
-			if (bodyAtom.isBooleanFunction()) {
-				continue;
-			}
-
 			if (bodyAtom.isDataFunction()) {
 				dependencyList.add(bodyAtom.getFunctionSymbol());
-
-			}
-
-			if (bodyAtom.isAlgebraFunction()) {
-				generatePredicateDependency_traverseBodyAtom(dependencyList,
-						bodyAtom);
+			} else if (bodyAtom.isAlgebraFunction() || bodyAtom.isBooleanFunction()) {
+				generatePredicateDependency_traverseBodyAtom(dependencyList, bodyAtom);
+			} else if (bodyAtom.isArithmeticFunction() || bodyAtom.isDataTypeFunction()){
+				continue;
+			} else {
+				throw new IllegalStateException("Unknown Function");
 			}
 		}
 
