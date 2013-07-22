@@ -3,15 +3,19 @@ package it.unibz.krdb.obda.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jgraph.graph.DefaultEdge;
+import org.jgrapht.traverse.TopologicalOrderIterator;
+
 import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.OBDADataFactory;
+import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import junit.framework.TestCase;
 
-public class DatalogDependencyGraphGeneratorTest extends TestCase {
+public class DatalogDependencyGraphGeneratorTest<E> extends TestCase {
 
 	OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
 
@@ -174,5 +178,13 @@ public class DatalogDependencyGraphGeneratorTest extends TestCase {
 		assertEquals(4, g.getRuleDependencyGraph().edgeSet().size());
 		
 		assertEquals(3, g.getExtensionalPredicates().size());
+		
+		TopologicalOrderIterator<Predicate, DefaultEdge> iter =
+					new TopologicalOrderIterator<Predicate, DefaultEdge>(g.getPredicateDependencyGraph());
+		
+		while(iter.hasNext()){
+			System.err.println(iter.next());
+		}
+		
 	}
 }

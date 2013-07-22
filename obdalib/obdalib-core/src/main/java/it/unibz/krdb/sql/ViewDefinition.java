@@ -6,6 +6,17 @@ public class ViewDefinition extends DataDefinition {
 
 	private String statement;
 
+
+	public ViewDefinition(String name) {
+		super(name);
+	}
+	
+	
+	public void setSQL(String statement) {
+		this.statement = statement;
+	}
+	
+	@Deprecated
 	public void copy(String statement) {
 		this.statement = statement;
 	}

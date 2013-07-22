@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DBMetadata implements Serializable {
 
@@ -341,4 +343,96 @@ public class DBMetadata implements Serializable {
 		}
 		return pkeys;
 	}
+	
+	public ViewDefinition createViewDefinition(String name, String sqlString) {
+		ViewDefinition vd = new ViewDefinition(name);
+		vd.setSQL(sqlString);
+		int pos = 1;
+		List<Attribute> listOfAttributes = collectAttributesFromQuery(sqlString);
+		for (Attribute attr : listOfAttributes) {
+			vd.setAttribute(pos, attr);
+			pos++;
+		}
+		return vd;
+	}
+	
+	private List<Attribute> collectAttributesFromQuery(String sqlString) {
+		List<Attribute> attributeList = new LinkedList<Attribute>();
+		
+		int start = 6; // the position of 'select' keyword
+		int end = sqlString.toLowerCase().indexOf("from");	// find the position of 'from' keyword	
+		
+		if (end == -1) {
+			throw new RuntimeException("Error parsing SQL query: Couldn't find FROM keyword");
+		}
+		// The projection string will contain the column names separated by commas.
+		//but it might have commas inside REPLACE statements, therefore we need to go
+		//trough the string extracting the columns
+		String projection = sqlString.substring(start, end).trim();
+		char[] listchar = projection.toCharArray();
+		List<String> columns = new LinkedList<String>(); //here we keep the column names
+		String tempattr = new String();
+		boolean ignore = false;
+		int bracketbalance =0;
+
+		for (int i = 0, n = listchar.length; i < n; i++){
+			char symbol=listchar[i];
+			if (symbol!=','&& symbol!='('  && !ignore){
+				tempattr= tempattr + symbol;
+			} else if (symbol=='(' && ignore == false) {
+				ignore= true;
+				tempattr= tempattr + symbol;
+				bracketbalance =1; 
+			} else if (ignore == true && bracketbalance>0) {
+				tempattr= tempattr + symbol;
+				if (symbol=='('){
+					bracketbalance++;
+				}
+				if (symbol==')'){
+					bracketbalance--;
+				}
+				
+			} else if  (ignore == true && bracketbalance==0){
+				ignore =  false;
+			} else if (symbol==',' && bracketbalance==0 && ignore == false){
+				columns.add(removeQuotes(tempattr));
+				tempattr = "";
+			}
+		}
+		
+		
+		
+		/*
+		 * Now we have to check every column and see if it has a proper format:
+		 * table.name
+		 * name
+		 * "something" AS name
+		 */
+		Pattern pattern = Pattern.compile("^((\\w|_)+(\\.(\\w|_)+){0,2})");
+		Pattern aliasPattern = Pattern.compile("[as]\\s+(.*)", Pattern.CASE_INSENSITIVE);
+		
+		for (int i = 0; i < columns.size(); i++) {
+			String columnName = columns.get(i).trim();
+			
+			Matcher matcher = pattern.matcher(columnName);
+			boolean patternFound = matcher.matches();
+			if (!patternFound) {
+				
+				Matcher aliasMatch = aliasPattern.matcher(columnName);
+				if (aliasMatch.find()) { // has an alias
+					columnName = aliasMatch.group(1);  // make the alias name as the column name
+				} else {
+					throw new RuntimeException("Cannot parse the expression: " + columnName + " in SELECT statment. AS statement is probably required");
+				}
+			}			
+			Attribute atname = new Attribute(columnName);
+			attributeList.add(atname);
+		}
+		return attributeList;
+	}
+
+	private String removeQuotes(String str) {
+		return str.replace("\"", "");
+	}
+
 }

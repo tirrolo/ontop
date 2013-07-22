@@ -10,6 +10,7 @@ import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.NumericalOperationPredicate;
+import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
 import it.unibz.krdb.obda.model.Predicate;
@@ -18,6 +19,7 @@ import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.URITemplatePredicate;
 import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
+import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.Quest;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
@@ -25,6 +27,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.DB2SQLDialectAdapt
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.JDBCUtility;
 import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
 import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
+import it.unibz.krdb.obda.utils.DatalogDependencyGraphGenerator;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.DataDefinition;
 import it.unibz.krdb.sql.TableDefinition;
@@ -41,6 +44,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jgraph.graph.DefaultEdge;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -106,21 +112,32 @@ public class SQLGenerator implements SQLQueryGenerator {
 	 * method descriptions.
 	 */
 	@Override
-	public String generateSourceQuery(DatalogProgram query, List<String> signature) throws OBDAException {
-		isDistinct = hasSelectDistinctStatement(query);
-		isOrderBy = hasOrderByClause(query);
-		if (query.getQueryModifiers().hasModifiers()) {
+	public String generateSourceQuery(DatalogProgram queryProgram, List<String> signature) throws OBDAException {
+		
+		
+		DatalogDependencyGraphGenerator depGrqaph = new DatalogDependencyGraphGenerator(queryProgram);
+
+		
+		Map<Predicate, List<CQIE>> ruleIndex = depGrqaph.getRuleIndex();
+		List<Predicate> predicatesInBottomUp = depGrqaph.getPredicatesInBottomUp();		
+		Set<Predicate> extensionalPredicates = depGrqaph.getExtensionalPredicates();
+		
+		
+		
+		isDistinct = hasSelectDistinctStatement(queryProgram);
+		isOrderBy = hasOrderByClause(queryProgram);
+		if (queryProgram.getQueryModifiers().hasModifiers()) {
 			final String indent = "   ";
 			final String outerViewName = "SUB_QVIEW";
-			String subquery = generateQuery(query, signature, indent);
+			String subquery = generateQuery(queryProgram, signature, indent,ruleIndex,  predicatesInBottomUp, extensionalPredicates);
 
 			String modifier = "";
-			List<OrderCondition> conditions = query.getQueryModifiers().getSortConditions();
+			List<OrderCondition> conditions = queryProgram.getQueryModifiers().getSortConditions();
 			if (!conditions.isEmpty()) {
 				modifier += sqladapter.sqlOrderBy(conditions, outerViewName) + "\n";
 			}
-			long limit = query.getQueryModifiers().getLimit();
-			long offset = query.getQueryModifiers().getOffset();
+			long limit = queryProgram.getQueryModifiers().getLimit();
+			long offset = queryProgram.getQueryModifiers().getOffset();
 			if (limit != -1 || offset != -1) {
 				modifier += sqladapter.sqlSlice(limit, offset) + "\n";
 			}
@@ -131,7 +148,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 			sql += modifier;
 			return sql;
 		} else {
-			return generateQuery(query, signature, "");
+			return generateQuery(queryProgram, signature, "", ruleIndex,  predicatesInBottomUp, extensionalPredicates);
 		}
 	}
 	
@@ -155,16 +172,130 @@ public class SQLGenerator implements SQLQueryGenerator {
 	/**
 	 * Main method. Generates the full query, taking into account
 	 * limit/offset/order by.
+	 * @param ruleIndex 
+	 * @param extensionalPredicates 
+	 * @param ruleDependencyGraph 
+	 * @param predicateDependencyGraph 
+	 * @param setExt 
 	 */
 	private String generateQuery(DatalogProgram query, List<String> signature,
-			String indent) throws OBDAException {
+			String indent,  Map<Predicate, List<CQIE>> ruleIndex, List<Predicate> predicatesBottomUp, Set<Predicate> extensionalPredicates) throws OBDAException {
 
-		int numberOfQueries = query.getRules().size();
-
+		List<CQIE> Originalrules = query.getRules();
+		int numberOfQueries = Originalrules.size();
+		
+		int listSize = predicatesBottomUp.size();
+		int i = 0;
+		while( i<listSize -1 ){
+			Predicate pred = predicatesBottomUp.get(i);
+			if (extensionalPredicates.contains(pred)){
+				continue;
+			} else {
+				createViewFrom(pred,metadata,ruleIndex, query, signature);
+			}
+			i++ ;
+		}	
+		//This should be ans1, and the rules defining it.
+		Predicate predAns1 = predicatesBottomUp.get(i);
+		List<CQIE> ansrules = ruleIndex.get(predAns1);
+		
+		
+		
+		
 		List<String> queriesStrings = new LinkedList<String>();
 		/* Main loop, constructing the SPJ query for each CQ */
-		for (CQIE cq : query.getRules()) {
 
+		
+		for (CQIE cq : ansrules) {
+
+		/*
+		 * Here we normalize so that the form of the CQ is as close to the
+		 * form of a normal SQL algebra as possible, particularly, no shared
+		 * variables, only joins by means of equality. Also, equalities in
+		 * nested expressions (JOINS) are kept at their respective levels to
+		 * generate correct ON and wHERE clauses.
+		 */
+//		log.debug("Before pushing equalities: \n{}", cq);
+
+		DatalogNormalizer.enforceEqualities(cq, false);
+
+//		log.debug("Before folding Joins: \n{}", cq);
+
+		DatalogNormalizer.foldJoinTrees(cq, false);
+
+//		log.debug("Before pulling out equalities: \n{}", cq);
+		
+		DatalogNormalizer.pullOutEqualities(cq);
+		
+//		log.debug("Before pulling out Left Join Conditions: \n{}", cq);
+		
+		DatalogNormalizer.pullOutLeftJoinConditions(cq);
+		
+//		log.debug("Before pulling up nested references: \n{}", cq);
+
+		DatalogNormalizer.pullUpNestedReferences(cq, false);
+
+//		log.debug("Before adding trivial equalities: \n{}, cq);", cq);
+
+		DatalogNormalizer.addMinimalEqualityToLeftJoin(cq);
+
+//		log.debug("Normalized CQ: \n{}", cq);
+
+		Predicate headPredicate = cq.getHead().getFunctionSymbol();
+		if (!headPredicate.getName().toString().equals("ans1")) {
+			// not a target query, skip it.
+			continue;
+		}
+
+		QueryAliasIndex index = new QueryAliasIndex(cq);
+
+		boolean innerdistincts = false;
+		if (isDistinct && numberOfQueries == 1) {
+			innerdistincts = true;
+		}
+
+		String FROM = getFROM(cq, index);
+		String WHERE = getWHERE(cq, index);
+		String SELECT = getSelectClause(signature, cq, index, innerdistincts);
+
+		String querystr = SELECT + FROM + WHERE;
+		queriesStrings.add(querystr);
+	}
+
+		
+	
+
+		
+		
+		
+		
+		
+		
+		Iterator<String> queryStringIterator = queriesStrings.iterator();
+		StringBuilder result = new StringBuilder();
+		if (queryStringIterator.hasNext()) {
+			result.append(queryStringIterator.next());
+		}
+
+		String UNION = null;
+		if (isDistinct) {
+			UNION = "UNION";
+		} else {
+			UNION = "UNION ALL";
+		}
+		while (queryStringIterator.hasNext()) {
+			result.append("\n");
+			result.append(UNION);
+			result.append("\n\n");
+			result.append(queryStringIterator.next());
+		}
+
+		return result.toString();
+	}
+
+	private String generateQueryFromSingleRule(CQIE cq,	List<String> signature) throws OBDAException 
+	{
+		//for (CQIE cq : query.getRules()) {
 			/*
 			 * Here we normalize so that the form of the CQ is as close to the
 			 * form of a normal SQL algebra as possible, particularly, no shared
@@ -198,16 +329,12 @@ public class SQLGenerator implements SQLQueryGenerator {
 
 //			log.debug("Normalized CQ: \n{}", cq);
 
-			Predicate headPredicate = cq.getHead().getFunctionSymbol();
-			if (!headPredicate.getName().toString().equals("ans1")) {
-				// not a target query, skip it.
-				continue;
-			}
-
 			QueryAliasIndex index = new QueryAliasIndex(cq);
 
 			boolean innerdistincts = false;
-			if (isDistinct && numberOfQueries == 1) {
+			
+			//&& numberOfQueries == 1
+			if (isDistinct ) {
 				innerdistincts = true;
 			}
 
@@ -216,30 +343,87 @@ public class SQLGenerator implements SQLQueryGenerator {
 			String SELECT = getSelectClause(signature, cq, index, innerdistincts);
 
 			String querystr = SELECT + FROM + WHERE;
-			queriesStrings.add(querystr);
+			return querystr ;
+		}
+	
+
+	/**
+
+	* This Method was created to handle the semantics of OPTIONAL when there
+
+	* are multiple mappings. It will take mappings of the form
+
+	*
+
+	* Concept <- SQL 1 Concept <- SQL 2
+
+	*
+
+	* And will generate a view of the form
+
+	*
+
+	* ConceptView = SQL 1 UNION SQL 2
+
+	*
+
+	* and a rule of the form
+
+	*
+
+	* ConceptUnion <- ConceptView
+
+	*
+
+	* The idea is to replace Concept by ConceptUnion in the Optionals/LeftJoins
+	 * @param ruleIndex 
+	 * @param query 
+	 * @param signature 
+	 * @throws OBDAException 
+
+	*
+
+	* @throws Exception
+
+	*/
+
+	private void createViewFrom(Predicate pred, DBMetadata metadata,
+			Map<Predicate, List<CQIE>> ruleIndex, DatalogProgram query,
+			List<String> signature) throws OBDAException
+	{
+
+
+		/*
+		 * 
+		 * Now we process non-deterministic mappings
+		 */
+
+		/* Creates BODY of the view query */
+
+		List<CQIE> ruleList = ruleIndex.get(pred);
+		String UnionView = "";
+
+		for (CQIE cq : ruleList) {
+			String sqlQuery = generateQueryFromSingleRule(cq, signature);
+			UnionView = UnionView + "\n" + "\n Union \n (" + sqlQuery + ")";
+
 		}
 
-		Iterator<String> queryStringIterator = queriesStrings.iterator();
-		StringBuilder result = new StringBuilder();
-		if (queryStringIterator.hasNext()) {
-			result.append(queryStringIterator.next());
-		}
+		/* Creates the SQL of the View */
 
-		String UNION = null;
-		if (isDistinct) {
-			UNION = "UNION";
-		} else {
-			UNION = "UNION ALL";
-		}
-		while (queryStringIterator.hasNext()) {
-			result.append("\n");
-			result.append(UNION);
-			result.append("\n\n");
-			result.append(queryStringIterator.next());
-		}
+		Map<Predicate, List<Integer>> pkeys = DBMetadata.extractPKs(metadata,
+				query);
 
-		return result.toString();
+		// create the names for the view and the mapping head
+
+		String viewname = "Quest-" + pred + "-UnionView";
+
+		/* Creates the View itself */
+		ViewDefinition viewU = metadata.createViewDefinition(viewname,	UnionView);
+		metadata.add(viewU);
 	}
+
+
 
 	/***
 	 * Returns a string with boolean conditions formed with the boolean atoms

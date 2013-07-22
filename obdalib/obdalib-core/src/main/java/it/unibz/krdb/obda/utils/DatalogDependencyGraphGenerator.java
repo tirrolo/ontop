@@ -6,6 +6,9 @@ import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.Predicate;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -17,6 +20,7 @@ import java.util.Set;
 import org.jgraph.graph.DefaultEdge;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 
 /***
  * 
@@ -53,6 +57,12 @@ public class DatalogDependencyGraphGenerator {
 	 */
 	private Set<Predicate> extensionalPredicates = new HashSet<Predicate>();
 
+	/**
+	 * Bottom-up Ordered List of predicates
+	 */
+	private List<Predicate> predicatesInBottomUp = new ArrayList<Predicate>();
+	
+	
 	public DirectedGraph<Predicate, DefaultEdge> getPredicateDependencyGraph() {
 		return predicateDependencyGraph;
 	}
@@ -68,24 +78,20 @@ public class DatalogDependencyGraphGenerator {
 	public Set<Predicate> getExtensionalPredicates() {
 		return extensionalPredicates;
 	}
-
 	
+	
+
+	// TODO: See if this can be done in 1 pass.
 	public DatalogDependencyGraphGenerator(DatalogProgram program) {
 		for (CQIE rule : program.getRules()) {
 
-			Function head = rule.getHead();
-
-			List<CQIE> rules = ruleIndex.get(head.getFunctionSymbol());
-			if (rules == null) {
-				rules = new LinkedList<CQIE>();
-				ruleIndex.put(head.getFunctionSymbol(), rules);
-			}
-			rules.add(rule);
+			updateRuleIndex(rule);
 			
 			updatePredicateDependencyGraph(rule);
 		}
 
 		generateRuleDependencyGraph(program);
+		generateOrderedDepGraph();
 
 		/**
 		 * 
@@ -100,10 +106,28 @@ public class DatalogDependencyGraphGenerator {
 		extensionalPredicates.removeAll(ruleIndex.keySet());
 
 	}
+	
+	/**
+	 * This method takes a rule and populates the ruleIndex field.
+	 * @param rule
+	 */
+	private void updateRuleIndex(CQIE rule) {
+		Function head = rule.getHead();
+
+		List<CQIE> rules = ruleIndex.get(head.getFunctionSymbol());
+		if (rules == null) {
+			rules = new LinkedList<CQIE>();
+			
+			
+			ruleIndex.put(head.getFunctionSymbol(), rules);
+		}
+		rules.add(rule);
+	}
 
 	/***
 	 * 
 	 * generates the {@link #ruleDependencyGraph}
+	 * 
 	 * 
 	 * @param program
 	 */
@@ -128,6 +152,15 @@ public class DatalogDependencyGraphGenerator {
 		}
 	}
 
+	
+	
+	/**
+	 * 
+	 */
+	
+	
+
+	
 	/**
 	 * Updates the {@link #predicateDependencyGraph} by the input rule.
 	 * 
@@ -139,6 +172,7 @@ public class DatalogDependencyGraphGenerator {
 	 * @param rule
 	 */
 	private void updatePredicateDependencyGraph(CQIE rule) {
+		
 
 		List<Predicate> dependencyList = new LinkedList<Predicate>();
 
@@ -162,6 +196,25 @@ public class DatalogDependencyGraphGenerator {
 			predicateDependencyGraph.addVertex(dependentPred);
 			predicateDependencyGraph.addEdge(headPred, dependentPred);
 		}
+	}
+
+	/**
+	 * This method will 
+	 * <ul>
+	 * <li>Order the {@link #predicateDependencyGraph} using a top down approach</li>
+	 * <li>Then reverse the list and add them into the field {@link #predicatesInBottomUp} </li>
+	 * </ul>
+	 */
+	@SuppressWarnings("unused")
+	private void generateOrderedDepGraph() {
+		TopologicalOrderIterator<Predicate, DefaultEdge> iter =
+				new TopologicalOrderIterator<Predicate, DefaultEdge>(predicateDependencyGraph);
+		
+		while (iter.hasNext()){
+			Predicate pred = iter.next();
+			predicatesInBottomUp.add(pred);
+		}
+		Collections.reverse(predicatesInBottomUp);
 	}
 
 	/**
@@ -203,6 +256,12 @@ public class DatalogDependencyGraphGenerator {
 		}
 
 	}
+
+	public List<Predicate> getPredicatesInBottomUp() {
+		return predicatesInBottomUp;
+	}
+
+
 
 
 
