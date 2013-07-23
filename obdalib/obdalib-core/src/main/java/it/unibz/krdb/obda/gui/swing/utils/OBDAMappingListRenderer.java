@@ -1,12 +1,13 @@
 package it.unibz.krdb.obda.gui.swing.utils;
 
-import it.unibz.krdb.obda.codec.SourceQueryToTextCodec;
-import it.unibz.krdb.obda.codec.TargetQueryToTurtleCodec;
 import it.unibz.krdb.obda.gui.swing.IconLoader;
 import it.unibz.krdb.obda.gui.swing.treemodel.TargetQueryVocabularyValidator;
+import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.utils.OBDAPreferences;
+import it.unibz.krdb.obda.model.OBDAQuery;
+import it.unibz.krdb.obda.renderer.SourceQueryRenderer;
+import it.unibz.krdb.obda.renderer.TargetQueryRenderer;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -29,38 +30,26 @@ import javax.swing.UIManager;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import javax.swing.text.View;
 
 public class OBDAMappingListRenderer implements ListCellRenderer {
 
+	private PrefixManager prefixManager;
+	
 	private JTextPane mapTextPane;
 	private JLabel mapIconLabel;
-
 	private JTextPane trgQueryTextPane;
 	private JTextPane srcQueryTextPane;
-
 	private JLabel trgQueryIconLabel;
 	private JLabel srcQueryIconLabel;
-
 	private JPanel renderingComponent;
 
 	private int preferredWidth;
-
 	private int minTextHeight;
-
-	private JList componentBeingRendered;
-	private boolean gettingCellBounds;
-
-	private boolean renderIcon = true;
 
 	private Font plainFont;
 
-	private Font boldFont;
-
 	public static final Color SELECTION_BACKGROUND = UIManager.getDefaults().getColor("List.selectionBackground");
-
 	public static final Color SELECTION_FOREGROUND = UIManager.getDefaults().getColor("List.selectionForeground");
-
 	public static final Color FOREGROUND = UIManager.getDefaults().getColor("List.foreground");
 
 	final Icon mappingIcon;
@@ -71,10 +60,10 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 
 	final String PATH_MAPPING_ICON = "images/mapping.png";
 	final String PATH_INVALIDMAPPING_ICON = "images/mapping_invalid.png";
-
 	final String PATH_MAPPINGHEAD_ICON = "images/head.png";
 	final String PATH_INVALIDMAPPINGHEAD_ICON = "images/head_invalid.png";
 	final String PATH_MAPPINGBODY_ICON = "images/body.png";
+	
 	private int plainFontHeight;
 	private Style plainStyle;
 	private Style boldStyle;
@@ -86,27 +75,19 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 	private int width;
 	private int plainFontWidth;
 
-	SourceQueryToTextCodec srccodec;
-	TargetQueryToTurtleCodec trgcodec;
 	private Style background;
 	private Style alignment;
 	private JPanel trgQueryPanel;
 	private JPanel srcQueryPanel;
 	private JPanel mapPanel;
-	private int heightTargetQuery;
-	private int heightSourceQuery;
-	private int heightID;
 	private JPanel mainPanel;
 	private QueryPainter painter;
 	private SQLQueryPainter sqlpainter;
 
-	public OBDAMappingListRenderer(OBDAModel apic, TargetQueryVocabularyValidator validator) {
+	public OBDAMappingListRenderer(OBDAModel obdaModel, TargetQueryVocabularyValidator validator) {
 
-		// setPreferredWidth(width);
-
-		srccodec = new SourceQueryToTextCodec(apic);
-		trgcodec = new TargetQueryToTurtleCodec(apic);
-
+		prefixManager = obdaModel.getPrefixManager();
+		
 		trgQueryIconLabel = new JLabel("");
 		trgQueryIconLabel.setVerticalAlignment(SwingConstants.TOP);
 
@@ -117,7 +98,7 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 		mapIconLabel.setVerticalAlignment(SwingConstants.TOP);
 
 		trgQueryTextPane = new JTextPane();
-		painter = new QueryPainter(apic, trgQueryTextPane, validator);
+		painter = new QueryPainter(obdaModel, trgQueryTextPane, validator);
 
 		trgQueryTextPane.setMargin(new Insets(4, 4, 4, 4));
 
@@ -142,7 +123,6 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 
 		mainPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
-		// mainPanel.add(this.mapIconLabel);
 		mainPanel.add(this.mapTextPane);
 		mainPanel.add(this.trgQueryIconLabel);
 		mainPanel.add(this.trgQueryTextPane);
@@ -150,10 +130,6 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 		mainPanel.add(srcQueryTextPane);
 
 		mainPanel.setBorder(BorderFactory.createLineBorder(new Color(192, 192, 192), 1));
-		// srcQueryTextPane.setBorder(BorderFactory.createLineBorder(new
-		// Color(192,192,192), 1));
-		// trgQueryTextPane.setBorder(BorderFactory.createLineBorder(new
-		// Color(192,192,192), 1));
 
 		mainPanel.setOpaque(true);
 		mapTextPane.setOpaque(false);
@@ -169,8 +145,6 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 		invalidmappingheadIcon = IconLoader.getImageIcon(PATH_INVALIDMAPPINGHEAD_ICON);
 		mappingbodyIcon = IconLoader.getImageIcon(PATH_MAPPINGBODY_ICON);
 
-		// renderingComponent = mainPanel;
-
 		SpringLayout layout = new SpringLayout();
 
 		renderingComponent = new JPanel(layout);
@@ -184,7 +158,6 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 
 		prepareStyles();
 		setupFont();
-
 	}
 
 	private void resetStyles(StyledDocument doc) {
@@ -199,11 +172,7 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 	private void prepareStyles() {
 		StyledDocument doc = trgQueryTextPane.getStyledDocument();
 		plainStyle = doc.addStyle("PLAIN_STYLE", null);
-		// StyleConstants.setForeground(plainStyle, Color.BLACK);
 		StyleConstants.setItalic(plainStyle, false);
-		// StyleConstants.setSpaceAbove(plainStyle, 0);
-		// StyleConstants.setFontFamily(plainStyle,
-		// textPane.getFont().getFamily());
 
 		boldStyle = doc.addStyle("BOLD_STYLE", null);
 		StyleConstants.setBold(boldStyle, true);
@@ -238,28 +207,12 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 
 	}
 
-	// public int getPreferredWidth() {
-	// return preferredWidth;
-	// }
-
 	public void setPreferredWidth(int preferredWidth) {
-		// System.out.println("Called prefered width!!!!");
 		this.preferredWidth = preferredWidth;
 	}
 
-//	private int getFontSize() {
-//		return Integer.parseInt(preferences.get(OBDAPreferences.OBDAPREFS_FONTSIZE).toString());
-//	}
-
 	private void setupFont() {
-
-		// StyleConstants.setFontFamily(style, );
-		// StyleConstants.setFontSize(style,
-		// Integer.parseInt(pref.get(OBDAPreferences.OBDAPREFS_FONTSIZE).toString()));
-
 		plainFont = new Font("Dialog", Font.PLAIN, 14);
-		// plainFont =
-		// Font.getFont(preferences.get(OBDAPreferences.OBDAPREFS_FONTFAMILY).toString().trim());
 		plainFontHeight = trgQueryIconLabel.getFontMetrics(plainFont).getHeight();
 
 		int[] widths = trgQueryIconLabel.getFontMetrics(plainFont).getWidths();
@@ -269,7 +222,6 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 			sum += j;
 		}
 		plainFontWidth = sum / widths.length;
-		boldFont = plainFont.deriveFont(Font.BOLD);
 		trgQueryTextPane.setFont(plainFont);
 	}
 
@@ -279,7 +231,6 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 	int textidHeight;
 	int textTargetHeight;
 	int textSourceHeight;
-	// int width;
 	int height;
 	int totalWidth;
 	int totalHeight;
@@ -294,22 +245,13 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 	 * implementation that needs to be adjusted in the same way as the one for
 	 * the target query (to compute the number of lines using FontMetris instead
 	 * of "maxChars".
-	 * 
-	 * @param parent
 	 */
 	private void computeDimensions(JPanel parent) {
 		iconWidth = trgQueryIconLabel.getPreferredSize().width;
 		iconHeight = trgQueryIconLabel.getPreferredSize().height;
-		Insets insets = parent.getInsets();
 		Insets rcInsets = renderingComponent.getInsets();
 
-		// Insets rcInsets = mainPanel.getInsets();
-
 		if (preferredWidth != -1) {
-
-			// textWidth = preferredWidth - iconWidth - rcInsets.left -
-			// rcInsets.right - 6;
-
 			textWidth = preferredWidth - iconWidth - rcInsets.left - rcInsets.right - 6;
 
 			int maxChars = (textWidth / (plainFontWidth)) - 10;
@@ -354,26 +296,24 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 			int linesSource = (int) (srcQuery.length() / maxChars) + 1;
 
 			textTargetHeight = m.getHeight() * linesTarget; // target
-			// textTargetHeight = minTextHeight * linesTarget; // target
 			textSourceHeight = minTextHeight * linesSource; // source
 			textidHeight = minTextHeight;
 
-			View v = trgQueryTextPane.getUI().getRootView(trgQueryTextPane);
+			trgQueryTextPane.getUI().getRootView(trgQueryTextPane);
 			// v.setSize(textWidth, Integer.MAX_VALUE);
 			// v.setSize(textWidth, 0);
 			trgQueryTextPane.setPreferredSize(new Dimension(textWidth, textTargetHeight));
 
-			v = srcQueryTextPane.getUI().getRootView(srcQueryTextPane);
+			srcQueryTextPane.getUI().getRootView(srcQueryTextPane);
 			// v.setSize(textWidth, Integer.MAX_VALUE);
 			// v.setSize(textWidth, 0);
 			srcQueryTextPane.setPreferredSize(new Dimension(textWidth, textSourceHeight));
 
-			v = mapTextPane.getUI().getRootView(mapTextPane);
+			mapTextPane.getUI().getRootView(mapTextPane);
 			// v.setSize(textWidth, Integer.MAX_VALUE);
 			// v.setSize(textWidth, 0);
 			mapTextPane.setPreferredSize(new Dimension(textWidth, textidHeight));
 
-			// textidHeight = (int) v.getMinimumSpan(View.Y_AXIS);
 			width = preferredWidth;
 		} else {
 
@@ -406,40 +346,24 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 
 	@Override
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-
-		componentBeingRendered = list;
-		// Rectangle cellBounds = new Rectangle();
-		// if (!gettingCellBounds) {
-		// gettingCellBounds = true;
-		// cellBounds = tree.getRowBounds(row);
-		// gettingCellBounds = false;
-		// }
 		if (list.getParent() != null) {
 			preferredWidth = list.getParent().getWidth();
 		}
 
 		minTextHeight = this.plainFontHeight + 6;
 		Component c = prepareRenderer((OBDAMappingAxiom) value, isSelected, cellHasFocus);
-		// c.invalidate();
 		return c;
 	}
 
 	private Component prepareRenderer(OBDAMappingAxiom value, boolean isSelected, boolean hasFocus) {
-		// String wrappedtext = wrap(value.toString());
 		renderingComponent.setOpaque(false);
-
-		// renderingComponent.setPreferredSize(getRenderingDimensions(wrappedtext));
 		prepareTextPanes(value, isSelected);
-		computeTextPaneHight(value);
 
 		if (isSelected) {
-			// renderingComponent.setBackground(Color.white);
-
 			mainPanel.setBackground(SELECTION_BACKGROUND);
 		} else {
 			mainPanel.setBackground(new Color(240, 245, 240));
 		}
-
 		computeDimensions(renderingComponent);
 
 		trgQueryIconLabel.setPreferredSize(new Dimension(this.mappingheadIcon.getIconWidth(), textTargetHeight));
@@ -456,7 +380,6 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 		boolean debugColors = false;
 
 		if (debugColors) {
-
 			mapTextPane.setOpaque(true);
 			srcQueryTextPane.setOpaque(true);
 			trgQueryTextPane.setOpaque(true);
@@ -486,25 +409,22 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 			painter.recolorQuery();
 			sqlpainter.recolorQuery();
 		} catch (Exception e) {
-				e.printStackTrace();
-//			 System.out.println(e.getLocalizedMessage());
+			e.printStackTrace();
 		}
 		trgQueryTextPane.setBorder(null);
-
 		renderingComponent.revalidate();
 		return renderingComponent;
 	}
 
-	private void computeTextPaneHight(OBDAMappingAxiom value) {
-
-	}
-
 	private void prepareTextPanes(OBDAMappingAxiom value, boolean selected) {
-
-		String trgQuery = trgcodec.encode(value.getTargetQuery());
+		OBDAQuery targetQuery = value.getTargetQuery();
+		String trgQuery = TargetQueryRenderer.encode(targetQuery, prefixManager);
 		trgQueryTextPane.setText(trgQuery);
-		String srcQuery = srccodec.encode(value.getSourceQuery());
+
+		OBDAQuery sourceQuery = value.getSourceQuery();
+		String srcQuery = SourceQueryRenderer.encode(sourceQuery);
 		srcQueryTextPane.setText(srcQuery);
+		
 		mapTextPane.setText(value.getId());
 
 		StyledDocument doc = trgQueryTextPane.getStyledDocument();
@@ -517,27 +437,25 @@ public class OBDAMappingListRenderer implements ListCellRenderer {
 			doc.setParagraphAttributes(0, doc.getLength(), foreground, false);
 		}
 
-		doc = srcQueryTextPane.getStyledDocument();
+		doc = srcQueryTextPane.getStyledDocument(); // reuse variable
 		resetStyles(doc);
 		doc.setParagraphAttributes(0, doc.getLength(), background, false);
 		doc.setParagraphAttributes(0, doc.getLength(), alignment, false);
 		if (selected) {
-			doc.setParagraphAttributes(0, doc.getLength(), selectionForeground, false);
+			doc.setParagraphAttributes(0, doc.getLength(), selectionForeground,	false);
 		} else {
 			doc.setParagraphAttributes(0, doc.getLength(), foreground, false);
 		}
 
-		doc = mapTextPane.getStyledDocument();
+		doc = mapTextPane.getStyledDocument(); // reuse variable
 		resetStyles(doc);
 		doc.setParagraphAttributes(0, doc.getLength(), boldStyle, false);
 		doc.setParagraphAttributes(0, doc.getLength(), background, false);
 		doc.setParagraphAttributes(0, doc.getLength(), alignment, false);
 		if (selected) {
-			doc.setParagraphAttributes(0, doc.getLength(), selectionForeground, false);
+			doc.setParagraphAttributes(0, doc.getLength(), selectionForeground,	false);
 		} else {
 			doc.setParagraphAttributes(0, doc.getLength(), foreground, false);
 		}
-
 	}
-
 }

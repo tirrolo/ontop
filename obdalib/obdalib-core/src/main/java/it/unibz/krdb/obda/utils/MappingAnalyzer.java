@@ -1,40 +1,42 @@
 package it.unibz.krdb.obda.utils;
 
-import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
+import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDASQLQuery;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.parser.SQLQueryTranslator;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.DataDefinition;
 import it.unibz.krdb.sql.api.AndOperator;
+import it.unibz.krdb.sql.api.BooleanAlgebraPredicate;
 import it.unibz.krdb.sql.api.BooleanLiteral;
+import it.unibz.krdb.sql.api.BooleanOperator;
 import it.unibz.krdb.sql.api.ComparisonPredicate;
 import it.unibz.krdb.sql.api.ComparisonPredicate.Operator;
 import it.unibz.krdb.sql.api.DecimalLiteral;
 import it.unibz.krdb.sql.api.ICondition;
 import it.unibz.krdb.sql.api.IValueExpression;
 import it.unibz.krdb.sql.api.IntegerLiteral;
+import it.unibz.krdb.sql.api.LeftParenthesis;
 import it.unibz.krdb.sql.api.Literal;
-import it.unibz.krdb.sql.api.LogicalOperator;
 import it.unibz.krdb.sql.api.NullPredicate;
 import it.unibz.krdb.sql.api.OrOperator;
+import it.unibz.krdb.sql.api.Parenthesis;
 import it.unibz.krdb.sql.api.QueryTree;
 import it.unibz.krdb.sql.api.ReferenceValueExpression;
 import it.unibz.krdb.sql.api.Relation;
+import it.unibz.krdb.sql.api.RightParenthesis;
 import it.unibz.krdb.sql.api.Selection;
 import it.unibz.krdb.sql.api.StringLiteral;
 
-import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,7 +46,6 @@ import java.util.List;
 import java.util.Stack;
 
 import com.hp.hpl.jena.iri.IRI;
-import com.hp.hpl.jena.iri.IRIFactory;
 
 public class MappingAnalyzer {
 
@@ -57,8 +58,6 @@ public class MappingAnalyzer {
 
 	/**
 	 * Creates a mapping analyzer by taking into account the OBDA model.
-	 * 
-	 * @param model
 	 */
 	public MappingAnalyzer(ArrayList<OBDAMappingAxiom> mappingList, DBMetadata dbMetaData) {
 		this.mappingList = mappingList;
@@ -68,11 +67,8 @@ public class MappingAnalyzer {
 	}
 
 	public DatalogProgram constructDatalogProgram() {
-
 		DatalogProgram datalog = dfac.getDatalogProgram();
-
 		LinkedList<String> errorMessage = new LinkedList<String>();
-		
 		for (OBDAMappingAxiom axiom : mappingList) {
 			try {
 				// Obtain the target and source query from each mapping axiom in
@@ -90,11 +86,11 @@ public class MappingAnalyzer {
 				ArrayList<Relation> tableList = queryTree.getTableSet();
 
 				// Construct the body from the source query
-				ArrayList<Atom> atoms = new ArrayList<Atom>();
+				ArrayList<Function> atoms = new ArrayList<Function>();
 				for (Relation table : tableList) {
 					// Construct the URI from the table name
 					String tableName = table.getName();
-					IRI predicateName = OBDADataFactoryImpl.getIRI(tableName);
+					String predicateName = tableName;
 
 					// Construct the predicate using the table name
 					int arity = dbMetaData.getDefinition(tableName).countAttribute();
@@ -112,7 +108,7 @@ public class MappingAnalyzer {
 						terms.add(term);
 					}
 					// Create an atom for a particular table
-					Atom atom = dfac.getAtom(predicate, terms);
+					Function atom = dfac.getAtom(predicate, terms);
 					atoms.add(atom);
 				}
 
@@ -132,100 +128,150 @@ public class MappingAnalyzer {
 					NewLiteral t1 = dfac.getVariable(lookup1);
 					NewLiteral t2 = dfac.getVariable(lookup2);
 
-					Atom atom = dfac.getEQAtom(t1, t2);
+					Function atom = dfac.getEQAtom(t1, t2);
 					atoms.add(atom);
 				}
 
 				// For the selection "where" clause conditions
 				Selection selection = queryTree.getSelection();
 				if (selection != null) {
-					// Filling up the OR stack
-					Stack<Function> stack = new Stack<Function>();
+					// Stack for filter function
+					Stack<Function> filterFunctionStack = new Stack<Function>();
+					// Stack for boolean algebra predicate
+					Stack<BooleanAlgebraPredicate> booleanPredicateStack = new Stack<BooleanAlgebraPredicate>();
+					
 					List<ICondition> conditions = selection.getRawConditions();
 					for (int i = 0; i < conditions.size(); i++) {
 						Object element = conditions.get(i);
 						if (element instanceof ComparisonPredicate) {
 							ComparisonPredicate pred = (ComparisonPredicate) element;
-							Function compOperator = getFunction(pred, lookupTable);
-							stack.push(compOperator);
+							Function filterFunction = getFunction(pred, lookupTable);
+							if (hasBooleanOperator(booleanPredicateStack)) {
+								BooleanOperator op = (BooleanOperator) booleanPredicateStack.pop();
+								Function otherFilterFunction = filterFunctionStack.pop();
+								filterFunction = createBooleanFunction(otherFilterFunction, filterFunction, op);
+							}
+							filterFunctionStack.push(filterFunction);
 						} else if (element instanceof NullPredicate) {
 							NullPredicate pred = (NullPredicate) element;
-							Function nullOperator = getFunction(pred, lookupTable);
-							stack.push(nullOperator);
-						} else if (element instanceof LogicalOperator) {
-							// Check either it's AND or OR operator
-							if (element instanceof AndOperator) {
-								/*
-								 * The AND operator has the expression:
-								 * <condition> AND <condition> There are two
-								 * types of conditions: (1) using the comparison
-								 * predicate (such as EQ, LT, GT, etc.) and (2)
-								 * using the null predicate (i.e., IS NULL or IS
-								 * NOT NULL). Each has a different way to
-								 * handle.
-								 */
-								ICondition condition = conditions.get(i + 1);
-								i++; // the right-hand condition
-								if (condition instanceof ComparisonPredicate) {
-									ComparisonPredicate pred = (ComparisonPredicate) condition;
-									NewLiteral leftCondition = stack.pop();
-									NewLiteral rightCondition = getFunction(pred, lookupTable);
-									Function andOperator = dfac.getANDFunction(leftCondition, rightCondition);
-									stack.push(andOperator);
-								} else if (condition instanceof NullPredicate) {
-									NullPredicate pred = (NullPredicate) condition;
-									NewLiteral leftCondition = stack.pop();
-									NewLiteral rightCondition = getFunction(pred, lookupTable);
-									Function andOperator = dfac.getANDFunction(leftCondition, rightCondition);
-									stack.push(andOperator);
-								}
-							} else if (element instanceof OrOperator) {
-								// NO-OP
+							Function filterFunction = getFunction(pred, lookupTable);
+							if (hasBooleanOperator(booleanPredicateStack)) {
+								BooleanOperator op = (BooleanOperator) booleanPredicateStack.pop();
+								Function otherFilterFunction = filterFunctionStack.pop();
+								filterFunction = createBooleanFunction(otherFilterFunction, filterFunction, op);
 							}
-						} else {
-							/* Unsupported query */
-							return null;
+							filterFunctionStack.push(filterFunction);
+						} else if (element instanceof BooleanAlgebraPredicate) {
+							BooleanAlgebraPredicate pred = (BooleanAlgebraPredicate) element;
+							if (pred instanceof BooleanOperator) {
+								BooleanOperator op = (BooleanOperator) pred;
+								manageBooleanOperator(op, booleanPredicateStack);
+							} else if (pred instanceof Parenthesis) {
+								Parenthesis paren = (Parenthesis) pred;
+								manageParenthesis(paren, booleanPredicateStack, filterFunctionStack);
+							}
 						}
 					}
-
-					// Collapsing into a single atom.
-					while (stack.size() > 1) {
-						Function orAtom = dfac.getORFunction(stack.pop(), stack.pop());
-						stack.push(orAtom);
+					
+					// Check if there are still boolean operators left in the stack
+					while (!booleanPredicateStack.isEmpty()) {
+						BooleanOperator op = (BooleanOperator) booleanPredicateStack.pop();					
+						Function filterFunction = createBooleanFunction(filterFunctionStack, op);
+						filterFunctionStack.push(filterFunction);
 					}
-					Function f = stack.pop();
-					Atom atom = dfac.getAtom(f.getFunctionSymbol(), f.getTerms());
-					atoms.add(atom);
+					
+					// The filter function stack must have 1 element left
+					if (filterFunctionStack.size() == 1) {
+						Function filterFunction = filterFunctionStack.pop();
+						Function atom = dfac.getAtom(filterFunction.getFunctionSymbol(), filterFunction.getTerms());
+						atoms.add(atom);
+					} else {						
+						throwInvalidFilterExpressionException(filterFunctionStack);
+					}
 				}
 
 				// Construct the head from the target query.
-				List<Atom> atomList = targetQuery.getBody();
-				for (Atom atom : atomList) {
+				List<Function> atomList = targetQuery.getBody();
+				for (Function atom : atomList) {
 					List<NewLiteral> terms = atom.getTerms();
 					List<NewLiteral> newterms = new LinkedList<NewLiteral>();
 					for (NewLiteral term : terms) {
 						newterms.add(updateTerm(term, lookupTable));
 					}
-					Atom newhead = dfac.getAtom(atom.getPredicate(), newterms);
+					Function newhead = dfac.getAtom(atom.getPredicate(), newterms);
 					CQIE rule = dfac.getCQIE(newhead, atoms);
 					datalog.appendRule(rule);
 				}
 			} catch (Exception e) {
-				errorMessage.add("Error in mapping with id: " + axiom.getId() + " \nDescription: "
+				errorMessage.add("Error in mapping with id: " + axiom.getId() + " \n Description: "
 						+ e.getMessage() + " \nMapping: [" + axiom.toString() + "]");
 				
 			}
 		}
 		if (errorMessage.size() > 0) {
-			StringBuffer errors = new StringBuffer();
-			for (String error: errorMessage)
+			StringBuilder errors = new StringBuilder();
+			for (String error: errorMessage) {
 				errors.append(error + "\n");
-			RuntimeException r = new RuntimeException("There was an error analyzing the following mappings. Please correct the issue(s) to continue.\n" + errors.toString());
+			}
+			final String msg = "There was an error analyzing the following mappings. Please correct the issue(s) to continue.\n" + errors.toString();
+			RuntimeException r = new RuntimeException(msg);
 			throw r;
 		}
 		return datalog;
 	}
+	
+	private void throwInvalidFilterExpressionException(Stack<Function> filterFunctionStack) {
+		StringBuilder filterExpression = new StringBuilder();
+		while (!filterFunctionStack.isEmpty()) {
+			filterExpression.append(filterFunctionStack.pop());
+		}
+		throw new RuntimeException("Illegal filter expression: " + filterExpression.toString());
+	}
 
+	private void manageBooleanOperator(BooleanOperator op, Stack<BooleanAlgebraPredicate> booleanPredicateStack) {
+		booleanPredicateStack.push(op);
+	}
+	
+	private void manageParenthesis(Parenthesis paren, Stack<BooleanAlgebraPredicate> booleanPredicateStack, Stack<Function> filterFunctionStack) {
+		if (paren instanceof LeftParenthesis) {
+			booleanPredicateStack.push(paren);
+		} else if (paren instanceof RightParenthesis) {
+			while (true) {
+				BooleanAlgebraPredicate predicate = booleanPredicateStack.pop();		
+				if (predicate instanceof LeftParenthesis) {
+					break;
+				}
+				BooleanOperator op = (BooleanOperator) predicate;					
+				Function filterFunction = createBooleanFunction(filterFunctionStack, op);
+				filterFunctionStack.push(filterFunction);
+			}
+		}
+	}
+	
+	private Function createBooleanFunction(Stack<Function> filterFunctionStack, BooleanOperator op) {
+		Function rightFunction = filterFunctionStack.pop();
+		Function leftFunction = filterFunctionStack.pop();
+		return createBooleanFunction(leftFunction, rightFunction, op);
+	}
+
+	private Function createBooleanFunction(Function leftFunction, Function rightFunction, BooleanOperator op) {
+		Function booleanFunction = null;
+		if (op instanceof AndOperator) {
+			booleanFunction = dfac.getANDFunction(leftFunction, rightFunction);
+		} else if (op instanceof OrOperator) {
+			booleanFunction = dfac.getORFunction(leftFunction, rightFunction);
+		}
+		return booleanFunction;
+	}
+
+	private boolean hasBooleanOperator(Stack<BooleanAlgebraPredicate> boolStack) {
+		if (!boolStack.isEmpty()) {
+			BooleanAlgebraPredicate pred = boolStack.peek();
+			return (pred instanceof BooleanOperator) ? true : false;
+		}
+		return false;
+	}
+	
 	private Function getFunction(NullPredicate pred, LookupTable lookupTable) {
 		IValueExpression column = pred.getValueExpression();
 
@@ -288,24 +334,12 @@ public class MappingAnalyzer {
 
 		Function funct = null;
 		switch (op) {
-		case EQ:
-			funct = dfac.getEQFunction(t1, t2);
-			break;
-		case GT:
-			funct = dfac.getGTFunction(t1, t2);
-			break;
-		case LT:
-			funct = dfac.getLTFunction(t1, t2);
-			break;
-		case GE:
-			funct = dfac.getGTEFunction(t1, t2);
-			break;
-		case LE:
-			funct = dfac.getLTEFunction(t1, t2);
-			break;
-		case NE:
-			funct = dfac.getNEQFunction(t1, t2);
-			break;
+		case EQ: funct = dfac.getEQFunction(t1, t2); break;
+		case GT: funct = dfac.getGTFunction(t1, t2); break;
+		case LT: funct = dfac.getLTFunction(t1, t2); break;
+		case GE: funct = dfac.getGTEFunction(t1, t2); break;
+		case LE: funct = dfac.getLTEFunction(t1, t2); break;
+		case NE: funct = dfac.getNEQFunction(t1, t2); break;
 		default:
 			throw new RuntimeException("Unknown opertor: " + op.toString() + " " + op.getClass().toString());
 		}
@@ -313,7 +347,10 @@ public class MappingAnalyzer {
 	}
 
 	private boolean containDateTimeString(String value) {
-		final String[] formatStrings = { "yyyy-MM-dd HH:mm:ss.SS", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "yyyy-MM-dd'T'HH:mm:ssZ",
+		final String[] formatStrings = { "yyyy-MM-dd HH:mm:ss.SS", 
+				"yyyy-MM-dd HH:mm:ss", 
+				"yyyy-MM-dd", 
+				"yyyy-MM-dd'T'HH:mm:ssZ",
 				"yyyy-MM-dd'T'HH:mm:ss.sZ" };
 
 		for (String formatString : formatStrings) {
@@ -327,12 +364,8 @@ public class MappingAnalyzer {
 		return false; // the string doesn't contain date time info if none of the formats is suitable.
 	}
 
-	/***
-	 * Returns a new term with the updated references
-	 * 
-	 * @param term
-	 * @param lookupTable
-	 * @return
+	/**
+	 * Returns a new term with the updated references.
 	 */
 	private NewLiteral updateTerm(NewLiteral term, LookupTable lookupTable) {
 		NewLiteral result = null;
@@ -341,7 +374,8 @@ public class MappingAnalyzer {
 			String varName = var.getName();
 			String termName = lookupTable.lookup(varName);
 			if (termName == null) {
-				throw new RuntimeException(String.format("Error in identifying column name \"%s\", please check the query source in the mappings.\nPossible reasons:\n1. The name is ambiguous, or\n2. The name is not defined in the database schema.", var));
+				final String msg = String.format("Error in identifying column name \"%s\", please check the query source in the mappings.\nPossible reasons:\n1. The name is ambiguous, or\n2. The name is not defined in the database schema.", var);
+				throw new RuntimeException(msg);
 			}
 			result = dfac.getVariable(termName);
 		} else if (term instanceof Function) {

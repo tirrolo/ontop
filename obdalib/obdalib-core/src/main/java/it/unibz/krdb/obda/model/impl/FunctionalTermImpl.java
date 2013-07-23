@@ -17,10 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class FunctionalTermImpl extends AbstractLiteral implements Function,
-		ListListener {
+public class FunctionalTermImpl extends AbstractLiteral implements Function, ListListener {
 
 	protected static final long serialVersionUID = 2832481815465364535L;
+	
 	protected Predicate functor = null;
 	protected EventGeneratingArrayList<NewLiteral> terms = null;
 	protected int identifier = -1;
@@ -72,15 +72,14 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 		registerListeners(terms);
 	}
 	
-	private void registerListeners(EventGeneratingArrayList functions) {
+	private void registerListeners(EventGeneratingArrayList<? extends NewLiteral> functions) {
 		functions.addListener(this);
-
 		for (Object o : functions) {
 			if (!(o instanceof Function)) {
 				continue;
 			}
 			Function f = (Function) o;
-			EventGeneratingArrayList list = (EventGeneratingArrayList) f.getTerms();
+			EventGeneratingArrayList<NewLiteral> list = (EventGeneratingArrayList<NewLiteral>) f.getTerms();
 			list.addListener(this);
 			registerListeners(list);
 		}
@@ -88,9 +87,9 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof FunctionalTermImpl))
+		if (obj == null || !(obj instanceof FunctionalTermImpl)) {
 			return false;
-
+		}
 		FunctionalTermImpl functor2 = (FunctionalTermImpl) obj;
 		return this.hashCode() == functor2.hashCode();
 	}
@@ -156,48 +155,7 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 
 	@Override
 	public String toString() {
-		if (string == null) {
-
-			StringBuffer sb_t = new StringBuffer();
-
-			for (int i = 0; i < terms.size(); i++) {
-				if (sb_t.length() > 0) {
-					sb_t.append(",");
-				}
-				NewLiteral t = terms.get(i);
-				sb_t.append(t.toString());
-			}
-			StringBuffer sb_name = new StringBuffer();
-
-			if (functor == OBDAVocabulary.EQ) {
-				sb_name.append("EQ");
-			} else if (functor == OBDAVocabulary.NEQ) {
-				sb_name.append("NEQ");
-			} else if (functor == OBDAVocabulary.GT) {
-				sb_name.append("GT");
-			} else if (functor == OBDAVocabulary.GTE) {
-				sb_name.append("GTE");
-			} else if (functor == OBDAVocabulary.LT) {
-				sb_name.append("LT");
-			} else if (functor == OBDAVocabulary.LTE) {
-				sb_name.append("LTE");
-			} else if (functor == OBDAVocabulary.NOT) {
-				sb_name.append("NOT");
-			} else if (functor == OBDAVocabulary.AND) {
-				sb_name.append("AND");
-			} else if (functor == OBDAVocabulary.OR) {
-				sb_name.append("OR");
-			} else {
-				sb_name.append(this.functor.getName());
-			}
-
-			sb_name.append("(");
-			sb_name.append(sb_t);
-			sb_name.append(")");
-
-			string = sb_name.toString();
-		}
-		return string;
+		return TermUtil.toString(this);
 	}
 
 	/**
@@ -267,7 +225,6 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 		return currentcount;
 	}
 
-
 	@Override
 	public NewLiteral getTerm(int index) {
 		return terms.get(index);
@@ -280,24 +237,20 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 	}
 
 	public void updateTerms(List<NewLiteral> newterms) {
-
 		for (NewLiteral term : terms) {
 			if (term instanceof FunctionalTermImpl) {
 				FunctionalTermImpl function = (FunctionalTermImpl) term;
-				EventGeneratingArrayList<NewLiteral> innertermlist = (EventGeneratingArrayList<NewLiteral>) function
-						.getTerms();
+				EventGeneratingArrayList<NewLiteral> innertermlist = (EventGeneratingArrayList<NewLiteral>) function.getTerms();
 				innertermlist.removeListener(this);
 			}
 		}
-
 		terms.clear();
 		terms.addAll(newterms);
 
 		for (NewLiteral term : terms) {
 			if (term instanceof FunctionalTermImpl) {
 				FunctionalTermImpl function = (FunctionalTermImpl) term;
-				EventGeneratingArrayList<NewLiteral> innertermlist = (EventGeneratingArrayList<NewLiteral>) function
-						.getTerms();
+				EventGeneratingArrayList<NewLiteral> innertermlist = (EventGeneratingArrayList<NewLiteral>) function.getTerms();
 				innertermlist.addListener(this);
 			}
 		}
@@ -306,8 +259,9 @@ public class FunctionalTermImpl extends AbstractLiteral implements Function,
 
 	@Override
 	public Atom asAtom() {
-		if (asAtom == null)
+		if (asAtom == null) {
 			asAtom = new AtomWrapperImpl(this);
+		}
 		return asAtom;
 	}
 

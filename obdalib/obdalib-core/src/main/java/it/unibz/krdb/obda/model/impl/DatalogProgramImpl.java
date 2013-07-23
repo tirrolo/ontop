@@ -1,8 +1,8 @@
 package it.unibz.krdb.obda.model.impl;
 
-import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
+import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.OBDAQueryModifiers;
 import it.unibz.krdb.obda.model.Predicate;
 
@@ -15,9 +15,6 @@ import java.util.Map;
 
 public class DatalogProgramImpl implements DatalogProgram {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -1644491423712454150L;
 
 	private List<CQIE> rules = null;
@@ -44,20 +41,17 @@ public class DatalogProgramImpl implements DatalogProgram {
 
 	public void appendRule(CQIE rule) {
 		if (rule == null) {
-			throw new IllegalArgumentException(
-					"DatalogProgram: Recieved a null rule.");
+			throw new IllegalArgumentException("DatalogProgram: Recieved a null rule.");
 		}
-
 		if (rules.contains(rule)) {
-			// Skip if the rule already exists!
-			return;
+			return; // Skip if the rule already exists!
 		}
 
 		rules.add(rule);
 
-		Atom head = rule.getHead();
+		Function head = rule.getHead();
 		if (head != null) {
-			Predicate predicate = rule.getHead().getPredicate();
+			Predicate predicate = rule.getHead().getFunctionSymbol();
 			List<CQIE> indexedRules = predicateIndex.get(predicate);
 			if (indexedRules == null) {
 				indexedRules = new LinkedList<CQIE>();
@@ -71,17 +65,15 @@ public class DatalogProgramImpl implements DatalogProgram {
 		for (CQIE rule : rules) {
 			appendRule(rule);
 		}
-
 	}
 
 	public void removeRule(CQIE rule) {
-
-		if (rule == null)
+		if (rule == null) {
 			throw new RuntimeException("Invalid parameter: null");
-
+		}
 		rules.remove(rule);
 
-		Predicate predicate = rule.getHead().getPredicate();
+		Predicate predicate = rule.getHead().getFunctionSymbol();
 		List<CQIE> indexedRules = this.predicateIndex.get(predicate);
 		if (indexedRules != null)
 			indexedRules.remove(rule);
@@ -99,17 +91,14 @@ public class DatalogProgramImpl implements DatalogProgram {
 	}
 
 	public boolean isUCQ() {
-
 		if (rules.size() > 1) {
 			boolean isucq = true;
 			CQIE rule0 = rules.get(0);
-			Atom head0 = rule0.getHead();
+			Function head0 = rule0.getHead();
 			for (int i = 1; i < rules.size() && isucq; i++) {
-
 				CQIE ruleI = rules.get(i);
-				Atom headI = ruleI.getHead();
-				if (head0.getArity() != headI.getArity()
-						|| !(head0.getPredicate().equals(headI.getPredicate()))) {
+				Function headI = ruleI.getHead();
+				if (head0.getArity() != headI.getArity() || !(head0.getFunctionSymbol().equals(headI.getFunctionSymbol()))) {
 					isucq = false;
 				}
 			}
@@ -119,8 +108,6 @@ public class DatalogProgramImpl implements DatalogProgram {
 		} else {
 			return false;
 		}
-		// returns true if the head of all the rules has the same predicate and
-		// same arity
 	}
 
 	public List<CQIE> getRules() {
@@ -141,7 +128,6 @@ public class DatalogProgramImpl implements DatalogProgram {
 		List<CQIE> rules = this.predicateIndex.get(headPredicate);
 		if (rules == null) {
 			rules = new LinkedList<CQIE>();
-			// predicateIndex.put(headPredicate, rules);
 		}
 		return Collections.unmodifiableList(rules);
 	}

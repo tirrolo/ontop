@@ -7,9 +7,6 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
-import com.hp.hpl.jena.iri.IRI;
-import com.sun.msv.datatype.xsd.XSDatatype;
-
 public interface OBDADataFactory extends Serializable {
 
 	public OBDAModel getOBDAModel();
@@ -20,10 +17,10 @@ public interface OBDADataFactory extends Serializable {
 
 	public Atom getAtom(Predicate predicate, NewLiteral term1, NewLiteral term2);
 
-	public CQIE getCQIE(Atom head, List<Atom> body);
+	public CQIE getCQIE(Function head, List<Function> body);
 
-	public CQIE getCQIE(Atom head, Atom body);
-
+	public CQIE getCQIE(Function head, Function body);
+	
 	public OBDADataSource getDataSource(URI id);
 
 	public DatalogProgram getDatalogProgram();
@@ -41,35 +38,25 @@ public interface OBDADataFactory extends Serializable {
 	 *            the number of elements inside the predicate.
 	 * @return a predicate object.
 	 */
-	@Deprecated
-	public Predicate getPredicate(IRI name, int arity);
 
 	@Deprecated
 	public Predicate getPredicate(String uri, int arity);
 
-	public Predicate getPredicate(IRI name, int arity, COL_TYPE[] types);
 
 	public Predicate getPredicate(String uri, int arity, COL_TYPE[] types);
 
-	public Predicate getObjectPropertyPredicate(IRI name);
-
 	public Predicate getObjectPropertyPredicate(String name);
-
-	public Predicate getDataPropertyPredicate(IRI name);
 
 	public Predicate getDataPropertyPredicate(String name);
 
 	public Predicate getClassPredicate(String name);
 
-	public Predicate getClassPredicate(IRI name);
 
 	/*
 	 * Data types
 	 */
 
 	public Predicate getDataTypePredicateUnsupported(String uri);
-
-	public Predicate getDataTypePredicateUnsupported(IRI uri);
 
 	public Predicate getDataTypePredicateLiteral();
 
@@ -92,6 +79,8 @@ public interface OBDADataFactory extends Serializable {
 	 */
 
 	public Predicate getUriTemplatePredicate(int arity);
+	
+	public Function getUriTemplate(NewLiteral...terms);
 
 	public Predicate getBNodeTemplatePredicate(int arity);
 
@@ -149,15 +138,13 @@ public interface OBDADataFactory extends Serializable {
 
 	public Function getANDFunction(NewLiteral term1, NewLiteral term2);
 
-	public Function getANDFunction(NewLiteral term1, NewLiteral term2,
-			NewLiteral term3);
+	public Function getANDFunction(NewLiteral term1, NewLiteral term2, NewLiteral term3);
 
 	public Function getANDFunction(List<NewLiteral> terms);
 
 	public Function getORFunction(NewLiteral term1, NewLiteral term2);
 
-	public Function getORFunction(NewLiteral term1, NewLiteral term2,
-			NewLiteral term3);
+	public Function getORFunction(NewLiteral term1, NewLiteral term2, NewLiteral term3);
 
 	public Function getORFunction(List<NewLiteral> terms);
 
@@ -212,9 +199,9 @@ public interface OBDADataFactory extends Serializable {
 	 *            the URI.
 	 * @return a URI constant.
 	 */
-//	public URIConstant getURIConstant(URI uri);
+	public URIConstant getURIConstant(String uri);
 	
-	public URIConstant getURIConstant(IRI uri);
+//	public URIConstant getURIConstant(IRI uri);
 
 	public BNode getBNodeConstant(String name);
 
@@ -290,22 +277,8 @@ public interface OBDADataFactory extends Serializable {
 	 * @return the variable object.
 	 */
 	public Variable getVariable(String name);
-
-	/**
-	 * Construct a {@link Variable} object with a type definition. The variable
-	 * name is started by a dollar sign ('$') or a question mark sign ('?'),
-	 * e.g.:
-	 * <p>
-	 * <code>
-	 * pred($x) <br />
-	 * func(?x, ?y)
-	 * </code>
-	 * 
-	 * @param name
-	 *            the name of the variable.
-	 * @return the variable object.
-	 */
-	public Variable getVariable(String name, XSDatatype type);
+	
+	
 
 	/**
 	 * Construct a {@link Variable} object with empty name.
@@ -330,21 +303,19 @@ public interface OBDADataFactory extends Serializable {
 
 	public Function getFunctionalTerm(Predicate functor, NewLiteral term1);
 
-	public Function getFunctionalTerm(Predicate functor, NewLiteral term1,
-			NewLiteral term2);
+	public Function getFunctionalTerm(Predicate functor, NewLiteral term1, NewLiteral term2);
 
-	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String id,
-			OBDAQuery sourceQuery, OBDAQuery targetQuery);
+	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String id, OBDAQuery sourceQuery, OBDAQuery targetQuery);
 
-	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String id, String sql,
-			OBDAQuery targetQuery);
+	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String id, String sql, OBDAQuery targetQuery);
 
-	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String sql,
-			OBDAQuery targetQuery);
+	public OBDARDBMappingAxiom getRDBMSMappingAxiom(String sql, OBDAQuery targetQuery);
 
 	public OBDASQLQuery getSQLQuery(String query);
 
 	public Predicate getTypePredicate(Predicate.COL_TYPE type);
 
+	Predicate getJoinPredicate();
 
+	Predicate getLeftJoinPredicate();
 }

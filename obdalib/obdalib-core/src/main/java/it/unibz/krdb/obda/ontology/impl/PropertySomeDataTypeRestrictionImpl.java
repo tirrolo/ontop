@@ -6,9 +6,6 @@ import it.unibz.krdb.obda.ontology.PropertySomeDataTypeRestriction;
 
 public class PropertySomeDataTypeRestrictionImpl implements PropertySomeDataTypeRestriction {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3140348825768903966L;
 
 	private final Predicate predicate;
@@ -51,7 +48,7 @@ public class PropertySomeDataTypeRestrictionImpl implements PropertySomeDataType
 	}
 
 	public String toString() {
-		StringBuffer bf = new StringBuffer();
+		StringBuilder bf = new StringBuilder();
 		bf.append("E");
 		bf.append(predicate.toString());
 		if (isInverse) {

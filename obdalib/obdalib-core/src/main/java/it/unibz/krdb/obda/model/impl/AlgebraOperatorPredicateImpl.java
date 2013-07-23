@@ -2,16 +2,8 @@ package it.unibz.krdb.obda.model.impl;
 
 import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
 
-import java.net.URI;
+public class AlgebraOperatorPredicateImpl extends PredicateImpl implements AlgebraOperatorPredicate {
 
-import com.hp.hpl.jena.iri.IRI;
-
-public class AlgebraOperatorPredicateImpl extends PredicateImpl implements
-		AlgebraOperatorPredicate {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 9152448029926695852L;
 
 	/**
@@ -23,7 +15,7 @@ public class AlgebraOperatorPredicateImpl extends PredicateImpl implements
 	 * @param type
 	 *            The datatype that the term holds.
 	 */
-	public AlgebraOperatorPredicateImpl(IRI name, COL_TYPE type) {
+	public AlgebraOperatorPredicateImpl(String name, COL_TYPE type) {
 		super(name, 2, new COL_TYPE[] { type });
 	}
 
@@ -38,7 +30,7 @@ public class AlgebraOperatorPredicateImpl extends PredicateImpl implements
 	 * @param types
 	 *            The datatypes that each term holds.
 	 */
-	public AlgebraOperatorPredicateImpl(IRI name, COL_TYPE[] types) {
+	public AlgebraOperatorPredicateImpl(String name, COL_TYPE[] types) {
 		super(name, types.length, types);
 	}
 
@@ -46,5 +38,4 @@ public class AlgebraOperatorPredicateImpl extends PredicateImpl implements
 	public AlgebraOperatorPredicateImpl clone() {
 		return this;
 	}
-
 }

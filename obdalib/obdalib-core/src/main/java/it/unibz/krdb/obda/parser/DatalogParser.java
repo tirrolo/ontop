@@ -285,8 +285,8 @@ public class DatalogParser extends Parser {
             	            variableList.addAll(variables); // Import all the data from the Set to a Vector.
             	             
             	            // Get the head atom
-            	            Atom head = rule.getHead();
-            	            IRI name = head.getPredicate().getName();
+            	            Function head = rule.getHead();
+            	            String name = head.getPredicate().getName();
             	            int size = variableList.size(); 
             	            
             	            // Get the predicate atom
@@ -579,7 +579,7 @@ public class DatalogParser extends Parser {
         CQIE value = null;
 
 
-        List<Atom> body8 =null;
+        List<Function> body8 =null;
 
         CQIE datalog_syntax_alt9 =null;
 
@@ -659,11 +659,11 @@ public class DatalogParser extends Parser {
         CQIE value = null;
 
 
-        Atom head10 =null;
+        Function head10 =null;
 
-        List<Atom> body11 =null;
+        List<Function> body11 =null;
 
-        Atom head12 =null;
+        Function head12 =null;
 
 
         try {
@@ -776,7 +776,7 @@ public class DatalogParser extends Parser {
                     match(input,INV_IMPLIES,FOLLOW_INV_IMPLIES_in_datalog_syntax_alt276); if (state.failed) return value;
 
                     if ( state.backtracking==0 ) {
-                          value = dfac.getCQIE(head12, new LinkedList<Atom>());
+                          value = dfac.getCQIE(head12, new LinkedList<Function>());
                         }
 
                     }
@@ -841,7 +841,7 @@ public class DatalogParser extends Parser {
                     if (state.failed) return value;
 
                     if ( state.backtracking==0 ) {
-                          value = dfac.getCQIE(head13, new LinkedList<Atom>());
+                          value = dfac.getCQIE(head13, new LinkedList<Function>());
                         }
 
                     }
@@ -884,11 +884,11 @@ public class DatalogParser extends Parser {
         CQIE value = null;
 
 
-        Atom head15 =null;
+        Function head15 =null;
 
-        List<Atom> body16 =null;
+        List<Function> body16 =null;
 
-        List<Atom> body17 =null;
+        List<Function> body17 =null;
 
 
         try {
@@ -1068,17 +1068,17 @@ public class DatalogParser extends Parser {
 
     // $ANTLR start "body"
     // C:\\Project\\Obdalib\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Datalog.g:225:1: body returns [List<Atom> value] : a1= atom ( ( COMMA | CARET ) a2= atom )* ;
-    public final List<Atom> body() throws RecognitionException {
-        List<Atom> value = null;
+    public final List<Function> body() throws RecognitionException {
+        List<Function> value = null;
 
 
-        Atom a1 =null;
+        Function a1 =null;
 
-        Atom a2 =null;
+        Function a2 =null;
 
 
 
-          value = new LinkedList<Atom>();
+          value = new LinkedList<Function>();
 
         try {
             // C:\\Project\\Obdalib\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\parser\\Datalog.g:229:3: (a1= atom ( ( COMMA | CARET ) a2= atom )* )
@@ -1202,7 +1202,7 @@ public class DatalogParser extends Parser {
             match(input,RPAREN,FOLLOW_RPAREN_in_atom438); if (state.failed) return value;
 
             if ( state.backtracking==0 ) {
-                  IRI uri = OBDADataFactoryImpl.getIRI(predicate19);
+                  String uri = predicate19;
                   
                   Vector<NewLiteral> elements = terms20;
                   if (elements == null)
@@ -1740,7 +1740,7 @@ public class DatalogParser extends Parser {
                   } else if (functionName.equals(OBDAVocabulary.QUEST_URI)) {
                     functionSymbol = dfac.getUriTemplatePredicate(arity);
                   } else {
-                    functionSymbol = dfac.getPredicate(OBDADataFactoryImpl.getIRI(functionName), arity);
+                    functionSymbol = dfac.getPredicate(functionName, arity);
                   }
                   value = dfac.getFunctionalTerm(functionSymbol, terms31);
                 }
@@ -1786,7 +1786,7 @@ public class DatalogParser extends Parser {
 
             if ( state.backtracking==0 ) { 
                   uriText = (uri32!=null?input.toString(uri32.start,uri32.stop):null);      
-                  value = dfac.getURIConstant(OBDADataFactoryImpl.getIRI(uriText));
+                  value = dfac.getURIConstant(uriText);
                 }
 
             }

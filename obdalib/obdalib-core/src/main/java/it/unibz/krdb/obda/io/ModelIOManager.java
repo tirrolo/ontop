@@ -1,20 +1,24 @@
 package it.unibz.krdb.obda.io;
 
-import it.unibz.krdb.obda.codec.TargetQueryToTurtleCodec;
 import it.unibz.krdb.obda.exception.DuplicateMappingException;
+import it.unibz.krdb.obda.exception.UnsupportedTagException;
 import it.unibz.krdb.obda.gui.swing.exception.Indicator;
 import it.unibz.krdb.obda.gui.swing.exception.InvalidMappingException;
 import it.unibz.krdb.obda.gui.swing.exception.InvalidPredicateDeclarationException;
-import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDADataSource;
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
+import it.unibz.krdb.obda.parser.TargetQueryParser;
+import it.unibz.krdb.obda.parser.TargetQueryParserException;
+import it.unibz.krdb.obda.parser.TurtleOBDASyntaxParser;
 import it.unibz.krdb.obda.parser.TurtleSyntaxParser;
+import it.unibz.krdb.obda.parser.UnparsableTargetQueryException;
+import it.unibz.krdb.obda.renderer.SourceQueryRenderer;
+import it.unibz.krdb.obda.renderer.TargetQueryRenderer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,9 +29,9 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,22 +56,16 @@ public class ModelIOManager {
     private static final String START_COLLECTION_SYMBOL = "@collection [[";
     private static final String END_COLLECTION_SYMBOL = "]]";
     private static final String COMMENT_SYMBOL = ";";
-
-    private static final int MAX_ENTITIES_PER_ROW = 10;
-
+    
     private OBDAModel model;
     private PrefixManager prefixManager;
     private OBDADataFactory dataFactory;
-    private TurtleSyntaxParser conjunctiveQueryParser;
-
-    private List<Predicate> predicateDeclarations = new ArrayList<Predicate>();
     
-//    private List<Indicator> invalidPredicateIndicators = new ArrayList<Indicator>();
     private List<Indicator> invalidMappingIndicators = new ArrayList<Indicator>();
     
-    private TargetQueryToTurtleCodec turtleRenderer;
-
-    private static final Logger log = LoggerFactory.getLogger(DataManager.class);
+    private List<TargetQueryParser> listOfParsers = new ArrayList<TargetQueryParser>();
+    
+    private static final Logger log = LoggerFactory.getLogger(ModelIOManager.class);
     
     /**
      * Create an IO manager for saving/loading the OBDA model.
@@ -77,13 +75,22 @@ public class ModelIOManager {
      */
     public ModelIOManager(OBDAModel model) {
         this.model = model;
-        turtleRenderer = new TargetQueryToTurtleCodec(model);
-
         prefixManager = model.getPrefixManager();
         dataFactory = model.getDataFactory();
-        conjunctiveQueryParser = new TurtleSyntaxParser(model.getPrefixManager());
+
+        // Register available parsers for target query
+        register(new TurtleOBDASyntaxParser(prefixManager));
+        register(new TurtleSyntaxParser(prefixManager));
+    }
+    
+    private void register(TargetQueryParser parser) {
+    	listOfParsers.add(parser);
     }
 
+    private List<TargetQueryParser> getParsers() {
+    	return listOfParsers;
+    }
+    
     /**
      * The save/write operation.
      * 
@@ -106,9 +113,6 @@ public class ModelIOManager {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             writePrefixDeclaration(writer);
-            writeClassEntityDeclaration(writer);
-            writeObjectPropertyDeclaration(writer);
-            writeDataPropertyDeclaration(writer);
             for (OBDADataSource source : model.getSources()) {
                 writeSourceDeclaration(source, writer);
                 writeMappingDeclaration(source, writer);
@@ -145,7 +149,6 @@ public class ModelIOManager {
      */
     public void load(File file) throws IOException, InvalidMappingException {
         if (!file.exists()) {
-            // NO-OP: Users may not have the OBDA file
             log.warn("WARNING: Cannot locate OBDA file at: " + file.getPath());
             return;
         }
@@ -161,24 +164,31 @@ public class ModelIOManager {
         String line = "";
         URI sourceUri = null;
         while ((line = reader.readLine()) != null) {
-            if (isCommentLine(line) || line.isEmpty()) {
-                continue; // skip comment lines and blank lines
-            }
-            if (line.contains(PREFIX_DECLARATION_TAG)) {
-                readPrefixDeclaration(reader);
-            } else if (line.contains(CLASS_DECLARATION_TAG)) {
-                readClassDeclaration(reader);
-            } else if (line.contains(OBJECT_PROPERTY_DECLARATION_TAG)) {
-                readObjectPropertyDeclaration(reader);
-            } else if (line.contains(DATA_PROPERTY_DECLARATION_TAG)) {
-                readDataPropertyDeclaration(reader);
-            } else if (line.contains(SOURCE_DECLARATION_TAG)) {
-                sourceUri = readSourceDeclaration(reader);
-            } else if (line.contains(MAPPING_DECLARATION_TAG)) {
-                readMappingDeclaration(reader, sourceUri);
-            } else {
-                throw new IOException(String.format("Invalid syntax at line: %s", reader.getLineNumber()));
-            }
+        	try {
+	            if (isCommentLine(line) || line.isEmpty()) {
+	                continue; // skip comment lines and blank lines
+	            }
+	            if (line.contains(PREFIX_DECLARATION_TAG)) {
+	                readPrefixDeclaration(reader);
+	            } else if (line.contains(CLASS_DECLARATION_TAG)) {
+	            	// deprecated tag
+	            	throw new UnsupportedTagException(CLASS_DECLARATION_TAG);
+	            } else if (line.contains(OBJECT_PROPERTY_DECLARATION_TAG)) {
+	            	// deprecated tag
+	            	throw new UnsupportedTagException(OBJECT_PROPERTY_DECLARATION_TAG);
+	            } else if (line.contains(DATA_PROPERTY_DECLARATION_TAG)) {
+	            	// deprecated tag
+	            	throw new UnsupportedTagException(DATA_PROPERTY_DECLARATION_TAG);
+	            } else if (line.contains(SOURCE_DECLARATION_TAG)) {
+	                sourceUri = readSourceDeclaration(reader);
+	            } else if (line.contains(MAPPING_DECLARATION_TAG)) {
+	                readMappingDeclaration(reader, sourceUri);
+	            } else {
+	                throw new IOException("Unknown syntax: " + line);
+	            }
+        	} catch (Exception e) {
+        		throw new IOException(String.format("Problem at line: %s", reader.getLineNumber()), e);
+        	}
         }
         
         // Throw some validation exceptions
@@ -206,65 +216,6 @@ public class ModelIOManager {
         }
         writer.write("\n");
     }
-
-    private void writeClassEntityDeclaration(BufferedWriter writer) throws IOException {
-        writer.write(CLASS_DECLARATION_TAG + " " + START_COLLECTION_SYMBOL);
-        writer.write("\n");
-        Set<Predicate> declaredClasses = model.getDeclaredClasses();
-        if (!declaredClasses.isEmpty()) {
-            writeEntities(declaredClasses, writer);
-        }
-        writer.write(END_COLLECTION_SYMBOL);
-        writer.write("\n\n");
-    }
-
-    private void writeObjectPropertyDeclaration(BufferedWriter writer) throws IOException {
-        writer.write(OBJECT_PROPERTY_DECLARATION_TAG + " " + START_COLLECTION_SYMBOL);
-        writer.write("\n");
-        Set<Predicate> declaredRoles = model.getDeclaredObjectProperties();
-        if (!declaredRoles.isEmpty()) {
-            writeEntities(declaredRoles, writer);
-        }
-        writer.write(END_COLLECTION_SYMBOL);
-        writer.write("\n\n");
-    }
-
-    private void writeDataPropertyDeclaration(BufferedWriter writer) throws IOException {
-        writer.write(DATA_PROPERTY_DECLARATION_TAG + " " + START_COLLECTION_SYMBOL);
-        writer.write("\n");
-        Set<Predicate> declaredAttributes = model.getDeclaredDataProperties();
-        if (!declaredAttributes.isEmpty()) {
-            writeEntities(declaredAttributes, writer);
-        }
-        writer.write(END_COLLECTION_SYMBOL);
-        writer.write("\n\n");
-    }
-
-    private void writeEntities(Set<? extends Predicate> predicates, BufferedWriter writer) throws IOException {
-        int count = 1;
-        boolean needComma = false;
-        for (Predicate p : predicates) {
-            if (count > MAX_ENTITIES_PER_ROW) {
-                writer.write("\n");
-                count = 1;
-                needComma = false;
-            }
-            if (needComma) {
-                writer.write(", ");
-            }
-            String prefixedName = prefixManager.getShortForm(p.toString());
-            
-            if (prefixedName.equals(p.toString())) { // if the name doesn't get shortened (i.e., still in full URI)
-                writer.write("<" + p.toString() + ">");
-            }
-            else {
-                writer.write(prefixedName);
-            }
-            needComma = true;
-            count++;
-        }
-        writer.write("\n");
-    }
     
     private void writeSourceDeclaration(OBDADataSource source, BufferedWriter writer) throws IOException {
         writer.write(SOURCE_DECLARATION_TAG);
@@ -279,7 +230,6 @@ public class ModelIOManager {
 
     private void writeMappingDeclaration(OBDADataSource source, BufferedWriter writer) throws IOException {
         final URI sourceUri = source.getSourceID();
-//        CQFormatter formatter = new TurtleFormatter(model.getPrefixManager());
 
         writer.write(MAPPING_DECLARATION_TAG + " " + START_COLLECTION_SYMBOL);
         writer.write("\n");
@@ -290,17 +240,26 @@ public class ModelIOManager {
                 writer.write("\n");
             }
             writer.write(Label.mappingId.name() + "\t" + mapping.getId() + "\n");
-            writer.write(Label.target.name() + "\t\t" + turtleRenderer.encode((CQIE) mapping.getTargetQuery()) + "\n");
-            writer.write(Label.source.name() + "\t\t" + printSourceQuery(mapping.getSourceQuery()) + "\n");
+            
+            OBDAQuery targetQuery = mapping.getTargetQuery();
+            writer.write(Label.target.name() + "\t\t" + printTargetQuery(targetQuery) + "\n");
+            
+            OBDAQuery sourceQuery = mapping.getSourceQuery();
+            writer.write(Label.source.name() + "\t\t" + printSourceQuery(sourceQuery) + "\n");
             needLineBreak = true;
         }
         writer.write(END_COLLECTION_SYMBOL);
         writer.write("\n\n");
     }
 
+    private String printTargetQuery(OBDAQuery query) {
+    	return TargetQueryRenderer.encode(query, prefixManager);
+    }
+    
     private String printSourceQuery(OBDAQuery query) {
-    	String str = convertTabToSpaces(query.toString());
-    	return str.replaceAll("\n", "\n\t\t\t");
+    	String sourceString = SourceQueryRenderer.encode(query);
+    	String toReturn = convertTabToSpaces(sourceString);
+    	return toReturn.replaceAll("\n", "\n\t\t\t");
     }
     
     /*
@@ -315,77 +274,6 @@ public class ModelIOManager {
             pm.addPrefix(tokens[0], tokens[1]);
         }
     }
-
-    private void readClassDeclaration(LineNumberReader reader) throws IOException {
-        String line = "";
-        while (!(line = reader.readLine()).equals(END_COLLECTION_SYMBOL)) {
-            String[] tokens = line.split(",");
-            for (int i = 0; i < tokens.length; i++) {
-                String declaration = tokens[i].trim();
-                String className = "";
-                if (declaration.contains("<") && declaration.contains(">")) { // if the class declaration is written in full URI
-                    className = declaration.substring(1, declaration.length()-1);
-                } else {
-                   className = expand(declaration);
-                }
-                Predicate predicate = dataFactory.getClassPredicate(className);
-                predicateDeclarations.add(predicate);
-               
-                model.declareClass(predicate);
-            }
-        }
-    }
-    
-    private void readObjectPropertyDeclaration(LineNumberReader reader) throws IOException {
-        String line = "";
-        while (!(line = reader.readLine()).equals(END_COLLECTION_SYMBOL)) {
-            String[] tokens = line.split(",");
-            for (int i = 0; i < tokens.length; i++) {
-                String declaration = tokens[i].trim();
-                String propertyName = "";
-                if (declaration.contains("<") && declaration.contains(">")) { // if the object property declaration is written in full URI
-                    propertyName = declaration.substring(1, declaration.length()-1);
-                } else {
-                    propertyName = expand(declaration);
-                }
-                Predicate predicate = dataFactory.getObjectPropertyPredicate(propertyName);
-                predicateDeclarations.add(predicate);
-               
-                model.declareObjectProperty(predicate);
-            }
-        }
-    }
-    
-    private void readDataPropertyDeclaration(LineNumberReader reader) throws IOException {
-        String line = "";
-        while (!(line = reader.readLine()).equals(END_COLLECTION_SYMBOL)) {
-            String[] tokens = line.split(",");
-            for (int i = 0; i < tokens.length; i++) {
-                String declaration = tokens[i].trim();
-                String propertyName = "";
-                if (declaration.contains("<") && declaration.contains(">")) { // if the object property declaration is written in full URI
-                    propertyName = declaration.substring(1, declaration.length()-1);
-                } else {
-                    propertyName = expand(declaration);
-                }
-                Predicate predicate = dataFactory.getDataPropertyPredicate(propertyName);
-                predicateDeclarations.add(predicate);
-               
-                model.declareDataProperty(predicate);
-            }
-        }
-    }
-
-    private String expand(String prefixedName) throws IOException {
-       int index = prefixedName.indexOf(":");
-       if (index == -1) {
-          throw new IOException("Invalid entity name declaration: " + prefixedName);
-       }
-       String prefix = prefixedName.substring(0, index+1);
-       String uri = prefixManager.getURIDefinition(prefix);
-       String fullName = prefixedName.replace(prefix, uri);
-       return fullName;
-    }
     
     private URI readSourceDeclaration(LineNumberReader reader) throws IOException {
         String line = "";
@@ -394,20 +282,23 @@ public class ModelIOManager {
         while (!(line = reader.readLine()).isEmpty()) {
             int lineNumber = reader.getLineNumber();
             String[] tokens = line.split("[\t| ]+", 2);
-            if (tokens[0].equals(Label.sourceUri.name())) {
-                sourceUri = URI.create(tokens[1]);
+            
+            final String parameter = tokens[0].trim();
+            final String inputParamter = tokens[1].trim();
+            if (parameter.equals(Label.sourceUri.name())) {
+                sourceUri = URI.create(inputParamter);
                 // TODO: BAD CODE! The data source id should be part of the parameters!
                 datasource = model.getDataFactory().getDataSource(sourceUri);
-            } else if (tokens[0].equals(Label.connectionUrl.name())) {
-                datasource.setParameter(RDBMSourceParameterConstants.DATABASE_URL, tokens[1]);
-            } else if (tokens[0].equals(Label.username.name())) {
-                datasource.setParameter(RDBMSourceParameterConstants.DATABASE_USERNAME, tokens[1]);
-            } else if (tokens[0].equals(Label.password.name())) {
-                datasource.setParameter(RDBMSourceParameterConstants.DATABASE_PASSWORD, tokens[1]);
-            } else if (tokens[0].equals(Label.driverClass.name())) {
-                datasource.setParameter(RDBMSourceParameterConstants.DATABASE_DRIVER, tokens[1]);
+            } else if (parameter.equals(Label.connectionUrl.name())) {
+                datasource.setParameter(RDBMSourceParameterConstants.DATABASE_URL, inputParamter);
+            } else if (parameter.equals(Label.username.name())) {
+                datasource.setParameter(RDBMSourceParameterConstants.DATABASE_USERNAME, inputParamter);
+            } else if (parameter.equals(Label.password.name())) {
+                datasource.setParameter(RDBMSourceParameterConstants.DATABASE_PASSWORD, inputParamter);
+            } else if (parameter.equals(Label.driverClass.name())) {
+                datasource.setParameter(RDBMSourceParameterConstants.DATABASE_DRIVER, inputParamter);
             } else {
-                String msg = String.format("Unknown parameter name \"%s\" at line: %d.", tokens[0], lineNumber);
+                String msg = String.format("Unknown parameter name \"%s\" at line: %d.", parameter, lineNumber);
                 throw new IOException(msg);
             }
         }
@@ -446,52 +337,34 @@ public class ModelIOManager {
             }
             
             String[] tokens = line.split("[\t| ]+", 2);
-            if (!tokens[0].trim().isEmpty()) {
+            String label = tokens[0].trim();
+            String value = tokens[1].trim();
+            if (!label.isEmpty()) {
             	currentLabel = tokens[0];
             	wsCount = getSeparatorLength(line, currentLabel.length());
             } else {
             	if (currentLabel.equals(Label.source.name())) {
             		int beginIndex = wsCount + 1; // add one tab to replace the "source" label
-            		String value = line.substring(beginIndex, line.length());
-            		tokens = new String[]{ tokens[0], convertTabToSpaces(value) };
+            		value = line.substring(beginIndex, line.length());
             	}       	
             }
             
             if (currentLabel.equals(Label.mappingId.name())) {
-                mappingId = tokens[1];
+                mappingId = value;
                 if (mappingId.isEmpty()) { // empty or not
                     register(invalidMappingIndicators, new Indicator(lineNumber, Label.mappingId, InvalidMappingException.MAPPING_ID_IS_BLANK));
                     isMappingValid = false;
                 }
             } else if (currentLabel.equals(Label.target.name())) {
-                String targetString = tokens[1];
+                String targetString = value;
                 if (targetString.isEmpty()) { // empty or not
                     register(invalidMappingIndicators, new Indicator(lineNumber, mappingId, InvalidMappingException.TARGET_QUERY_IS_BLANK));
                     isMappingValid = false;
-                } else {
-                    try { 
-                        // Parse the string if it's not empty
-                        targetQuery = conjunctiveQueryParser.parse(targetString);
-                        
-                        // Check if the predicates in the atoms are declared
-                        List<Predicate> undeclaredPredicates = new ArrayList<Predicate>();
-                        for (Atom atom : targetQuery.getBody()) {
-                            boolean isDeclared = predicateDeclarations.contains(atom.getPredicate());
-                            if (!isDeclared) {
-                                undeclaredPredicates.add(atom.getPredicate());
-                            }
-                        }
-                        if (!undeclaredPredicates.isEmpty()) {
-                            register(invalidMappingIndicators, new Indicator(lineNumber, new Object[] { mappingId, undeclaredPredicates }, InvalidMappingException.UNKNOWN_PREDICATE_IN_TARGET_QUERY));
-                            isMappingValid = false;
-                        }
-                    } catch (Exception e) { // Catch the exception from parsing the string
-                        register(invalidMappingIndicators, new Indicator(lineNumber, new String[] { mappingId, targetString }, InvalidMappingException.ERROR_PARSING_TARGET_QUERY));
-                        isMappingValid = false;
-                    }
                 }
+                // Load the target query
+                targetQuery = loadTargetQuery(targetString);
             } else if (currentLabel.equals(Label.source.name())) {
-                String sourceString = tokens[1];
+                String sourceString = value;
                 if (sourceString.isEmpty()) { // empty or not
                     register(invalidMappingIndicators, new Indicator(lineNumber, mappingId, InvalidMappingException.SOURCE_QUERY_IS_BLANK));
                     isMappingValid = false;
@@ -513,6 +386,18 @@ public class ModelIOManager {
         if (!mappingId.isEmpty() && isMappingValid) {
             saveMapping(dataSourceUri, mappingId, sourceQuery.toString(), targetQuery);
         }
+    }
+
+	private CQIE loadTargetQuery(String targetString) throws UnparsableTargetQueryException {
+        Map<TargetQueryParser, TargetQueryParserException> exceptions = new HashMap<TargetQueryParser, TargetQueryParserException>();
+		for (TargetQueryParser parser : getParsers()) {
+            try {
+            	return parser.parse(targetString);
+            } catch (TargetQueryParserException e) {
+            	exceptions.put(parser, e);
+            }     
+    	}
+		throw new UnparsableTargetQueryException(exceptions);
     }
 
 	private int getSeparatorLength(String input, int beginIndex) {

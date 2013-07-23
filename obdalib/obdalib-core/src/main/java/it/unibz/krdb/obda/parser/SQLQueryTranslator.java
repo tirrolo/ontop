@@ -60,9 +60,9 @@ public class SQLQueryTranslator {
 		int start = 6; // the keyword 'select'
 		int end = query.toLowerCase().indexOf("from");		
 		
-		if (end == -1)
+		if (end == -1) {
 			throw new RuntimeException("Error parsing SQL query: Couldn't find FROM clause");
-
+		}
 		String projection = query.substring(start, end).trim();
 		String[] columns = projection.split(",");
 		
@@ -71,7 +71,35 @@ public class SQLQueryTranslator {
 		viewDefinition.copy(query);		
 		for (int i = 0; i < columns.length; i++) {
 			String columnName = columns[i].trim();
-			if (columnName.contains(" as ")) {
+			
+			/*
+			 * Remove any identifier quotes
+			 * Example:
+			 * 		INPUT: "table"."column"
+			 * 		OUTPUT: table.column
+			 */
+			if (columnName.contains("\"")) {
+				columnName = columnName.replaceAll("\"", "");
+			} else if (columnName.contains("`")) {
+				columnName = columnName.replaceAll("`", "");
+			} else if (columnName.contains("[") && columnName.contains("]")) {
+				columnName = columnName.replaceAll("[", "").replaceAll("]", "");
+			}
+
+			/*
+			 * Get only the short name if the column name uses qualified name.
+			 * Example:
+			 * 		INPUT: table.column
+			 * 		OUTPUT: column
+			 */
+			if (columnName.contains(".")) {
+				columnName = columnName.substring(columnName.lastIndexOf(".")+1, columnName.length()); // get only the name
+			}
+			
+			/*
+			 * Take the alias name if the column name has it.
+			 */
+			if (columnName.contains(" as ")) { // has an alias
 				columnName = columnName.split(" as ")[1].trim();
 			}			
 			viewDefinition.setAttribute(i+1, new Attribute(columnName)); // the attribute index always start at 1

@@ -1,11 +1,10 @@
 package it.unibz.krdb.obda.io;
 
-import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DataTypePredicate;
 import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.NewLiteral;
+import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.URITemplatePredicate;
 import it.unibz.krdb.obda.model.Variable;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
@@ -26,10 +25,10 @@ public class TurtleFormatter extends CQFormatter {
 
     public String print(CQIE query) {
         TurtleContainer container = new TurtleContainer();
-        List<Atom> body = query.getBody();
-        for (Atom atom : body) {
+        List<Function> body = query.getBody();
+        for (Function atom : body) {
             String subject, predicate, object = "";
-            String predicateName = atom.getPredicate().toString();
+            String predicateName = atom.getFunctionSymbol().toString();
             if (isUnary(atom)) {
                 NewLiteral term = atom.getTerm(0);
                 subject = getDisplayString(term);
@@ -93,7 +92,7 @@ public class TurtleFormatter extends CQFormatter {
     /**
      * Checks if the atom is unary or not.
      */
-    private boolean isUnary(Atom atom) {
+    private boolean isUnary(Function atom) {
         return atom.getArity() == 1 ? true : false;
     }
 
@@ -160,11 +159,11 @@ public class TurtleFormatter extends CQFormatter {
          * container.
          * 
          * @param subject
-         *            The subject term of the Atom.
+         *            The subject term of the Function.
          * @param predicate
-         *            The Atom predicate.
+         *            The Function predicate.
          * @param object
-         *            The object term of the Atom.
+         *            The object term of the Function.
          */
         void put(String subject, String predicate, String object) {
             // Subject to Predicates map
@@ -206,7 +205,7 @@ public class TurtleFormatter extends CQFormatter {
                 boolean semiColonSeparator = false;
                 for (String predicate : subjectToPredicates.get(subject)) {
                     if (semiColonSeparator) {
-                        sb.append("; ");
+                        sb.append(" ; ");
                     }
                     sb.append(predicate);
                     sb.append(" ");
@@ -215,7 +214,7 @@ public class TurtleFormatter extends CQFormatter {
                     boolean commaSeparator = false;
                     for (String object : predicateToObjects.get(predicate)) {
                         if (commaSeparator) {
-                            sb.append(", ");
+                            sb.append(" , ");
                         }
                         sb.append(object);
                         commaSeparator = true;

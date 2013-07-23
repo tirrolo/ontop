@@ -1,9 +1,9 @@
 package it.unibz.krdb.sql;
 
-import it.unibz.krdb.obda.model.Atom;
 import it.unibz.krdb.obda.model.BooleanOperationPredicate;
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
+import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.sql.api.Attribute;
 
@@ -103,7 +103,12 @@ public class DBMetadata implements Serializable {
 	 *            The string name.
 	 */
 	public DataDefinition getDefinition(String name) {
-		return schema.get(name);
+		DataDefinition def = schema.get(name);
+		if (def == null)
+			def = schema.get(name.toLowerCase());
+		if (def == null)
+			def = schema.get(name.toUpperCase());
+		return def;
 	}
 	
 	/**
@@ -290,7 +295,7 @@ public class DBMetadata implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuffer bf = new StringBuffer();
+		StringBuilder bf = new StringBuilder();
 		for (String key : schema.keySet()) {
 			bf.append(key);
 			bf.append("=");
@@ -311,27 +316,27 @@ public class DBMetadata implements Serializable {
 	 */
 	public static Map<Predicate, List<Integer>> extractPKs(DBMetadata metadata, DatalogProgram program) {
 		Map<Predicate, List<Integer>> pkeys = new HashMap<Predicate, List<Integer>>();
-
 		for (CQIE mapping : program.getRules()) {
-			for (Atom newatom : mapping.getBody()) {
-				Predicate newAtomPredicate = newatom.getPredicate();
+			for (Function newatom : mapping.getBody()) {
+				Predicate newAtomPredicate = newatom.getFunctionSymbol();
 				if (newAtomPredicate instanceof BooleanOperationPredicate) {
 					continue;
 				}
+				// TODO Check this: somehow the new atom name is "Join" instead of table name.
 				String newAtomName = newAtomPredicate.toString();
 				DataDefinition def = metadata.getDefinition(newAtomName);
-				List<Integer> pkeyIdx = new LinkedList<Integer>();
-				for (int columnidx = 1; columnidx <= def.countAttribute(); columnidx++) {
-					Attribute column = def.getAttribute(columnidx);
-					if (column.isPrimaryKey()) {
-						pkeyIdx.add(columnidx);
+				if (def != null) {
+					List<Integer> pkeyIdx = new LinkedList<Integer>();
+					for (int columnidx = 1; columnidx <= def.countAttribute(); columnidx++) {
+						Attribute column = def.getAttribute(columnidx);
+						if (column.isPrimaryKey()) {
+							pkeyIdx.add(columnidx);
+						}
 					}
-	
+					if (!pkeyIdx.isEmpty()) {
+						pkeys.put(newatom.getFunctionSymbol(), pkeyIdx);
+					}
 				}
-				if (!pkeyIdx.isEmpty()) {
-					pkeys.put(newatom.getPredicate(), pkeyIdx);
-				}
-	
 			}
 		}
 		return pkeys;

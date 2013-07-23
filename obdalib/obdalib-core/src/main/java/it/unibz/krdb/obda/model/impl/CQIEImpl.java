@@ -17,22 +17,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/***
+/**
  * This is a rule implementation that keeps track of changes in the query by
  * externals. It is also optimized for .equals calls.
- * 
- * @author Mariano Rodriguez Muro
- * 
  */
 public class CQIEImpl implements CQIE, ListListener {
 
 	private static final long serialVersionUID = 5789854661851692098L;
-	private Atom head = null;
-	private List<Atom> body = null;
-	// private boolean isBoolean = false;
+	private Function head = null;
+	private List<Function> body = null;
 
 	private int hash = -1;
-
 	private boolean rehash = true;
 
 	private String string = null;
@@ -44,73 +39,61 @@ public class CQIEImpl implements CQIE, ListListener {
 	private OBDAQueryModifiers modifiers = null;
 
 	// TODO Remove isBoolean from the signature and from any method
-	protected CQIEImpl(Atom head, List<Atom> body) {
-
-		// this.isBoolean = isBoolean;
+	protected CQIEImpl(Function head, List<Function> body) {
 
 		// The syntax for CQ may contain no body, thus, this condition will
 		// check whether the construction of the link list is possible or not.
 		if (body != null) {
-			EventGeneratingArrayList<Atom> eventbody = new EventGeneratingArrayList<Atom>(body.size()*20);
+			EventGeneratingArrayList<Function> eventbody = new EventGeneratingArrayList<Function>(body.size()*20);
 			eventbody.addAll(body);
-
 			this.body = eventbody;
 
 			registerListeners(eventbody);
-			
 			// TODO possible memory leak!!! we should also de-register when objects are removed
-			
-			
 		}
 
 		// The syntax for CQ may also contain no head, thus, this condition
 		// will check whether we can look for the head terms or not.
 		if (head != null) {
 			this.head = head;
-
 			EventGeneratingArrayList<NewLiteral> headterms = (EventGeneratingArrayList<NewLiteral>) head.getTerms();
 			headterms.addListener(this);
 		}
 	}
 
-	private void registerListeners(EventGeneratingArrayList functions) {
+	private void registerListeners(EventGeneratingArrayList<? extends NewLiteral> functions) {
 
 		functions.addListener(this);
 
 		for (Object o : functions) {
-			if (!(o instanceof Function))
+			if (!(o instanceof Function)) {
 				continue;
+			}
 			Function f = (Function) o;
-			EventGeneratingArrayList list = (EventGeneratingArrayList) f
-					.getTerms();
-
+			EventGeneratingArrayList<NewLiteral> list = (EventGeneratingArrayList<NewLiteral>) f.getTerms();
 			list.addListener(this);
-
 			registerListeners(list);
 		}
 	}
 
-	public List<Atom> getBody() {
+	public List<Function> getBody() {
 		return body;
 	}
 
-	public Atom getHead() {
+	public Function getHead() {
 		return head;
 	}
 
-	public void updateHead(Atom head) {
-
-		EventGeneratingArrayList<NewLiteral> headterms = (EventGeneratingArrayList<NewLiteral>) head
-				.getTerms();
-		headterms.removeListener(this);
-
+	public void updateHead(Function head) {
 		this.head = head;
-		((EventGeneratingArrayList) head.getTerms()).addListener(this);
 
+		EventGeneratingArrayList<NewLiteral> headterms = (EventGeneratingArrayList<NewLiteral>) head.getTerms();
+		headterms.removeListener(this);
+		headterms.addListener(this);
 		listChanged();
 	}
 
-	public void updateBody(List<Atom> body) {
+	public void updateBody(List<Function> body) {
 		this.body.clear();
 		this.body.addAll(body);
 		listChanged();
@@ -125,11 +108,6 @@ public class CQIEImpl implements CQIE, ListListener {
 		return hash;
 	}
 
-	// @Override
-	// public boolean isBoolean() {
-	// return isBoolean;
-	// }
-
 	@Override
 	public String toString() {
 		if (string == null) {
@@ -137,7 +115,7 @@ public class CQIEImpl implements CQIE, ListListener {
 			sb.append(head.toString());
 			sb.append(SPACE + INV_IMPLIES + SPACE); // print " :- "
 
-			Iterator<Atom> bit = body.iterator();
+			Iterator<Function> bit = body.iterator();
 			while (bit.hasNext()) {
 				Function atom = bit.next();
 				sb.append(atom.toString());
@@ -153,12 +131,12 @@ public class CQIEImpl implements CQIE, ListListener {
 
 	@Override
 	public CQIEImpl clone() {
-		Atom copyHead = (Atom) head.clone();
-		List<Atom> copyBody = new ArrayList<Atom>(body.size() + 10);
+		Function copyHead = (Atom) head.clone();
+		List<Function> copyBody = new ArrayList<Function>(body.size() + 10);
 
-		for (Atom atom : body) {
+		for (Function atom : body) {
 			if (atom != null) {
-				copyBody.add(atom.clone());
+				copyBody.add((Function) atom.clone());
 			}
 		}
 		
@@ -172,8 +150,9 @@ public class CQIEImpl implements CQIE, ListListener {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof CQIEImpl))
+		if (!(obj instanceof CQIEImpl)) {
 			return false;
+		}
 		CQIEImpl q2 = (CQIEImpl) obj;
 		return hashCode() == q2.hashCode();
 	}
@@ -182,7 +161,6 @@ public class CQIEImpl implements CQIE, ListListener {
 	public void listChanged() {
 		rehash = true;
 		string = null;
-
 	}
 
 	@Override
@@ -198,9 +176,8 @@ public class CQIEImpl implements CQIE, ListListener {
 
 	@Override
 	public Set<Variable> getReferencedVariables() {
-
 		Set<Variable> vars = new LinkedHashSet<Variable>();
-		for (Atom atom : body)
+		for (Function atom : body)
 			for (NewLiteral t : atom.getTerms()) {
 				for (Variable v : t.getReferencedVariables())
 					vars.add(v);
@@ -211,7 +188,7 @@ public class CQIEImpl implements CQIE, ListListener {
 	@Override
 	public Map<Variable, Integer> getVariableCount() {
 		Map<Variable, Integer> vars = new HashMap<Variable, Integer>();
-		for (Atom atom : body) {
+		for (Function atom : body) {
 			Map<Variable, Integer> atomCount = atom.getVariableCount();
 			for (Variable var : atomCount.keySet()) {
 				Integer count = vars.get(var);
@@ -221,7 +198,6 @@ public class CQIEImpl implements CQIE, ListListener {
 					vars.put(var, new Integer(atomCount.get(var)));
 				}
 			}
-
 		}
 
 		Map<Variable, Integer> atomCount = head.getVariableCount();

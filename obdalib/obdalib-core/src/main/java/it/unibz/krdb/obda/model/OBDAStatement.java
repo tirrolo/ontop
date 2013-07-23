@@ -4,15 +4,9 @@ public interface OBDAStatement {
 
 	public void cancel() throws OBDAException;
 
-	// public void clearBatch() throws OBDAException;
-
 	public void close() throws OBDAException;
 
-	public OBDAResultSet execute(String query) throws OBDAException;
-
-	public GraphResultSet executeConstruct(String query) throws OBDAException;
-
-	public GraphResultSet executeDescribe(String query) throws OBDAException;
+	public ResultSet execute(String query) throws OBDAException;
 
 	public int executeUpdate(String query) throws OBDAException;
 
@@ -22,14 +16,9 @@ public interface OBDAStatement {
 
 	public int getMaxRows() throws OBDAException;
 
-	/***
-	 * To implement
-	 * 
-	 * @throws Exception
-	 */
 	public void getMoreResults() throws OBDAException;
 
-	public OBDAResultSet getResultSet() throws OBDAException;
+	public ResultSet getResultSet() throws OBDAException;
 
 	public int getQueryTimeout() throws OBDAException;
 
@@ -49,5 +38,4 @@ public interface OBDAStatement {
 	 * @throws Exception
 	 */
 	public void setQueryTimeout(int seconds) throws Exception;
-
-	}
+}

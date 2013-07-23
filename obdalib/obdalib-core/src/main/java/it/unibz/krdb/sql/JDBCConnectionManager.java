@@ -57,44 +57,6 @@ public class JDBCConnectionManager {
 		return instance;
 	}
 
-	// /**
-	// * Creates all the database connections that are defined in the OBDA
-	// model.
-	// * Call this method to start filling the connection pool.
-	// *
-	// * @param model
-	// * The OBDA model.
-	// */
-	// public void setupConnection(OBDAModel model) {
-	// List<OBDADataSource> sources = model.getSources();
-	// for (OBDADataSource ds : sources) {
-	// try {
-	// setConnection(ds);
-	// } catch (SQLException e) {
-	// String message =
-	// String.format("Fail to create a connection.\nReason: %s for data source %s",
-	// e.getMessage(),
-	// ds.getSourceID());
-	// log.error(message);
-	// }
-	// }
-	// }
-
-	// /**
-	// * Constructs a new database connection object and then registers it to
-	// the
-	// * connection pool.
-	// *
-	// * @param dataSource
-	// * The data source object.
-	// * @throws SQLException
-	// */
-	// public void setConnection(OBDADataSource dataSource) throws SQLException
-	// {
-	// Connection conn = createConnection(dataSource);
-	// registerConnection(dataSource.getSourceID(), conn);
-	// }
-
 	/**
 	 * Constructs a new database connection object from a data source and
 	 * retrieves the object.
@@ -119,35 +81,14 @@ public class JDBCConnectionManager {
 		try {
 			Class.forName(driver);
 		} catch (ClassNotFoundException e1) {
+			// NO-OP
 		}
 
 		Connection conn = DriverManager.getConnection(url, username, password);
-
-		// if (driver.equals("com.mysql.jdbc.Driver"))
-		// conn.setAutoCommit(false);
-
-		// boolean bAutoCommit = ((Boolean)
-		// properties.get(JDBC_AUTOCOMMIT)).booleanValue();
-		// conn.setAutoCommit(bAutoCommit);
-
 		connectionPool.put(dataSource, conn);
-
 		return conn;
 	}
-
-	// /*
-	// * Store the connection object to the connection pool. Any existing
-	// * connection with the same ID will be replaced by the given connection.
-	// */
-	// private void registerConnection(URI sourceId, Connection conn) {
-	// boolean bRemoved = removeConnection(sourceId);
-	// if (bRemoved) {
-	// connectionPool.put(sourceId, conn);
-	// } else {
-	// log.error("Registration failed: Can't remove the existing connection.");
-	// }
-	// }
-
+	
 	/**
 	 * Retrieves the connection object from the connection pool. If the
 	 * connection doesnt exist or is dead, it will attempt to create a new
@@ -157,11 +98,10 @@ public class JDBCConnectionManager {
 	 *            The connection ID (usually the same as the data source URI).
 	 */
 	public Connection getConnection(OBDADataSource source) throws SQLException {
-
 		boolean alive = isConnectionAlive(source);
-		if (!alive)
+		if (!alive) {
 			createConnection(source);
-
+		}
 		Connection conn = connectionPool.get(source);
 		return conn;
 	}
@@ -189,7 +129,6 @@ public class JDBCConnectionManager {
 		} catch (SQLException e) {
 			log.error(e.getMessage());
 		}
-
 		return bStatus;
 	}
 
@@ -209,50 +148,6 @@ public class JDBCConnectionManager {
 		}
 		return !conn.isClosed();
 	}
-
-	// /**
-	// * Executes the query string using the given connection ID. If it is
-	// * successful, the method will return the result set.
-	// *
-	// * @param sourceId
-	// * The connection ID (usually the same as the data source URI).
-	// * @param query
-	// * The SQL query string.
-	// * @return The Result Set object.
-	// * @throws SQLException
-	// */
-	// public ResultSet executeQuery(URI sourceId, String query) throws
-	// SQLException {
-	// ResultSet rs = null;
-	// Statement st = null;
-	// try {
-	// Connection conn = getConnection(sourceId);
-	//
-	// int type = (Integer) properties.get(JDBC_RESULTSETTYPE);
-	// int concur = (Integer) properties.get(JDBC_RESULTSETCONCUR);
-	// int fetchsize = (Integer) properties.get(JDBC_FETCHSIZE);
-	//
-	// st = conn.createStatement(type, concur);
-	// st.setFetchSize(fetchsize);
-	// rs = st.executeQuery(query);
-	// } catch (SQLException e) {
-	// log.error(e.getMessage());
-	// } finally {
-	// // TODO: For the purpose of displaying only the query result, it is
-	// // better
-	// // not to return the ResultSet object. Instead, store all the result
-	// // into
-	// // another object and return that object. In this way, we can close
-	// // both
-	// // the Statement and ResultSet in advanced.
-	// //
-	// // To reduce this memory leak, currently the solution is that we
-	// // close the
-	// // ResultSet manually in the caller side.
-	// // st.close();
-	// }
-	// return rs;
-	// }
 
 	/**
 	 * Retrieves the database meta data about the table schema given a
@@ -275,33 +170,34 @@ public class JDBCConnectionManager {
 	 *            The database id.
 	 * @return The database meta data object.
 	 */
-	public static DBMetadata getMetaData(Connection conn) {
+	public static DBMetadata getMetaData(Connection conn) throws SQLException {
 		DBMetadata metadata = null;
-		try {
-			final DatabaseMetaData md = conn.getMetaData();
-			if (md.getDatabaseProductName().equals("Oracle")) {
-				// If the database engine is Oracle
-				metadata = getOracleMetaData(md, conn);
-			} else {
-				// For other database engines
-				metadata = getOtherMetaData(md);
-			}
-			return metadata;
-		} catch (Exception e) {
-			throw new RuntimeException("Errors on collecting database metadata: " + e.getMessage());
+		final DatabaseMetaData md = conn.getMetaData();
+		if (md.getDatabaseProductName().contains("Oracle")) {
+			// If the database engine is Oracle
+			metadata = getOracleMetaData(md, conn);
+		} else if (md.getDatabaseProductName().contains("DB2")) {
+			// If the database engine is IBM DB2
+			metadata = getDB2MetaData(md, conn);
+		} else if (md.getDatabaseProductName().contains("SQL Server")) {
+			// If the database engine is SQL Server
+			metadata = getSqlServerMetaData(md, conn);
+		} else {
+			// For other database engines
+			metadata = getOtherMetaData(md);
 		}
+		return metadata;
 	}
 
 	/**
-	 * Retrieve metadata for most of the database engine, e.g., MySQL,
-	 * PostgreSQL, SQL server
+	 * Retrieve metadata for most of the database engine, e.g., MySQL and PostgreSQL
 	 */
 	private static DBMetadata getOtherMetaData(DatabaseMetaData md) throws SQLException {
 		DBMetadata metadata = new DBMetadata(md);
 
 		ResultSet rsTables = null;
 		try {
-			rsTables = md.getTables(null, null, null, new String[] { "TABLE" });
+			rsTables = md.getTables(null, null, null, new String[] { "TABLE", "VIEW" });
 			while (rsTables.next()) {
 				Set<String> tableColumns = new HashSet<String>();
 
@@ -316,6 +212,9 @@ public class JDBCConnectionManager {
 				ResultSet rsColumns = null;
 				try {
 					rsColumns = md.getColumns(tblCatalog, tblSchema, tblName, null);
+					if (rsColumns == null) {
+						continue;
+					}
 					for (int pos = 1; rsColumns.next(); pos++) {
 						final String columnName = rsColumns.getString("COLUMN_NAME");
 						final int dataType = rsColumns.getInt("DATA_TYPE");
@@ -333,38 +232,49 @@ public class JDBCConnectionManager {
 					// Add this information to the DBMetadata
 					metadata.add(td);
 				} finally {
-					rsColumns.close(); // close existing open cursor
+					if (rsColumns != null) {
+						rsColumns.close(); // close existing open cursor
+					}
 				}
 			}
 		} finally {
-			rsTables.close();
+			if (rsTables != null) {
+				rsTables.close();
+			}
 		}
 		return metadata;
 	}
 
 	/**
-	 * Retrieve metadata for Oracle database engine
+	 * Retrieve metadata for SQL Server database engine
 	 */
-	private static DBMetadata getOracleMetaData(DatabaseMetaData md, Connection conn) throws SQLException {
+	private static DBMetadata getSqlServerMetaData(DatabaseMetaData md, Connection conn) throws SQLException {
 		DBMetadata metadata = new DBMetadata(md);
-
 		Statement stmt = null;
-		ResultSet rsTables = null;
+		ResultSet resultSet = null;
 		try {
+			/* Obtain the statement object for query execution */
 			stmt = conn.createStatement();
-			rsTables = stmt.executeQuery("select object_name from user_objects where object_type = 'TABLE' and (NOT object_name LIKE '%$%' and NOT object_name LIKE 'LOG%' and object_name != 'HELP' and object_name != 'SQLPLUS_PRODUCT_PROFILE')");
-			while (rsTables.next()) {
-				Set<String> tableColumns = new HashSet<String>();
-
-				final String tblName = rsTables.getString("object_name");
-				final ArrayList<String> primaryKeys = getPrimaryKey(md, null, null, tblName);
-				final Map<String, Reference> foreignKeys = getForeignKey(md, null, null, tblName);
-				
-				TableDefinition td = new TableDefinition(tblName);
-
+			
+			/* Obtain the relational objects (i.e., tables and views) */
+			final String tableSelectQuery = "SELECT TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME " +
+					"FROM INFORMATION_SCHEMA.TABLES " +
+					"WHERE TABLE_TYPE='BASE TABLE' OR TABLE_TYPE='VIEW'";
+			resultSet = stmt.executeQuery(tableSelectQuery);
+			
+			/* Obtain the column information for each relational object */
+			while (resultSet.next()) {
 				ResultSet rsColumns = null;
 				try {
-					rsColumns = md.getColumns(null, "SYSTEM", tblName, null);
+					final String tblCatalog = resultSet.getString("TABLE_CATALOG");
+					final String tblSchema = resultSet.getString("TABLE_SCHEMA");
+					final String tblName = resultSet.getString("TABLE_NAME");
+					final ArrayList<String> primaryKeys = getPrimaryKey(md, tblCatalog, tblSchema, tblName);
+					final Map<String, Reference> foreignKeys = getForeignKey(md, tblCatalog, tblSchema, tblName);
+					
+					TableDefinition td = new TableDefinition(tblName);
+					rsColumns = md.getColumns(tblCatalog, tblSchema, tblName, null);
+					
 					for (int pos = 1; rsColumns.next(); pos++) {
 						final String columnName = rsColumns.getString("COLUMN_NAME");
 						final int dataType = rsColumns.getInt("DATA_TYPE");
@@ -372,22 +282,153 @@ public class JDBCConnectionManager {
 						final Reference reference = foreignKeys.get(columnName);
 						final int isNullable = rsColumns.getInt("NULLABLE");
 						td.setAttribute(pos, new Attribute(columnName, dataType, isPrimaryKey, reference, isNullable));
-
-						// Check if the columns are unique regardless their letter cases
-						if (!tableColumns.add(columnName.toLowerCase())) {
-							// if exist
-							break;
-						}
 					}
 					// Add this information to the DBMetadata
 					metadata.add(td);
 				} finally {
-					rsColumns.close(); // close existing open cursor
+					if (rsColumns != null) {
+						rsColumns.close(); // close existing open cursor
+					}
 				}
 			}
 		} finally {
-			rsTables.close();
-			stmt.close();
+			if (resultSet != null) {
+				resultSet.close();
+			}
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
+		return metadata;
+	}
+	
+	/**
+	 * Retrieve metadata for DB2 database engine
+	 */
+	private static DBMetadata getDB2MetaData(DatabaseMetaData md, Connection conn) throws SQLException {
+		DBMetadata metadata = new DBMetadata(md);
+		Statement stmt = null;
+		ResultSet resultSet = null;
+		try {
+			/* Obtain the statement object for query execution */
+			stmt = conn.createStatement();
+			
+			/* Obtain the relational objects (i.e., tables and views) */
+			final String tableSelectQuery = "SELECT TABSCHEMA, TABNAME " +
+					"FROM SYSCAT.TABLES " +
+					"WHERE OWNERTYPE='U' " +
+					"	AND (TYPE='T' OR TYPE='V') " +
+					"	AND TBSPACEID IN (SELECT TBSPACEID FROM SYSCAT.TABLESPACES WHERE TBSPACE LIKE 'USERSPACE%')";
+			resultSet = stmt.executeQuery(tableSelectQuery);
+			
+			/* Obtain the column information for each relational object */
+			while (resultSet.next()) {
+				ResultSet rsColumns = null;
+				try {
+					final String tblSchema = resultSet.getString("TABSCHEMA");
+					final String tblName = resultSet.getString("TABNAME");
+					final ArrayList<String> primaryKeys = getPrimaryKey(md, null, tblSchema, tblName);
+					final Map<String, Reference> foreignKeys = getForeignKey(md, null, tblSchema, tblName);
+					
+					TableDefinition td = new TableDefinition(tblName);
+					rsColumns = md.getColumns(null, tblSchema, tblName, null);
+					
+					for (int pos = 1; rsColumns.next(); pos++) {
+						final String columnName = rsColumns.getString("COLUMN_NAME");
+						final int dataType = rsColumns.getInt("DATA_TYPE");
+						final boolean isPrimaryKey = primaryKeys.contains(columnName);
+						final Reference reference = foreignKeys.get(columnName);
+						final int isNullable = rsColumns.getInt("NULLABLE");
+						td.setAttribute(pos, new Attribute(columnName, dataType, isPrimaryKey, reference, isNullable));
+					}
+					// Add this information to the DBMetadata
+					metadata.add(td);
+				} finally {
+					if (rsColumns != null) {
+						rsColumns.close(); // close existing open cursor
+					}
+				}
+			}
+		} finally {
+			if (resultSet != null) {
+				resultSet.close();
+			}
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
+		return metadata;
+	}
+	
+	/**
+	 * Retrieve metadata for Oracle database engine
+	 */
+	private static DBMetadata getOracleMetaData(DatabaseMetaData md, Connection conn) throws SQLException {
+		DBMetadata metadata = new DBMetadata(md);
+		Statement stmt = null;
+		ResultSet resultSet = null;
+		try {
+			/* Obtain the statement object for query execution */
+			stmt = conn.createStatement();
+			
+			/* Obtain the table owner (i.e., schema name) */
+			String tableOwner = "SYSTEM"; // by default
+			resultSet = stmt.executeQuery("SELECT user FROM dual");
+			if (resultSet.next()) {
+				tableOwner = resultSet.getString("user");
+			}
+			
+			/* Obtain the relational objects (i.e., tables and views) */
+			final String tableSelectQuery = "SELECT object_name FROM ( " +
+					"SELECT table_name as object_name FROM user_tables WHERE " +
+					"NOT table_name LIKE 'MVIEW$_%' AND " +
+					"NOT table_name LIKE 'LOGMNR_%' AND " +
+					"NOT table_name LIKE 'AQ$_%' AND " +
+					"NOT table_name LIKE 'DEF$_%' AND " +
+					"NOT table_name LIKE 'REPCAT$_%' AND " +
+					"NOT table_name LIKE 'LOGSTDBY$%' AND " +
+					"NOT table_name LIKE 'OL$%' " +
+					"UNION " +
+					"SELECT view_name as object_name FROM user_views WHERE " +
+					"NOT view_name LIKE 'MVIEW_%' AND " +
+					"NOT view_name LIKE 'LOGMNR_%' AND " +
+					"NOT view_name LIKE 'AQ$_%')";
+			resultSet = stmt.executeQuery(tableSelectQuery);
+			
+			/* Obtain the column information for each relational object */
+			while (resultSet.next()) {
+				ResultSet rsColumns = null;
+				try {
+					final String tblName = resultSet.getString("object_name");
+					final ArrayList<String> primaryKeys = getPrimaryKey(md, null, tableOwner, tblName);
+					final Map<String, Reference> foreignKeys = getForeignKey(md, null, tableOwner, tblName);
+					
+					TableDefinition td = new TableDefinition(tblName);
+					rsColumns = md.getColumns(null, tableOwner, tblName, null);
+					
+					for (int pos = 1; rsColumns.next(); pos++) {
+						final String columnName = rsColumns.getString("COLUMN_NAME");
+						final int dataType = rsColumns.getInt("DATA_TYPE");
+						final boolean isPrimaryKey = primaryKeys.contains(columnName);
+						final Reference reference = foreignKeys.get(columnName);
+						final int isNullable = rsColumns.getInt("NULLABLE");
+						td.setAttribute(pos, new Attribute(columnName, dataType, isPrimaryKey, reference, isNullable));
+					}
+					// Add this information to the DBMetadata
+					metadata.add(td);
+				} finally {
+					if (rsColumns != null) {
+						rsColumns.close(); // close existing open cursor
+					}
+				}
+			}
+		} finally {
+			if (resultSet != null) {
+				resultSet.close();
+			}
+			if (stmt != null) {
+				stmt.close();
+			}
 		}
 		return metadata;
 	}
@@ -395,12 +436,19 @@ public class JDBCConnectionManager {
 	/* Retrives the primary key(s) from a table */
 	private static ArrayList<String> getPrimaryKey(DatabaseMetaData md, String tblCatalog, String schema, String table) throws SQLException {
 		ArrayList<String> pk = new ArrayList<String>();
-		ResultSet rsPrimaryKeys = md.getPrimaryKeys(tblCatalog, schema, table);
-		while (rsPrimaryKeys.next()) {
-			String colName = rsPrimaryKeys.getString("COLUMN_NAME");
-			String pkName = rsPrimaryKeys.getString("PK_NAME");
-			if (pkName != null) {
-				pk.add(colName);
+		ResultSet rsPrimaryKeys = null;
+		try {
+			rsPrimaryKeys = md.getPrimaryKeys(tblCatalog, schema, table);
+			while (rsPrimaryKeys.next()) {
+				String colName = rsPrimaryKeys.getString("COLUMN_NAME");
+				String pkName = rsPrimaryKeys.getString("PK_NAME");
+				if (pkName != null) {
+					pk.add(colName);
+				}
+			}
+		} finally {
+			if (rsPrimaryKeys != null) {
+				rsPrimaryKeys.close();
 			}
 		}
 		return pk;
@@ -409,13 +457,20 @@ public class JDBCConnectionManager {
 	/* Retrives the foreign key(s) from a table */
 	private static Map<String, Reference> getForeignKey(DatabaseMetaData md, String tblCatalog, String schema, String table) throws SQLException {
 		Map<String, Reference> fk = new HashMap<String, Reference>();
-		ResultSet rsForeignKeys = md.getImportedKeys(tblCatalog, schema, table);
-		while (rsForeignKeys.next()) {
-			String fkName = rsForeignKeys.getString("FK_NAME");
-			String colName = rsForeignKeys.getString("FKCOLUMN_NAME");
-			String pkTableName = rsForeignKeys.getString("PKTABLE_NAME");
-			String pkColumnName = rsForeignKeys.getString("PKCOLUMN_NAME");
-			fk.put(colName, new Reference(fkName, pkTableName, pkColumnName));
+		ResultSet rsForeignKeys = null;
+		try {
+			rsForeignKeys = md.getImportedKeys(tblCatalog, schema, table);
+			while (rsForeignKeys.next()) {
+				String fkName = rsForeignKeys.getString("FK_NAME");
+				String colName = rsForeignKeys.getString("FKCOLUMN_NAME");
+				String pkTableName = rsForeignKeys.getString("PKTABLE_NAME");
+				String pkColumnName = rsForeignKeys.getString("PKCOLUMN_NAME");
+				fk.put(colName, new Reference(fkName, pkTableName, pkColumnName));
+			}
+		} finally {
+			if (rsForeignKeys != null) {
+				rsForeignKeys.close();
+			}
 		}
 		return fk;
 	}

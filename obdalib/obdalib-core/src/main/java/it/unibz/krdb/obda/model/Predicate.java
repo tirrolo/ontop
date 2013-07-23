@@ -1,7 +1,6 @@
 package it.unibz.krdb.obda.model;
 
 import java.io.Serializable;
-import java.net.URI;
 
 import com.hp.hpl.jena.iri.IRI;
 
@@ -25,7 +24,7 @@ public interface Predicate extends Cloneable, Serializable {
 	 * 
 	 * @return the resource identifier (URI).
 	 */
-	public IRI getName();
+	public String getName();
 
 	/**
 	 * Get the number of elements of the predicate.
@@ -64,5 +63,4 @@ public interface Predicate extends Cloneable, Serializable {
 	boolean isArithmeticPredicate();
 	
 	boolean isDataTypePredicate();
-
 }

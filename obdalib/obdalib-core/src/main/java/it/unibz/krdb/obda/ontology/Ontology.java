@@ -3,11 +3,8 @@ package it.unibz.krdb.obda.ontology;
 import it.unibz.krdb.obda.model.Predicate;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.Collection;
 import java.util.Set;
-
-import com.hp.hpl.jena.iri.IRI;
 
 public interface Ontology extends Cloneable, Serializable {
 
@@ -33,28 +30,19 @@ public interface Ontology extends Cloneable, Serializable {
 
 	public Set<Axiom> getAssertions();
 
-	
 	public boolean referencesPredicate(Predicate pred);
 
-	
 	public boolean referencesPredicates(Collection<Predicate> preds);
 
 	/***
 	 * This will retrun all the assertions whose right side concept description
 	 * refers to the predicate 'pred'
-	 * 
-	 * @param pred
-	 * @return
 	 */
 	public Set<SubDescriptionAxiom> getByIncluding(Predicate pred);
 
 	/***
 	 * As before but it will only return assetions where the right side is an
 	 * existential role concept description
-	 * 
-	 * @param pred
-	 * @param onlyAtomic
-	 * @return
 	 */
 	public Set<SubDescriptionAxiom> getByIncludingExistOnly(Predicate pred);
 
@@ -62,14 +50,9 @@ public interface Ontology extends Cloneable, Serializable {
 
 	public Set<SubDescriptionAxiom> getByIncluded(Predicate pred);
 
-	//
-	// public Set<PositiveInclusion> getByIncludedExistOnly(Predicate pred);
-	//
-	// public Set<PositiveInclusion> getByIncludedNoExist(Predicate pred);
+	public String getUri();
 
-	public IRI getUri();
-
-	/***
+	/**
 	 * This will saturate the ontology, i.e. it will make sure that all axioms
 	 * implied by this ontology are asserted in the ontology and accessible
 	 * through the methods of the ontology.
