@@ -1,10 +1,7 @@
 package it.unibz.krdb.obda.owlapi3;
 
 import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.Constant;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -18,18 +15,24 @@ import org.semanticweb.owlapi.model.OWLPropertyAssertionObject;
 
 public class OWLResultSetTableModel implements TableModel {
 
-	OWLResultSet results;
-	int numcols, numrows, fetchsize;
+	private OWLResultSet results;
+	private int numcols;
+	private int numrows;
+	private int fetchSizeLimit;
+	private boolean isHideUri;
+	private boolean isFetchAll;
 
-	Vector<String[]> resultsTable = null;
-	HashSet<String> mergeSet = null;
-	private Vector<TableModelListener> listener = null;
+	// Tabular data for exporting result
+	private Vector<String[]> tabularData;
+	// Vector data for presenting result to table GUI
+	private Vector<String[]> resultsTable;
+	
+	private Vector<TableModelListener> listener;
 
-	PrefixManager prefixman = null;
+	private PrefixManager prefixman;
 
-	boolean isAfterLast = false;
-
-	boolean useshortform;
+	private final int INITIAL_FETCH_SIZE = 100;
+	private final int NEXT_FETCH_SIZE = 100;
 
 	/**
 	 * This constructor creates a TableModel from a ResultSet. It is package
@@ -37,55 +40,87 @@ public class OWLResultSetTableModel implements TableModel {
 	 * ResultSetTableModelFactory, which is what you should use to obtain a
 	 * ResultSetTableModel
 	 */
-	public OWLResultSetTableModel(OWLResultSet results,
-			PrefixManager prefixman, boolean useshortform) throws OWLException {
-		this.prefixman = prefixman;
-		this.useshortform = useshortform;
-
+	public OWLResultSetTableModel(OWLResultSet results, PrefixManager prefixman, 
+			boolean hideUri, boolean fetchAll, int fetchSizeLimit) throws OWLException {
 		this.results = results;
+		this.prefixman = prefixman;
+		this.isHideUri = hideUri;
+		this.isFetchAll = fetchAll;
+		this.fetchSizeLimit = fetchSizeLimit;
+
 		numcols = results.getColumCount();
-		fetchsize = results.getFetchSize();
-		if (fetchsize == 0) {// means it is disabled
-			fetchsize = 100;
-		}
+		numrows = 0;
+		
 		resultsTable = new Vector<String[]>();
 		listener = new Vector<TableModelListener>();
-		mergeSet = new HashSet<String>();
-		int i = 0;
-		while (i < fetchsize && !isAfterLast) {
-
-			if (results.nextRow()) {
-
+		
+		int fetchSize = fetchSizeLimit;
+		if (needFetchMore()) {
+			fetchSize = INITIAL_FETCH_SIZE;
+		}
+		fetchRows(fetchSize);
+	}
+	
+	private void fetchRows(int size) throws OWLException {
+		if (results == null) {
+			return;
+		}
+		if (size != 0) {
+			int counter = 0;
+			while (results.nextRow()) {
 				String[] crow = new String[numcols];
 				for (int j = 0; j < numcols; j++) {
 					OWLPropertyAssertionObject constant = results
 							.getOWLPropertyAssertionObject(j + 1);
-					if (constant != null)
+					if (constant != null) {
 						crow[j] = constant.toString();
-					else
+					}
+					else {
 						crow[j] = "";
-
+					}
 				}
 				resultsTable.add(crow);
-				i += 1;
-			} else {
-				isAfterLast = true;
+				counter++;
+				updateRowCount();
+				
+				// Determine if the loop should stop now
+				if (counter == size) {
+					break;
+				}
 			}
-
 		}
-		numrows = i;
-
 	}
 
-	public List<String[]> getTabularData() {
-		List<String[]> tabularData = new ArrayList<String[]>();
-		try {
-			String[] columnName = results.getSignature().toArray(
-					new String[results.getSignature().size()]);
+	private void updateRowCount() {
+		numrows++;
+	}
+
+	/**
+	 * Fetch all the tuples returned by the result set.
+	 */
+	public List<String[]> getTabularData() throws OWLException {
+		if (tabularData == null) {
+			tabularData = new Vector<String[]>();
+			String[] columnName = results.getSignature().toArray(new String[numcols]);		
+			// Append the column names
 			tabularData.add(columnName);
-			tabularData.addAll(resultsTable);
-		} catch (OWLException e) {
-			e.printStackTrace();
+			// Append first the already fetched tuples
+			tabularData.addAll(resultsTable); 
+			// Append the rest
+			while (results.nextRow()) {
+				String[] crow = new String[numcols];
+				for (int j = 0; j < numcols; j++) {
+					OWLPropertyAssertionObject constant = results
+							.getOWLPropertyAssertionObject(j + 1);
+					if (constant != null) {
+						crow[j] = constant.toString();
+					}
+					else {
+						crow[j] = "";
+					}
+				}
+				tabularData.add(crow);
+			}
 		}
 		return tabularData;
 	}
@@ -95,12 +130,11 @@ public class OWLResultSetTableModel implements TableModel {
 	 * Statement object used to create it.
 	 */
 	public void close() {
-
 		try {
 			results.close();
 		} catch (OWLException e) {
+			// NO-OP
 		}
-
 	}
 
 	/** Automatically close when we're garbage collected */
@@ -148,35 +182,53 @@ public class OWLResultSetTableModel implements TableModel {
 	 * numbers start at 0.
 	 */
 	public Object getValueAt(int row, int column) {
-		// try {
-		// Constant c = results.getConstantFromColumn(column); // Go to the
-		// // specified row
-		// return c.toString(); // Convert it to a string
-
-		try {
-			if (row + 5 > numrows && !isAfterLast) {
-				fetchMoreTuples();
-				fireModelChangedEvent();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (needFetchMore()) {
+			checkNextRowAvailability(row);
 		}
-
 		String value = resultsTable.get(row)[column];
-		if (value == null)
+		if (value == null) {
 			return "";
-		else if (useshortform) {
+		}
+		else if (isHideUri) {
 			return prefixman.getShortForm(value);
 		} else {
 			return value;
 		}
-
-		// } catch (QueryResultException e) {
-		// e.printStackTrace(System.err);
-		// return e.toString();
-		// }
 	}
 
+	/**
+	 * Determine if the table need to fetch more tuples.
+	 */
+	public boolean needFetchMore() {
+		return isFetchingAll() || fetchSizeLimit > INITIAL_FETCH_SIZE;
+	}
+	
+	private boolean isFetchingAll() {
+		return isFetchAll;
+	}
+	
+	private void checkNextRowAvailability(int currentRowNumber) {
+		try {
+			int nextRowNumber = currentRowNumber + getRowCount() / 4;
+			if (nextRowNumber >= getRowCount()) {
+				if (isFetchingAll()) {
+					fetchRows(NEXT_FETCH_SIZE);
+				} else {
+					int remainder = fetchSizeLimit - getRowCount();
+					int c = remainder / NEXT_FETCH_SIZE;
+					if (c != 0) {
+						fetchRows(NEXT_FETCH_SIZE);
+					} else {
+						fetchRows(remainder);
+					}
+				}				
+				fireModelChangedEvent();
+			}
+		} catch (OWLException e) {
+			// NO-OP
+		}
+	}
+	
 	// Our table isn't editable
 	public boolean isCellEditable(int row, int column) {
 		return false;
@@ -184,6 +236,7 @@ public class OWLResultSetTableModel implements TableModel {
 
 	// Since its not editable, we don't need to implement these methods
 	public void setValueAt(Object value, int row, int column) {
+		// NO-OP
 	}
 
 	public void addTableModelListener(TableModelListener l) {
@@ -194,47 +247,10 @@ public class OWLResultSetTableModel implements TableModel {
 		listener.remove(l);
 	}
 
-	private boolean add(Constant crow[]) {
-
-		String row = "";
-		for (int i = 0; i < crow.length; i++) {
-			row = row + crow[i].toString();
-		}
-		return mergeSet.add(row);
-	}
-
-	private void fetchMoreTuples() throws OWLException {
-
-		int i = 0;
-		while (i < fetchsize && !isAfterLast) {
-
-			if (results.nextRow()) {
-				String[] crow = new String[numcols];
-				for (int j = 0; j < numcols; j++) {
-					OWLPropertyAssertionObject constant = results
-							.getOWLPropertyAssertionObject(j + 1);
-					if (constant != null)
-						crow[j] = constant.toString();
-					else
-						crow[j] = null;
-				}
-				resultsTable.add(crow);
-				i += 1;
-			} else {
-				isAfterLast = true;
-			}
-
-		}
-		numrows = numrows + i;
-
-	}
-
 	private void fireModelChangedEvent() {
-
 		Iterator<TableModelListener> it = listener.iterator();
 		while (it.hasNext()) {
 			it.next().tableChanged(new TableModelEvent(this));
 		}
 	}
-
 }

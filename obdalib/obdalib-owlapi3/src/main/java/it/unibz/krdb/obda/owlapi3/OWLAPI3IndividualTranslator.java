@@ -86,7 +86,7 @@ public class OWLAPI3IndividualTranslator {
 		if (constant instanceof URIConstant) {
 
 			result = dataFactory.getOWLNamedIndividual(IRI
-					.create(((URIConstant) constant).getURI().toString()));
+					.create(constant.getValue()));
 		} else if (constant instanceof BNode) {
 			result = dataFactory.getOWLAnonymousIndividual(((BNode) constant)
 					.getName());
@@ -112,12 +112,11 @@ public class OWLAPI3IndividualTranslator {
 				result = dataFactory.getOWLLiteral(value,
 						OWL2Datatype.XSD_INTEGER);
 			} else if (v.getType() == COL_TYPE.LITERAL) {
-				if (v.getLanguage() == null || !v.getLanguage().equals("")) {
-					result = dataFactory.getOWLLiteral(value, v.getLanguage());
-				} else {
-					result = dataFactory.getOWLLiteral(value,
-							OWL2Datatype.RDF_PLAIN_LITERAL);
-				}
+				result = dataFactory.getOWLLiteral(value, 
+						OWL2Datatype.RDF_PLAIN_LITERAL);
+			} else if (v.getType() == COL_TYPE.LITERAL_LANG) {
+				result = dataFactory.getOWLLiteral(value, 
+						v.getLanguage());
 			} else if (v.getType() == COL_TYPE.STRING) {
 				result = dataFactory.getOWLLiteral(value,
 						OWL2Datatype.XSD_STRING);
