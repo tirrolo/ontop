@@ -66,18 +66,17 @@
 			<artifactId>tomcat-jdbc</artifactId>
 			<version>7.0.37</version>
 		</dependency>     
+		<dependency>
+			<!-- this includes ALL seasame -->
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-runtime</artifactId>
+		</dependency>
+		<!-- These will download some of the sources -->
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-repository-api</artifactId>
+		</dependency>
 	</dependencies>
-	
-	<repositories>
-		<repository>
-		  <releases>
-                <enabled>true</enabled>
-            </releases>
-			<id>bonecp-repo</id>
-			<name>BoneCP Repository</name>
-			<url>http://jolbox.com/bonecp/downloads/maven</url>
-		</repository>
-	</repositories>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

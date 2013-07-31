@@ -50,6 +50,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.parser.ParsedQuery;
+import org.openrdf.query.parser.QueryParser;
+import org.openrdf.query.parser.QueryParserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -402,7 +407,41 @@ public class QuestStatement implements OBDAStatement {
 		program = validator.replaceEquivalences(program);
 		return program;
 	}
+	private DatalogProgram translateAndPreProcess(ParsedQuery pq, List<String> signature) {
+		DatalogProgram program = null;
+		try {
+			if (questInstance.isSemIdx()) {
+				translator.setSI();
+				translator.setUriRef(questInstance.getUriRefIds());
+			}
+			program = translator.translate(pq, signature);
 
+			log.debug("Translated query: \n{}", program);
+
+			DatalogUnfolder unfolder = new DatalogUnfolder(program.clone(), new HashMap<Predicate, List<Integer>>());
+			removeNonAnswerQueries(program);
+
+			program = unfolder.unfold(program, "ans1");
+
+			log.debug("Flattened query: \n{}", program);
+		} catch (Exception e) {
+			e.printStackTrace();
+			OBDAException ex = new OBDAException(e.getMessage());
+			ex.setStackTrace(e.getStackTrace());
+			try {
+				throw e;
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		log.debug("Replacing equivalences...");
+		program = validator.replaceEquivalences(program);
+		return program;
+		
+	}
+
+	
 	private DatalogProgram getUnfolding(DatalogProgram query) throws OBDAException {
 
 		log.debug("Start the partial evaluation process...");
@@ -552,6 +591,10 @@ public class QuestStatement implements OBDAStatement {
 		List<String> signatureContainer = new LinkedList<String>();
 		Query query;
 
+		QueryParser qp = QueryParserUtil.createParser(QueryLanguage.SPARQL);
+		ParsedQuery pq = qp.parseQuery(strquery, null);
+		TupleExpr te = pq.getTupleExpr();
+		
 		// Check the cache first if the system has processed the query string
 		// before
 		if (querycache.containsKey(strquery)) {
@@ -568,7 +611,8 @@ public class QuestStatement implements OBDAStatement {
 			jenaQueryCache.put(strquery, query);
 			signaturecache.put(strquery, signatureContainer);
 
-			DatalogProgram program = translateAndPreProcess(query, signatureContainer);
+			//DatalogProgram program_test = translateAndPreProcess(query, signatureContainer);
+			DatalogProgram program = translateAndPreProcess(pq, signatureContainer);
 			try {
 				// log.debug("Input query:\n{}", strquery);
 
@@ -705,15 +749,15 @@ public class QuestStatement implements OBDAStatement {
 		program.appendRule(unionOfQueries);
 	}
 
-	// private void cacheQueryAndProperties(String sparqlQuery, String sqlQuery,
-	// List<String> signature, Query jenaQuery) {
-	// // Store the query
-	// querycache.put(sparqlQuery, sqlQuery);
-	// signaturecache.put(sparqlQuery, signature);
-	// jenaQueryCache.put(sparqlQuery, jenaQuery);
-	//
-	//
-	// }
+	 private void cacheQueryAndProperties(String sparqlQuery, String sqlQuery,
+	 List<String> signature, Query jenaQuery) {
+	 // Store the query
+	 querycache.put(sparqlQuery, sqlQuery);
+	 signaturecache.put(sparqlQuery, signature);
+	 jenaQueryCache.put(sparqlQuery, jenaQuery);
+	
+	
+	 }
 
 	/**
 	 * Returns the number of tuples returned by the query
