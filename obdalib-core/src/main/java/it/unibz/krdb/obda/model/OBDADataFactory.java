@@ -122,6 +122,8 @@ public interface OBDADataFactory extends Serializable {
 	 * Boolean function terms
 	 */
 
+	public Function getCompareFunction(NewLiteral firstTerm, NewLiteral secondTerm);
+	
 	public Function getEQFunction(NewLiteral firstTerm, NewLiteral secondTerm);
 
 	public Function getGTEFunction(NewLiteral firstTerm, NewLiteral secondTerm);
@@ -318,4 +320,5 @@ public interface OBDADataFactory extends Serializable {
 	Predicate getJoinPredicate();
 
 	Predicate getLeftJoinPredicate();
+
 }

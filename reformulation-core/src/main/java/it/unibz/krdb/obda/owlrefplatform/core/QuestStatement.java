@@ -31,6 +31,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.resultset.EmptyQueryResultSet;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestGraphResultSet;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestResultset;
 import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
+import it.unibz.krdb.obda.owlrefplatform.core.translator.SesameConstructTemplate;
 import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.ExpressionEvaluator;
@@ -50,6 +51,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
+import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.parser.ParsedQuery;
@@ -108,9 +110,11 @@ public class QuestStatement implements OBDAStatement {
 
 	final Map<String, Boolean> isconstructcache;
 
-	final Map<String, Boolean> isdescribecache;
+	final Map<String, Boolean> isdescribecache; 
 
 	final SparqlAlgebraToDatalogTranslator translator;
+	
+	SesameConstructTemplate templ = null;
 
 	/*
 	 * For benchmark purpose
@@ -253,7 +257,8 @@ public class QuestStatement implements OBDAStatement {
 							TupleResultSet tuples = null;
 
 							tuples = new QuestResultset(set, signature, QuestStatement.this);
-							graphResult = new QuestGraphResultSet(tuples, template, collectResults);
+							//graphResult = new QuestGraphResultSet(tuples, template, collectResults);
+							graphResult = new QuestGraphResultSet(tuples, templ, collectResults);
 						}
 					} catch (SQLException e) {
 						exception = e;
@@ -284,7 +289,6 @@ public class QuestStatement implements OBDAStatement {
 		if (strquery.isEmpty()) {
 			throw new OBDAException("Cannot execute an empty query");
 		}
-
 		// encoding ofquery type into numbers
 		if (SPARQLQueryUtility.isSelectQuery(strquery)) {
 			return executeTupleQuery(strquery, 1);
@@ -293,6 +297,11 @@ public class QuestStatement implements OBDAStatement {
 			return executeTupleQuery(strquery, 2);
 		} else if (SPARQLQueryUtility.isConstructQuery(strquery)) {
 			// Here we need to get the template for the CONSTRUCT query results
+			try {
+				templ = new SesameConstructTemplate(strquery);
+			} catch (MalformedQueryException e) {
+				e.printStackTrace();
+			}
 			
 			// Here we replace CONSTRUCT query with SELECT query
 			strquery = SPARQLQueryUtility.getSelectFromConstruct(strquery);
@@ -585,7 +594,7 @@ public class QuestStatement implements OBDAStatement {
 
 		QueryParser qp = QueryParserUtil.createParser(QueryLanguage.SPARQL);
 		ParsedQuery pq = qp.parseQuery(strquery, null); // base URI is null
-		TupleExpr te = pq.getTupleExpr();
+		//TupleExpr te = pq.getTupleExpr();
 		
 		// Check the cache first if the system has processed the query string
 		// before

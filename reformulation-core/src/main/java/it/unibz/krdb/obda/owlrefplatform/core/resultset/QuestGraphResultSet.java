@@ -19,9 +19,15 @@ import it.unibz.krdb.obda.ontology.DataPropertyAssertion;
 import it.unibz.krdb.obda.ontology.ObjectPropertyAssertion;
 import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
+import it.unibz.krdb.obda.owlrefplatform.core.translator.SesameConstructTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.openrdf.query.algebra.ExtensionElem;
+import org.openrdf.query.algebra.ProjectionElem;
+import org.openrdf.query.algebra.ProjectionElemList;
+import org.openrdf.query.algebra.Var;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Node_Blank;
@@ -38,6 +44,8 @@ public class QuestGraphResultSet implements GraphResultSet {
 	private TupleResultSet tupleResultSet;
 
 	private Template template;
+	
+	private SesameConstructTemplate sesameTemplate;
 
 	//store results in case of describe queries
 	private boolean storeResults = false;
@@ -45,12 +53,20 @@ public class QuestGraphResultSet implements GraphResultSet {
 	private OBDADataFactory dfac = OBDADataFactoryImpl.getInstance();
 	private OntologyFactory ofac = OntologyFactoryImpl.getInstance();
 
-	public QuestGraphResultSet(TupleResultSet results, Template template,
+//	public QuestGraphResultSet(TupleResultSet results, Template template,
+//			boolean storeResult) throws OBDAException {
+//		this.tupleResultSet = results;
+//		this.template = template;
+//		this.storeResults = storeResult;
+//		processResultSet(tupleResultSet, template);
+//	}
+//	
+	public QuestGraphResultSet(TupleResultSet results, SesameConstructTemplate template,
 			boolean storeResult) throws OBDAException {
 		this.tupleResultSet = results;
-		this.template = template;
+		this.sesameTemplate = template;
 		this.storeResults = storeResult;
-		processResultSet(tupleResultSet, template);
+		processResultSet(tupleResultSet, sesameTemplate);
 	}
 
 	@Override
@@ -58,8 +74,7 @@ public class QuestGraphResultSet implements GraphResultSet {
 		return tupleResultSet;
 	}
 
-	
-	private void processResultSet(TupleResultSet resSet, Template template)
+	private void processResultSet(TupleResultSet resSet, SesameConstructTemplate template)
 			throws OBDAException {
 		if (storeResults) {
 			//process current result set into local buffer, 
@@ -69,6 +84,17 @@ public class QuestGraphResultSet implements GraphResultSet {
 			}
 		}
 	}
+	
+//	private void processResultSet(TupleResultSet resSet, Template template)
+//			throws OBDAException {
+//		if (storeResults) {
+//			//process current result set into local buffer, 
+//			//since additional results will be collected
+//			while (resSet.nextRow()) {
+//				this.results.add(processResults(resSet, template));
+//			}
+//		}
+//	}
 	
 	@Override
 	public void addNewResultSet(List<Assertion> result)
@@ -81,23 +107,21 @@ public class QuestGraphResultSet implements GraphResultSet {
 		return template;
 	}
 
-	/**
-	 * The method to actually process the current result set Row.
-	 * Construct a list of assertions from the current result set row.
-	 * In case of describe it is called to process and store all 
-	 * the results from a resultset.
-	 * In case of construct it is called upon next, to process
-	 * the only current result set.
-	 */
+	
 	private List<Assertion> processResults(TupleResultSet result,
-			Template template) throws OBDAException {
+			SesameConstructTemplate template) throws OBDAException {
 		List<Assertion> tripleAssertions = new ArrayList<Assertion>();
-		for (Triple triple : template.getTriples()) {
-
-			Constant subjectConstant = getConstant(triple.getSubject(), result);
-			Constant predicateConstant = getConstant(triple.getPredicate(),
+		ProjectionElemList peList = template.getProjection().getProjectionElemList();
+		List <ExtensionElem> extList = template.getExtension().getElements();
+		
+		int size = peList.getElements().size();
+		
+		for (int i = 0; i < size / 3; i++) {
+			
+			Constant subjectConstant = getConstant(peList.getElements().get(i*3), result);
+			Constant predicateConstant = getConstant(peList.getElements().get(i*3+1),
 					result);
-			Constant objectConstant = getConstant(triple.getObject(), result);
+			Constant objectConstant = getConstant(peList.getElements().get(i*3+2), result);
 
 			// Determines the type of assertion
 			String predicateName = predicateConstant.getValue();
@@ -137,6 +161,64 @@ public class QuestGraphResultSet implements GraphResultSet {
 		}
 		return (tripleAssertions);
 	}
+	
+	
+	/**
+	 * The method to actually process the current result set Row.
+	 * Construct a list of assertions from the current result set row.
+	 * In case of describe it is called to process and store all 
+	 * the results from a resultset.
+	 * In case of construct it is called upon next, to process
+	 * the only current result set.
+	 */
+//	private List<Assertion> processResults(TupleResultSet result,
+//			Template template) throws OBDAException {
+//		List<Assertion> tripleAssertions = new ArrayList<Assertion>();
+//		for (Triple triple : template.getTriples()) {
+//
+//			Constant subjectConstant = getConstant(triple.getSubject(), result);
+//			Constant predicateConstant = getConstant(triple.getPredicate(),
+//					result);
+//			Constant objectConstant = getConstant(triple.getObject(), result);
+//
+//			// Determines the type of assertion
+//			String predicateName = predicateConstant.getValue();
+//			if (predicateName.equals(OBDAVocabulary.RDF_TYPE)) {
+//				Predicate concept = dfac.getClassPredicate(objectConstant
+//						.getValue());
+//				ClassAssertion ca = ofac.createClassAssertion(concept,
+//						(ObjectConstant) subjectConstant);
+//				tripleAssertions.add(ca);
+//			} else {
+//				if (objectConstant instanceof URIConstant) {
+//					Predicate role = dfac
+//							.getObjectPropertyPredicate(predicateName);
+//					ObjectPropertyAssertion op = ofac
+//							.createObjectPropertyAssertion(role,
+//									(ObjectConstant) subjectConstant,
+//									(ObjectConstant) objectConstant);
+//					tripleAssertions.add(op);
+//				} else if (objectConstant instanceof BNodeConstantImpl) {
+//					Predicate role = dfac
+//							.getObjectPropertyPredicate(predicateName);
+//					ObjectPropertyAssertion op = ofac
+//							.createObjectPropertyAssertion(role,
+//									(ObjectConstant) subjectConstant,
+//									(ObjectConstant) objectConstant);
+//					tripleAssertions.add(op);
+//				} else {
+//					Predicate attribute = dfac
+//							.getDataPropertyPredicate(predicateName);
+//					DataPropertyAssertion dp = ofac
+//							.createDataPropertyAssertion(attribute,
+//									(ObjectConstant) subjectConstant,
+//									(ValueConstant) objectConstant);
+//					tripleAssertions.add(dp);
+//				}
+//			}
+//		}
+//		return (tripleAssertions);
+//	}
 
 	@Override
 	public boolean hasNext() throws OBDAException {
@@ -156,28 +238,47 @@ public class QuestGraphResultSet implements GraphResultSet {
 			return results.remove(0);
 		} else {
 			//otherwise we need to process the unstored result
-			return processResults(tupleResultSet, template);
+			return processResults(tupleResultSet, sesameTemplate);
 		}
 	}
 
-	private Constant getConstant(Node node, TupleResultSet resSet)
+	private org.openrdf.query.algebra.ValueConstant getVC(String s) {
+		
+		return null;
+	}
+	
+	private Constant getConstant(ProjectionElem node, TupleResultSet resSet)
 			throws OBDAException {
+		// WORK in progress!!! This method needs fixing
 		Constant constant = null;
-		if (node instanceof Node_Variable) {
-			String columnName = ((Node_Variable) node).getName();
-			constant = resSet.getConstant(columnName);
-		} else if (node instanceof Node_URI) {
-			String uriString = ((Node_URI) node).getURI();
-			constant = dfac.getURIConstant(uriString);
-		} else if (node instanceof Node_Literal) {
-			String value = ((Node_Literal) node).getLiteralValue().toString();
-			constant = dfac.getValueConstant(value);
-		} else if (node instanceof Node_Blank) {
-			String label = ((Node_Blank) node).getBlankNodeLabel();
-			constant = dfac.getBNodeConstant(label);
+		String node_name = node.getSourceName();
+		org.openrdf.query.algebra.ValueConstant vc = getVC(node_name);
+		if (node_name.charAt(0) == '-') {
+			constant = dfac.getValueConstant(node_name);
+		} else {
+			constant = resSet.getConstant(node_name);
 		}
 		return constant;
 	}
+	
+//	private Constant getConstant(Node node, TupleResultSet resSet)
+//			throws OBDAException {
+//		Constant constant = null;
+//		if (node instanceof Node_Variable) {
+//			String columnName = ((Node_Variable) node).getName();
+//			constant = resSet.getConstant(columnName);
+//		} else if (node instanceof Node_URI) {
+//			String uriString = ((Node_URI) node).getURI();
+//			constant = dfac.getURIConstant(uriString);
+//		} else if (node instanceof Node_Literal) {
+//			String value = ((Node_Literal) node).getLiteralValue().toString();
+//			constant = dfac.getValueConstant(value);
+//		} else if (node instanceof Node_Blank) {
+//			String label = ((Node_Blank) node).getBlankNodeLabel();
+//			constant = dfac.getBNodeConstant(label);
+//		}
+//		return constant;
+//	}
 
 	@Override
 	public void close() throws OBDAException {

@@ -389,6 +389,11 @@ public class OBDADataFactoryImpl implements OBDADataFactory {
 	}
 
 	@Override
+	public Function getCompareFunction(NewLiteral firstTerm, NewLiteral secondTerm) {
+		return getFunctionalTerm(OBDAVocabulary.EQ, firstTerm, secondTerm);
+	}
+	
+	@Override
 	public Function getEQFunction(NewLiteral firstTerm, NewLiteral secondTerm) {
 		return getFunctionalTerm(OBDAVocabulary.EQ, firstTerm, secondTerm);
 	}
