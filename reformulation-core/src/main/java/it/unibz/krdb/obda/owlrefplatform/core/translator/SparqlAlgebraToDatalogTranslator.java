@@ -30,28 +30,55 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.xml.bind.annotation.XmlSchema;
+
 import org.openjena.atlas.lib.Tuple;
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.BooleanLiteralImpl;
+import org.openrdf.model.impl.CalendarLiteralImpl;
+import org.openrdf.model.impl.DecimalLiteralImpl;
+import org.openrdf.model.impl.IntegerLiteralImpl;
 import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.impl.NumericLiteralImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.BinaryTupleOperator;
+import org.openrdf.query.algebra.BinaryValueOperator;
+import org.openrdf.query.algebra.Bound;
+import org.openrdf.query.algebra.Compare;
+import org.openrdf.query.algebra.Compare.CompareOp;
+import org.openrdf.query.algebra.Datatype;
 import org.openrdf.query.algebra.Distinct;
 import org.openrdf.query.algebra.Filter;
+import org.openrdf.query.algebra.IsBNode;
+import org.openrdf.query.algebra.IsLiteral;
+import org.openrdf.query.algebra.IsURI;
 import org.openrdf.query.algebra.Join;
+import org.openrdf.query.algebra.Lang;
+import org.openrdf.query.algebra.LangMatches;
 import org.openrdf.query.algebra.LeftJoin;
+import org.openrdf.query.algebra.MathExpr;
+import org.openrdf.query.algebra.MathExpr.MathOp;
+import org.openrdf.query.algebra.NAryValueOperator;
+import org.openrdf.query.algebra.Not;
+import org.openrdf.query.algebra.Or;
 import org.openrdf.query.algebra.Order;
 import org.openrdf.query.algebra.OrderElem;
 import org.openrdf.query.algebra.Projection;
 import org.openrdf.query.algebra.ProjectionElem;
+import org.openrdf.query.algebra.Reduced;
+import org.openrdf.query.algebra.Regex;
 import org.openrdf.query.algebra.Slice;
 import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.Str;
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.UnaryTupleOperator;
+import org.openrdf.query.algebra.UnaryValueOperator;
 import org.openrdf.query.algebra.Union;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
@@ -65,6 +92,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Node_Literal;
 import com.hp.hpl.jena.graph.Node_URI;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.iri.IRIFactory;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryException;
 import com.hp.hpl.jena.sparql.algebra.Algebra;
@@ -131,7 +159,7 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	
 	private OBDADataFactory ofac = OBDADataFactoryImpl.getInstance();
-//	private IRIFactory irifac = OBDADataFactoryImpl.getIRIFactory();
+	private IRIFactory irifac = OBDADataFactoryImpl.getIRIFactory();
 
 	private NewLiteralComparator comparator = new NewLiteralComparator();
 
@@ -152,19 +180,6 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	protected static org.slf4j.Logger log = LoggerFactory
 			.getLogger(SparqlAlgebraToDatalogTranslator.class);
-
-//	/**
-//	 * Translate a given SPARQL query string to datalog program.
-//	 * 
-//	 * @param query
-//	 *            The SPARQL query string.
-//	 * @return Datalog program that represents the construction of the SPARQL
-//	 *         query.
-//	 */
-//	public DatalogProgram translate(String query, List<String> signature) {
-//		Query arqQuery = QueryFactory.create(query);
-//		return translate(arqQuery, signature);
-//	}
 
 	public DatalogProgram translate(ParsedQuery pq, List<String> signature) {
 		TupleExpr te = pq.getTupleExpr();
@@ -257,6 +272,10 @@ public class SparqlAlgebraToDatalogTranslator {
 		} else if (te instanceof LeftJoin) {
 			LeftJoin join = (LeftJoin) te;
 			translate(vars, join, pr, i, varcount);
+		
+//		} else if (te instanceof Reduced) { 
+//			Reduced red = (Reduced) te;
+//			translate(vars, red.getArg(), pr, i, varcount);
 		} else {
 			try {
 				throw new QueryEvaluationException("Operation not supported: "
@@ -268,59 +287,6 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 	}
 	
-	public void translate(List<Variable> vars, Op op, DatalogProgram pr, int i,
-			int[] varcount) {
-
-		if (op instanceof OpSlice) {
-
-			// Add LIMIT and OFFSET modifiers, if any
-			OpSlice sliceOp = (OpSlice) op;
-			translate(vars, sliceOp, pr, i, varcount);
-
-		} else if (op instanceof OpDistinct) {
-
-			// Add DISTINCT modifier, if any
-			OpDistinct distinctOp = (OpDistinct) op;
-			translate(vars, distinctOp, pr, i, varcount);
-
-		} else if (op instanceof OpProject) {
-
-			// Add PROJECTION modifier, if any
-			OpProject projectOp = (OpProject) op;
-			translate(vars, projectOp, pr, i, varcount);
-
-		} else if (op instanceof OpOrder) {
-
-			// Add ORDER BY modifier, if any
-			OpOrder orderOp = (OpOrder) op;
-			translate(vars, orderOp, pr, i, varcount);
-
-		} else if (op instanceof OpFilter) {
-			OpFilter filter = (OpFilter) op;
-			translate(vars, filter, pr, i, varcount);
-
-		} else if (op instanceof OpBGP) {
-
-			OpBGP bgp = (OpBGP) op;
-			translate(vars, bgp, pr, i, varcount);
-
-		} else if (op instanceof OpJoin) {
-			OpJoin join = (OpJoin) op;
-			translate(vars, join, pr, i, varcount);
-
-		} else if (op instanceof OpUnion) {
-			OpUnion union = (OpUnion) op;
-			translate(vars, union, pr, i, varcount);
-
-		} else if (op instanceof OpLeftJoin) {
-			OpLeftJoin join = (OpLeftJoin) op;
-			translate(vars, join, pr, i, varcount);
-		} else {
-			throw new QueryException("Operation not supported: "
-					+ op.toString());
-		}
-	}
-
 	private void translate(List<Variable> vars, Union union,
 			DatalogProgram pr, int i, int[] varcount) {
 		TupleExpr left = union.getLeftArg();
@@ -501,12 +467,12 @@ public class SparqlAlgebraToDatalogTranslator {
 		Function joinAtom = ofac.getAtom(joinp, leftAtom, rightAtom);
 
 		/* adding the conditions of the filter for the LeftJoin */
-//		if (filter != null) {
-//			List joinTerms = joinAtom.getTerms();
-//			for (Expr expr : filter) {
-//				joinTerms.add(((Function) getBooleanTerm(expr)).asAtom());
-//			}
-//		}
+		if (filter != null) {
+		
+			List<NewLiteral> joinTerms = joinAtom.getTerms();
+			joinTerms.add(((Function) getBooleanTerm(filter)).asAtom());
+			
+		}
 
 		/* Preparing the head of the LeftJoin rule */
 		// Collections.sort(vars, comparator);
@@ -606,8 +572,10 @@ public class SparqlAlgebraToDatalogTranslator {
 			if (!(expression instanceof Var)) {
 				throw new IllegalArgumentException("Error translating ORDER BY. The current implementation can only sort by variables, this query has a more complex expression. Offending expression: '"+expression+"'");
 			}
-			Variable var = ofac.getVariable(expression.getSignature());
-			int direction = 1; //(c.isAscending(): 0);
+			Var v = (Var) expression;
+			Variable var = ofac.getVariable(v.getName());
+			int direction = 0;
+			if (c.isAscending()) direction = 1;
 			pr.getQueryModifiers().addOrderCondition(var, direction);
 		}
 		te = order.getArg(); // narrow down the query
@@ -616,24 +584,22 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	public void translate(List<Variable> var, Filter filter, DatalogProgram pr,
 			int i, int varcount[]) {
-		ValueExpr list = filter.getCondition();
-		//List<Expr> exprlist = list.getList();
+		ValueExpr condition = filter.getCondition();
 		List<Function> filterAtoms = new LinkedList<Function>();
 		Set<Variable> filteredVariables = new LinkedHashSet<Variable>();
-//		for (Expr expr : exprlist) {
-//			Function a = null;
-//			if (expr.isVariable()) {
-//				a = ofac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, getVariableTerm((ExprVar) expr));
-//			} else {
-//				a = (Function) getBooleanTerm(expr);
-//			}
-//			if (a != null) {
-//				Function filterAtom = ofac.getAtom(a.getFunctionSymbol(),
-//						a.getTerms());
-//				filterAtoms.add(filterAtom);
-//				filteredVariables.addAll(filterAtom.getReferencedVariables());
-//			}
-//		}
+
+			Function a = null;
+			if (condition instanceof Var) {
+				a = ofac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, getVariableTerm((Var) condition));
+			} else {
+				a = (Function) getBooleanTerm(condition);
+			}
+			if (a != null) {
+				Function filterAtom = ofac.getAtom(a.getFunctionSymbol(),
+						a.getTerms());
+				filterAtoms.add(filterAtom);
+				filteredVariables.addAll(filterAtom.getReferencedVariables());
+			}
 
 		Predicate predicate = ofac.getPredicate("ans" + (i), var.size());
 		List<NewLiteral> vars = new LinkedList<NewLiteral>();
@@ -820,14 +786,6 @@ public class SparqlAlgebraToDatalogTranslator {
 				functionURI.getTerms();
 				terms.add(functionURI);
 				}
-				 Function functionURI = ofac.getFunctionalTerm(
-				 ofac.getUriTemplatePredicate(1),
-				 ofac.getURIConstant(subjectUri));
-				 Variable freshVariable = getFreshVariable(varcount);
-				 Function eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-				 result.add(eqAtom);
-				
-				 terms.add(freshVariable);
 
 			}
 
@@ -892,16 +850,17 @@ public class SparqlAlgebraToDatalogTranslator {
 
 			// Subject node
 			if (s == null) {
+				if (subj.isAnonymous()) {}
 				terms.add(ofac.getVariable(subj.getName()));
 			} else if (s instanceof LiteralImpl) {
 				LiteralImpl subject = (LiteralImpl) s;
 				ValueConstant constant = getConstant(subject);
 				terms.add(constant);
 			} else if (s instanceof URIImpl) {
-				Node_URI subject = (Node_URI) s;
+				URIImpl subject = (URIImpl) s;
 				subjectType = COL_TYPE.OBJECT;
 				
-				String subject_URI = subject.getURI();
+				String subject_URI = subject.stringValue();
 				subject_URI = decodeURIEscapeCodes(subject_URI);
 				
 
@@ -917,14 +876,6 @@ public class SparqlAlgebraToDatalogTranslator {
 					return;
 					terms.add(functionURI);
 				}
-				 Function functionURI = ofac.getFunctionalTerm(
-				 ofac.getUriTemplatePredicate(1),
-				 ofac.getURIConstant(subjectUri));
-				 Variable freshVariable = getFreshVariable(varcount);
-				 Function eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-				 result.add(eqAtom);
-				
-				 terms.add(freshVariable);
 			}
 
 			// Object node
@@ -989,14 +940,6 @@ public class SparqlAlgebraToDatalogTranslator {
 					}
 				terms.add(functionURI);
 				}
-				 Function functionURI = ofac.getFunctionalTerm(
-				 ofac.getUriTemplatePredicate(1),
-				 ofac.getURIConstant(objectUri));
-				 Variable freshVariable = getFreshVariable(varcount);
-				 Function eqAtom = ofac.getEQAtom(freshVariable, functionURI);
-				 result.add(eqAtom);
-				
-				 terms.add(freshVariable);
 
 			}
 			// Construct the predicate
@@ -1114,17 +1057,6 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	}
 
-//	private int indexOfRef(Node s) {
-//		
-//		String uri = s.toString();
-//		Integer index =  this.uriRef.get(uri);
-//		if (index != null)
-//			return index;
-//		
-//		return -2;
-//		
-//	}
-	
 	private int indexOfRef(String uri) {
 		Integer index =  this.uriRef.get(uri);
 		if (index != null)
@@ -1154,7 +1086,7 @@ public class SparqlAlgebraToDatalogTranslator {
 	public Set<Variable> getVariables(List<org.openrdf.query.algebra.Var> list) {
 		Set<Variable> vars = new HashSet<Variable>();
 		for (org.openrdf.query.algebra.Var variable : list) {
-			if (!variable.isAnonymous()) {
+			if (!variable.hasValue()) { // if it has value, then its a constant
 				String name = variable.getName();
 				Variable var = ofac.getVariable(name);
 				vars.add(var);
@@ -1164,39 +1096,6 @@ public class SparqlAlgebraToDatalogTranslator {
 	}
 	
 	
-//	public Set<Variable> getVariables(List<Triple> triples) {
-//		Set<Variable> vars = new HashSet<Variable>();
-//		for (Triple triple : triples) {
-//			vars.addAll(getVariables(triple));
-//		}
-//		return vars;
-//	}
-
-//	public Set<Variable> getVariables(Triple triple) {
-//		Set<Variable> vars = new HashSet<Variable>();
-//		Node o = triple.getObject();
-//		Node p = triple.getPredicate();
-//		Node s = triple.getSubject();
-//		if (o instanceof Var) {
-//			String name = ((Var) o).getVarName();
-//			Variable var = ofac.getVariable(name);
-//			vars.add(var);
-//		}
-//
-//		if (p instanceof Var) {
-//			String name = ((Var) p).getVarName();
-//			Variable var = ofac.getVariable(name);
-//			vars.add(var);
-//		}
-//
-//		if (s instanceof Var) {
-//			String name = ((Var) s).getVarName();
-//			Variable var = ofac.getVariable(name);
-//			vars.add(var);
-//		}
-//		return vars;
-//	}
-
 	public Set<Variable> getVariables(TupleExpr te) {
 		Set<Variable> result = new LinkedHashSet<Variable>();
 		if (te instanceof StatementPattern) {
@@ -1214,23 +1113,6 @@ public class SparqlAlgebraToDatalogTranslator {
 		return result;
 	}
 	
-//	public Set<Variable> getVariables(Op op) {
-//		Set<Variable> result = new LinkedHashSet<Variable>();
-//		if (op instanceof OpBGP) {
-//			result.addAll(getVariables(((OpBGP) op).getPattern().getList()));
-//		} else if (op instanceof OpTriple) {
-//			result.addAll(getVariables(((OpTriple) op).getTriple()));
-//		} else if (op instanceof Op2) {
-//			result.addAll(getVariables(((Op2) op).getLeft()));
-//			result.addAll(getVariables(((Op2) op).getRight()));
-//		} else if (op instanceof Op1) {
-//			result.addAll(getVariables(((Op1) op).getSubOp()));
-//		} else {
-//			throw new RuntimeException("Operator not supported: " + op);
-//		}
-//		return result;
-//	}
-
 	private Variable getFreshVariable(int[] count) {
 		count[0] += 1;
 		return ofac.getVariable("VAR" + count[0]);
@@ -1325,133 +1207,130 @@ public class SparqlAlgebraToDatalogTranslator {
 		return dataType;
 	}
 
-	private NewLiteral getBooleanTerm(Expr expr) {
-		if (expr instanceof ExprVar) {
-			return getVariableTerm((ExprVar) expr);
-		} else if (expr instanceof NodeValue) {
-			return getConstantFunctionTerm((NodeValue) expr);
-		} else if (expr instanceof ExprFunction1) {
-			return getBuiltinFunctionTerm((ExprFunction1) expr);
-		} else if (expr instanceof ExprFunction2) {
-			ExprFunction2 function = (ExprFunction2) expr;
-			Expr arg1 = function.getArg1(); // get the first argument
-			Expr arg2 = function.getArg2(); // get the second argument
+	private NewLiteral getBooleanTerm(ValueExpr expr) {
+		if (expr instanceof Var) {
+			return getVariableTerm((Var) expr);
+		} else if (expr instanceof org.openrdf.query.algebra.ValueConstant) {
+			return getConstantFunctionTerm((org.openrdf.query.algebra.ValueConstant) expr);
+		} else if (expr instanceof UnaryValueOperator) {
+			return getBuiltinFunctionTerm((UnaryValueOperator) expr);
+		} else if (expr instanceof BinaryValueOperator) {
+			if (expr instanceof Regex) { // sesame regex is Binary, Jena N-ary
+				Regex reg = (Regex) expr;
+				ValueExpr arg1 = reg.getLeftArg(); 
+				ValueExpr arg2 = reg.getRightArg(); 
+				ValueExpr flags = reg.getFlagsArg();
+				NewLiteral term1 = getBooleanTerm(arg1);
+				NewLiteral term2 = getBooleanTerm(arg2);
+				NewLiteral term3 = (flags != null) ? getBooleanTerm(flags) : ofac
+						.getNULL();
+				return ofac.getFunctionalTerm(
+						OBDAVocabulary.SPARQL_REGEX, term1, term2, term3);
+			}
+			BinaryValueOperator function = (BinaryValueOperator) expr;
+			ValueExpr arg1 = function.getLeftArg(); // get the first argument
+			ValueExpr arg2 = function.getRightArg(); // get the second argument
 			NewLiteral term1 = getBooleanTerm(arg1);
 			NewLiteral term2 = getBooleanTerm(arg2);
 			// Construct the boolean function
 			// TODO Change the method name because ExprFunction2 is not only for
 			// boolean functions
 			return getBooleanFunction(function, term1, term2);
-		} else if (expr instanceof ExprFunctionN) {
-			return getOtherFunctionTerm((ExprFunctionN) expr);
+		} else if (expr instanceof Bound){
+			
+			return ofac.getFunctionalTerm(OBDAVocabulary.IS_NOT_NULL, getVariableTerm(((Bound) expr).getArg()));
 		} else {
 			throw new RuntimeException("The builtin function "
 					+ expr.toString() + " is not supported yet!");
 		}
 	}
-
-	private Function getVariableTermIntoBoolFunction(ExprVar expr) {
+	
+	private Function getVariableTermIntoBoolFunction(Var expr) {
 		return ofac.getFunctionalTerm(OBDAVocabulary.IS_TRUE, getVariableTerm(expr));
 	}
 	
-	private Variable getVariableTerm(ExprVar expr) {
-		return ofac.getVariable(expr.getVarName());
+	private Variable getVariableTerm(Var expr) {
+		return ofac.getVariable(expr.getName());
 	}
 
-	private Function getConstantFunctionTerm(NodeValue expr) {
+	private Function getConstantFunctionTerm(org.openrdf.query.algebra.ValueConstant expr) {
 		Function constantFunction = null;
-		if (expr instanceof NodeValueString) {
-			constantFunction = ofac.getFunctionalTerm(
-					ofac.getDataTypePredicateString(),
-					ofac.getValueConstant(expr.getString(), COL_TYPE.STRING));
-		} else if (expr instanceof NodeValueInteger) {
-			constantFunction = ofac.getFunctionalTerm(ofac
-					.getDataTypePredicateInteger(), ofac.getValueConstant(
-					expr.getInteger() + "", COL_TYPE.INTEGER));
-		} else if (expr instanceof NodeValueDecimal) {
-			constantFunction = ofac.getFunctionalTerm(ofac
-					.getDataTypePredicateDecimal(), ofac.getValueConstant(
-					expr.getDecimal() + "", COL_TYPE.DECIMAL));
-		} else if (expr instanceof NodeValueDouble
-				|| expr instanceof NodeValueFloat) {
-			constantFunction = ofac.getFunctionalTerm(ofac
-					.getDataTypePredicateDouble(), ofac.getValueConstant(
-					expr.getDouble() + "", COL_TYPE.DOUBLE));
-		} else if (expr instanceof NodeValueDateTime) {
-			constantFunction = ofac.getFunctionalTerm(ofac
-					.getDataTypePredicateDateTime(), ofac.getValueConstant(
-					expr.getDateTime() + "", COL_TYPE.DATETIME));
-		} else if (expr instanceof NodeValueBoolean) {
-			constantFunction = ofac.getFunctionalTerm(ofac
-					.getDataTypePredicateBoolean(), ofac.getValueConstant(
-					expr.getBoolean() + "", COL_TYPE.BOOLEAN));
-		} else if (expr instanceof NodeValueNode) {
-			NodeValueNode nodeValue = (NodeValueNode) expr;
-			Node node = nodeValue.getNode();
-			if (node instanceof Node_Literal) {
-				constantFunction = ofac.getFunctionalTerm(ofac
-						.getDataTypePredicateLiteral(), ofac.getValueConstant(
-						node.getLiteralLexicalForm(), COL_TYPE.STRING));
-			} else if (node instanceof Node_URI) {
-				constantFunction = ofac.getFunctionalTerm(ofac
-						.getUriTemplatePredicate(1), ofac.getValueConstant(
-						node.toString(), COL_TYPE.OBJECT));
-			} else {
-				throw new RuntimeException("Unsupported node: "
-						+ expr.toString());
+		Value v = expr.getValue();
+
+		if (v instanceof LiteralImpl) {
+			LiteralImpl lit = (LiteralImpl)v;
+			URI type = lit.getDatatype();
+			if (type == null) {
+				return ofac.getFunctionalTerm(ofac
+						.getDataTypePredicateString(), ofac.getValueConstant(
+						v.stringValue(), COL_TYPE.STRING));
 			}
-		} else {
-			throw new QueryException("Unknown data type!");
-		}
+			if ( (type == XMLSchema.INTEGER) || type.equals(XMLSchema.INTEGER)) constantFunction = ofac.getFunctionalTerm(ofac
+					.getDataTypePredicateInteger(), ofac.getValueConstant(
+							lit.intValue() + "", COL_TYPE.INTEGER));
+			else if ((type == XMLSchema.DECIMAL)  || type.equals(XMLSchema.DECIMAL)) constantFunction = ofac.getFunctionalTerm(ofac
+					.getDataTypePredicateDecimal(), ofac.getValueConstant(
+							lit.decimalValue() + "", COL_TYPE.DECIMAL));
+			else if ((type == XMLSchema.DOUBLE) || type.equals(XMLSchema.DOUBLE)) constantFunction = ofac.getFunctionalTerm(ofac
+					.getDataTypePredicateDouble(), ofac.getValueConstant(
+							lit.doubleValue() + "", COL_TYPE.DOUBLE));
+			else if ((type == XMLSchema.DATETIME) || type.equals(XMLSchema.DATETIME)) constantFunction = ofac.getFunctionalTerm(ofac
+					.getDataTypePredicateDateTime(), ofac.getValueConstant(
+							lit.calendarValue() + "", COL_TYPE.DATETIME));
+			else if ((type == XMLSchema.BOOLEAN) || type.equals(XMLSchema.BOOLEAN)) constantFunction = ofac.getFunctionalTerm(ofac
+					.getDataTypePredicateBoolean(), ofac.getValueConstant(
+							lit.booleanValue() + "", COL_TYPE.BOOLEAN));
+			else if ((type == XMLSchema.STRING) || type.equals(XMLSchema.STRING)) constantFunction = ofac.getFunctionalTerm(ofac
+					.getDataTypePredicateBoolean(), ofac.getValueConstant(
+							lit.stringValue() + "", COL_TYPE.STRING));
+			else {
+				// its some custom type
+					constantFunction = ofac.getFunctionalTerm(ofac
+							.getUriTemplatePredicate(1), ofac.getValueConstant(
+							type.toString(), COL_TYPE.OBJECT));
+			}
+		} else if (v instanceof URIImpl) {
+			constantFunction = ofac.getFunctionalTerm(ofac
+					.getUriTemplatePredicate(1), ofac.getValueConstant(
+							((URIImpl)v).stringValue(), COL_TYPE.OBJECT));
+			
+		} 
+		
 		return constantFunction;
 	}
 
-	private Function getBuiltinFunctionTerm(ExprFunction1 expr) {
+	private Function getBuiltinFunctionTerm(UnaryValueOperator expr) {
 		Function builtInFunction = null;
-		if (expr instanceof E_LogicalNot) {
-			Expr arg = expr.getArg();
+		if (expr instanceof Not) {
+			ValueExpr arg = expr.getArg();
 			NewLiteral term = getBooleanTerm(arg);
 			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.NOT, term);
 		}
 		/*
 		 * The following expressions only accept variable as the parameter
 		 */
-		else if (expr instanceof E_UnaryMinus) {
-			Expr arg = expr.getArg();
-			NewLiteral term = getBooleanTerm(arg);
-			NewLiteral minusOneConstant = ofac.getValueConstant("-1", COL_TYPE.INTEGER);
-			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.MULTIPLY, minusOneConstant, term);
-		} else if (expr instanceof E_Bound) {
-			Expr arg = expr.getArg();
-			if (arg instanceof ExprVar) {
-				builtInFunction = ofac.getFunctionalTerm(
-						OBDAVocabulary.IS_NOT_NULL,
-						getVariableTerm((ExprVar) arg));
-			}
-		} else if (expr instanceof E_IsLiteral) {
+
+		else if (expr instanceof IsLiteral) {
 			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_LITERAL, getBooleanTerm( expr.getArg()));
 			
-		} else if (expr instanceof E_IsBlank) {
-			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_BLANK, getBooleanTerm( expr.getArg()));
-			
-		} else if (expr instanceof E_IsURI) {
+		} else if (expr instanceof IsURI) {
 			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_URI, getBooleanTerm( expr.getArg()));
 			
-		} else if (expr instanceof E_IsIRI) {
-			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_IRI, getBooleanTerm( expr.getArg()));
-			
-		} else if (expr instanceof E_Str) {
+		} else if (expr instanceof Str) {
 			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_STR, getBooleanTerm( expr.getArg()));
 			
-		} else if (expr instanceof E_Datatype) {
+		} else if (expr instanceof Datatype) {
 			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_DATATYPE, getBooleanTerm( expr.getArg()));
+		
+		} else if (expr instanceof IsBNode) {
+			builtInFunction = ofac.getFunctionalTerm(OBDAVocabulary.SPARQL_IS_BLANK, getBooleanTerm( expr.getArg()));
 							
-		} else if (expr instanceof E_Lang) {
-			Expr arg = expr.getArg();
-			if (arg instanceof ExprVar) {
+		} else if (expr instanceof Lang) {
+			ValueExpr arg = expr.getArg();
+			if (arg instanceof Var) {
 				builtInFunction = ofac.getFunctionalTerm(
 						OBDAVocabulary.SPARQL_LANG,
-						getVariableTerm((ExprVar) arg));
+						getVariableTerm((Var) arg));
 			}
 		} else {
 			throw new RuntimeException("The builtin function "
@@ -1460,38 +1339,41 @@ public class SparqlAlgebraToDatalogTranslator {
 		return builtInFunction;
 	}
 
-	private Function getBooleanFunction(ExprFunction2 expr, NewLiteral term1,
+	private Function getBooleanFunction(BinaryValueOperator expr, NewLiteral term1,
 			NewLiteral term2) {
 		Function function = null;
 		// The AND and OR expression
-		if (expr instanceof E_LogicalAnd) {
+		if (expr instanceof And) {
 			function = ofac.getANDFunction(term1, term2);
-		} else if (expr instanceof E_LogicalOr) {
+		} else if (expr instanceof Or) {
 			function = ofac.getORFunction(term1, term2);
 		}
-		// The Relational expression
-		if (expr instanceof E_Equals) {
-			function = ofac.getEQFunction(term1, term2);
-		} else if (expr instanceof E_NotEquals) {
-			function = ofac.getNEQFunction(term1, term2);
-		} else if (expr instanceof E_GreaterThan) {
-			function = ofac.getGTFunction(term1, term2);
-		} else if (expr instanceof E_GreaterThanOrEqual) {
-			function = ofac.getGTEFunction(term1, term2);
-		} else if (expr instanceof E_LessThan) {
-			function = ofac.getLTFunction(term1, term2);
-		} else if (expr instanceof E_LessThanOrEqual) {
-			function = ofac.getLTEFunction(term1, term2);
-		} else if (expr instanceof E_LangMatches) {
-			function = ofac.getLANGMATCHESFunction(term1, toLowerCase(term2));
+		// The other expressions
+		if (expr instanceof Compare) {
+			CompareOp operator = ((Compare) expr).getOperator();
+			if (operator == Compare.CompareOp.EQ)
+				function = ofac.getEQFunction(term1, term2);
+			else if (operator == Compare.CompareOp.GE)
+				function = ofac.getGTEFunction(term1, term2);
+			else if (operator == Compare.CompareOp.GT)
+				function = ofac.getGTFunction(term1, term2);
+			else if (operator == Compare.CompareOp.LE)
+				function = ofac.getLTEFunction(term1, term2);
+			else if (operator == Compare.CompareOp.LT)
+				function = ofac.getLTFunction(term1, term2);
+			else if (operator == Compare.CompareOp.NE)
+				function = ofac.getNEQFunction(term1, term2);
 		}
-		// The Numerical expression
-		if (expr instanceof E_Add) {
-			function = ofac.getAddFunction(term1, term2);
-		} else if (expr instanceof E_Subtract) {
-			function = ofac.getSubstractFunction(term1, term2);
-		} else if (expr instanceof E_Multiply) {
-			function = ofac.getMultiplyFunction(term1, term2);
+		if (expr instanceof MathExpr) {
+			MathOp mop = ((MathExpr)expr).getOperator();
+			if (mop == MathOp.PLUS) 
+				function = ofac.getAddFunction(term1, term2);
+			else if (mop == MathOp.MINUS)
+				function = ofac.getSubstractFunction(term1, term2);
+			else if (mop == MathOp.MULTIPLY) 
+				function = ofac.getMultiplyFunction(term1, term2);
+		} else if (expr instanceof LangMatches) {
+			function = ofac.getLANGMATCHESFunction(term1, toLowerCase(term2));
 		}
 		return function;
 	}
@@ -1513,26 +1395,28 @@ public class SparqlAlgebraToDatalogTranslator {
 		}
 		return output;
 	}
+	
+	// Regex is binary in sesame
 
-	private NewLiteral getOtherFunctionTerm(ExprFunctionN expr) {
-		Function builtInFunction = null;
-		if (expr instanceof E_Regex) {
-			E_Regex function = (E_Regex) expr;
-			Expr arg1 = function.getArg(1); // get the first argument
-			Expr arg2 = function.getArg(2); // get the second argument
-			Expr arg3 = function.getArg(3); // get the third argument (optional)
-			NewLiteral term1 = getBooleanTerm(arg1);
-			NewLiteral term2 = getBooleanTerm(arg2);
-			NewLiteral term3 = (arg3 != null) ? getBooleanTerm(arg3) : ofac
-					.getNULL();
-			builtInFunction = ofac.getFunctionalTerm(
-					OBDAVocabulary.SPARQL_REGEX, term1, term2, term3);
-		} else {
-			throw new RuntimeException("The builtin function "
-					+ expr.toString() + " is not supported yet!");
-		}
-		return builtInFunction;
-	}
+//	private NewLiteral getOtherFunctionTerm(NAryValueOperator expr) {
+//		Function builtInFunction = null;
+//		if (expr instanceof Regex) {
+//			Regex function = (Regex) expr;
+//			ValueExpr arg1 = function.getLeftArg(); // get the first argument
+//			ValueExpr arg2 = function.getRightArg(); // get the second argument
+//			ValueExpr arg3 = function.getFlagsArg(); // get the third argument (optional)
+//			NewLiteral term1 = getBooleanTerm(arg1);
+//			NewLiteral term2 = getBooleanTerm(arg2);
+//			NewLiteral term3 = (arg3 != null) ? getBooleanTerm(arg3) : ofac
+//					.getNULL();
+//			builtInFunction = ofac.getFunctionalTerm(
+//					OBDAVocabulary.SPARQL_REGEX, term1, term2, term3);
+//		} else {
+//			throw new RuntimeException("The builtin function "
+//					+ expr.toString() + " is not supported yet!");
+//		}
+//		return builtInFunction;
+//	}
 
 	public void getSignature(Query query, List<String> signatureContainer) {
 		signatureContainer.clear();

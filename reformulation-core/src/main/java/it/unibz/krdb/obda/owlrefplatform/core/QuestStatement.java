@@ -206,22 +206,15 @@ public class QuestStatement implements OBDAStatement {
 
 		@Override
 		public void run() {
-
 			log.debug("Executing query: \n{}", strquery);
-
 			try {
-
 				if (!querycache.containsKey(strquery)) {
-					// final long startTime = System.currentTimeMillis();
-
 					/*
 					 * Note, while translating the SQL String, List<String> with
 					 * the query signature, and the Jena Query objects are
 					 * cached
 					 */
-
 					getUnfolding(strquery);
-
 				}
 				/*
 				 * Obtaineing the query from the cache
@@ -241,14 +234,9 @@ public class QuestStatement implements OBDAStatement {
 						// Execute the SQL query string
 						executingSQL = true;
 						ResultSet set = null;
-						// try {
 
 						set = sqlstatement.executeQuery(sql);
 
-						// }
-						// catch(SQLException e)
-						// {
-						//
 						// Store the SQL result to application result set.
 						if (isSelect) { // is tuple-based results
 
@@ -304,6 +292,10 @@ public class QuestStatement implements OBDAStatement {
 		} else if (SPARQLQueryUtility.isAskQuery(strquery)) {
 			return executeTupleQuery(strquery, 2);
 		} else if (SPARQLQueryUtility.isConstructQuery(strquery)) {
+			// Here we need to get the template for the CONSTRUCT query results
+			
+			// Here we replace CONSTRUCT query with SELECT query
+			strquery = SPARQLQueryUtility.getSelectFromConstruct(strquery);
 			return executeGraphQuery(strquery, 3);
 		} else if (SPARQLQueryUtility.isDescribeQuery(strquery)) {
 			// create list of uriconstants we want to describe
@@ -592,7 +584,7 @@ public class QuestStatement implements OBDAStatement {
 		Query query;
 
 		QueryParser qp = QueryParserUtil.createParser(QueryLanguage.SPARQL);
-		ParsedQuery pq = qp.parseQuery(strquery, null);
+		ParsedQuery pq = qp.parseQuery(strquery, null); // base URI is null
 		TupleExpr te = pq.getTupleExpr();
 		
 		// Check the cache first if the system has processed the query string

@@ -111,6 +111,22 @@ public class SPARQLQueryUtility {
 		return strquery;
 	}
 
+	public static String getSelectFromConstruct(String strquery){
+		String strlower = strquery.toLowerCase();
+		// Lets assume it IS Construct query and we dont need to check
+//		if (strlower.contains("construct"))
+//		{
+			StringBuilder bf = new StringBuilder();
+			int idx_con = strlower.indexOf("construct");
+			int idx_where = strlower.indexOf("where");
+			bf.append(strquery.substring(0, idx_con));
+			bf.append(" SELECT * ");
+			bf.append(strquery.substring(idx_where));
+			strquery = bf.toString();
+//		}
+		return strquery;
+	}
+	
 	public static String getConstructObjQuery(Constant constant) {
 		return "CONSTRUCT { ?s ?p <" + constant.toString()
 				+ "> } WHERE { ?s ?p <" + constant.toString() + ">}";
