@@ -150,11 +150,25 @@ public class BindTest extends TestCase {
 		String query = "PREFIX : <http://it.unibz.krdb/obda/test/simple#> "
 				+ "PREFIX  dc:  <http://purl.org/dc/elements/1.1/>"
 				+ "PREFIX  ns:  <http://example.org/ns#>"
-				+ "SELECT  ?title ?price" + "{  ?x ns:price ?p ."
-				+ "   ?x ns:discount ?discount"
+				+ "SELECT  ?title ?price" 
+				+ "{  ?x ns:hasPrice ?p ."
+				+ "   ?x ns:hasDiscount ?discount"
 				+ "   BIND (?p*(1-?discount) AS ?price)"
-				+ "   FILTER(?price < 20)" + "   ?x dc:title ?title ." + "}";
+				+ "   FILTER(?price < 20)" 
+				+ "   ?x dc:title ?title ." 
+				+ "}";
 
+//		String query = "PREFIX : <http://it.unibz.krdb/obda/test/simple#> "
+//				+ "PREFIX  dc:  <http://purl.org/dc/elements/1.1/>"
+//				+ "PREFIX  ns:  <http://example.org/ns#>"
+//				+ "SELECT  ?title ?p" 
+//				+ "Where"
+//				+ "{  ?x ns:hasPrice ?p ."
+//				+ "   ?x ns:hasDiscount ?discount ."
+//				+ "   ?x dc:title ?title ." 
+//				+ "   FILTER(?p < 20)" 
+//				+ "}";
+		
 		StringBuilder bf = new StringBuilder(query);
 		try {
 			

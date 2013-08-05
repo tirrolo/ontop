@@ -57,6 +57,7 @@ import com.hp.hpl.jena.sparql.algebra.op.Op1;
 import com.hp.hpl.jena.sparql.algebra.op.Op2;
 import com.hp.hpl.jena.sparql.algebra.op.OpBGP;
 import com.hp.hpl.jena.sparql.algebra.op.OpDistinct;
+import com.hp.hpl.jena.sparql.algebra.op.OpExtend;
 import com.hp.hpl.jena.sparql.algebra.op.OpFilter;
 import com.hp.hpl.jena.sparql.algebra.op.OpJoin;
 import com.hp.hpl.jena.sparql.algebra.op.OpLeftJoin;
@@ -67,6 +68,7 @@ import com.hp.hpl.jena.sparql.algebra.op.OpTriple;
 import com.hp.hpl.jena.sparql.algebra.op.OpUnion;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.sparql.core.VarExprList;
 import com.hp.hpl.jena.sparql.expr.E_Add;
 import com.hp.hpl.jena.sparql.expr.E_Bound;
 import com.hp.hpl.jena.sparql.expr.E_Datatype;
@@ -232,12 +234,70 @@ public class SparqlAlgebraToDatalogTranslator {
 		} else if (op instanceof OpLeftJoin) {
 			OpLeftJoin join = (OpLeftJoin) op;
 			translate(vars, join, pr, i, varcount);
-		} else {
+		
+		} else  if (op instanceof OpExtend) {
+			OpExtend extend = (OpExtend) op;
+			translate(vars, extend, pr, i, varcount);
+
+		}else {
 			throw new QueryException("Operation not supported: "
 					+ op.toString());
 		}
 	}
 
+	private void translate(List<Variable> vars, OpExtend extend, DatalogProgram pr,
+			int i, int[] varcount) {
+		Op subop = extend.getSubOp();
+		VarExprList extendExpr = extend.getVarExprList();
+		Map<Var, Expr> varmap = extendExpr.getExprs();
+		Variable var = null;
+		Expr exp = null;
+		
+		for (Var v: varmap.keySet()){
+			String name = v.getVarName();
+			var = ofac.getVariable(name);
+			exp = varmap.get(v);
+		}
+		
+		Term term = getTermFromExpression(exp);
+		
+		Set<Variable> atom1VarsSet = getVariables(subop);
+		List<Term> atom1VarsList = new LinkedList<Term>();
+		atom1VarsList.addAll(atom1VarsSet);
+		atom1VarsList.add(var);
+		Collections.sort(atom1VarsList, comparator);
+		int indexOfvar = atom1VarsList.indexOf(var);
+		atom1VarsList.set(indexOfvar,term);
+		Predicate leftAtomPred = ofac.getPredicate("ans" + (i),
+				atom1VarsList.size());
+		Function head = ofac.getFunction(leftAtomPred, atom1VarsList);
+
+		
+		Set<Variable> atom2VarsSet = getVariables(subop);
+		List<Term> atom2VarsList = new LinkedList<Term>();
+		atom2VarsList.addAll(atom2VarsSet);
+		Collections.sort(atom2VarsList, comparator);
+		Predicate rightAtomPred = ofac.getPredicate("ans" + ((2 * i)),
+				atom2VarsList.size());
+		Function rightAtom = ofac.getFunction(rightAtomPred, atom2VarsList);
+		
+		
+		
+		CQIE newrule = ofac.getCQIE(head, rightAtom);
+		pr.appendRule(newrule);
+		
+		/*
+		 * Translating the rest
+		 */
+		{
+			List<Variable> vars1 = new LinkedList<Variable>();
+			for (Term var1 : atom2VarsSet)
+				vars1.add((Variable) var1);
+			translate(vars1, subop, pr, 2 * i, varcount);
+		}
+		
+		
+	}
 	private void translate(List<Variable> vars, OpUnion union,
 			DatalogProgram pr, int i, int[] varcount) {
 		Op left = union.getLeft();
@@ -422,7 +482,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		if (filter != null) {
 			List joinTerms = joinAtom.getTerms();
 			for (Expr expr : filter.getList()) {
-				joinTerms.add(((Function) getBooleanTerm(expr)));
+				joinTerms.add(((Function) getTermFromExpression(expr)));
 			}
 		}
 
@@ -544,7 +604,7 @@ public class SparqlAlgebraToDatalogTranslator {
 			if (expr.isVariable()) {
 				a = ofac.getFunction(OBDAVocabulary.IS_TRUE, getVariableTerm((ExprVar) expr));
 			} else {
-				a = (Function) getBooleanTerm(expr);
+				a = (Function) getTermFromExpression(expr);
 			}
 			if (a != null) {
 				Function filterAtom = ofac.getFunction(a.getFunctionSymbol(),
@@ -1111,6 +1171,15 @@ public class SparqlAlgebraToDatalogTranslator {
 			result.addAll(getVariables(((OpBGP) op).getPattern().getList()));
 		} else if (op instanceof OpTriple) {
 			result.addAll(getVariables(((OpTriple) op).getTriple()));
+		} else if (op instanceof OpExtend) {
+			VarExprList extendExpr = ((OpExtend) op).getVarExprList();
+			Map<Var, Expr> varmap = extendExpr.getExprs();
+			for (Var v: varmap.keySet()){
+				String name = v.getVarName();
+				Variable var = ofac.getVariable(name);
+				result.add(var);
+			}
+			result.addAll(getVariables(((OpExtend) op).getSubOp()));	
 		} else if (op instanceof Op2) {
 			result.addAll(getVariables(((Op2) op).getLeft()));
 			result.addAll(getVariables(((Op2) op).getRight()));
@@ -1242,7 +1311,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		return dataType;
 	}
 
-	private Term getBooleanTerm(Expr expr) {
+	private Term getTermFromExpression(Expr expr) {
 		if (expr instanceof ExprVar) {
 			return getVariableTerm((ExprVar) expr);
 		} else if (expr instanceof NodeValue) {
@@ -1253,8 +1322,8 @@ public class SparqlAlgebraToDatalogTranslator {
 			ExprFunction2 function = (ExprFunction2) expr;
 			Expr arg1 = function.getArg1(); // get the first argument
 			Expr arg2 = function.getArg2(); // get the second argument
-			Term term1 = getBooleanTerm(arg1);
-			Term term2 = getBooleanTerm(arg2);
+			Term term1 = getTermFromExpression(arg1);
+			Term term2 = getTermFromExpression(arg2);
 			// Construct the boolean function
 			// TODO Change the method name because ExprFunction2 is not only for
 			// boolean functions
@@ -1327,7 +1396,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		Function builtInFunction = null;
 		if (expr instanceof E_LogicalNot) {
 			Expr arg = expr.getArg();
-			Term term = getBooleanTerm(arg);
+			Term term = getTermFromExpression(arg);
 			builtInFunction = ofac.getFunction(OBDAVocabulary.NOT, term);
 		}
 		/*
@@ -1335,7 +1404,7 @@ public class SparqlAlgebraToDatalogTranslator {
 		 */
 		else if (expr instanceof E_UnaryMinus) {
 			Expr arg = expr.getArg();
-			Term term = getBooleanTerm(arg);
+			Term term = getTermFromExpression(arg);
 			Term minusOneConstant = ofac.getConstantLiteral("-1", COL_TYPE.INTEGER);
 			builtInFunction = ofac.getFunction(OBDAVocabulary.MULTIPLY, minusOneConstant, term);
 		} else if (expr instanceof E_Bound) {
@@ -1346,22 +1415,22 @@ public class SparqlAlgebraToDatalogTranslator {
 						getVariableTerm((ExprVar) arg));
 			}
 		} else if (expr instanceof E_IsLiteral) {
-			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_IS_LITERAL, getBooleanTerm( expr.getArg()));
+			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_IS_LITERAL, getTermFromExpression( expr.getArg()));
 			
 		} else if (expr instanceof E_IsBlank) {
-			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_IS_BLANK, getBooleanTerm( expr.getArg()));
+			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_IS_BLANK, getTermFromExpression( expr.getArg()));
 			
 		} else if (expr instanceof E_IsURI) {
-			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_IS_URI, getBooleanTerm( expr.getArg()));
+			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_IS_URI, getTermFromExpression( expr.getArg()));
 			
 		} else if (expr instanceof E_IsIRI) {
-			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_IS_IRI, getBooleanTerm( expr.getArg()));
+			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_IS_IRI, getTermFromExpression( expr.getArg()));
 			
 		} else if (expr instanceof E_Str) {
-			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_STR, getBooleanTerm( expr.getArg()));
+			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_STR, getTermFromExpression( expr.getArg()));
 			
 		} else if (expr instanceof E_Datatype) {
-			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_DATATYPE, getBooleanTerm( expr.getArg()));
+			builtInFunction = ofac.getFunction(OBDAVocabulary.SPARQL_DATATYPE, getTermFromExpression( expr.getArg()));
 							
 		} else if (expr instanceof E_Lang) {
 			Expr arg = expr.getArg();
@@ -1438,9 +1507,9 @@ public class SparqlAlgebraToDatalogTranslator {
 			Expr arg1 = function.getArg(1); // get the first argument
 			Expr arg2 = function.getArg(2); // get the second argument
 			Expr arg3 = function.getArg(3); // get the third argument (optional)
-			Term term1 = getBooleanTerm(arg1);
-			Term term2 = getBooleanTerm(arg2);
-			Term term3 = (arg3 != null) ? getBooleanTerm(arg3) : ofac
+			Term term1 = getTermFromExpression(arg1);
+			Term term2 = getTermFromExpression(arg2);
+			Term term3 = (arg3 != null) ? getTermFromExpression(arg3) : ofac
 					.getConstantNULL();
 			builtInFunction = ofac.getFunction(
 					OBDAVocabulary.SPARQL_REGEX, term1, term2, term3);
