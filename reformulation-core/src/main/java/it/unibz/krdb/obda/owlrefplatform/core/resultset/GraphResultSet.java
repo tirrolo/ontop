@@ -6,13 +6,15 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.model;
+package it.unibz.krdb.obda.owlrefplatform.core.resultset;
 
+import it.unibz.krdb.obda.model.OBDAException;
+import it.unibz.krdb.obda.model.ResultSet;
+import it.unibz.krdb.obda.model.TupleResultSet;
 import it.unibz.krdb.obda.ontology.Assertion;
+import it.unibz.krdb.obda.owlrefplatform.core.SesameConstructTemplate;
 
 import java.util.List;
-
-import com.hp.hpl.jena.sparql.syntax.Template;
 
 public interface GraphResultSet extends ResultSet {
 
@@ -26,6 +28,6 @@ public interface GraphResultSet extends ResultSet {
 
 	void addNewResultSet(List<Assertion> result);
 	
-	Template getTemplate();
+	SesameConstructTemplate getTemplate();
 	
 }

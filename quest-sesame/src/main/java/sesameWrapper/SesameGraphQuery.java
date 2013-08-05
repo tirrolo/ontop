@@ -8,11 +8,11 @@
  */
 package sesameWrapper;
 
-import it.unibz.krdb.obda.model.GraphResultSet;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.ontology.Assertion;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestDBStatement;
+import it.unibz.krdb.obda.owlrefplatform.core.resultset.GraphResultSet;
 
 import java.util.HashMap;
 import java.util.LinkedList;

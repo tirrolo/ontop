@@ -1,12 +1,10 @@
 package it.unibz.krdb.obda.owlrefplatform.core.resultset;
 
 import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.GraphResultSet;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.ObjectConstant;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.ResultSet;
 import it.unibz.krdb.obda.model.TupleResultSet;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
@@ -19,7 +17,7 @@ import it.unibz.krdb.obda.ontology.DataPropertyAssertion;
 import it.unibz.krdb.obda.ontology.ObjectPropertyAssertion;
 import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.SesameConstructTemplate;
+import it.unibz.krdb.obda.owlrefplatform.core.SesameConstructTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,15 +25,6 @@ import java.util.List;
 import org.openrdf.query.algebra.ExtensionElem;
 import org.openrdf.query.algebra.ProjectionElem;
 import org.openrdf.query.algebra.ProjectionElemList;
-import org.openrdf.query.algebra.Var;
-
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Node_Blank;
-import com.hp.hpl.jena.graph.Node_Literal;
-import com.hp.hpl.jena.graph.Node_URI;
-import com.hp.hpl.jena.graph.Node_Variable;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.sparql.syntax.Template;
 
 public class QuestGraphResultSet implements GraphResultSet {
 
@@ -43,7 +32,7 @@ public class QuestGraphResultSet implements GraphResultSet {
 
 	private TupleResultSet tupleResultSet;
 
-	private Template template;
+//	private Template template;
 	
 	private SesameConstructTemplate sesameTemplate;
 
@@ -103,8 +92,8 @@ public class QuestGraphResultSet implements GraphResultSet {
 	}
 
 	@Override
-	public Template getTemplate() {
-		return template;
+	public SesameConstructTemplate getTemplate() {
+		return sesameTemplate;
 	}
 
 	
@@ -254,7 +243,7 @@ public class QuestGraphResultSet implements GraphResultSet {
 		String node_name = node.getSourceName();
 		org.openrdf.query.algebra.ValueConstant vc = getVC(node_name);
 		if (node_name.charAt(0) == '-') {
-			constant = dfac.getValueConstant(node_name);
+			constant = dfac.getConstantLiteral(node_name);
 		} else {
 			constant = resSet.getConstant(node_name);
 		}

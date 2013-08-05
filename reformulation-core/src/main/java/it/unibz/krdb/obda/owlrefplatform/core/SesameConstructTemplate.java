@@ -1,16 +1,16 @@
-package it.unibz.krdb.obda.owlrefplatform.core.translator;
+package it.unibz.krdb.obda.owlrefplatform.core;
 
-import java.util.Set;
+import it.unibz.krdb.sql.api.Projection;
 
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.algebra.Extension;
-import org.openrdf.query.algebra.Projection;
 import org.openrdf.query.algebra.Reduced;
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.QueryParser;
 import org.openrdf.query.parser.QueryParserUtil;
+
+import com.mysql.jdbc.Extension;
 
 public class SesameConstructTemplate {
 	private TupleExpr sesameAlgebra = null;

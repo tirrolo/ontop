@@ -5,8 +5,6 @@ import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.Constant;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.GraphResultSet;
-import it.unibz.krdb.obda.model.NewLiteral;
 import it.unibz.krdb.obda.model.OBDAConnection;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAException;
@@ -14,6 +12,7 @@ import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.obda.model.OBDAStatement;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.TupleResultSet;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.Variable;
@@ -28,11 +27,12 @@ import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SPARQLQueryUtility
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.BooleanOWLOBDARefResultSet;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.EmptyQueryResultSet;
+import it.unibz.krdb.obda.owlrefplatform.core.resultset.GraphResultSet;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestGraphResultSet;
 import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestResultset;
 import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.SesameConstructTemplate;
 import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
+import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslatorSesame;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.ExpressionEvaluator;
 import it.unibz.krdb.obda.renderer.DatalogProgramRenderer;
@@ -53,7 +53,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.QueryParser;
 import org.openrdf.query.parser.QueryParserUtil;
@@ -112,7 +111,7 @@ public class QuestStatement implements OBDAStatement {
 
 	final Map<String, Boolean> isdescribecache; 
 
-	final SparqlAlgebraToDatalogTranslator translator;
+	final SparqlAlgebraToDatalogTranslatorSesame translator;
 	
 	SesameConstructTemplate templ = null;
 
@@ -129,7 +128,7 @@ public class QuestStatement implements OBDAStatement {
 
 		this.questInstance = questinstance;
 
-		this.translator = new SparqlAlgebraToDatalogTranslator(this.questInstance.getUriTemplateMatcher());
+		this.translator = new SparqlAlgebraToDatalogTranslatorSesame(this.questInstance.getUriTemplateMatcher());
 		this.querycache = questinstance.getSQLCache();
 		this.signaturecache = questinstance.getSignatureCache();
 		this.jenaQueryCache = questinstance.getJenaQueryCache();
@@ -716,7 +715,7 @@ public class QuestStatement implements OBDAStatement {
 																		// suffix
 																		// number
 					Function ruleBody = rule.getBody().get(0);
-					Map<Variable, NewLiteral> theta = Unifier.getMGU(ruleBody, atomQuery);
+					Map<Variable, Term> theta = Unifier.getMGU(ruleBody, atomQuery);
 					if (theta == null || theta.isEmpty()) {
 						continue;
 					}
