@@ -517,7 +517,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 					String username = "sa";
 					String password = "";
 						
-					//DatabaseManager.threadedDBM();
+					DatabaseManager.threadedDBM();
 
 					obdaSource = fac.getDataSource(URI.create("http://www.obda.org/ABOXDUMP" + System.currentTimeMillis()));
 					obdaSource.setParameter(RDBMSourceParameterConstants.DATABASE_DRIVER, driver);

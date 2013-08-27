@@ -797,6 +797,7 @@ public class SparqlAlgebraToDatalogTranslator {
 				Function rdfTypeConstant = ofac.getFunctionalTerm(ofac
 						.getUriTemplatePredicate(1), ofac.getURIConstant(OBDAVocabulary.RDF_TYPE));
 				terms.add(rdfTypeConstant);
+				terms.add(ofac.getVariable(obj.getName()));
 
 			} else if (o instanceof LiteralImpl) {
 				throw new QueryException("Unsupported query syntax");
@@ -1064,16 +1065,6 @@ public class SparqlAlgebraToDatalogTranslator {
 		return -2;
 	}
 	
-
-	// private class VariableComparator implements Comparator<Variable> {
-	//
-	// @Override
-	// public int compare(Variable arg0, Variable arg1) {
-	// return arg0.getName().compareTo(arg1.getName());
-	// }
-	//
-	// }
-
 	private class NewLiteralComparator implements Comparator<NewLiteral> {
 
 		@Override
@@ -1396,28 +1387,6 @@ public class SparqlAlgebraToDatalogTranslator {
 		return output;
 	}
 	
-	// Regex is binary in sesame
-
-//	private NewLiteral getOtherFunctionTerm(NAryValueOperator expr) {
-//		Function builtInFunction = null;
-//		if (expr instanceof Regex) {
-//			Regex function = (Regex) expr;
-//			ValueExpr arg1 = function.getLeftArg(); // get the first argument
-//			ValueExpr arg2 = function.getRightArg(); // get the second argument
-//			ValueExpr arg3 = function.getFlagsArg(); // get the third argument (optional)
-//			NewLiteral term1 = getBooleanTerm(arg1);
-//			NewLiteral term2 = getBooleanTerm(arg2);
-//			NewLiteral term3 = (arg3 != null) ? getBooleanTerm(arg3) : ofac
-//					.getNULL();
-//			builtInFunction = ofac.getFunctionalTerm(
-//					OBDAVocabulary.SPARQL_REGEX, term1, term2, term3);
-//		} else {
-//			throw new RuntimeException("The builtin function "
-//					+ expr.toString() + " is not supported yet!");
-//		}
-//		return builtInFunction;
-//	}
-
 	public void getSignature(Query query, List<String> signatureContainer) {
 		signatureContainer.clear();
 		if (query.isSelectType() || query.isDescribeType()) {
