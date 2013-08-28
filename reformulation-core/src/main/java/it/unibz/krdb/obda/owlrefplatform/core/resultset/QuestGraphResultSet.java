@@ -1,12 +1,10 @@
 package it.unibz.krdb.obda.owlrefplatform.core.resultset;
 
 import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.GraphResultSet;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.ObjectConstant;
 import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.ResultSet;
 import it.unibz.krdb.obda.model.TupleResultSet;
 import it.unibz.krdb.obda.model.URIConstant;
 import it.unibz.krdb.obda.model.ValueConstant;
@@ -19,7 +17,7 @@ import it.unibz.krdb.obda.ontology.DataPropertyAssertion;
 import it.unibz.krdb.obda.ontology.ObjectPropertyAssertion;
 import it.unibz.krdb.obda.ontology.OntologyFactory;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.SesameConstructTemplate;
+import it.unibz.krdb.obda.owlrefplatform.core.SesameConstructTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +46,7 @@ public class QuestGraphResultSet implements GraphResultSet {
 
 	private TupleResultSet tupleResultSet;
 
-	private Template template;
+//	private Template template;
 	
 	private SesameConstructTemplate sesameTemplate;
 
@@ -93,8 +91,8 @@ public class QuestGraphResultSet implements GraphResultSet {
 	}
 
 	@Override
-	public Template getTemplate() {
-		return template;
+	public SesameConstructTemplate getTemplate() {
+		return sesameTemplate;
 	}
 
 	
@@ -207,12 +205,14 @@ public class QuestGraphResultSet implements GraphResultSet {
 			ValueExpr ve = extMap.get(node_name);
 			org.openrdf.query.algebra.ValueConstant vc = (org.openrdf.query.algebra.ValueConstant) ve;
 			 if (vc.getValue() instanceof URIImpl) {
-				 constant = dfac.getURIConstant(vc.getValue().stringValue());
+				 constant = dfac.getConstantURI(vc.getValue().stringValue());
 			 } else if (vc.getValue() instanceof LiteralImpl) {
-				 constant = dfac.getValueConstant(vc.getValue().stringValue());
+				 constant = dfac.getConstantLiteral(vc.getValue().stringValue());
 			 } else {
-				 constant = dfac.getBNodeConstant(vc.getValue().stringValue());
+				 constant = dfac.getConstantBNode(vc.getValue().stringValue());
 			 }
+
+			constant = dfac.getConstantLiteral(node_name);
 		} else {
 			constant = resSet.getConstant(node_name);
 		}

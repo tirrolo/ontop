@@ -1,10 +1,18 @@
+/*
+ * Copyright (C) 2009-2013, Free University of Bozen Bolzano
+ * This source code is available under the terms of the Affero General Public
+ * License v3.
+ * 
+ * Please see LICENSE.txt for full license terms, including the availability of
+ * proprietary exceptions.
+ */
 package sesameWrapper;
 
-import it.unibz.krdb.obda.model.GraphResultSet;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.ontology.Assertion;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestDBStatement;
+import it.unibz.krdb.obda.owlrefplatform.core.resultset.GraphResultSet;
 
 import java.util.HashMap;
 import java.util.LinkedList;

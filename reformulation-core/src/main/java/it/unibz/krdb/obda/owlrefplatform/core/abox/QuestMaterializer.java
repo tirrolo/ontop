@@ -1,8 +1,15 @@
+/*
+ * Copyright (C) 2009-2013, Free University of Bozen Bolzano
+ * This source code is available under the terms of the Affero General Public
+ * License v3.
+ * 
+ * Please see LICENSE.txt for full license terms, including the availability of
+ * proprietary exceptions.
+ */
 package it.unibz.krdb.obda.owlrefplatform.core.abox;
 
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.GraphResultSet;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
 import it.unibz.krdb.obda.model.OBDAModel;
@@ -27,6 +34,8 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sesameWrapper.GraphResultSet;
 
 /***
  * Allows you to work with the virtual triples defined by an OBDA model. In
