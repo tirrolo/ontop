@@ -29,7 +29,16 @@ public class DBMetadata implements Serializable {
 	private static final long serialVersionUID = -806363154890865756L;
 
 	private HashMap<String, DataDefinition> schema = new HashMap<String, DataDefinition>();
+	
+	//This will store the login-usr/schema information of each table. For instance
+	// Countries -> HR  (Oracle DB)
+	//WARNING!! : We assume that there are no two tables with the same name in different schemas.
+	
+	private HashMap<String, String> owner = new HashMap<String, String>();
 
+	
+	
+	
 	private String driverName;
 	private String databaseProductName;
 
@@ -90,6 +99,20 @@ public class DBMetadata implements Serializable {
 	public void add(DataDefinition value) {
 		schema.put(value.getName(), value);
 	}
+
+	/**
+	 * This method associates the owner/schema with the name of the table
+	 * @param table
+	 * @param ownerName
+	 */
+	public void add(String table, String ownerName) {
+		owner.put(table, ownerName);
+	}
+	
+	public String getOwner(String table) {
+		return owner.get(table);
+	}
+
 
 	/**
 	 * Inserts a list of data definition in batch.

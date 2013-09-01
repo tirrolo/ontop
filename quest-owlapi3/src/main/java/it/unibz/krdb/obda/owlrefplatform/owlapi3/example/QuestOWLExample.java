@@ -34,8 +34,8 @@ public class QuestOWLExample {
 	 * Use the sample database using H2 from
 	 * https://babbage.inf.unibz.it/trac/obdapublic/wiki/InstallingTutorialDatabases
 	 */
-	final String owlfile = "src/main/resources/example/exampleBooks.owl";
-	final String obdafile = "src/main/resources/example/exampleBooks.obda";
+	final String owlfile = "src/main/resources/example/oracle.owl";
+	final String obdafile = "src/main/resources/example/oracle.obda";
 
 	public void runQuery() throws Exception {
 
@@ -78,11 +78,8 @@ public class QuestOWLExample {
 		 * Get the book information that is stored in the database
 		 */
 		String sparqlQuery = 
-				"PREFIX : <http://meraka/moss/exampleBooks.owl#> \n" +
-				"SELECT DISTINCT ?x ?title ?author ?genre ?edition \n" +
-				"WHERE { ?x a :Book; :title ?title; :genre ?genre; :writtenBy ?y; :hasEdition ?z. \n" +
-				"		 ?y a :Author; :name ?author. \n" +
-				"		 ?z a :Edition; :editionNumber ?edition }";
+				"PREFIX : <http://www.semanticweb.org/ontologies/2013/7/untitled-ontology-150#>"+
+				"SELECT ?w WHERE {?w a :Country.}";
 
 		try {
 			QuestOWLResultSet rs = st.executeTuple(sparqlQuery);

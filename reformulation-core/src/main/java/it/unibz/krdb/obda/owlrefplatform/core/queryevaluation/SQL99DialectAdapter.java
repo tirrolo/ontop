@@ -69,8 +69,8 @@ public class SQL99DialectAdapter implements SQLDialectAdapter {
 	}
 
 	@Override
-	public String sqlTableName(String tablename, String viewname) {
-		return String.format("\"%s\" %s", tablename, viewname);
+	public String sqlTableName(String tablename, String viewname, String owner) {
+		return String.format("\"%s\".\"%s\" %s", owner, tablename, viewname);
 	}
 
 	@Override
@@ -123,4 +123,5 @@ public class SQL99DialectAdapter implements SQLDialectAdapter {
 		}
 		return columnname + " LIKE " + "'%" + pattern + "%'";
 	}
+
 }

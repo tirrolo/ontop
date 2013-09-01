@@ -32,7 +32,7 @@ public interface SQLDialectAdapter {
 
 	public String sqlQualifiedColumn(String tablename, String columnname);
 
-	public String sqlTableName(String tablename, String viewname);
+	public String sqlTableName(String tablename, String viewname, String owner);
 
 	public String sqlQuote(String name);
 

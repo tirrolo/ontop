@@ -388,27 +388,32 @@ public class JDBCConnectionManager {
 			}
 			
 			/* Obtain the relational objects (i.e., tables and views) */
-			final String tableSelectQuery = "SELECT object_name FROM ( " +
-					"SELECT table_name as object_name FROM user_tables WHERE " +
+			final String tableSelectQuery = "SELECT object_name, owner_name  FROM ( " +
+					"SELECT table_name as object_name, owner as owner_name FROM all_tables WHERE " +
+					"table_name  LIKE 'COUNTRIES' AND "+
 					"NOT table_name LIKE 'MVIEW$_%' AND " +
 					"NOT table_name LIKE 'LOGMNR_%' AND " +
 					"NOT table_name LIKE 'AQ$_%' AND " +
 					"NOT table_name LIKE 'DEF$_%' AND " +
 					"NOT table_name LIKE 'REPCAT$_%' AND " +
 					"NOT table_name LIKE 'LOGSTDBY$%' AND " +
-					"NOT table_name LIKE 'OL$%' " +
-					"UNION " +
-					"SELECT view_name as object_name FROM user_views WHERE " +
-					"NOT view_name LIKE 'MVIEW_%' AND " +
-					"NOT view_name LIKE 'LOGMNR_%' AND " +
-					"NOT view_name LIKE 'AQ$_%')";
+					"NOT table_name LIKE 'OL$%' AND " +
+					"NOT table_name LIKE 'ALL$_%' )" ;
+//					"UNION " +
+//					"SELECT view_name as object_name FROM all_views WHERE " +
+//					"NOT view_name LIKE 'MVIEW_%' AND " +
+//					"NOT view_name LIKE 'LOGMNR_%' AND " +
+//					"NOT view_name LIKE 'ALL$_%' AND " +
+//					"NOT view_name LIKE 'AQ$_%')";
 			resultSet = stmt.executeQuery(tableSelectQuery);
 			
 			/* Obtain the column information for each relational object */
 			while (resultSet.next()) {
 				ResultSet rsColumns = null;
 				try {
-					final String tblName = resultSet.getString("object_name");
+					String tblName = resultSet.getString("object_name");
+					tableOwner = resultSet.getString("owner_name");
+					System.out.println(tblName+"\n");
 					final ArrayList<String> primaryKeys = getPrimaryKey(md, null, tableOwner, tblName);
 					final Map<String, Reference> foreignKeys = getForeignKey(md, null, tableOwner, tblName);
 					
@@ -425,6 +430,8 @@ public class JDBCConnectionManager {
 					}
 					// Add this information to the DBMetadata
 					metadata.add(td);
+					metadata.add(tblName,tableOwner);
+					
 				} finally {
 					if (rsColumns != null) {
 						rsColumns.close(); // close existing open cursor
