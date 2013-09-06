@@ -57,6 +57,8 @@ import it.unibz.krdb.obda.owlrefplatform.core.translator.MappingVocabularyRepair
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.UnfoldingMechanism;
 import it.unibz.krdb.obda.utils.MappingAnalyzer;
+import it.unibz.krdb.obda.utils.MappingParser;
+import it.unibz.krdb.obda.utils.ParsedMapping;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
@@ -652,8 +654,13 @@ public class Quest implements Serializable, RepositoryChangedListener {
 			OBDADataSource datasource = unfoldingOBDAModel.getSources().get(0);
 			URI sourceId = datasource.getSourceID();
 
+			MappingParser mParser = new MappingParser(unfoldingOBDAModel.getMappings(sourceId));
+	
+			
 			metadata = JDBCConnectionManager.getMetaData(localConnection);
 
+			mParser.addViewDefs(metadata);
+			
 			SQLDialectAdapter sqladapter = SQLAdapterFactory.getSQLDialectAdapter(datasource
 					.getParameter(RDBMSourceParameterConstants.DATABASE_DRIVER));
 
@@ -669,7 +676,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 			 * Starting mapping processing
 			 */
 
-			MappingAnalyzer analyzer = new MappingAnalyzer(unfoldingOBDAModel.getMappings(sourceId), metadata);
+			MappingAnalyzer analyzer = new MappingAnalyzer(mParser.getParsedMappings(), metadata);
 
 			unfoldingProgram = analyzer.constructDatalogProgram();
 
@@ -796,8 +803,9 @@ public class Quest implements Serializable, RepositoryChangedListener {
 		unfoldingOBDAModel.removeAllMappings(obdaSource.getSourceID());
 
 		unfoldingOBDAModel.addMappings(obdaSource.getSourceID(), dataRepository.getMappings());
-
-		MappingAnalyzer analyzer = new MappingAnalyzer(unfoldingOBDAModel.getMappings(obdaSource.getSourceID()), metadata);
+		
+		MappingParser mParser = new MappingParser(unfoldingOBDAModel.getMappings(obdaSource.getSourceID()));
+		MappingAnalyzer analyzer = new MappingAnalyzer(mParser.getParsedMappings(), metadata);
 
 		unfoldingProgram = analyzer.constructDatalogProgram();
 

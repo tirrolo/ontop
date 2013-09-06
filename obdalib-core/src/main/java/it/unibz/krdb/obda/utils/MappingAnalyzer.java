@@ -15,7 +15,6 @@ import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDASQLQuery;
 import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
 import it.unibz.krdb.obda.model.Variable;
@@ -44,6 +43,7 @@ import it.unibz.krdb.sql.api.Relation;
 import it.unibz.krdb.sql.api.RightParenthesis;
 import it.unibz.krdb.sql.api.Selection;
 import it.unibz.krdb.sql.api.StringLiteral;
+import it.unibz.krdb.obda.utils.ParsedMapping;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,39 +53,35 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import com.hp.hpl.jena.iri.IRI;
-
 public class MappingAnalyzer {
 
-	private ArrayList<OBDAMappingAxiom> mappingList;
 	private DBMetadata dbMetaData;
+	private ArrayList<ParsedMapping> parsedMappings;
 
-	private SQLQueryTranslator translator;
-
+	
 	private static final OBDADataFactory dfac = OBDADataFactoryImpl.getInstance();
 
 	/**
 	 * Creates a mapping analyzer by taking into account the OBDA model.
 	 */
-	public MappingAnalyzer(ArrayList<OBDAMappingAxiom> mappingList, DBMetadata dbMetaData) {
-		this.mappingList = mappingList;
+	public MappingAnalyzer(ArrayList<ParsedMapping> mappingList, DBMetadata dbMetaData) {
 		this.dbMetaData = dbMetaData;
-
-		translator = new SQLQueryTranslator(dbMetaData);
+		this.parsedMappings = mappingList;
 	}
-
+		
+	
+	
 	public DatalogProgram constructDatalogProgram() {
 		DatalogProgram datalog = dfac.getDatalogProgram();
 		LinkedList<String> errorMessage = new LinkedList<String>();
-		for (OBDAMappingAxiom axiom : mappingList) {
+		for (ParsedMapping mapping : parsedMappings) {
 			try {
-				// Obtain the target and source query from each mapping axiom in
+				// Obtain the target query from each mapping axiom in
 				// the model.
-				CQIE targetQuery = (CQIE) axiom.getTargetQuery();
-				OBDASQLQuery sourceQuery = (OBDASQLQuery) axiom.getSourceQuery();
-
-				// Construct the SQL query tree from the source query
-				QueryTree queryTree = translator.contructQueryTree(sourceQuery.toString());
+				CQIE targetQuery = (CQIE) mapping.getTargetQuery();
+				
+				// Get the parsed source query
+				QueryTree queryTree = mapping.getSourceQueryTree();
 
 				// Create a lookup table for variable swapping
 				LookupTable lookupTable = createLookupTable(queryTree);
@@ -211,8 +207,8 @@ public class MappingAnalyzer {
 					datalog.appendRule(rule);
 				}
 			} catch (Exception e) {
-				errorMessage.add("Error in mapping with id: " + axiom.getId() + " \n Description: "
-						+ e.getMessage() + " \nMapping: [" + axiom.toString() + "]");
+				errorMessage.add("Error in mapping with id: " + mapping.getId() + " \n Description: "
+						+ e.getMessage() + " \nMapping: [" + mapping.toString() + "]");
 				
 			}
 		}

@@ -8,6 +8,8 @@
  */
 package it.unibz.krdb.obda.parser;
 
+import java.util.ArrayList;
+
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.ViewDefinition;
 import it.unibz.krdb.sql.api.Attribute;
@@ -23,14 +25,14 @@ import org.slf4j.LoggerFactory;
 
 public class SQLQueryTranslator {
 
-	private DBMetadata dbMetaData;
+	private ArrayList<ViewDefinition> viewDefinitions;
 	
 	private static int id_counter;
 	
 	private static Logger log = LoggerFactory.getLogger(SQLQueryTranslator.class);
 	
-	public SQLQueryTranslator(DBMetadata dbMetaData) {
-		this.dbMetaData = dbMetaData;
+	public SQLQueryTranslator() {
+		this.viewDefinitions = new ArrayList<ViewDefinition>();
 		id_counter = 0;		
 	}
 
@@ -54,16 +56,36 @@ public class SQLQueryTranslator {
 		return queryTree;
 	}
 	
+	
+	/**
+	 * This function is called if the sql query cannot be parsed. In that
+	 * case a view definition must be created in stead. The view definition is stored in 
+	 * the list viewDefinitions. Later, when the database metadata has been parsed, this list is
+	 * added to the DBMetaData.
+	 * 
+	 * @param query
+	 * @return
+	 */
 	private QueryTree createView(String query) {
 		String viewName = String.format("view_%s", id_counter++);
 		
 		ViewDefinition vd = createViewDefintion(viewName, query);
-		dbMetaData.add(vd);
+		viewDefinitions.add(vd);
 		
 		QueryTree vt = createViewTree(viewName, query);
 		return vt;
 	}
 		
+	/**
+	 * Called after metadata extraction, such that the view definitions (from unparsed sql source expressions)
+	 * are added to the DBMetaData
+	 * 
+	 * @return All view definitions
+	 */
+	public ArrayList<ViewDefinition> getViewDefinitions(){
+		return this.viewDefinitions;
+	}
+	
 	private ViewDefinition createViewDefintion(String viewName, String query) {
 		int start = 6; // the keyword 'select'
 		int end = query.toLowerCase().indexOf("from");		
