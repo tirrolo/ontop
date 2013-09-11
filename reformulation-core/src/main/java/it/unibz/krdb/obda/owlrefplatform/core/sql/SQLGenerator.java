@@ -1411,8 +1411,8 @@ public class SQLGenerator implements SQLQueryGenerator {
 		public String getViewDefinition(Function atom) {
 			DataDefinition def = dataDefinitions.get(atom);
 			if (def instanceof TableDefinition) {
-				String owner = metadata.getOwner(def.getName());
-				String sqlTableName = sqladapter.sqlTableName(tableNames.get(atom), viewNames.get(atom), owner);
+				//String owner = metadata.getOwner(def.getName());
+				String sqlTableName = sqladapter.sqlTableName(tableNames.get(atom), viewNames.get(atom));
 				
 				return sqlTableName;
 				

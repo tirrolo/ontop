@@ -398,13 +398,13 @@ public class JDBCConnectionManager {
 					"NOT table_name LIKE 'REPCAT$_%' AND " +
 					"NOT table_name LIKE 'LOGSTDBY$%' AND " +
 					"NOT table_name LIKE 'OL$%' AND " +
-					"NOT table_name LIKE 'ALL$_%' )" ;
-//					"UNION " +
-//					"SELECT view_name as object_name FROM all_views WHERE " +
-//					"NOT view_name LIKE 'MVIEW_%' AND " +
-//					"NOT view_name LIKE 'LOGMNR_%' AND " +
-//					"NOT view_name LIKE 'ALL$_%' AND " +
-//					"NOT view_name LIKE 'AQ$_%')";
+					"NOT table_name LIKE 'ALL$_%' )" +
+					"UNION " +
+					"SELECT view_name as object_name FROM all_views WHERE " +
+					"NOT view_name LIKE 'MVIEW_%' AND " +
+					"NOT view_name LIKE 'LOGMNR_%' AND " +
+					"NOT view_name LIKE 'ALL$_%' AND " +
+					"NOT view_name LIKE 'AQ$_%')";
 			resultSet = stmt.executeQuery(tableSelectQuery);
 			
 			/* Obtain the column information for each relational object */
@@ -417,7 +417,7 @@ public class JDBCConnectionManager {
 					final ArrayList<String> primaryKeys = getPrimaryKey(md, null, tableOwner, tblName);
 					final Map<String, Reference> foreignKeys = getForeignKey(md, null, tableOwner, tblName);
 					
-					TableDefinition td = new TableDefinition(tblName);
+					TableDefinition td = new TableDefinition("\"" + tableOwner + "\".\"" + tblName + "\"");
 					rsColumns = md.getColumns(null, tableOwner, tblName, null);
 					
 					for (int pos = 1; rsColumns.next(); pos++) {
@@ -430,7 +430,7 @@ public class JDBCConnectionManager {
 					}
 					// Add this information to the DBMetadata
 					metadata.add(td);
-					metadata.add(tblName,tableOwner);
+					//metadata.add(tblName,tableOwner);
 					
 				} finally {
 					if (rsColumns != null) {
