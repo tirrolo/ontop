@@ -112,7 +112,7 @@ public class DBMetadata implements Serializable {
 //	public String getOwner(String table) {
 //		return owner.get(table);
 //	}
-//
+
 
 	/**
 	 * Inserts a list of data definition in batch.
