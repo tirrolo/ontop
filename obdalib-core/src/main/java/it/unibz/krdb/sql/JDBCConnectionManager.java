@@ -167,9 +167,13 @@ public class JDBCConnectionManager {
 	 *            The database id.
 	 * @return The database meta data object.
 	 */
-	public DBMetadata getMetaData(OBDADataSource sourceId) throws SQLException {
+	public DBMetadata getMetaData(OBDADataSource sourceId, ArrayList<Relation> tables) throws SQLException {
 		Connection conn = getConnection(sourceId);
-		return getMetaData(conn);
+		return getMetaData(conn, tables);
+	}
+	
+	public DBMetadata getMetaData(OBDADataSource sourceId) throws SQLException {
+		return getMetaData(sourceId, new ArrayList<Relation>());
 	}
 
 	/**

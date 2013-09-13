@@ -657,7 +657,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 			MappingParser mParser = new MappingParser(unfoldingOBDAModel.getMappings(sourceId));
 	
 			
-			metadata = JDBCConnectionManager.getMetaData(localConnection);
+			metadata = JDBCConnectionManager.getMetaData(localConnection, mParser.getTables());
 
 			mParser.addViewDefs(metadata);
 			

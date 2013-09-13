@@ -1,25 +1,20 @@
 package it.unibz.krdb.obda.utils;
 
 import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.parser.SQL99Lexer;
-import it.unibz.krdb.obda.parser.SQL99Parser;
 import it.unibz.krdb.obda.parser.SQLQueryTranslator;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.ViewDefinition;
 import it.unibz.krdb.sql.api.QueryTree;
+import it.unibz.krdb.sql.api.Relation;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 public class MappingParser {
 	
-	private static Logger log = LoggerFactory.getLogger(SQLQueryTranslator.class);
 	private ArrayList<OBDAMappingAxiom> mappingList;
 	private SQLQueryTranslator translator;
 	private ArrayList<ParsedMapping> parsedMappings;
@@ -32,6 +27,20 @@ public class MappingParser {
 	
 	public ArrayList<ParsedMapping> getParsedMappings(){
 		return parsedMappings;
+	}
+	
+	public ArrayList<Relation> getTables(){
+		ArrayList<Relation> tables = new ArrayList<Relation>();
+		for(ParsedMapping pm : parsedMappings){
+			QueryTree query = pm.getSourceQueryTree();
+			ArrayList<Relation> queryTables = query.getTableSet();
+			for(Relation table : queryTables){
+				if (!(tables.contains(table))){
+					tables.add(table);
+				}
+			}
+		}
+		return tables;
 	}
 	
 	/**
