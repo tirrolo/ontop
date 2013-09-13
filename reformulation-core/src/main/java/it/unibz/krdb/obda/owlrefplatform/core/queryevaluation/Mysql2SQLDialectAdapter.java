@@ -51,9 +51,9 @@ public class Mysql2SQLDialectAdapter extends SQL99DialectAdapter {
 	}
 
 	@Override
-	public String sqlTableName(String tablename, String viewname, String owner) {
+	public String sqlTableName(String tablename, String viewname) {
 		
-		String extendedName = String.format("`%s`.`%s` %s", owner, tablename, viewname);
+		String extendedName = String.format("`%s` %s", tablename, viewname);
 		return extendedName;
 	}
 

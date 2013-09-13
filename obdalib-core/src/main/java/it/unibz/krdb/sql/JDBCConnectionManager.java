@@ -466,7 +466,7 @@ public class JDBCConnectionManager {
 					}
 					// Add this information to the DBMetadata
 					metadata.add(td);
-					metadata.add(tblName,tableOwner);
+					//metadata.add(tblName,tableOwner);
 					
 				} finally {
 					if (rsColumns != null) {
