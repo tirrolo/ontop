@@ -12,6 +12,7 @@ import it.unibz.krdb.obda.model.OBDADataSource;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
 import it.unibz.krdb.sql.api.Attribute;
+import it.unibz.krdb.sql.api.Relation;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -22,6 +23,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -174,16 +176,33 @@ public class JDBCConnectionManager {
 	 * Retrieves the database meta data about the table schema given a
 	 * particular data source id.
 	 * 
+	 * Implemented by calling the getMetaData with empty list of tables
+	 * 
 	 * @param sourceId
 	 *            The database id.
 	 * @return The database meta data object.
 	 */
 	public static DBMetadata getMetaData(Connection conn) throws SQLException {
+		return JDBCConnectionManager.getMetaData(conn, new ArrayList<Relation>());
+	}
+		
+
+		/**
+		 * Retrieves the database meta data about the schemas of the specified tables given a
+		 * particular data source id. If the list of tables is empty, all tables are fetched
+		 * 
+		 * Presently, the restriction to named tables is only implemented for oracle
+		 * 
+		 * @param sourceId
+		 *            The database id.
+		 * @return The database meta data object.
+		 */
+		public static DBMetadata getMetaData(Connection conn, ArrayList<Relation> tables) throws SQLException {
 		DBMetadata metadata = null;
 		final DatabaseMetaData md = conn.getMetaData();
 		if (md.getDatabaseProductName().contains("Oracle")) {
 			// If the database engine is Oracle
-			metadata = getOracleMetaData(md, conn);
+			metadata = getOracleMetaData(md, conn, tables);
 		} else if (md.getDatabaseProductName().contains("DB2")) {
 			// If the database engine is IBM DB2
 			metadata = getDB2MetaData(md, conn);
@@ -370,8 +389,14 @@ public class JDBCConnectionManager {
 	
 	/**
 	 * Retrieve metadata for Oracle database engine
+	 * 
+	 * Currently only retrieves metadata for the tables listed
+	 * 
+	 * Future plan to retrive all tables when this list is empty?
+	 * 
+	 * @param tables 
 	 */
-	private static DBMetadata getOracleMetaData(DatabaseMetaData md, Connection conn) throws SQLException {
+	private static DBMetadata getOracleMetaData(DatabaseMetaData md, Connection conn, ArrayList<Relation> tables) throws SQLException {
 		DBMetadata metadata = new DBMetadata(md);
 		Statement stmt = null;
 		ResultSet resultSet = null;
@@ -386,38 +411,49 @@ public class JDBCConnectionManager {
 			if (resultSet.next()) {
 				tableOwner = resultSet.getString("user");
 			}
-			
-			/* Obtain the relational objects (i.e., tables and views) */
-			final String tableSelectQuery = "SELECT object_name, owner_name  FROM ( " +
-					"SELECT table_name as object_name, owner as owner_name FROM all_tables WHERE " +
-					"table_name  LIKE 'COUNTRIES' AND "+
-					"NOT table_name LIKE 'MVIEW$_%' AND " +
-					"NOT table_name LIKE 'LOGMNR_%' AND " +
-					"NOT table_name LIKE 'AQ$_%' AND " +
-					"NOT table_name LIKE 'DEF$_%' AND " +
-					"NOT table_name LIKE 'REPCAT$_%' AND " +
-					"NOT table_name LIKE 'LOGSTDBY$%' AND " +
-					"NOT table_name LIKE 'OL$%' AND " +
-					"NOT table_name LIKE 'ALL$_%' )" ;
-//					"UNION " +
-//					"SELECT view_name as object_name FROM all_views WHERE " +
-//					"NOT view_name LIKE 'MVIEW_%' AND " +
-//					"NOT view_name LIKE 'LOGMNR_%' AND " +
-//					"NOT view_name LIKE 'ALL$_%' AND " +
-//					"NOT view_name LIKE 'AQ$_%')";
-			resultSet = stmt.executeQuery(tableSelectQuery);
-			
+//			if(tables.size() == 0){
+//				/* Obtain the relational objects (i.e., tables and views) */
+//				final String tableSelectQuery = "SELECT object_name, owner_name  FROM ( " +
+//						"SELECT table_name as object_name, owner as owner_name FROM all_tables WHERE " +
+//						"table_name  LIKE 'COUNTRIES' AND "+
+//						"NOT table_name LIKE 'MVIEW$_%' AND " +
+//						"NOT table_name LIKE 'LOGMNR_%' AND " +
+//						"NOT table_name LIKE 'AQ$_%' AND " +
+//						"NOT table_name LIKE 'DEF$_%' AND " +
+//						"NOT table_name LIKE 'REPCAT$_%' AND " +
+//						"NOT table_name LIKE 'LOGSTDBY$%' AND " +
+//						"NOT table_name LIKE 'OL$%' AND " +
+//						"NOT table_name LIKE 'ALL$_%' )" ;
+//				//					"UNION " +
+//				//					"SELECT view_name as object_name FROM all_views WHERE " +
+//				//					"NOT view_name LIKE 'MVIEW_%' AND " +
+//				//					"NOT view_name LIKE 'LOGMNR_%' AND " +
+//				//					"NOT view_name LIKE 'ALL$_%' AND " +
+//				//					"NOT view_name LIKE 'AQ$_%')";
+//				resultSet = stmt.executeQuery(tableSelectQuery);
+//				/* Obtain the column information for each relational object */
+//				while (resultSet.next()) {
+//					String tblName = resultSet.getString("object_name");
+//					tableOwner = resultSet.getString("owner_name");
+//					System.out.println(tblName+"\n");
+//					TableDefinition td = new TableDefinition(tblName);
+//				}
+//			} else {
+			Iterator<Relation> table_iter = tables.iterator();
 			/* Obtain the column information for each relational object */
-			while (resultSet.next()) {
+			while (table_iter.hasNext()) {
+				Relation table = table_iter.next();
 				ResultSet rsColumns = null;
 				try {
-					String tblName = resultSet.getString("object_name");
-					tableOwner = resultSet.getString("owner_name");
+//					String tblName = resultSet.getString("object_name");
+//					tableOwner = resultSet.getString("owner_name");
+					String tblName = table.getName();
+					tableOwner = table.getSchema();
 					System.out.println(tblName+"\n");
 					final ArrayList<String> primaryKeys = getPrimaryKey(md, null, tableOwner, tblName);
 					final Map<String, Reference> foreignKeys = getForeignKey(md, null, tableOwner, tblName);
 					
-					TableDefinition td = new TableDefinition(tblName);
+					TableDefinition td = new TableDefinition("\"" + tableOwner + "\".\"" + tblName + "\"");
 					rsColumns = md.getColumns(null, tableOwner, tblName, null);
 					
 					for (int pos = 1; rsColumns.next(); pos++) {
