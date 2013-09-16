@@ -383,7 +383,7 @@ public class JDBCConnectionManager {
 		} finally {
 			if (resultSet != null) {
 				resultSet.close();
-			}
+							}
 			if (stmt != null) {
 				stmt.close();
 			}
@@ -410,10 +410,10 @@ public class JDBCConnectionManager {
 			stmt = conn.createStatement();
 			
 			/* Obtain the table owner (i.e., schema name) */
-			String tableOwner = "SYSTEM"; // by default
+			String loggedUser = "SYSTEM"; // by default
 			resultSet = stmt.executeQuery("SELECT user FROM dual");
 			if (resultSet.next()) {
-				tableOwner = resultSet.getString("user");
+				loggedUser = resultSet.getString("user");
 			}
 
 //			if(tables.size() == 0){
@@ -453,7 +453,11 @@ public class JDBCConnectionManager {
 //					String tblName = resultSet.getString("object_name");
 //					tableOwner = resultSet.getString("owner_name");
 					String tblName = table.getName();
-					tableOwner = table.getSchema();
+					String tableOwner;
+					if( table.getSchema().length() > 0)
+						tableOwner = table.getSchema();
+					else
+						tableOwner = loggedUser;
 					System.out.println(tblName+"\n");
 					final ArrayList<String> primaryKeys = getPrimaryKey(md, null, tableOwner, tblName);
 					final Map<String, Reference> foreignKeys = getForeignKey(md, null, tableOwner, tblName);
