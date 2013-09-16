@@ -668,6 +668,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 
 			MappingParser mParser = new MappingParser(unfoldingOBDAModel.getMappings(sourceId));
 			//if the metadata was not already set, extract tables from mappings and then metadata
+			// Second line adds the generated views to the metadata
 			if (metadata == null) {
 				metadata = JDBCConnectionManager.getMetaData(localConnection, mParser.getTables());
 				mParser.addViewDefs(metadata);
