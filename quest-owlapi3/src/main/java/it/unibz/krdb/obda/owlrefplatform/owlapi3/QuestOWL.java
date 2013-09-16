@@ -217,7 +217,7 @@ public class QuestOWL extends OWLReasonerBase {
 		}
 
 		log.debug("Initializing a new Quest instance...");
-
+		
 		final boolean bObtainFromOntology = preferences.getCurrentBooleanValueFor(QuestPreferences.OBTAIN_FROM_ONTOLOGY);
 		final boolean bObtainFromMappings = preferences.getCurrentBooleanValueFor(QuestPreferences.OBTAIN_FROM_MAPPINGS);
 		final String unfoldingMode = (String) preferences.getCurrentValue(QuestPreferences.ABOX_MODE);
