@@ -11,6 +11,6 @@ driverClass	oracle.jdbc.driver.OracleDriver
 [MappingDeclaration] @collection [[
 mappingId	MAPID-8ef78e8fd80b46c7921e6a03723fadc3
 target		:Country-{COUNTRY_NAME} a :Country . 
-source		select COUNTRY_NAME FROM HR.COUNTRIES
+source		select COUNTRY_NAME FROM "HR"."COUNTRIES"
 ]]
 

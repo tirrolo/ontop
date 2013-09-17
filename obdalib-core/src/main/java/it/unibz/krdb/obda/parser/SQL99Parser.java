@@ -1,12 +1,4 @@
-/*
- * Copyright (C) 2009-2013, Free University of Bozen Bolzano
- * This source code is available under the terms of the Affero General Public
- * License v3.
- * 
- * Please see LICENSE.txt for full license terms, including the availability of
- * proprietary exceptions.
- */
-// $ANTLR 3.5 /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g 2013-05-16 15:28:08
+// $ANTLR 3.5 /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g 2013-09-17 11:37:02
 
 package it.unibz.krdb.obda.parser;
 
@@ -181,7 +173,7 @@ public class SQL99Parser extends Parser {
 	}
 
 	@Override public String[] getTokenNames() { return SQL99Parser.tokenNames; }
-	@Override public String getGrammarFileName() { return "/Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g"; }
+	@Override public String getGrammarFileName() { return "/Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g"; }
 
 
 
@@ -346,7 +338,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "parse"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:277:1: parse returns [QueryTree value] : query EOF ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:277:1: parse returns [QueryTree value] : query EOF ;
 	public final QueryTree parse() throws RecognitionException {
 		QueryTree value = null;
 
@@ -354,8 +346,8 @@ public class SQL99Parser extends Parser {
 		QueryTree query1 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:278:3: ( query EOF )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:278:5: query EOF
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:278:3: ( query EOF )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:278:5: query EOF
 			{
 			pushFollow(FOLLOW_query_in_parse51);
 			query1=query();
@@ -382,7 +374,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "query"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:283:1: query returns [QueryTree value] : query_specification ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:283:1: query returns [QueryTree value] : query_specification ;
 	public final QueryTree query() throws RecognitionException {
 		QueryTree value = null;
 
@@ -393,8 +385,8 @@ public class SQL99Parser extends Parser {
 		int quantifier = 0;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:287:3: ( query_specification )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:287:5: query_specification
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:287:3: ( query_specification )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:287:5: query_specification
 			{
 			pushFollow(FOLLOW_query_specification_in_query79);
 			query_specification2=query_specification();
@@ -421,7 +413,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "query_specification"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:308:1: query_specification returns [QueryTree value] : SELECT ( set_quantifier )? select_list table_expression ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:308:1: query_specification returns [QueryTree value] : SELECT ( set_quantifier )? select_list table_expression ;
 	public final QueryTree query_specification() throws RecognitionException {
 		QueryTree value = null;
 
@@ -434,11 +426,11 @@ public class SQL99Parser extends Parser {
 		int quantifier = 0;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:312:3: ( SELECT ( set_quantifier )? select_list table_expression )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:312:5: SELECT ( set_quantifier )? select_list table_expression
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:312:3: ( SELECT ( set_quantifier )? select_list table_expression )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:312:5: SELECT ( set_quantifier )? select_list table_expression
 			{
 			match(input,SELECT,FOLLOW_SELECT_in_query_specification120); 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:312:12: ( set_quantifier )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:312:12: ( set_quantifier )?
 			int alt1=2;
 			int LA1_0 = input.LA(1);
 			if ( (LA1_0==ALL||LA1_0==DISTINCT) ) {
@@ -446,7 +438,7 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt1) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:312:12: set_quantifier
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:312:12: set_quantifier
 					{
 					pushFollow(FOLLOW_set_quantifier_in_query_specification122);
 					set_quantifier5=set_quantifier();
@@ -518,13 +510,13 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "set_quantifier"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:356:1: set_quantifier returns [int value] : ( ALL | DISTINCT );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:356:1: set_quantifier returns [int value] : ( ALL | DISTINCT );
 	public final int set_quantifier() throws RecognitionException {
 		int value = 0;
 
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:357:3: ( ALL | DISTINCT )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:357:3: ( ALL | DISTINCT )
 			int alt2=2;
 			int LA2_0 = input.LA(1);
 			if ( (LA2_0==ALL) ) {
@@ -542,14 +534,14 @@ public class SQL99Parser extends Parser {
 
 			switch (alt2) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:357:5: ALL
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:357:5: ALL
 					{
 					match(input,ALL,FOLLOW_ALL_in_set_quantifier148); 
 					 value = 1; 
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:358:5: DISTINCT
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:358:5: DISTINCT
 					{
 					match(input,DISTINCT,FOLLOW_DISTINCT_in_set_quantifier156); 
 					 value = 2; 
@@ -572,7 +564,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "select_list"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:361:1: select_list returns [ArrayList<DerivedColumn> value] : a= select_sublist ( COMMA b= select_sublist )* ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:361:1: select_list returns [ArrayList<DerivedColumn> value] : a= select_sublist ( COMMA b= select_sublist )* ;
 	public final ArrayList<DerivedColumn> select_list() throws RecognitionException {
 		ArrayList<DerivedColumn> value = null;
 
@@ -584,15 +576,15 @@ public class SQL99Parser extends Parser {
 		  value = new ArrayList<DerivedColumn>();
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:365:3: (a= select_sublist ( COMMA b= select_sublist )* )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:365:5: a= select_sublist ( COMMA b= select_sublist )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:365:3: (a= select_sublist ( COMMA b= select_sublist )* )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:365:5: a= select_sublist ( COMMA b= select_sublist )*
 			{
 			pushFollow(FOLLOW_select_sublist_in_select_list184);
 			a=select_sublist();
 			state._fsp--;
 
 			 value.add(a); 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:365:48: ( COMMA b= select_sublist )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:365:48: ( COMMA b= select_sublist )*
 			loop3:
 			while (true) {
 				int alt3=2;
@@ -603,7 +595,7 @@ public class SQL99Parser extends Parser {
 
 				switch (alt3) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:365:49: COMMA b= select_sublist
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:365:49: COMMA b= select_sublist
 					{
 					match(input,COMMA,FOLLOW_COMMA_in_select_list189); 
 					pushFollow(FOLLOW_select_sublist_in_select_list193);
@@ -636,7 +628,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "select_sublist"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:368:1: select_sublist returns [DerivedColumn value] : derived_column ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:368:1: select_sublist returns [DerivedColumn value] : derived_column ;
 	public final DerivedColumn select_sublist() throws RecognitionException {
 		DerivedColumn value = null;
 
@@ -644,8 +636,8 @@ public class SQL99Parser extends Parser {
 		DerivedColumn derived_column6 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:369:3: ( derived_column )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:369:5: derived_column
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:369:3: ( derived_column )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:369:5: derived_column
 			{
 			pushFollow(FOLLOW_derived_column_in_select_sublist216);
 			derived_column6=derived_column();
@@ -669,11 +661,11 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "qualified_asterisk"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:373:1: qualified_asterisk : table_identifier PERIOD ASTERISK ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:373:1: qualified_asterisk : table_identifier PERIOD ASTERISK ;
 	public final void qualified_asterisk() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:374:3: ( table_identifier PERIOD ASTERISK )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:374:5: table_identifier PERIOD ASTERISK
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:374:3: ( table_identifier PERIOD ASTERISK )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:374:5: table_identifier PERIOD ASTERISK
 			{
 			pushFollow(FOLLOW_table_identifier_in_qualified_asterisk234);
 			table_identifier();
@@ -697,7 +689,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "derived_column"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:377:1: derived_column returns [DerivedColumn value] : value_expression ( ( AS )? alias_name )? ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:377:1: derived_column returns [DerivedColumn value] : value_expression ( ( AS )? alias_name )? ;
 	public final DerivedColumn derived_column() throws RecognitionException {
 		DerivedColumn value = null;
 
@@ -709,14 +701,14 @@ public class SQL99Parser extends Parser {
 		  value = new DerivedColumn();
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:3: ( value_expression ( ( AS )? alias_name )? )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:5: value_expression ( ( AS )? alias_name )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:3: ( value_expression ( ( AS )? alias_name )? )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:5: value_expression ( ( AS )? alias_name )?
 			{
 			pushFollow(FOLLOW_value_expression_in_derived_column262);
 			value_expression7=value_expression();
 			state._fsp--;
 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:22: ( ( AS )? alias_name )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:22: ( ( AS )? alias_name )?
 			int alt5=2;
 			int LA5_0 = input.LA(1);
 			if ( (LA5_0==AS||LA5_0==STRING_WITH_QUOTE_DOUBLE||LA5_0==VARNAME) ) {
@@ -724,9 +716,9 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt5) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:23: ( AS )? alias_name
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:23: ( AS )? alias_name
 					{
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:23: ( AS )?
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:23: ( AS )?
 					int alt4=2;
 					int LA4_0 = input.LA(1);
 					if ( (LA4_0==AS) ) {
@@ -734,7 +726,7 @@ public class SQL99Parser extends Parser {
 					}
 					switch (alt4) {
 						case 1 :
-							// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:23: AS
+							// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:381:23: AS
 							{
 							match(input,AS,FOLLOW_AS_in_derived_column265); 
 							}
@@ -775,7 +767,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "value_expression"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:390:1: value_expression returns [AbstractValueExpression value] : reference_value_expression ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:390:1: value_expression returns [AbstractValueExpression value] : reference_value_expression ;
 	public final AbstractValueExpression value_expression() throws RecognitionException {
 		AbstractValueExpression value = null;
 
@@ -783,8 +775,8 @@ public class SQL99Parser extends Parser {
 		ReferenceValueExpression reference_value_expression9 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:391:3: ( reference_value_expression )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:391:5: reference_value_expression
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:391:3: ( reference_value_expression )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:391:5: reference_value_expression
 			{
 			pushFollow(FOLLOW_reference_value_expression_in_value_expression292);
 			reference_value_expression9=reference_value_expression();
@@ -808,7 +800,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "numeric_value_expression"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:397:1: numeric_value_expression returns [NumericValueExpression value] : LPAREN numeric_operation RPAREN ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:397:1: numeric_value_expression returns [NumericValueExpression value] : LPAREN numeric_operation RPAREN ;
 	public final NumericValueExpression numeric_value_expression() throws RecognitionException {
 		NumericValueExpression value = null;
 
@@ -817,8 +809,8 @@ public class SQL99Parser extends Parser {
 		  numericExp = new NumericValueExpression();
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:401:3: ( LPAREN numeric_operation RPAREN )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:401:5: LPAREN numeric_operation RPAREN
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:401:3: ( LPAREN numeric_operation RPAREN )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:401:5: LPAREN numeric_operation RPAREN
 			{
 			match(input,LPAREN,FOLLOW_LPAREN_in_numeric_value_expression319); 
 			pushFollow(FOLLOW_numeric_operation_in_numeric_value_expression321);
@@ -846,19 +838,19 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "numeric_operation"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:406:1: numeric_operation : term ( (t= PLUS |t= MINUS ) term )* ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:406:1: numeric_operation : term ( (t= PLUS |t= MINUS ) term )* ;
 	public final void numeric_operation() throws RecognitionException {
 		Token t=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:407:3: ( term ( (t= PLUS |t= MINUS ) term )* )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:407:5: term ( (t= PLUS |t= MINUS ) term )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:407:3: ( term ( (t= PLUS |t= MINUS ) term )* )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:407:5: term ( (t= PLUS |t= MINUS ) term )*
 			{
 			pushFollow(FOLLOW_term_in_numeric_operation338);
 			term();
 			state._fsp--;
 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:408:5: ( (t= PLUS |t= MINUS ) term )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:408:5: ( (t= PLUS |t= MINUS ) term )*
 			loop7:
 			while (true) {
 				int alt7=2;
@@ -869,9 +861,9 @@ public class SQL99Parser extends Parser {
 
 				switch (alt7) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:409:7: (t= PLUS |t= MINUS ) term
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:409:7: (t= PLUS |t= MINUS ) term
 					{
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:409:7: (t= PLUS |t= MINUS )
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:409:7: (t= PLUS |t= MINUS )
 					int alt6=2;
 					int LA6_0 = input.LA(1);
 					if ( (LA6_0==PLUS) ) {
@@ -889,13 +881,13 @@ public class SQL99Parser extends Parser {
 
 					switch (alt6) {
 						case 1 :
-							// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:409:8: t= PLUS
+							// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:409:8: t= PLUS
 							{
 							t=(Token)match(input,PLUS,FOLLOW_PLUS_in_numeric_operation356); 
 							}
 							break;
 						case 2 :
-							// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:409:15: t= MINUS
+							// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:409:15: t= MINUS
 							{
 							t=(Token)match(input,MINUS,FOLLOW_MINUS_in_numeric_operation360); 
 							}
@@ -932,22 +924,22 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "term"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:414:1: term : a= factor ( (t= ASTERISK |t= SOLIDUS ) b= factor )* ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:414:1: term : a= factor ( (t= ASTERISK |t= SOLIDUS ) b= factor )* ;
 	public final void term() throws RecognitionException {
 		Token t=null;
 		Object a =null;
 		Object b =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:415:3: (a= factor ( (t= ASTERISK |t= SOLIDUS ) b= factor )* )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:415:5: a= factor ( (t= ASTERISK |t= SOLIDUS ) b= factor )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:415:3: (a= factor ( (t= ASTERISK |t= SOLIDUS ) b= factor )* )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:415:5: a= factor ( (t= ASTERISK |t= SOLIDUS ) b= factor )*
 			{
 			pushFollow(FOLLOW_factor_in_term395);
 			a=factor();
 			state._fsp--;
 
 			 numericExp.putSpecification(a); 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:416:5: ( (t= ASTERISK |t= SOLIDUS ) b= factor )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:416:5: ( (t= ASTERISK |t= SOLIDUS ) b= factor )*
 			loop9:
 			while (true) {
 				int alt9=2;
@@ -958,9 +950,9 @@ public class SQL99Parser extends Parser {
 
 				switch (alt9) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:417:7: (t= ASTERISK |t= SOLIDUS ) b= factor
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:417:7: (t= ASTERISK |t= SOLIDUS ) b= factor
 					{
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:417:7: (t= ASTERISK |t= SOLIDUS )
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:417:7: (t= ASTERISK |t= SOLIDUS )
 					int alt8=2;
 					int LA8_0 = input.LA(1);
 					if ( (LA8_0==ASTERISK) ) {
@@ -978,13 +970,13 @@ public class SQL99Parser extends Parser {
 
 					switch (alt8) {
 						case 1 :
-							// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:417:8: t= ASTERISK
+							// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:417:8: t= ASTERISK
 							{
 							t=(Token)match(input,ASTERISK,FOLLOW_ASTERISK_in_term415); 
 							}
 							break;
 						case 2 :
-							// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:417:19: t= SOLIDUS
+							// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:417:19: t= SOLIDUS
 							{
 							t=(Token)match(input,SOLIDUS,FOLLOW_SOLIDUS_in_term419); 
 							}
@@ -1022,7 +1014,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "factor"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:422:1: factor returns [Object value] : ( column_reference | numeric_literal );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:422:1: factor returns [Object value] : ( column_reference | numeric_literal );
 	public final Object factor() throws RecognitionException {
 		Object value = null;
 
@@ -1031,7 +1023,7 @@ public class SQL99Parser extends Parser {
 		NumericLiteral numeric_literal11 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:423:3: ( column_reference | numeric_literal )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:423:3: ( column_reference | numeric_literal )
 			int alt10=2;
 			int LA10_0 = input.LA(1);
 			if ( (LA10_0==STRING_WITH_QUOTE_DOUBLE||LA10_0==VARNAME) ) {
@@ -1049,7 +1041,7 @@ public class SQL99Parser extends Parser {
 
 			switch (alt10) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:423:5: column_reference
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:423:5: column_reference
 					{
 					pushFollow(FOLLOW_column_reference_in_factor461);
 					column_reference10=column_reference();
@@ -1059,7 +1051,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:424:5: numeric_literal
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:424:5: numeric_literal
 					{
 					pushFollow(FOLLOW_numeric_literal_in_factor469);
 					numeric_literal11=numeric_literal();
@@ -1085,11 +1077,11 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "sign"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:427:1: sign : ( PLUS | MINUS );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:427:1: sign : ( PLUS | MINUS );
 	public final void sign() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:428:3: ( PLUS | MINUS )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:428:3: ( PLUS | MINUS )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
 			{
 			if ( input.LA(1)==MINUS||input.LA(1)==PLUS ) {
 				input.consume();
@@ -1115,7 +1107,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "string_value_expression"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:432:1: string_value_expression returns [StringValueExpression value] : LPAREN concatenation RPAREN ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:432:1: string_value_expression returns [StringValueExpression value] : LPAREN concatenation RPAREN ;
 	public final StringValueExpression string_value_expression() throws RecognitionException {
 		StringValueExpression value = null;
 
@@ -1124,8 +1116,8 @@ public class SQL99Parser extends Parser {
 		  stringExp = new StringValueExpression();
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:436:3: ( LPAREN concatenation RPAREN )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:436:5: LPAREN concatenation RPAREN
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:436:3: ( LPAREN concatenation RPAREN )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:436:5: LPAREN concatenation RPAREN
 			{
 			match(input,LPAREN,FOLLOW_LPAREN_in_string_value_expression512); 
 			pushFollow(FOLLOW_concatenation_in_string_value_expression514);
@@ -1153,21 +1145,21 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "concatenation"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:441:1: concatenation : a= character_factor ( CONCATENATION b= character_factor )+ ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:441:1: concatenation : a= character_factor ( CONCATENATION b= character_factor )+ ;
 	public final void concatenation() throws RecognitionException {
 		Object a =null;
 		Object b =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:442:3: (a= character_factor ( CONCATENATION b= character_factor )+ )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:442:5: a= character_factor ( CONCATENATION b= character_factor )+
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:442:3: (a= character_factor ( CONCATENATION b= character_factor )+ )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:442:5: a= character_factor ( CONCATENATION b= character_factor )+
 			{
 			pushFollow(FOLLOW_character_factor_in_concatenation535);
 			a=character_factor();
 			state._fsp--;
 
 			 stringExp.putSpecification(a); 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:442:66: ( CONCATENATION b= character_factor )+
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:442:66: ( CONCATENATION b= character_factor )+
 			int cnt11=0;
 			loop11:
 			while (true) {
@@ -1179,7 +1171,7 @@ public class SQL99Parser extends Parser {
 
 				switch (alt11) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:443:7: CONCATENATION b= character_factor
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:443:7: CONCATENATION b= character_factor
 					{
 					match(input,CONCATENATION,FOLLOW_CONCATENATION_in_concatenation547); 
 					 stringExp.putSpecification(StringValueExpression.CONCAT_OP); 
@@ -1215,7 +1207,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "character_factor"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:447:1: character_factor returns [Object value] : ( column_reference | general_literal );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:447:1: character_factor returns [Object value] : ( column_reference | general_literal );
 	public final Object character_factor() throws RecognitionException {
 		Object value = null;
 
@@ -1224,7 +1216,7 @@ public class SQL99Parser extends Parser {
 		Literal general_literal13 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:448:3: ( column_reference | general_literal )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:448:3: ( column_reference | general_literal )
 			int alt12=2;
 			int LA12_0 = input.LA(1);
 			if ( (LA12_0==STRING_WITH_QUOTE_DOUBLE||LA12_0==VARNAME) ) {
@@ -1242,7 +1234,7 @@ public class SQL99Parser extends Parser {
 
 			switch (alt12) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:448:5: column_reference
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:448:5: column_reference
 					{
 					pushFollow(FOLLOW_column_reference_in_character_factor581);
 					column_reference12=column_reference();
@@ -1252,7 +1244,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:449:5: general_literal
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:449:5: general_literal
 					{
 					pushFollow(FOLLOW_general_literal_in_character_factor589);
 					general_literal13=general_literal();
@@ -1278,7 +1270,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "reference_value_expression"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:452:1: reference_value_expression returns [ReferenceValueExpression value] : column_reference ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:452:1: reference_value_expression returns [ReferenceValueExpression value] : column_reference ;
 	public final ReferenceValueExpression reference_value_expression() throws RecognitionException {
 		ReferenceValueExpression value = null;
 
@@ -1289,8 +1281,8 @@ public class SQL99Parser extends Parser {
 		  referenceExp = new ReferenceValueExpression();
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:456:3: ( column_reference )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:456:5: column_reference
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:456:3: ( column_reference )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:456:5: column_reference
 			{
 			pushFollow(FOLLOW_column_reference_in_reference_value_expression613);
 			column_reference14=column_reference();
@@ -1317,7 +1309,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "column_reference"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:462:1: column_reference returns [ColumnReference value] : (t= table_identifier PERIOD )? column_name ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:462:1: column_reference returns [ColumnReference value] : (t= table_identifier PERIOD )? column_name ;
 	public final ColumnReference column_reference() throws RecognitionException {
 		ColumnReference value = null;
 
@@ -1326,10 +1318,10 @@ public class SQL99Parser extends Parser {
 		String column_name15 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:463:3: ( (t= table_identifier PERIOD )? column_name )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:463:5: (t= table_identifier PERIOD )? column_name
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:463:3: ( (t= table_identifier PERIOD )? column_name )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:463:5: (t= table_identifier PERIOD )? column_name
 			{
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:463:5: (t= table_identifier PERIOD )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:463:5: (t= table_identifier PERIOD )?
 			int alt13=2;
 			int LA13_0 = input.LA(1);
 			if ( (LA13_0==VARNAME) ) {
@@ -1346,7 +1338,7 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt13) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:463:6: t= table_identifier PERIOD
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:463:6: t= table_identifier PERIOD
 					{
 					pushFollow(FOLLOW_table_identifier_in_column_reference635);
 					t=table_identifier();
@@ -1386,7 +1378,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "collection_value_expression"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:472:1: collection_value_expression returns [CollectionValueExpression value] : set_function_specification ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:472:1: collection_value_expression returns [CollectionValueExpression value] : set_function_specification ;
 	public final CollectionValueExpression collection_value_expression() throws RecognitionException {
 		CollectionValueExpression value = null;
 
@@ -1395,8 +1387,8 @@ public class SQL99Parser extends Parser {
 		  collectionExp = new CollectionValueExpression();
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:476:3: ( set_function_specification )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:476:5: set_function_specification
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:476:3: ( set_function_specification )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:476:5: set_function_specification
 			{
 			pushFollow(FOLLOW_set_function_specification_in_collection_value_expression669);
 			set_function_specification();
@@ -1422,13 +1414,13 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "set_function_specification"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:481:1: set_function_specification : ( COUNT LPAREN ASTERISK RPAREN | general_set_function );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:481:1: set_function_specification : ( COUNT LPAREN ASTERISK RPAREN | general_set_function );
 	public final void set_function_specification() throws RecognitionException {
 		Token COUNT16=null;
 		Token ASTERISK17=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:482:3: ( COUNT LPAREN ASTERISK RPAREN | general_set_function )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:482:3: ( COUNT LPAREN ASTERISK RPAREN | general_set_function )
 			int alt14=2;
 			int LA14_0 = input.LA(1);
 			if ( (LA14_0==COUNT) ) {
@@ -1483,7 +1475,7 @@ public class SQL99Parser extends Parser {
 
 			switch (alt14) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:482:5: COUNT LPAREN ASTERISK RPAREN
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:482:5: COUNT LPAREN ASTERISK RPAREN
 					{
 					COUNT16=(Token)match(input,COUNT,FOLLOW_COUNT_in_set_function_specification684); 
 					match(input,LPAREN,FOLLOW_LPAREN_in_set_function_specification686); 
@@ -1496,7 +1488,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:486:5: general_set_function
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:486:5: general_set_function
 					{
 					pushFollow(FOLLOW_general_set_function_in_set_function_specification698);
 					general_set_function();
@@ -1520,14 +1512,14 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "general_set_function"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:490:1: general_set_function : set_function_op LPAREN column_reference RPAREN ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:490:1: general_set_function : set_function_op LPAREN column_reference RPAREN ;
 	public final void general_set_function() throws RecognitionException {
 		String set_function_op18 =null;
 		ColumnReference column_reference19 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:491:3: ( set_function_op LPAREN column_reference RPAREN )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:491:5: set_function_op LPAREN column_reference RPAREN
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:491:3: ( set_function_op LPAREN column_reference RPAREN )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:491:5: set_function_op LPAREN column_reference RPAREN
 			{
 			pushFollow(FOLLOW_set_function_op_in_general_set_function713);
 			set_function_op18=set_function_op();
@@ -1559,7 +1551,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "set_function_op"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:497:1: set_function_op returns [String value] : (t= AVG |t= MAX |t= MIN |t= SUM |t= EVERY |t= ANY |t= SOME |t= COUNT ) ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:497:1: set_function_op returns [String value] : (t= AVG |t= MAX |t= MIN |t= SUM |t= EVERY |t= ANY |t= SOME |t= COUNT ) ;
 	public final String set_function_op() throws RecognitionException {
 		String value = null;
 
@@ -1567,10 +1559,10 @@ public class SQL99Parser extends Parser {
 		Token t=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:3: ( (t= AVG |t= MAX |t= MIN |t= SUM |t= EVERY |t= ANY |t= SOME |t= COUNT ) )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:5: (t= AVG |t= MAX |t= MIN |t= SUM |t= EVERY |t= ANY |t= SOME |t= COUNT )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:3: ( (t= AVG |t= MAX |t= MIN |t= SUM |t= EVERY |t= ANY |t= SOME |t= COUNT ) )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:5: (t= AVG |t= MAX |t= MIN |t= SUM |t= EVERY |t= ANY |t= SOME |t= COUNT )
 			{
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:5: (t= AVG |t= MAX |t= MIN |t= SUM |t= EVERY |t= ANY |t= SOME |t= COUNT )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:5: (t= AVG |t= MAX |t= MIN |t= SUM |t= EVERY |t= ANY |t= SOME |t= COUNT )
 			int alt15=8;
 			switch ( input.LA(1) ) {
 			case AVG:
@@ -1620,49 +1612,49 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt15) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:6: t= AVG
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:6: t= AVG
 					{
 					t=(Token)match(input,AVG,FOLLOW_AVG_in_set_function_op743); 
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:14: t= MAX
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:14: t= MAX
 					{
 					t=(Token)match(input,MAX,FOLLOW_MAX_in_set_function_op749); 
 					}
 					break;
 				case 3 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:22: t= MIN
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:22: t= MIN
 					{
 					t=(Token)match(input,MIN,FOLLOW_MIN_in_set_function_op755); 
 					}
 					break;
 				case 4 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:30: t= SUM
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:30: t= SUM
 					{
 					t=(Token)match(input,SUM,FOLLOW_SUM_in_set_function_op761); 
 					}
 					break;
 				case 5 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:38: t= EVERY
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:38: t= EVERY
 					{
 					t=(Token)match(input,EVERY,FOLLOW_EVERY_in_set_function_op767); 
 					}
 					break;
 				case 6 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:48: t= ANY
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:48: t= ANY
 					{
 					t=(Token)match(input,ANY,FOLLOW_ANY_in_set_function_op773); 
 					}
 					break;
 				case 7 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:56: t= SOME
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:56: t= SOME
 					{
 					t=(Token)match(input,SOME,FOLLOW_SOME_in_set_function_op779); 
 					}
 					break;
 				case 8 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:65: t= COUNT
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:498:65: t= COUNT
 					{
 					t=(Token)match(input,COUNT,FOLLOW_COUNT_in_set_function_op785); 
 					}
@@ -1690,7 +1682,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "row_value_expression"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:503:1: row_value_expression returns [IValueExpression value] : ( literal | value_expression );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:503:1: row_value_expression returns [IValueExpression value] : ( literal | value_expression );
 	public final IValueExpression row_value_expression() throws RecognitionException {
 		IValueExpression value = null;
 
@@ -1699,7 +1691,7 @@ public class SQL99Parser extends Parser {
 		AbstractValueExpression value_expression21 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:504:3: ( literal | value_expression )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:504:3: ( literal | value_expression )
 			int alt16=2;
 			int LA16_0 = input.LA(1);
 			if ( ((LA16_0 >= DECIMAL && LA16_0 <= DECIMAL_POSITIVE)||LA16_0==FALSE||(LA16_0 >= INTEGER && LA16_0 <= INTEGER_POSITIVE)||LA16_0==STRING_WITH_QUOTE||LA16_0==TRUE) ) {
@@ -1717,7 +1709,7 @@ public class SQL99Parser extends Parser {
 
 			switch (alt16) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:504:5: literal
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:504:5: literal
 					{
 					pushFollow(FOLLOW_literal_in_row_value_expression807);
 					literal20=literal();
@@ -1727,7 +1719,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:505:5: value_expression
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:505:5: value_expression
 					{
 					pushFollow(FOLLOW_value_expression_in_row_value_expression815);
 					value_expression21=value_expression();
@@ -1753,7 +1745,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "literal"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:508:1: literal returns [Literal value] : ( numeric_literal | general_literal );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:508:1: literal returns [Literal value] : ( numeric_literal | general_literal );
 	public final Literal literal() throws RecognitionException {
 		Literal value = null;
 
@@ -1762,7 +1754,7 @@ public class SQL99Parser extends Parser {
 		Literal general_literal23 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:509:3: ( numeric_literal | general_literal )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:509:3: ( numeric_literal | general_literal )
 			int alt17=2;
 			int LA17_0 = input.LA(1);
 			if ( ((LA17_0 >= DECIMAL && LA17_0 <= DECIMAL_POSITIVE)||(LA17_0 >= INTEGER && LA17_0 <= INTEGER_POSITIVE)) ) {
@@ -1780,7 +1772,7 @@ public class SQL99Parser extends Parser {
 
 			switch (alt17) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:509:5: numeric_literal
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:509:5: numeric_literal
 					{
 					pushFollow(FOLLOW_numeric_literal_in_literal834);
 					numeric_literal22=numeric_literal();
@@ -1790,7 +1782,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:510:5: general_literal
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:510:5: general_literal
 					{
 					pushFollow(FOLLOW_general_literal_in_literal842);
 					general_literal23=general_literal();
@@ -1816,7 +1808,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "table_expression"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:513:1: table_expression returns [TableExpression value] : from_clause ( where_clause )? ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:513:1: table_expression returns [TableExpression value] : from_clause ( where_clause )? ;
 	public final TableExpression table_expression() throws RecognitionException {
 		TableExpression value = null;
 
@@ -1825,8 +1817,8 @@ public class SQL99Parser extends Parser {
 		BooleanValueExpression where_clause25 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:514:3: ( from_clause ( where_clause )? )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:514:5: from_clause ( where_clause )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:514:3: ( from_clause ( where_clause )? )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:514:5: from_clause ( where_clause )?
 			{
 			pushFollow(FOLLOW_from_clause_in_table_expression861);
 			from_clause24=from_clause();
@@ -1835,7 +1827,7 @@ public class SQL99Parser extends Parser {
 
 			      value = new TableExpression(from_clause24);
 			    
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:517:5: ( where_clause )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:517:5: ( where_clause )?
 			int alt18=2;
 			int LA18_0 = input.LA(1);
 			if ( (LA18_0==WHERE) ) {
@@ -1843,7 +1835,7 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt18) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:517:6: where_clause
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:517:6: where_clause
 					{
 					pushFollow(FOLLOW_where_clause_in_table_expression870);
 					where_clause25=where_clause();
@@ -1872,7 +1864,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "from_clause"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:521:1: from_clause returns [ArrayList<TablePrimary> value] : FROM table_reference_list ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:521:1: from_clause returns [ArrayList<TablePrimary> value] : FROM table_reference_list ;
 	public final ArrayList<TablePrimary> from_clause() throws RecognitionException {
 		ArrayList<TablePrimary> value = null;
 
@@ -1880,8 +1872,8 @@ public class SQL99Parser extends Parser {
 		ArrayList<TablePrimary> table_reference_list26 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:522:3: ( FROM table_reference_list )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:522:5: FROM table_reference_list
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:522:3: ( FROM table_reference_list )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:522:5: FROM table_reference_list
 			{
 			match(input,FROM,FOLLOW_FROM_in_from_clause895); 
 			pushFollow(FOLLOW_table_reference_list_in_from_clause897);
@@ -1908,7 +1900,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "table_reference_list"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:527:1: table_reference_list returns [ArrayList<TablePrimary> value] : a= table_reference ( COMMA b= table_reference )* ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:527:1: table_reference_list returns [ArrayList<TablePrimary> value] : a= table_reference ( COMMA b= table_reference )* ;
 	public final ArrayList<TablePrimary> table_reference_list() throws RecognitionException {
 		ArrayList<TablePrimary> value = null;
 
@@ -1920,15 +1912,15 @@ public class SQL99Parser extends Parser {
 		  value = new ArrayList<TablePrimary>();
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:531:3: (a= table_reference ( COMMA b= table_reference )* )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:531:5: a= table_reference ( COMMA b= table_reference )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:531:3: (a= table_reference ( COMMA b= table_reference )* )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:531:5: a= table_reference ( COMMA b= table_reference )*
 			{
 			pushFollow(FOLLOW_table_reference_in_table_reference_list927);
 			a=table_reference();
 			state._fsp--;
 
 			 value.add(a); 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:532:5: ( COMMA b= table_reference )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:532:5: ( COMMA b= table_reference )*
 			loop19:
 			while (true) {
 				int alt19=2;
@@ -1939,7 +1931,7 @@ public class SQL99Parser extends Parser {
 
 				switch (alt19) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:533:7: COMMA b= table_reference
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:533:7: COMMA b= table_reference
 					{
 					match(input,COMMA,FOLLOW_COMMA_in_table_reference_list944); 
 					pushFollow(FOLLOW_table_reference_in_table_reference_list948);
@@ -1977,7 +1969,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "table_reference"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:541:1: table_reference returns [TablePrimary value] : table_primary ( joined_table )? ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:541:1: table_reference returns [TablePrimary value] : table_primary ( joined_table )? ;
 	public final TablePrimary table_reference() throws RecognitionException {
 		TablePrimary value = null;
 
@@ -1986,15 +1978,15 @@ public class SQL99Parser extends Parser {
 		TablePrimary joined_table28 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:542:3: ( table_primary ( joined_table )? )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:542:5: table_primary ( joined_table )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:542:3: ( table_primary ( joined_table )? )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:542:5: table_primary ( joined_table )?
 			{
 			pushFollow(FOLLOW_table_primary_in_table_reference975);
 			table_primary27=table_primary();
 			state._fsp--;
 
 			 value = table_primary27; 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:543:5: ( joined_table )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:543:5: ( joined_table )?
 			int alt20=2;
 			int LA20_0 = input.LA(1);
 			if ( (LA20_0==FULL||LA20_0==INNER||(LA20_0 >= JOIN && LA20_0 <= LEFT)||LA20_0==RIGHT) ) {
@@ -2002,7 +1994,7 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt20) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:543:6: joined_table
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:543:6: joined_table
 					{
 					pushFollow(FOLLOW_joined_table_in_table_reference984);
 					joined_table28=joined_table();
@@ -2031,7 +2023,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "where_clause"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:546:1: where_clause returns [BooleanValueExpression value] : WHERE search_condition ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:546:1: where_clause returns [BooleanValueExpression value] : WHERE search_condition ;
 	public final BooleanValueExpression where_clause() throws RecognitionException {
 		BooleanValueExpression value = null;
 
@@ -2039,8 +2031,8 @@ public class SQL99Parser extends Parser {
 		BooleanValueExpression search_condition29 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:547:3: ( WHERE search_condition )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:547:5: WHERE search_condition
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:547:3: ( WHERE search_condition )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:547:5: WHERE search_condition
 			{
 			match(input,WHERE,FOLLOW_WHERE_in_where_clause1006); 
 			pushFollow(FOLLOW_search_condition_in_where_clause1008);
@@ -2067,7 +2059,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "search_condition"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:552:1: search_condition returns [BooleanValueExpression value] : boolean_value_expression ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:552:1: search_condition returns [BooleanValueExpression value] : boolean_value_expression ;
 	public final BooleanValueExpression search_condition() throws RecognitionException {
 		BooleanValueExpression value = null;
 
@@ -2075,8 +2067,8 @@ public class SQL99Parser extends Parser {
 		BooleanValueExpression boolean_value_expression30 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:553:3: ( boolean_value_expression )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:553:5: boolean_value_expression
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:553:3: ( boolean_value_expression )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:553:5: boolean_value_expression
 			{
 			pushFollow(FOLLOW_boolean_value_expression_in_search_condition1027);
 			boolean_value_expression30=boolean_value_expression();
@@ -2102,7 +2094,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "boolean_value_expression"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:558:1: boolean_value_expression returns [BooleanValueExpression value] : boolean_term ( OR boolean_term )* ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:558:1: boolean_value_expression returns [BooleanValueExpression value] : boolean_term ( OR boolean_term )* ;
 	public final BooleanValueExpression boolean_value_expression() throws RecognitionException {
 		BooleanValueExpression value = null;
 
@@ -2113,14 +2105,14 @@ public class SQL99Parser extends Parser {
 		  }
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:564:3: ( boolean_term ( OR boolean_term )* )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:568:5: boolean_term ( OR boolean_term )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:564:3: ( boolean_term ( OR boolean_term )* )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:568:5: boolean_term ( OR boolean_term )*
 			{
 			pushFollow(FOLLOW_boolean_term_in_boolean_value_expression1063);
 			boolean_term();
 			state._fsp--;
 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:568:18: ( OR boolean_term )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:568:18: ( OR boolean_term )*
 			loop21:
 			while (true) {
 				int alt21=2;
@@ -2131,7 +2123,7 @@ public class SQL99Parser extends Parser {
 
 				switch (alt21) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:568:19: OR boolean_term
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:568:19: OR boolean_term
 					{
 					match(input,OR,FOLLOW_OR_in_boolean_value_expression1066); 
 					booleanExp.putSpecification(new OrOperator()); 
@@ -2165,17 +2157,17 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "boolean_term"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:572:1: boolean_term : boolean_factor ( AND boolean_factor )* ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:572:1: boolean_term : boolean_factor ( AND boolean_factor )* ;
 	public final void boolean_term() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:573:3: ( boolean_factor ( AND boolean_factor )* )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:573:5: boolean_factor ( AND boolean_factor )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:573:3: ( boolean_factor ( AND boolean_factor )* )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:573:5: boolean_factor ( AND boolean_factor )*
 			{
 			pushFollow(FOLLOW_boolean_factor_in_boolean_term1093);
 			boolean_factor();
 			state._fsp--;
 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:573:20: ( AND boolean_factor )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:573:20: ( AND boolean_factor )*
 			loop22:
 			while (true) {
 				int alt22=2;
@@ -2186,7 +2178,7 @@ public class SQL99Parser extends Parser {
 
 				switch (alt22) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:573:21: AND boolean_factor
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:573:21: AND boolean_factor
 					{
 					match(input,AND,FOLLOW_AND_in_boolean_term1096); 
 					 booleanExp.putSpecification(new AndOperator()); 
@@ -2218,12 +2210,12 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "boolean_factor"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:576:1: boolean_factor : ( predicate | parenthesized_boolean_value_expression );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:576:1: boolean_factor : ( predicate | parenthesized_boolean_value_expression );
 	public final void boolean_factor() throws RecognitionException {
 		IPredicate predicate31 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:577:3: ( predicate | parenthesized_boolean_value_expression )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:577:3: ( predicate | parenthesized_boolean_value_expression )
 			int alt23=2;
 			int LA23_0 = input.LA(1);
 			if ( ((LA23_0 >= DECIMAL && LA23_0 <= DECIMAL_POSITIVE)||LA23_0==FALSE||(LA23_0 >= INTEGER && LA23_0 <= INTEGER_POSITIVE)||(LA23_0 >= STRING_WITH_QUOTE && LA23_0 <= STRING_WITH_QUOTE_DOUBLE)||LA23_0==TRUE||LA23_0==VARNAME) ) {
@@ -2241,7 +2233,7 @@ public class SQL99Parser extends Parser {
 
 			switch (alt23) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:577:5: predicate
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:577:5: predicate
 					{
 					pushFollow(FOLLOW_predicate_in_boolean_factor1115);
 					predicate31=predicate();
@@ -2251,7 +2243,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:578:5: parenthesized_boolean_value_expression
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:578:5: parenthesized_boolean_value_expression
 					{
 					pushFollow(FOLLOW_parenthesized_boolean_value_expression_in_boolean_factor1123);
 					parenthesized_boolean_value_expression();
@@ -2275,7 +2267,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "predicate"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:581:1: predicate returns [IPredicate value] : ( comparison_predicate | null_predicate );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:581:1: predicate returns [IPredicate value] : ( comparison_predicate | null_predicate );
 	public final IPredicate predicate() throws RecognitionException {
 		IPredicate value = null;
 
@@ -2284,7 +2276,7 @@ public class SQL99Parser extends Parser {
 		NullPredicate null_predicate33 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:582:3: ( comparison_predicate | null_predicate )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:582:3: ( comparison_predicate | null_predicate )
 			int alt24=2;
 			switch ( input.LA(1) ) {
 			case DECIMAL:
@@ -2499,7 +2491,7 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt24) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:582:5: comparison_predicate
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:582:5: comparison_predicate
 					{
 					pushFollow(FOLLOW_comparison_predicate_in_predicate1141);
 					comparison_predicate32=comparison_predicate();
@@ -2509,7 +2501,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:583:5: null_predicate
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:583:5: null_predicate
 					{
 					pushFollow(FOLLOW_null_predicate_in_predicate1149);
 					null_predicate33=null_predicate();
@@ -2535,11 +2527,11 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "parenthesized_boolean_value_expression"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:587:1: parenthesized_boolean_value_expression : LPAREN boolean_value_expression RPAREN ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:587:1: parenthesized_boolean_value_expression : LPAREN boolean_value_expression RPAREN ;
 	public final void parenthesized_boolean_value_expression() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:588:3: ( LPAREN boolean_value_expression RPAREN )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:588:5: LPAREN boolean_value_expression RPAREN
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:588:3: ( LPAREN boolean_value_expression RPAREN )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:588:5: LPAREN boolean_value_expression RPAREN
 			{
 			match(input,LPAREN,FOLLOW_LPAREN_in_parenthesized_boolean_value_expression1165); 
 			 booleanExp.putSpecification(new LeftParenthesis()); 
@@ -2565,7 +2557,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "comparison_predicate"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:591:1: comparison_predicate returns [ComparisonPredicate value] : a= row_value_expression comp_op b= row_value_expression ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:591:1: comparison_predicate returns [ComparisonPredicate value] : a= row_value_expression comp_op b= row_value_expression ;
 	public final ComparisonPredicate comparison_predicate() throws RecognitionException {
 		ComparisonPredicate value = null;
 
@@ -2575,8 +2567,8 @@ public class SQL99Parser extends Parser {
 		ComparisonPredicate.Operator comp_op34 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:592:3: (a= row_value_expression comp_op b= row_value_expression )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:592:5: a= row_value_expression comp_op b= row_value_expression
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:592:3: (a= row_value_expression comp_op b= row_value_expression )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:592:5: a= row_value_expression comp_op b= row_value_expression
 			{
 			pushFollow(FOLLOW_row_value_expression_in_comparison_predicate1194);
 			a=row_value_expression();
@@ -2610,13 +2602,13 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "comp_op"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:597:1: comp_op returns [ComparisonPredicate.Operator value] : ( EQUALS | LESS GREATER | LESS | GREATER | LESS EQUALS | GREATER EQUALS );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:597:1: comp_op returns [ComparisonPredicate.Operator value] : ( EQUALS | LESS GREATER | LESS | GREATER | LESS EQUALS | GREATER EQUALS );
 	public final ComparisonPredicate.Operator comp_op() throws RecognitionException {
 		ComparisonPredicate.Operator value = null;
 
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:598:3: ( EQUALS | LESS GREATER | LESS | GREATER | LESS EQUALS | GREATER EQUALS )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:598:3: ( EQUALS | LESS GREATER | LESS | GREATER | LESS EQUALS | GREATER EQUALS )
 			int alt25=6;
 			switch ( input.LA(1) ) {
 			case EQUALS:
@@ -2696,14 +2688,14 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt25) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:598:5: EQUALS
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:598:5: EQUALS
 					{
 					match(input,EQUALS,FOLLOW_EQUALS_in_comp_op1219); 
 					 value = ComparisonPredicate.Operator.EQ; 
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:599:5: LESS GREATER
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:599:5: LESS GREATER
 					{
 					match(input,LESS,FOLLOW_LESS_in_comp_op1227); 
 					match(input,GREATER,FOLLOW_GREATER_in_comp_op1229); 
@@ -2711,21 +2703,21 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:600:5: LESS
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:600:5: LESS
 					{
 					match(input,LESS,FOLLOW_LESS_in_comp_op1237); 
 					 value = ComparisonPredicate.Operator.LT; 
 					}
 					break;
 				case 4 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:601:5: GREATER
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:601:5: GREATER
 					{
 					match(input,GREATER,FOLLOW_GREATER_in_comp_op1245); 
 					 value = ComparisonPredicate.Operator.GT; 
 					}
 					break;
 				case 5 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:602:5: LESS EQUALS
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:602:5: LESS EQUALS
 					{
 					match(input,LESS,FOLLOW_LESS_in_comp_op1253); 
 					match(input,EQUALS,FOLLOW_EQUALS_in_comp_op1255); 
@@ -2733,7 +2725,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 6 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:603:5: GREATER EQUALS
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:603:5: GREATER EQUALS
 					{
 					match(input,GREATER,FOLLOW_GREATER_in_comp_op1263); 
 					match(input,EQUALS,FOLLOW_EQUALS_in_comp_op1265); 
@@ -2757,7 +2749,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "null_predicate"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:606:1: null_predicate returns [NullPredicate value] : column_reference IS ( NOT )? NULL ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:606:1: null_predicate returns [NullPredicate value] : column_reference IS ( NOT )? NULL ;
 	public final NullPredicate null_predicate() throws RecognitionException {
 		NullPredicate value = null;
 
@@ -2768,15 +2760,15 @@ public class SQL99Parser extends Parser {
 		  boolean useIsNull = true;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:610:3: ( column_reference IS ( NOT )? NULL )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:610:5: column_reference IS ( NOT )? NULL
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:610:3: ( column_reference IS ( NOT )? NULL )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:610:5: column_reference IS ( NOT )? NULL
 			{
 			pushFollow(FOLLOW_column_reference_in_null_predicate1289);
 			column_reference35=column_reference();
 			state._fsp--;
 
 			match(input,IS,FOLLOW_IS_in_null_predicate1291); 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:610:25: ( NOT )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:610:25: ( NOT )?
 			int alt26=2;
 			int LA26_0 = input.LA(1);
 			if ( (LA26_0==NOT) ) {
@@ -2784,7 +2776,7 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt26) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:610:26: NOT
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:610:26: NOT
 					{
 					match(input,NOT,FOLLOW_NOT_in_null_predicate1294); 
 					 useIsNull = false; 
@@ -2814,17 +2806,17 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "in_predicate"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:615:1: in_predicate : column_reference ( NOT )? IN in_predicate_value ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:615:1: in_predicate : column_reference ( NOT )? IN in_predicate_value ;
 	public final void in_predicate() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:616:3: ( column_reference ( NOT )? IN in_predicate_value )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:616:5: column_reference ( NOT )? IN in_predicate_value
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:616:3: ( column_reference ( NOT )? IN in_predicate_value )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:616:5: column_reference ( NOT )? IN in_predicate_value
 			{
 			pushFollow(FOLLOW_column_reference_in_in_predicate1315);
 			column_reference();
 			state._fsp--;
 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:616:22: ( NOT )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:616:22: ( NOT )?
 			int alt27=2;
 			int LA27_0 = input.LA(1);
 			if ( (LA27_0==NOT) ) {
@@ -2832,7 +2824,7 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt27) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:616:23: NOT
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:616:23: NOT
 					{
 					match(input,NOT,FOLLOW_NOT_in_in_predicate1318); 
 					}
@@ -2861,10 +2853,10 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "in_predicate_value"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:619:1: in_predicate_value : ( table_subquery | LPAREN in_value_list RPAREN );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:619:1: in_predicate_value : ( table_subquery | LPAREN in_value_list RPAREN );
 	public final void in_predicate_value() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:620:3: ( table_subquery | LPAREN in_value_list RPAREN )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:620:3: ( table_subquery | LPAREN in_value_list RPAREN )
 			int alt28=2;
 			int LA28_0 = input.LA(1);
 			if ( (LA28_0==LPAREN) ) {
@@ -2898,7 +2890,7 @@ public class SQL99Parser extends Parser {
 
 			switch (alt28) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:620:5: table_subquery
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:620:5: table_subquery
 					{
 					pushFollow(FOLLOW_table_subquery_in_in_predicate_value1339);
 					table_subquery();
@@ -2907,7 +2899,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:621:5: LPAREN in_value_list RPAREN
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:621:5: LPAREN in_value_list RPAREN
 					{
 					match(input,LPAREN,FOLLOW_LPAREN_in_in_predicate_value1345); 
 					pushFollow(FOLLOW_in_value_list_in_in_predicate_value1347);
@@ -2933,11 +2925,11 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "table_subquery"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:624:1: table_subquery : subquery ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:624:1: table_subquery : subquery ;
 	public final void table_subquery() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:625:3: ( subquery )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:625:5: subquery
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:625:3: ( subquery )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:625:5: subquery
 			{
 			pushFollow(FOLLOW_subquery_in_table_subquery1362);
 			subquery();
@@ -2959,11 +2951,11 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "subquery"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:628:1: subquery : LPAREN query RPAREN ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:628:1: subquery : LPAREN query RPAREN ;
 	public final void subquery() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:629:3: ( LPAREN query RPAREN )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:629:5: LPAREN query RPAREN
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:629:3: ( LPAREN query RPAREN )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:629:5: LPAREN query RPAREN
 			{
 			match(input,LPAREN,FOLLOW_LPAREN_in_subquery1375); 
 			pushFollow(FOLLOW_query_in_subquery1377);
@@ -2987,17 +2979,17 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "in_value_list"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:632:1: in_value_list : row_value_expression ( COMMA row_value_expression )* ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:632:1: in_value_list : row_value_expression ( COMMA row_value_expression )* ;
 	public final void in_value_list() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:633:3: ( row_value_expression ( COMMA row_value_expression )* )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:633:5: row_value_expression ( COMMA row_value_expression )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:633:3: ( row_value_expression ( COMMA row_value_expression )* )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:633:5: row_value_expression ( COMMA row_value_expression )*
 			{
 			pushFollow(FOLLOW_row_value_expression_in_in_value_list1394);
 			row_value_expression();
 			state._fsp--;
 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:633:26: ( COMMA row_value_expression )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:633:26: ( COMMA row_value_expression )*
 			loop29:
 			while (true) {
 				int alt29=2;
@@ -3008,7 +3000,7 @@ public class SQL99Parser extends Parser {
 
 				switch (alt29) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:633:27: COMMA row_value_expression
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:633:27: COMMA row_value_expression
 					{
 					match(input,COMMA,FOLLOW_COMMA_in_in_value_list1397); 
 					pushFollow(FOLLOW_row_value_expression_in_in_value_list1399);
@@ -3039,7 +3031,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "group_by_clause"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:636:1: group_by_clause returns [ArrayList<GroupingElement> value] : GROUP BY grouping_element_list ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:636:1: group_by_clause returns [ArrayList<GroupingElement> value] : GROUP BY grouping_element_list ;
 	public final ArrayList<GroupingElement> group_by_clause() throws RecognitionException {
 		ArrayList<GroupingElement> value = null;
 
@@ -3047,8 +3039,8 @@ public class SQL99Parser extends Parser {
 		ArrayList<GroupingElement> grouping_element_list36 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:637:3: ( GROUP BY grouping_element_list )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:637:5: GROUP BY grouping_element_list
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:637:3: ( GROUP BY grouping_element_list )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:637:5: GROUP BY grouping_element_list
 			{
 			match(input,GROUP,FOLLOW_GROUP_in_group_by_clause1418); 
 			match(input,BY,FOLLOW_BY_in_group_by_clause1420); 
@@ -3076,7 +3068,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "grouping_element_list"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:642:1: grouping_element_list returns [ArrayList<GroupingElement> value] : a= grouping_element ( COMMA b= grouping_element )* ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:642:1: grouping_element_list returns [ArrayList<GroupingElement> value] : a= grouping_element ( COMMA b= grouping_element )* ;
 	public final ArrayList<GroupingElement> grouping_element_list() throws RecognitionException {
 		ArrayList<GroupingElement> value = null;
 
@@ -3088,15 +3080,15 @@ public class SQL99Parser extends Parser {
 		  value = new ArrayList<GroupingElement>();
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:646:3: (a= grouping_element ( COMMA b= grouping_element )* )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:646:5: a= grouping_element ( COMMA b= grouping_element )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:646:3: (a= grouping_element ( COMMA b= grouping_element )* )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:646:5: a= grouping_element ( COMMA b= grouping_element )*
 			{
 			pushFollow(FOLLOW_grouping_element_in_grouping_element_list1448);
 			a=grouping_element();
 			state._fsp--;
 
 			 value.add(a); 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:647:5: ( COMMA b= grouping_element )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:647:5: ( COMMA b= grouping_element )*
 			loop30:
 			while (true) {
 				int alt30=2;
@@ -3107,7 +3099,7 @@ public class SQL99Parser extends Parser {
 
 				switch (alt30) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:647:6: COMMA b= grouping_element
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:647:6: COMMA b= grouping_element
 					{
 					match(input,COMMA,FOLLOW_COMMA_in_grouping_element_list1458); 
 					pushFollow(FOLLOW_grouping_element_in_grouping_element_list1462);
@@ -3140,7 +3132,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "grouping_element"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:650:1: grouping_element returns [GroupingElement value] : ( grouping_column_reference | LPAREN grouping_column_reference_list RPAREN );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:650:1: grouping_element returns [GroupingElement value] : ( grouping_column_reference | LPAREN grouping_column_reference_list RPAREN );
 	public final GroupingElement grouping_element() throws RecognitionException {
 		GroupingElement value = null;
 
@@ -3152,7 +3144,7 @@ public class SQL99Parser extends Parser {
 		  value = new GroupingElement();
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:654:3: ( grouping_column_reference | LPAREN grouping_column_reference_list RPAREN )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:654:3: ( grouping_column_reference | LPAREN grouping_column_reference_list RPAREN )
 			int alt31=2;
 			int LA31_0 = input.LA(1);
 			if ( (LA31_0==STRING_WITH_QUOTE_DOUBLE||LA31_0==VARNAME) ) {
@@ -3170,7 +3162,7 @@ public class SQL99Parser extends Parser {
 
 			switch (alt31) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:654:5: grouping_column_reference
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:654:5: grouping_column_reference
 					{
 					pushFollow(FOLLOW_grouping_column_reference_in_grouping_element1490);
 					grouping_column_reference37=grouping_column_reference();
@@ -3180,7 +3172,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:655:5: LPAREN grouping_column_reference_list RPAREN
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:655:5: LPAREN grouping_column_reference_list RPAREN
 					{
 					match(input,LPAREN,FOLLOW_LPAREN_in_grouping_element1498); 
 					pushFollow(FOLLOW_grouping_column_reference_list_in_grouping_element1500);
@@ -3208,7 +3200,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "grouping_column_reference"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:658:1: grouping_column_reference returns [ColumnReference value] : column_reference ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:658:1: grouping_column_reference returns [ColumnReference value] : column_reference ;
 	public final ColumnReference grouping_column_reference() throws RecognitionException {
 		ColumnReference value = null;
 
@@ -3216,8 +3208,8 @@ public class SQL99Parser extends Parser {
 		ColumnReference column_reference39 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:659:3: ( column_reference )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:659:5: column_reference
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:659:3: ( column_reference )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:659:5: column_reference
 			{
 			pushFollow(FOLLOW_column_reference_in_grouping_column_reference1523);
 			column_reference39=column_reference();
@@ -3241,7 +3233,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "grouping_column_reference_list"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:662:1: grouping_column_reference_list returns [ArrayList<ColumnReference> value] : a= column_reference ( COMMA b= column_reference )* ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:662:1: grouping_column_reference_list returns [ArrayList<ColumnReference> value] : a= column_reference ( COMMA b= column_reference )* ;
 	public final ArrayList<ColumnReference> grouping_column_reference_list() throws RecognitionException {
 		ArrayList<ColumnReference> value = null;
 
@@ -3253,15 +3245,15 @@ public class SQL99Parser extends Parser {
 		  value = new ArrayList<ColumnReference>();
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:666:3: (a= column_reference ( COMMA b= column_reference )* )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:666:5: a= column_reference ( COMMA b= column_reference )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:666:3: (a= column_reference ( COMMA b= column_reference )* )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:666:5: a= column_reference ( COMMA b= column_reference )*
 			{
 			pushFollow(FOLLOW_column_reference_in_grouping_column_reference_list1551);
 			a=column_reference();
 			state._fsp--;
 
 			 value.add(a); 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:667:5: ( COMMA b= column_reference )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:667:5: ( COMMA b= column_reference )*
 			loop32:
 			while (true) {
 				int alt32=2;
@@ -3272,7 +3264,7 @@ public class SQL99Parser extends Parser {
 
 				switch (alt32) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:667:6: COMMA b= column_reference
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:667:6: COMMA b= column_reference
 					{
 					match(input,COMMA,FOLLOW_COMMA_in_grouping_column_reference_list1560); 
 					pushFollow(FOLLOW_column_reference_in_grouping_column_reference_list1564);
@@ -3305,7 +3297,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "joined_table"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:670:1: joined_table returns [TablePrimary value] : ( ( join_type )? JOIN table_reference join_specification ) ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:670:1: joined_table returns [TablePrimary value] : ( ( join_type )? JOIN table_reference join_specification ) ;
 	public final TablePrimary joined_table() throws RecognitionException {
 		TablePrimary value = null;
 
@@ -3318,13 +3310,13 @@ public class SQL99Parser extends Parser {
 		  int joinType = JoinOperator.JOIN; // by default
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:3: ( ( ( join_type )? JOIN table_reference join_specification ) )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:5: ( ( join_type )? JOIN table_reference join_specification )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:3: ( ( ( join_type )? JOIN table_reference join_specification ) )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:5: ( ( join_type )? JOIN table_reference join_specification )
 			{
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:5: ( ( join_type )? JOIN table_reference join_specification )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:6: ( join_type )? JOIN table_reference join_specification
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:5: ( ( join_type )? JOIN table_reference join_specification )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:6: ( join_type )? JOIN table_reference join_specification
 			{
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:6: ( join_type )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:6: ( join_type )?
 			int alt33=2;
 			int LA33_0 = input.LA(1);
 			if ( (LA33_0==FULL||LA33_0==INNER||LA33_0==LEFT||LA33_0==RIGHT) ) {
@@ -3332,7 +3324,7 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt33) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:7: join_type
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:674:7: join_type
 					{
 					pushFollow(FOLLOW_join_type_in_joined_table1594);
 					join_type40=join_type();
@@ -3380,7 +3372,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "join_type"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:684:1: join_type returns [int value] : ( INNER | outer_join_type ( OUTER )? );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:684:1: join_type returns [int value] : ( INNER | outer_join_type ( OUTER )? );
 	public final int join_type() throws RecognitionException {
 		int value = 0;
 
@@ -3391,7 +3383,7 @@ public class SQL99Parser extends Parser {
 		  boolean bHasOuter = false;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:688:3: ( INNER | outer_join_type ( OUTER )? )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:688:3: ( INNER | outer_join_type ( OUTER )? )
 			int alt35=2;
 			int LA35_0 = input.LA(1);
 			if ( (LA35_0==INNER) ) {
@@ -3409,20 +3401,20 @@ public class SQL99Parser extends Parser {
 
 			switch (alt35) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:688:5: INNER
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:688:5: INNER
 					{
 					match(input,INNER,FOLLOW_INNER_in_join_type1629); 
 					 value = JoinOperator.INNER_JOIN; 
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:689:5: outer_join_type ( OUTER )?
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:689:5: outer_join_type ( OUTER )?
 					{
 					pushFollow(FOLLOW_outer_join_type_in_join_type1637);
 					outer_join_type43=outer_join_type();
 					state._fsp--;
 
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:689:21: ( OUTER )?
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:689:21: ( OUTER )?
 					int alt34=2;
 					int LA34_0 = input.LA(1);
 					if ( (LA34_0==OUTER) ) {
@@ -3430,7 +3422,7 @@ public class SQL99Parser extends Parser {
 					}
 					switch (alt34) {
 						case 1 :
-							// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:689:22: OUTER
+							// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:689:22: OUTER
 							{
 							match(input,OUTER,FOLLOW_OUTER_in_join_type1640); 
 							 bHasOuter = true; 
@@ -3470,13 +3462,13 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "outer_join_type"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:703:1: outer_join_type returns [int value] : ( LEFT | RIGHT | FULL );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:703:1: outer_join_type returns [int value] : ( LEFT | RIGHT | FULL );
 	public final int outer_join_type() throws RecognitionException {
 		int value = 0;
 
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:704:3: ( LEFT | RIGHT | FULL )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:704:3: ( LEFT | RIGHT | FULL )
 			int alt36=3;
 			switch ( input.LA(1) ) {
 			case LEFT:
@@ -3501,21 +3493,21 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt36) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:704:5: LEFT
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:704:5: LEFT
 					{
 					match(input,LEFT,FOLLOW_LEFT_in_outer_join_type1665); 
 					 value = JoinOperator.LEFT_JOIN; 
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:705:5: RIGHT
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:705:5: RIGHT
 					{
 					match(input,RIGHT,FOLLOW_RIGHT_in_outer_join_type1673); 
 					 value = JoinOperator.RIGHT_JOIN; 
 					}
 					break;
 				case 3 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:706:5: FULL
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:706:5: FULL
 					{
 					match(input,FULL,FOLLOW_FULL_in_outer_join_type1681); 
 					 value = JoinOperator.FULL_JOIN; 
@@ -3538,7 +3530,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "join_specification"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:709:1: join_specification returns [BooleanValueExpression value] : join_condition ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:709:1: join_specification returns [BooleanValueExpression value] : join_condition ;
 	public final BooleanValueExpression join_specification() throws RecognitionException {
 		BooleanValueExpression value = null;
 
@@ -3546,8 +3538,8 @@ public class SQL99Parser extends Parser {
 		BooleanValueExpression join_condition44 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:710:3: ( join_condition )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:710:5: join_condition
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:710:3: ( join_condition )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:710:5: join_condition
 			{
 			pushFollow(FOLLOW_join_condition_in_join_specification1700);
 			join_condition44=join_condition();
@@ -3571,7 +3563,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "join_condition"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:714:1: join_condition returns [BooleanValueExpression value] : ON search_condition ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:714:1: join_condition returns [BooleanValueExpression value] : ON search_condition ;
 	public final BooleanValueExpression join_condition() throws RecognitionException {
 		BooleanValueExpression value = null;
 
@@ -3579,8 +3571,8 @@ public class SQL99Parser extends Parser {
 		BooleanValueExpression search_condition45 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:715:3: ( ON search_condition )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:715:5: ON search_condition
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:715:3: ( ON search_condition )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:715:5: ON search_condition
 			{
 			match(input,ON,FOLLOW_ON_in_join_condition1720); 
 			pushFollow(FOLLOW_search_condition_in_join_condition1722);
@@ -3607,11 +3599,11 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "named_columns_join"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:720:1: named_columns_join : USING LPAREN join_column_list RPAREN ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:720:1: named_columns_join : USING LPAREN join_column_list RPAREN ;
 	public final void named_columns_join() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:721:3: ( USING LPAREN join_column_list RPAREN )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:721:5: USING LPAREN join_column_list RPAREN
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:721:3: ( USING LPAREN join_column_list RPAREN )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:721:5: USING LPAREN join_column_list RPAREN
 			{
 			match(input,USING,FOLLOW_USING_in_named_columns_join1737); 
 			match(input,LPAREN,FOLLOW_LPAREN_in_named_columns_join1739); 
@@ -3636,17 +3628,17 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "join_column_list"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:724:1: join_column_list : column_name ( COMMA column_name )* ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:724:1: join_column_list : column_name ( COMMA column_name )* ;
 	public final void join_column_list() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:725:3: ( column_name ( COMMA column_name )* )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:725:5: column_name ( COMMA column_name )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:725:3: ( column_name ( COMMA column_name )* )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:725:5: column_name ( COMMA column_name )*
 			{
 			pushFollow(FOLLOW_column_name_in_join_column_list1756);
 			column_name();
 			state._fsp--;
 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:725:17: ( COMMA column_name )*
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:725:17: ( COMMA column_name )*
 			loop37:
 			while (true) {
 				int alt37=2;
@@ -3657,7 +3649,7 @@ public class SQL99Parser extends Parser {
 
 				switch (alt37) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:725:18: COMMA column_name
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:725:18: COMMA column_name
 					{
 					match(input,COMMA,FOLLOW_COMMA_in_join_column_list1759); 
 					pushFollow(FOLLOW_column_name_in_join_column_list1761);
@@ -3688,7 +3680,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "table_primary"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:729:1: table_primary returns [TablePrimary value] : table_name ( ( AS )? alias_name )? ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:729:1: table_primary returns [TablePrimary value] : table_name ( ( AS )? alias_name )? ;
 	public final TablePrimary table_primary() throws RecognitionException {
 		TablePrimary value = null;
 
@@ -3697,14 +3689,14 @@ public class SQL99Parser extends Parser {
 		String alias_name47 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:730:3: ( table_name ( ( AS )? alias_name )? )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:730:5: table_name ( ( AS )? alias_name )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:730:3: ( table_name ( ( AS )? alias_name )? )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:730:5: table_name ( ( AS )? alias_name )?
 			{
 			pushFollow(FOLLOW_table_name_in_table_primary1781);
 			table_name46=table_name();
 			state._fsp--;
 
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:731:5: ( ( AS )? alias_name )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:731:5: ( ( AS )? alias_name )?
 			int alt39=2;
 			int LA39_0 = input.LA(1);
 			if ( (LA39_0==AS||LA39_0==STRING_WITH_QUOTE_DOUBLE||LA39_0==VARNAME) ) {
@@ -3712,9 +3704,9 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt39) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:731:6: ( AS )? alias_name
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:731:6: ( AS )? alias_name
 					{
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:731:6: ( AS )?
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:731:6: ( AS )?
 					int alt38=2;
 					int LA38_0 = input.LA(1);
 					if ( (LA38_0==AS) ) {
@@ -3722,7 +3714,7 @@ public class SQL99Parser extends Parser {
 					}
 					switch (alt38) {
 						case 1 :
-							// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:731:6: AS
+							// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:731:6: AS
 							{
 							match(input,AS,FOLLOW_AS_in_table_primary1788); 
 							}
@@ -3762,7 +3754,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "table_name"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:743:1: table_name returns [TablePrimary value] : ( schema_name PERIOD )? table_identifier ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:743:1: table_name returns [TablePrimary value] : ( schema_name PERIOD )? table_identifier ;
 	public final TablePrimary table_name() throws RecognitionException {
 		TablePrimary value = null;
 
@@ -3771,10 +3763,10 @@ public class SQL99Parser extends Parser {
 		String table_identifier49 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:744:3: ( ( schema_name PERIOD )? table_identifier )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:744:5: ( schema_name PERIOD )? table_identifier
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:744:3: ( ( schema_name PERIOD )? table_identifier )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:744:5: ( schema_name PERIOD )? table_identifier
 			{
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:744:5: ( schema_name PERIOD )?
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:744:5: ( schema_name PERIOD )?
 			int alt40=2;
 			int LA40_0 = input.LA(1);
 			if ( (LA40_0==VARNAME) ) {
@@ -3791,7 +3783,7 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt40) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:744:6: schema_name PERIOD
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:744:6: schema_name PERIOD
 					{
 					pushFollow(FOLLOW_schema_name_in_table_name1819);
 					schema_name48=schema_name();
@@ -3833,7 +3825,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "alias_name"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:755:1: alias_name returns [String value] : identifier ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:755:1: alias_name returns [String value] : identifier ;
 	public final String alias_name() throws RecognitionException {
 		String value = null;
 
@@ -3841,8 +3833,8 @@ public class SQL99Parser extends Parser {
 		String identifier50 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:756:3: ( identifier )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:756:5: identifier
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:756:3: ( identifier )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:756:5: identifier
 			{
 			pushFollow(FOLLOW_identifier_in_alias_name1846);
 			identifier50=identifier();
@@ -3866,11 +3858,11 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "derived_table"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:759:1: derived_table : table_subquery ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:759:1: derived_table : table_subquery ;
 	public final void derived_table() throws RecognitionException {
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:760:3: ( table_subquery )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:760:5: table_subquery
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:760:3: ( table_subquery )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:760:5: table_subquery
 			{
 			pushFollow(FOLLOW_table_subquery_in_derived_table1862);
 			table_subquery();
@@ -3892,7 +3884,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "table_identifier"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:763:1: table_identifier returns [String value] : identifier ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:763:1: table_identifier returns [String value] : identifier ;
 	public final String table_identifier() throws RecognitionException {
 		String value = null;
 
@@ -3900,8 +3892,8 @@ public class SQL99Parser extends Parser {
 		String identifier51 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:764:3: ( identifier )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:764:5: identifier
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:764:3: ( identifier )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:764:5: identifier
 			{
 			pushFollow(FOLLOW_identifier_in_table_identifier1883);
 			identifier51=identifier();
@@ -3925,7 +3917,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "schema_name"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:767:1: schema_name returns [String value] : identifier ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:767:1: schema_name returns [String value] : identifier ;
 	public final String schema_name() throws RecognitionException {
 		String value = null;
 
@@ -3933,8 +3925,8 @@ public class SQL99Parser extends Parser {
 		String identifier52 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:768:3: ( identifier )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:768:5: identifier
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:768:3: ( identifier )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:768:5: identifier
 			{
 			pushFollow(FOLLOW_identifier_in_schema_name1904);
 			identifier52=identifier();
@@ -3958,7 +3950,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "column_name"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:771:1: column_name returns [String value] : identifier ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:771:1: column_name returns [String value] : identifier ;
 	public final String column_name() throws RecognitionException {
 		String value = null;
 
@@ -3966,8 +3958,8 @@ public class SQL99Parser extends Parser {
 		String identifier53 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:772:3: ( identifier )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:772:5: identifier
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:772:3: ( identifier )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:772:5: identifier
 			{
 			pushFollow(FOLLOW_identifier_in_column_name1927);
 			identifier53=identifier();
@@ -3991,7 +3983,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "identifier"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:775:1: identifier returns [String value] : (t= regular_identifier |t= delimited_identifier ) ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:775:1: identifier returns [String value] : (t= regular_identifier |t= delimited_identifier ) ;
 	public final String identifier() throws RecognitionException {
 		String value = null;
 
@@ -3999,10 +3991,10 @@ public class SQL99Parser extends Parser {
 		String t =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:776:3: ( (t= regular_identifier |t= delimited_identifier ) )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:776:5: (t= regular_identifier |t= delimited_identifier )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:776:3: ( (t= regular_identifier |t= delimited_identifier ) )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:776:5: (t= regular_identifier |t= delimited_identifier )
 			{
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:776:5: (t= regular_identifier |t= delimited_identifier )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:776:5: (t= regular_identifier |t= delimited_identifier )
 			int alt41=2;
 			int LA41_0 = input.LA(1);
 			if ( (LA41_0==VARNAME) ) {
@@ -4020,7 +4012,7 @@ public class SQL99Parser extends Parser {
 
 			switch (alt41) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:776:6: t= regular_identifier
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:776:6: t= regular_identifier
 					{
 					pushFollow(FOLLOW_regular_identifier_in_identifier1951);
 					t=regular_identifier();
@@ -4029,7 +4021,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:776:29: t= delimited_identifier
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:776:29: t= delimited_identifier
 					{
 					pushFollow(FOLLOW_delimited_identifier_in_identifier1957);
 					t=delimited_identifier();
@@ -4058,7 +4050,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "regular_identifier"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:779:1: regular_identifier returns [String value] : VARNAME ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:779:1: regular_identifier returns [String value] : VARNAME ;
 	public final String regular_identifier() throws RecognitionException {
 		String value = null;
 
@@ -4066,8 +4058,8 @@ public class SQL99Parser extends Parser {
 		Token VARNAME54=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:780:3: ( VARNAME )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:780:5: VARNAME
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:780:3: ( VARNAME )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:780:5: VARNAME
 			{
 			VARNAME54=(Token)match(input,VARNAME,FOLLOW_VARNAME_in_regular_identifier1977); 
 			 value = (VARNAME54!=null?VARNAME54.getText():null); 
@@ -4088,7 +4080,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "delimited_identifier"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:783:1: delimited_identifier returns [String value] : STRING_WITH_QUOTE_DOUBLE ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:783:1: delimited_identifier returns [String value] : STRING_WITH_QUOTE_DOUBLE ;
 	public final String delimited_identifier() throws RecognitionException {
 		String value = null;
 
@@ -4096,13 +4088,13 @@ public class SQL99Parser extends Parser {
 		Token STRING_WITH_QUOTE_DOUBLE55=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:784:3: ( STRING_WITH_QUOTE_DOUBLE )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:784:5: STRING_WITH_QUOTE_DOUBLE
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:784:3: ( STRING_WITH_QUOTE_DOUBLE )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:784:5: STRING_WITH_QUOTE_DOUBLE
 			{
 			STRING_WITH_QUOTE_DOUBLE55=(Token)match(input,STRING_WITH_QUOTE_DOUBLE,FOLLOW_STRING_WITH_QUOTE_DOUBLE_in_delimited_identifier1996); 
 			 
 			      value = (STRING_WITH_QUOTE_DOUBLE55!=null?STRING_WITH_QUOTE_DOUBLE55.getText():null);
-			      value = value.substring(1, value.length()-1);
+			 //     value = value.substring(1, value.length()-1);
 			    
 			}
 
@@ -4121,7 +4113,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "general_literal"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:790:1: general_literal returns [Literal value] : ( string_literal | boolean_literal );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:790:1: general_literal returns [Literal value] : ( string_literal | boolean_literal );
 	public final Literal general_literal() throws RecognitionException {
 		Literal value = null;
 
@@ -4130,7 +4122,7 @@ public class SQL99Parser extends Parser {
 		BooleanLiteral boolean_literal57 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:791:3: ( string_literal | boolean_literal )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:791:3: ( string_literal | boolean_literal )
 			int alt42=2;
 			int LA42_0 = input.LA(1);
 			if ( (LA42_0==STRING_WITH_QUOTE) ) {
@@ -4148,7 +4140,7 @@ public class SQL99Parser extends Parser {
 
 			switch (alt42) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:791:5: string_literal
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:791:5: string_literal
 					{
 					pushFollow(FOLLOW_string_literal_in_general_literal2015);
 					string_literal56=string_literal();
@@ -4158,7 +4150,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:792:5: boolean_literal
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:792:5: boolean_literal
 					{
 					pushFollow(FOLLOW_boolean_literal_in_general_literal2023);
 					boolean_literal57=boolean_literal();
@@ -4184,7 +4176,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "string_literal"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:795:1: string_literal returns [StringLiteral value] : STRING_WITH_QUOTE ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:795:1: string_literal returns [StringLiteral value] : STRING_WITH_QUOTE ;
 	public final StringLiteral string_literal() throws RecognitionException {
 		StringLiteral value = null;
 
@@ -4192,8 +4184,8 @@ public class SQL99Parser extends Parser {
 		Token STRING_WITH_QUOTE58=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:796:3: ( STRING_WITH_QUOTE )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:796:5: STRING_WITH_QUOTE
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:796:3: ( STRING_WITH_QUOTE )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:796:5: STRING_WITH_QUOTE
 			{
 			STRING_WITH_QUOTE58=(Token)match(input,STRING_WITH_QUOTE,FOLLOW_STRING_WITH_QUOTE_in_string_literal2042); 
 
@@ -4218,7 +4210,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "boolean_literal"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:803:1: boolean_literal returns [BooleanLiteral value] : (t= TRUE |t= FALSE ) ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:803:1: boolean_literal returns [BooleanLiteral value] : (t= TRUE |t= FALSE ) ;
 	public final BooleanLiteral boolean_literal() throws RecognitionException {
 		BooleanLiteral value = null;
 
@@ -4226,10 +4218,10 @@ public class SQL99Parser extends Parser {
 		Token t=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:804:3: ( (t= TRUE |t= FALSE ) )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:804:5: (t= TRUE |t= FALSE )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:804:3: ( (t= TRUE |t= FALSE ) )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:804:5: (t= TRUE |t= FALSE )
 			{
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:804:5: (t= TRUE |t= FALSE )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:804:5: (t= TRUE |t= FALSE )
 			int alt43=2;
 			int LA43_0 = input.LA(1);
 			if ( (LA43_0==TRUE) ) {
@@ -4247,13 +4239,13 @@ public class SQL99Parser extends Parser {
 
 			switch (alt43) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:804:6: t= TRUE
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:804:6: t= TRUE
 					{
 					t=(Token)match(input,TRUE,FOLLOW_TRUE_in_boolean_literal2064); 
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:804:15: t= FALSE
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:804:15: t= FALSE
 					{
 					t=(Token)match(input,FALSE,FOLLOW_FALSE_in_boolean_literal2070); 
 					}
@@ -4279,7 +4271,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "numeric_literal"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:807:1: numeric_literal returns [NumericLiteral value] : ( numeric_literal_unsigned | numeric_literal_positive | numeric_literal_negative );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:807:1: numeric_literal returns [NumericLiteral value] : ( numeric_literal_unsigned | numeric_literal_positive | numeric_literal_negative );
 	public final NumericLiteral numeric_literal() throws RecognitionException {
 		NumericLiteral value = null;
 
@@ -4289,7 +4281,7 @@ public class SQL99Parser extends Parser {
 		NumericLiteral numeric_literal_negative61 =null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:808:3: ( numeric_literal_unsigned | numeric_literal_positive | numeric_literal_negative )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:808:3: ( numeric_literal_unsigned | numeric_literal_positive | numeric_literal_negative )
 			int alt44=3;
 			switch ( input.LA(1) ) {
 			case DECIMAL:
@@ -4317,7 +4309,7 @@ public class SQL99Parser extends Parser {
 			}
 			switch (alt44) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:808:5: numeric_literal_unsigned
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:808:5: numeric_literal_unsigned
 					{
 					pushFollow(FOLLOW_numeric_literal_unsigned_in_numeric_literal2090);
 					numeric_literal_unsigned59=numeric_literal_unsigned();
@@ -4327,7 +4319,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:809:5: numeric_literal_positive
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:809:5: numeric_literal_positive
 					{
 					pushFollow(FOLLOW_numeric_literal_positive_in_numeric_literal2098);
 					numeric_literal_positive60=numeric_literal_positive();
@@ -4337,7 +4329,7 @@ public class SQL99Parser extends Parser {
 					}
 					break;
 				case 3 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:810:5: numeric_literal_negative
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:810:5: numeric_literal_negative
 					{
 					pushFollow(FOLLOW_numeric_literal_negative_in_numeric_literal2106);
 					numeric_literal_negative61=numeric_literal_negative();
@@ -4363,7 +4355,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "numeric_literal_unsigned"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:813:1: numeric_literal_unsigned returns [NumericLiteral value] : ( INTEGER | DECIMAL );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:813:1: numeric_literal_unsigned returns [NumericLiteral value] : ( INTEGER | DECIMAL );
 	public final NumericLiteral numeric_literal_unsigned() throws RecognitionException {
 		NumericLiteral value = null;
 
@@ -4372,7 +4364,7 @@ public class SQL99Parser extends Parser {
 		Token DECIMAL63=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:814:3: ( INTEGER | DECIMAL )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:814:3: ( INTEGER | DECIMAL )
 			int alt45=2;
 			int LA45_0 = input.LA(1);
 			if ( (LA45_0==INTEGER) ) {
@@ -4390,14 +4382,14 @@ public class SQL99Parser extends Parser {
 
 			switch (alt45) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:814:5: INTEGER
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:814:5: INTEGER
 					{
 					INTEGER62=(Token)match(input,INTEGER,FOLLOW_INTEGER_in_numeric_literal_unsigned2125); 
 					 value = new IntegerLiteral((INTEGER62!=null?INTEGER62.getText():null)); 
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:815:5: DECIMAL
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:815:5: DECIMAL
 					{
 					DECIMAL63=(Token)match(input,DECIMAL,FOLLOW_DECIMAL_in_numeric_literal_unsigned2133); 
 					 value = new DecimalLiteral((DECIMAL63!=null?DECIMAL63.getText():null)); 
@@ -4420,7 +4412,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "numeric_literal_positive"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:818:1: numeric_literal_positive returns [NumericLiteral value] : ( INTEGER_POSITIVE | DECIMAL_POSITIVE );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:818:1: numeric_literal_positive returns [NumericLiteral value] : ( INTEGER_POSITIVE | DECIMAL_POSITIVE );
 	public final NumericLiteral numeric_literal_positive() throws RecognitionException {
 		NumericLiteral value = null;
 
@@ -4429,7 +4421,7 @@ public class SQL99Parser extends Parser {
 		Token DECIMAL_POSITIVE65=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:819:3: ( INTEGER_POSITIVE | DECIMAL_POSITIVE )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:819:3: ( INTEGER_POSITIVE | DECIMAL_POSITIVE )
 			int alt46=2;
 			int LA46_0 = input.LA(1);
 			if ( (LA46_0==INTEGER_POSITIVE) ) {
@@ -4447,14 +4439,14 @@ public class SQL99Parser extends Parser {
 
 			switch (alt46) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:819:5: INTEGER_POSITIVE
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:819:5: INTEGER_POSITIVE
 					{
 					INTEGER_POSITIVE64=(Token)match(input,INTEGER_POSITIVE,FOLLOW_INTEGER_POSITIVE_in_numeric_literal_positive2152); 
 					 value = new IntegerLiteral((INTEGER_POSITIVE64!=null?INTEGER_POSITIVE64.getText():null)); 
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:820:5: DECIMAL_POSITIVE
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:820:5: DECIMAL_POSITIVE
 					{
 					DECIMAL_POSITIVE65=(Token)match(input,DECIMAL_POSITIVE,FOLLOW_DECIMAL_POSITIVE_in_numeric_literal_positive2160); 
 					 value = new DecimalLiteral((DECIMAL_POSITIVE65!=null?DECIMAL_POSITIVE65.getText():null)); 
@@ -4477,7 +4469,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "numeric_literal_negative"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:823:1: numeric_literal_negative returns [NumericLiteral value] : ( INTEGER_NEGATIVE | DECIMAL_NEGATIVE );
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:823:1: numeric_literal_negative returns [NumericLiteral value] : ( INTEGER_NEGATIVE | DECIMAL_NEGATIVE );
 	public final NumericLiteral numeric_literal_negative() throws RecognitionException {
 		NumericLiteral value = null;
 
@@ -4486,7 +4478,7 @@ public class SQL99Parser extends Parser {
 		Token DECIMAL_NEGATIVE67=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:824:3: ( INTEGER_NEGATIVE | DECIMAL_NEGATIVE )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:824:3: ( INTEGER_NEGATIVE | DECIMAL_NEGATIVE )
 			int alt47=2;
 			int LA47_0 = input.LA(1);
 			if ( (LA47_0==INTEGER_NEGATIVE) ) {
@@ -4504,14 +4496,14 @@ public class SQL99Parser extends Parser {
 
 			switch (alt47) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:824:5: INTEGER_NEGATIVE
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:824:5: INTEGER_NEGATIVE
 					{
 					INTEGER_NEGATIVE66=(Token)match(input,INTEGER_NEGATIVE,FOLLOW_INTEGER_NEGATIVE_in_numeric_literal_negative2181); 
 					 value = new IntegerLiteral((INTEGER_NEGATIVE66!=null?INTEGER_NEGATIVE66.getText():null)); 
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:825:5: DECIMAL_NEGATIVE
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:825:5: DECIMAL_NEGATIVE
 					{
 					DECIMAL_NEGATIVE67=(Token)match(input,DECIMAL_NEGATIVE,FOLLOW_DECIMAL_NEGATIVE_in_numeric_literal_negative2189); 
 					 value = new DecimalLiteral((DECIMAL_NEGATIVE67!=null?DECIMAL_NEGATIVE67.getText():null)); 
@@ -4534,7 +4526,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "truth_value"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:828:1: truth_value returns [boolean value] : (t= TRUE |t= FALSE ) ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:828:1: truth_value returns [boolean value] : (t= TRUE |t= FALSE ) ;
 	public final boolean truth_value() throws RecognitionException {
 		boolean value = false;
 
@@ -4542,10 +4534,10 @@ public class SQL99Parser extends Parser {
 		Token t=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:829:3: ( (t= TRUE |t= FALSE ) )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:829:5: (t= TRUE |t= FALSE )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:829:3: ( (t= TRUE |t= FALSE ) )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:829:5: (t= TRUE |t= FALSE )
 			{
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:829:5: (t= TRUE |t= FALSE )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:829:5: (t= TRUE |t= FALSE )
 			int alt48=2;
 			int LA48_0 = input.LA(1);
 			if ( (LA48_0==TRUE) ) {
@@ -4563,13 +4555,13 @@ public class SQL99Parser extends Parser {
 
 			switch (alt48) {
 				case 1 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:829:6: t= TRUE
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:829:6: t= TRUE
 					{
 					t=(Token)match(input,TRUE,FOLLOW_TRUE_in_truth_value2213); 
 					}
 					break;
 				case 2 :
-					// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:829:15: t= FALSE
+					// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:829:15: t= FALSE
 					{
 					t=(Token)match(input,FALSE,FOLLOW_FALSE_in_truth_value2219); 
 					}
@@ -4595,7 +4587,7 @@ public class SQL99Parser extends Parser {
 
 
 	// $ANTLR start "datetime_literal"
-	// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:832:1: datetime_literal returns [DateTimeLiteral value] : DATETIME ;
+	// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:832:1: datetime_literal returns [DateTimeLiteral value] : DATETIME ;
 	public final DateTimeLiteral datetime_literal() throws RecognitionException {
 		DateTimeLiteral value = null;
 
@@ -4603,8 +4595,8 @@ public class SQL99Parser extends Parser {
 		Token DATETIME68=null;
 
 		try {
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:833:3: ( DATETIME )
-			// /Users/johardi/Documents/Code/obdalib-parent/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:833:5: DATETIME
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:833:3: ( DATETIME )
+			// /Users/mrezk/Documents/workspace-git-final/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:833:5: DATETIME
 			{
 			DATETIME68=(Token)match(input,DATETIME,FOLLOW_DATETIME_in_datetime_literal2239); 
 			 value = new DateTimeLiteral((DATETIME68!=null?DATETIME68.getText():null)); 
