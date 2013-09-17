@@ -415,7 +415,12 @@ public class JDBCConnectionManager {
 			if (resultSet.next()) {
 				loggedUser = resultSet.getString("user");
 			}
-
+			/**
+			 *  The sql to extract table names is now removed, since we instead use the
+			 *  table names from the source sql of the mappings, given as the parameter tables
+			 */
+			
+			
 //			if(tables.size() == 0){
 //				/* Obtain the relational objects (i.e., tables and views) */
 //				final String tableSelectQuery = "SELECT object_name, owner_name  FROM ( " +
@@ -453,7 +458,16 @@ public class JDBCConnectionManager {
 //					String tblName = resultSet.getString("object_name");
 //					tableOwner = resultSet.getString("owner_name");
 					String tblName = table.getName();
+					/**
+					 * fullTableName is exactly the name the user provided, including schema prefix if that was
+					 * provided, otherwise without.
+					 */
 					String fullTableName = table.getNameWithPrefix();
+					/**
+					 * If there is a schema prefix, this must be the tableOwner argument to the 
+					 * jdbc methods below. Otherwise, we use the logged in user. I guess null would
+					 * also have worked in the latter case.
+					 */
 					String tableOwner;
 					if( table.getSchema().length() > 0)
 						tableOwner = table.getSchema();
