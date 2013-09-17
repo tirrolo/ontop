@@ -453,6 +453,7 @@ public class JDBCConnectionManager {
 //					String tblName = resultSet.getString("object_name");
 //					tableOwner = resultSet.getString("owner_name");
 					String tblName = table.getName();
+					String fullTableName = table.getNameWithPrefix();
 					String tableOwner;
 					if( table.getSchema().length() > 0)
 						tableOwner = table.getSchema();
@@ -462,7 +463,7 @@ public class JDBCConnectionManager {
 					final ArrayList<String> primaryKeys = getPrimaryKey(md, null, tableOwner, tblName);
 					final Map<String, Reference> foreignKeys = getForeignKey(md, null, tableOwner, tblName);
 					
-					TableDefinition td = new TableDefinition("\"" + tableOwner + "\".\"" + tblName + "\"");
+					TableDefinition td = new TableDefinition(fullTableName);
 					rsColumns = md.getColumns(null, tableOwner, tblName, null);
 					
 					for (int pos = 1; rsColumns.next(); pos++) {

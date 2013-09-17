@@ -94,7 +94,7 @@ public class MappingAnalyzer {
 				ArrayList<Function> atoms = new ArrayList<Function>();
 				for (Relation table : tableList) {
 					// Construct the URI from the table name
-					String tableName = table.getName();
+					String tableName = table.getNameWithPrefix();
 					String predicateName = tableName;
 
 					// Construct the predicate using the table name
@@ -409,7 +409,7 @@ public class MappingAnalyzer {
 		int offset = 0; // the index offset
 
 		for (Relation table : tableList) {
-			String tableName = table.getName();
+			String tableName = table.getNameWithPrefix();
 			DataDefinition def = dbMetaData.getDefinition(tableName);
 			if (def == null) {
 				throw new RuntimeException("Definition not found for table '" + tableName + "'.");

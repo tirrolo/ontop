@@ -49,6 +49,20 @@ public class TablePrimary implements ITable {
 		this.alias = alias;
 	}
 
+	/**
+	 * Necessary for the multi-schema/light federation case
+	 * Called by JDBCConnectionManager and MappingAnalyzer
+	 * 
+	 * Returns name with schema prefix
+	 */
+	public String getNameWithPrefix(){
+	    if (schema.length() > 0)
+	        return schema + "." + name ;
+	    else
+	        return name;
+	}
+
+	
 	public String getAlias() {
 		return alias;
 	}

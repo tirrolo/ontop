@@ -35,6 +35,18 @@ public class Relation extends RelationalAlgebra {
 		return table.getAlias();
 	}
 	
+
+	/**
+	 * Necessary for the multi-schema/light federation case
+	 * Called by MappingParser
+	 * 
+	 * Returns name with schema prefix
+	 */
+	public String getNameWithPrefix(){
+		return table.getNameWithPrefix();
+	}
+
+	
 	@Override
 	public String toString() {
 		return table.toString();
