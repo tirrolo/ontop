@@ -783,7 +783,7 @@ regular_identifier returns [String value]
 delimited_identifier returns [String value]
   : STRING_WITH_QUOTE_DOUBLE { 
       $value = $STRING_WITH_QUOTE_DOUBLE.text;
-      $value = $value.substring(1, $value.length()-1);
+ //     $value = $value.substring(1, $value.length()-1);
     }
   ;
 
