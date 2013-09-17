@@ -94,17 +94,17 @@ public class MappingAnalyzer {
 				ArrayList<Function> atoms = new ArrayList<Function>();
 				for (Relation table : tableList) {
 					// Construct the URI from the table name
-					String tableName = table.getNameWithPrefix();
-					String predicateName = tableName;
+					String tableGivenName = table.getGivenName();
+					String predicateName = tableGivenName;
 
 					// Construct the predicate using the table name
-					int arity = dbMetaData.getDefinition(tableName).countAttribute();
+					int arity = dbMetaData.getDefinition(tableGivenName).countAttribute();
 					Predicate predicate = dfac.getPredicate(predicateName, arity);
 
 					// Swap the column name with a new variable from the lookup table
 					List<Term> terms = new ArrayList<Term>();
 					for (int i = 1; i <= arity; i++) {
-						String columnName = dbMetaData.getFullQualifiedAttributeName(tableName, table.getAlias(), i);
+						String columnName = dbMetaData.getFullQualifiedAttributeName(tableGivenName, table.getAlias(), i);
 						String termName = lookupTable.lookup(columnName);
 						if (termName == null) {
 							throw new RuntimeException("Column '" + columnName + "'was not found in the lookup table: ");
@@ -409,7 +409,7 @@ public class MappingAnalyzer {
 		int offset = 0; // the index offset
 
 		for (Relation table : tableList) {
-			String tableName = table.getNameWithPrefix();
+			String tableName = table.getGivenName();
 			DataDefinition def = dbMetaData.getDefinition(tableName);
 			if (def == null) {
 				throw new RuntimeException("Definition not found for table '" + tableName + "'.");

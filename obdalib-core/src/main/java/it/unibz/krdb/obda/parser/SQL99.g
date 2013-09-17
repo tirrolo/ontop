@@ -742,48 +742,52 @@ table_primary returns [TablePrimary value]
  
 table_name returns [TablePrimary value]
   : (schema_name PERIOD)? table_identifier {
-      String schema = $schema_name.value;      
+      String schema = $schema_name.value.get(1);      
       if (schema != null && schema != "") {
-        $value = new TablePrimary(schema, $table_identifier.value);
+        $value = new TablePrimary(schema_name.value.get(1), $table_identifier.value.get(1), $schema_name.value.get(0) + "." + $table_identifier.value.get(0));
       }
       else {
-        $value = new TablePrimary($table_identifier.value);
+        $value = new TablePrimary($table_identifier.value.get(1), $table_identifier.value.get(0));
       }      
     }
   ;  
 
 alias_name returns [String value]
-  : identifier  { $value = $identifier.value; }
+  : identifier  { $value = $identifier.value.get(1); }
   ;
 
 derived_table
   : table_subquery
   ;
     
-table_identifier returns [String value]
+table_identifier returns [ArrayList<String> value]
   : identifier { $value = $identifier.value; }
   ;
   
-schema_name returns [String value]
+schema_name returns [ArrayList<String> value]
   : identifier { $value = $identifier.value; }
   ;
     
 column_name returns [String value]
-  : identifier { $value = $identifier.value; }
+  : identifier { $value = $identifier.value.get(1); }
   ;
   
-identifier returns [String value]
+identifier returns [ArrayList<String> value]
   : (t=regular_identifier | t=delimited_identifier) { $value = $t.value; }
   ;
 
-regular_identifier returns [String value]
-  : VARNAME { $value = $VARNAME.text; }
+regular_identifier returns [ArrayList<String> value]
+  : VARNAME { $value = new ArrayList<String>();
+  	$value.add($VARNAME.text);
+  	$value.add($VARNAME.text);
+  	 }
   ;
 
-delimited_identifier returns [String value]
+delimited_identifier returns [ArrayList<String> value]
   : STRING_WITH_QUOTE_DOUBLE { 
-      $value = $STRING_WITH_QUOTE_DOUBLE.text;
- //     $value = $value.substring(1, $value.length()-1);
+	$value = new ArrayList<String>();  
+      $value.add($STRING_WITH_QUOTE_DOUBLE.text);
+ 	$value.add($STRING_WITH_QUOTE_DOUBLE.text.substring(1, $value.length()-1);
     }
   ;
 

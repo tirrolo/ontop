@@ -27,8 +27,13 @@ public class Relation extends RelationalAlgebra {
 		return table.getSchema();
 	}
 	
-	public String getName() {
-		return table.getName();
+	/**
+	 * Called from JDBCConnectionManager for use in jdbc methods
+	 * 
+	 * @return Table name without prefix and without quotation marks
+	 */
+	public String getTableName() {
+		return table.getTableName();
 	}
 	
 	public String getAlias() {
@@ -40,10 +45,10 @@ public class Relation extends RelationalAlgebra {
 	 * Necessary for the multi-schema/light federation case
 	 * Called by MappingParser
 	 * 
-	 * Returns name with schema prefix
+	 * @return name with schema prefix exactly as given by user
 	 */
-	public String getNameWithPrefix(){
-		return table.getNameWithPrefix();
+	public String getGivenName(){
+		return table.getGivenName();
 	}
 
 	

@@ -457,12 +457,12 @@ public class JDBCConnectionManager {
 				try {
 //					String tblName = resultSet.getString("object_name");
 //					tableOwner = resultSet.getString("owner_name");
-					String tblName = table.getName();
+					String tblName = table.getTableName();
 					/**
 					 * fullTableName is exactly the name the user provided, including schema prefix if that was
 					 * provided, otherwise without.
 					 */
-					String fullTableName = table.getNameWithPrefix();
+					String tableGivenName = table.getGivenName();
 					/**
 					 * If there is a schema prefix, this must be the tableOwner argument to the 
 					 * jdbc methods below. Otherwise, we use the logged in user. I guess null would
@@ -473,11 +473,11 @@ public class JDBCConnectionManager {
 						tableOwner = table.getSchema();
 					else
 						tableOwner = loggedUser;
-					System.out.println(tblName+"\n");
+					System.out.println("Schema: " + tableOwner + ", table: " + tblName+"\n");
 					final ArrayList<String> primaryKeys = getPrimaryKey(md, null, tableOwner, tblName);
 					final Map<String, Reference> foreignKeys = getForeignKey(md, null, tableOwner, tblName);
 					
-					TableDefinition td = new TableDefinition(fullTableName);
+					TableDefinition td = new TableDefinition(tableGivenName);
 					rsColumns = md.getColumns(null, tableOwner, tblName, null);
 					
 					for (int pos = 1; rsColumns.next(); pos++) {
