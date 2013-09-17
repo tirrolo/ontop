@@ -1,4 +1,4 @@
-// $ANTLR 3.5 /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g 2013-09-17 23:45:51
+// $ANTLR 3.5 SQL99.g 2013-09-18 00:33:09
 
 package it.unibz.krdb.obda.parser;
 
@@ -154,15 +154,15 @@ public class SQL99Lexer extends Lexer {
 	public SQL99Lexer(CharStream input, RecognizerSharedState state) {
 		super(input,state);
 	}
-	@Override public String getGrammarFileName() { return "/home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g"; }
+	@Override public String getGrammarFileName() { return "SQL99.g"; }
 
 	// $ANTLR start "SELECT"
 	public final void mSELECT() throws RecognitionException {
 		try {
 			int _type = SELECT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:844:7: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:844:9: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' )
+			// SQL99.g:844:7: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) )
+			// SQL99.g:844:9: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' )
 			{
 			if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
 				input.consume();
@@ -228,8 +228,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = DISTINCT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:846:9: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'T' | 't' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:846:11: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'T' | 't' )
+			// SQL99.g:846:9: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'T' | 't' ) )
+			// SQL99.g:846:11: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'T' | 't' )
 			{
 			if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
 				input.consume();
@@ -311,8 +311,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = ALL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:848:4: ( ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:848:6: ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' )
+			// SQL99.g:848:4: ( ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
+			// SQL99.g:848:6: ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' )
 			{
 			if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
 				input.consume();
@@ -354,8 +354,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = AVG;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:850:4: ( ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'G' | 'g' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:850:6: ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'G' | 'g' )
+			// SQL99.g:850:4: ( ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'G' | 'g' ) )
+			// SQL99.g:850:6: ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'G' | 'g' )
 			{
 			if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
 				input.consume();
@@ -397,8 +397,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = MAX;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:852:4: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:852:6: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' )
+			// SQL99.g:852:4: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) )
+			// SQL99.g:852:6: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' )
 			{
 			if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
 				input.consume();
@@ -440,8 +440,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = MIN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:854:4: ( ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'N' | 'n' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:854:6: ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'N' | 'n' )
+			// SQL99.g:854:4: ( ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'N' | 'n' ) )
+			// SQL99.g:854:6: ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'N' | 'n' )
 			{
 			if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
 				input.consume();
@@ -483,8 +483,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = SUM;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:856:4: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'M' | 'm' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:856:6: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'M' | 'm' )
+			// SQL99.g:856:4: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'M' | 'm' ) )
+			// SQL99.g:856:6: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'M' | 'm' )
 			{
 			if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
 				input.consume();
@@ -526,8 +526,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = EVERY;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:858:6: ( ( 'E' | 'e' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:858:8: ( 'E' | 'e' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'Y' | 'y' )
+			// SQL99.g:858:6: ( ( 'E' | 'e' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) )
+			// SQL99.g:858:8: ( 'E' | 'e' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'Y' | 'y' )
 			{
 			if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
 				input.consume();
@@ -585,8 +585,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = ANY;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:860:4: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'Y' | 'y' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:860:6: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'Y' | 'y' )
+			// SQL99.g:860:4: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'Y' | 'y' ) )
+			// SQL99.g:860:6: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'Y' | 'y' )
 			{
 			if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
 				input.consume();
@@ -628,8 +628,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = SOME;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:862:5: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:862:7: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' )
+			// SQL99.g:862:5: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) )
+			// SQL99.g:862:7: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' )
 			{
 			if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
 				input.consume();
@@ -679,8 +679,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = COUNT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:864:6: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'T' | 't' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:864:8: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'T' | 't' )
+			// SQL99.g:864:6: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'T' | 't' ) )
+			// SQL99.g:864:8: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'T' | 't' )
 			{
 			if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
 				input.consume();
@@ -738,8 +738,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = FROM;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:866:5: ( ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'M' | 'm' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:866:7: ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'M' | 'm' )
+			// SQL99.g:866:5: ( ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'M' | 'm' ) )
+			// SQL99.g:866:7: ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'M' | 'm' )
 			{
 			if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
 				input.consume();
@@ -789,8 +789,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = WHERE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:868:6: ( ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:868:8: ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+			// SQL99.g:868:6: ( ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+			// SQL99.g:868:8: ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' )
 			{
 			if ( input.LA(1)=='W'||input.LA(1)=='w' ) {
 				input.consume();
@@ -848,8 +848,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = AND;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:870:4: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'D' | 'd' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:870:6: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'D' | 'd' )
+			// SQL99.g:870:4: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'D' | 'd' ) )
+			// SQL99.g:870:6: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'D' | 'd' )
 			{
 			if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
 				input.consume();
@@ -891,8 +891,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = OR;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:872:3: ( ( 'O' | 'o' ) ( 'R' | 'r' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:872:5: ( 'O' | 'o' ) ( 'R' | 'r' )
+			// SQL99.g:872:3: ( ( 'O' | 'o' ) ( 'R' | 'r' ) )
+			// SQL99.g:872:5: ( 'O' | 'o' ) ( 'R' | 'r' )
 			{
 			if ( input.LA(1)=='O'||input.LA(1)=='o' ) {
 				input.consume();
@@ -926,8 +926,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = NOT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:874:4: ( ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'T' | 't' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:874:6: ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'T' | 't' )
+			// SQL99.g:874:4: ( ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'T' | 't' ) )
+			// SQL99.g:874:6: ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'T' | 't' )
 			{
 			if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
 				input.consume();
@@ -969,8 +969,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = ORDER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:876:6: ( ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'R' | 'r' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:876:8: ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'R' | 'r' )
+			// SQL99.g:876:6: ( ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'R' | 'r' ) )
+			// SQL99.g:876:8: ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'R' | 'r' )
 			{
 			if ( input.LA(1)=='O'||input.LA(1)=='o' ) {
 				input.consume();
@@ -1028,8 +1028,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = GROUP;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:878:6: ( ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'P' | 'p' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:878:8: ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'P' | 'p' )
+			// SQL99.g:878:6: ( ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'P' | 'p' ) )
+			// SQL99.g:878:8: ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'P' | 'p' )
 			{
 			if ( input.LA(1)=='G'||input.LA(1)=='g' ) {
 				input.consume();
@@ -1087,8 +1087,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = BY;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:880:3: ( ( 'B' | 'b' ) ( 'Y' | 'y' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:880:5: ( 'B' | 'b' ) ( 'Y' | 'y' )
+			// SQL99.g:880:3: ( ( 'B' | 'b' ) ( 'Y' | 'y' ) )
+			// SQL99.g:880:5: ( 'B' | 'b' ) ( 'Y' | 'y' )
 			{
 			if ( input.LA(1)=='B'||input.LA(1)=='b' ) {
 				input.consume();
@@ -1122,8 +1122,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = AS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:882:3: ( ( 'A' | 'a' ) ( 'S' | 's' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:882:5: ( 'A' | 'a' ) ( 'S' | 's' )
+			// SQL99.g:882:3: ( ( 'A' | 'a' ) ( 'S' | 's' ) )
+			// SQL99.g:882:5: ( 'A' | 'a' ) ( 'S' | 's' )
 			{
 			if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
 				input.consume();
@@ -1157,8 +1157,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = JOIN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:884:5: ( ( 'J' | 'j' ) ( 'O' | 'o' ) ( 'I' | 'i' ) ( 'N' | 'n' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:884:7: ( 'J' | 'j' ) ( 'O' | 'o' ) ( 'I' | 'i' ) ( 'N' | 'n' )
+			// SQL99.g:884:5: ( ( 'J' | 'j' ) ( 'O' | 'o' ) ( 'I' | 'i' ) ( 'N' | 'n' ) )
+			// SQL99.g:884:7: ( 'J' | 'j' ) ( 'O' | 'o' ) ( 'I' | 'i' ) ( 'N' | 'n' )
 			{
 			if ( input.LA(1)=='J'||input.LA(1)=='j' ) {
 				input.consume();
@@ -1208,8 +1208,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = INNER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:886:6: ( ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:886:8: ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' )
+			// SQL99.g:886:6: ( ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) )
+			// SQL99.g:886:8: ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' )
 			{
 			if ( input.LA(1)=='I'||input.LA(1)=='i' ) {
 				input.consume();
@@ -1267,8 +1267,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = OUTER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:888:6: ( ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:888:8: ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' )
+			// SQL99.g:888:6: ( ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) )
+			// SQL99.g:888:8: ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' )
 			{
 			if ( input.LA(1)=='O'||input.LA(1)=='o' ) {
 				input.consume();
@@ -1326,8 +1326,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = LEFT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:890:5: ( ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'T' | 't' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:890:7: ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'T' | 't' )
+			// SQL99.g:890:5: ( ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'T' | 't' ) )
+			// SQL99.g:890:7: ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'T' | 't' )
 			{
 			if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
 				input.consume();
@@ -1377,8 +1377,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = RIGHT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:892:6: ( ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'T' | 't' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:892:8: ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'T' | 't' )
+			// SQL99.g:892:6: ( ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'T' | 't' ) )
+			// SQL99.g:892:8: ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'T' | 't' )
 			{
 			if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
 				input.consume();
@@ -1436,8 +1436,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = FULL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:894:5: ( ( 'F' | 'f' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:894:7: ( 'F' | 'f' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'L' | 'l' )
+			// SQL99.g:894:5: ( ( 'F' | 'f' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
+			// SQL99.g:894:7: ( 'F' | 'f' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'L' | 'l' )
 			{
 			if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
 				input.consume();
@@ -1487,8 +1487,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = UNION;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:896:6: ( ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:896:8: ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+			// SQL99.g:896:6: ( ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+			// SQL99.g:896:8: ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
 			{
 			if ( input.LA(1)=='U'||input.LA(1)=='u' ) {
 				input.consume();
@@ -1546,8 +1546,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = USING;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:898:6: ( ( 'U' | 'u' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:898:8: ( 'U' | 'u' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' )
+			// SQL99.g:898:6: ( ( 'U' | 'u' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) )
+			// SQL99.g:898:8: ( 'U' | 'u' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' )
 			{
 			if ( input.LA(1)=='U'||input.LA(1)=='u' ) {
 				input.consume();
@@ -1605,8 +1605,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = ON;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:900:3: ( ( 'O' | 'o' ) ( 'N' | 'n' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:900:5: ( 'O' | 'o' ) ( 'N' | 'n' )
+			// SQL99.g:900:3: ( ( 'O' | 'o' ) ( 'N' | 'n' ) )
+			// SQL99.g:900:5: ( 'O' | 'o' ) ( 'N' | 'n' )
 			{
 			if ( input.LA(1)=='O'||input.LA(1)=='o' ) {
 				input.consume();
@@ -1640,8 +1640,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = IN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:902:3: ( ( 'I' | 'i' ) ( 'N' | 'n' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:902:5: ( 'I' | 'i' ) ( 'N' | 'n' )
+			// SQL99.g:902:3: ( ( 'I' | 'i' ) ( 'N' | 'n' ) )
+			// SQL99.g:902:5: ( 'I' | 'i' ) ( 'N' | 'n' )
 			{
 			if ( input.LA(1)=='I'||input.LA(1)=='i' ) {
 				input.consume();
@@ -1675,8 +1675,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = IS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:904:3: ( ( 'I' | 'i' ) ( 'S' | 's' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:904:5: ( 'I' | 'i' ) ( 'S' | 's' )
+			// SQL99.g:904:3: ( ( 'I' | 'i' ) ( 'S' | 's' ) )
+			// SQL99.g:904:5: ( 'I' | 'i' ) ( 'S' | 's' )
 			{
 			if ( input.LA(1)=='I'||input.LA(1)=='i' ) {
 				input.consume();
@@ -1710,8 +1710,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = NULL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:906:5: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:906:7: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'L' | 'l' )
+			// SQL99.g:906:5: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
+			// SQL99.g:906:7: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'L' | 'l' )
 			{
 			if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
 				input.consume();
@@ -1761,8 +1761,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = FALSE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:908:6: ( ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:908:8: ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' )
+			// SQL99.g:908:6: ( ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) )
+			// SQL99.g:908:8: ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' )
 			{
 			if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
 				input.consume();
@@ -1820,8 +1820,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = TRUE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:910:5: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:910:7: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' )
+			// SQL99.g:910:5: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' ) )
+			// SQL99.g:910:7: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'E' | 'e' )
 			{
 			if ( input.LA(1)=='T'||input.LA(1)=='t' ) {
 				input.consume();
@@ -1871,8 +1871,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = SEMI;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:912:5: ( ';' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:912:16: ';'
+			// SQL99.g:912:5: ( ';' )
+			// SQL99.g:912:16: ';'
 			{
 			match(';'); 
 			}
@@ -1891,8 +1891,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = PERIOD;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:913:7: ( '.' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:913:16: '.'
+			// SQL99.g:913:7: ( '.' )
+			// SQL99.g:913:16: '.'
 			{
 			match('.'); 
 			}
@@ -1911,8 +1911,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = COMMA;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:914:6: ( ',' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:914:16: ','
+			// SQL99.g:914:6: ( ',' )
+			// SQL99.g:914:16: ','
 			{
 			match(','); 
 			}
@@ -1931,8 +1931,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = LSQ_BRACKET;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:915:12: ( '[' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:915:16: '['
+			// SQL99.g:915:12: ( '[' )
+			// SQL99.g:915:16: '['
 			{
 			match('['); 
 			}
@@ -1951,8 +1951,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = RSQ_BRACKET;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:916:12: ( ']' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:916:16: ']'
+			// SQL99.g:916:12: ( ']' )
+			// SQL99.g:916:16: ']'
 			{
 			match(']'); 
 			}
@@ -1971,8 +1971,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = LPAREN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:917:7: ( '(' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:917:16: '('
+			// SQL99.g:917:7: ( '(' )
+			// SQL99.g:917:16: '('
 			{
 			match('('); 
 			}
@@ -1991,8 +1991,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = RPAREN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:918:7: ( ')' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:918:16: ')'
+			// SQL99.g:918:7: ( ')' )
+			// SQL99.g:918:16: ')'
 			{
 			match(')'); 
 			}
@@ -2011,8 +2011,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = QUESTION;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:919:9: ( '?' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:919:16: '?'
+			// SQL99.g:919:9: ( '?' )
+			// SQL99.g:919:16: '?'
 			{
 			match('?'); 
 			}
@@ -2031,8 +2031,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = DOLLAR;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:920:7: ( '$' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:920:16: '$'
+			// SQL99.g:920:7: ( '$' )
+			// SQL99.g:920:16: '$'
 			{
 			match('$'); 
 			}
@@ -2051,8 +2051,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = QUOTE_DOUBLE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:921:13: ( '\"' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:921:16: '\"'
+			// SQL99.g:921:13: ( '\"' )
+			// SQL99.g:921:16: '\"'
 			{
 			match('\"'); 
 			}
@@ -2071,8 +2071,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = QUOTE_SINGLE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:922:13: ( '\\'' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:922:16: '\\''
+			// SQL99.g:922:13: ( '\\'' )
+			// SQL99.g:922:16: '\\''
 			{
 			match('\''); 
 			}
@@ -2091,8 +2091,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = APOSTROPHE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:923:11: ( '`' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:923:16: '`'
+			// SQL99.g:923:11: ( '`' )
+			// SQL99.g:923:16: '`'
 			{
 			match('`'); 
 			}
@@ -2111,8 +2111,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = UNDERSCORE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:924:11: ( '_' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:924:16: '_'
+			// SQL99.g:924:11: ( '_' )
+			// SQL99.g:924:16: '_'
 			{
 			match('_'); 
 			}
@@ -2131,8 +2131,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = MINUS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:925:6: ( '-' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:925:16: '-'
+			// SQL99.g:925:6: ( '-' )
+			// SQL99.g:925:16: '-'
 			{
 			match('-'); 
 			}
@@ -2151,8 +2151,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = ASTERISK;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:926:9: ( '*' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:926:16: '*'
+			// SQL99.g:926:9: ( '*' )
+			// SQL99.g:926:16: '*'
 			{
 			match('*'); 
 			}
@@ -2171,8 +2171,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = AMPERSAND;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:927:10: ( '&' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:927:16: '&'
+			// SQL99.g:927:10: ( '&' )
+			// SQL99.g:927:16: '&'
 			{
 			match('&'); 
 			}
@@ -2191,8 +2191,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = AT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:928:3: ( '@' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:928:16: '@'
+			// SQL99.g:928:3: ( '@' )
+			// SQL99.g:928:16: '@'
 			{
 			match('@'); 
 			}
@@ -2211,8 +2211,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = EXCLAMATION;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:929:12: ( '!' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:929:16: '!'
+			// SQL99.g:929:12: ( '!' )
+			// SQL99.g:929:16: '!'
 			{
 			match('!'); 
 			}
@@ -2231,8 +2231,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = HASH;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:930:5: ( '#' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:930:16: '#'
+			// SQL99.g:930:5: ( '#' )
+			// SQL99.g:930:16: '#'
 			{
 			match('#'); 
 			}
@@ -2251,8 +2251,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = PERCENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:931:8: ( '%' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:931:16: '%'
+			// SQL99.g:931:8: ( '%' )
+			// SQL99.g:931:16: '%'
 			{
 			match('%'); 
 			}
@@ -2271,8 +2271,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = PLUS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:932:5: ( '+' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:932:16: '+'
+			// SQL99.g:932:5: ( '+' )
+			// SQL99.g:932:16: '+'
 			{
 			match('+'); 
 			}
@@ -2291,8 +2291,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = EQUALS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:933:7: ( '=' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:933:16: '='
+			// SQL99.g:933:7: ( '=' )
+			// SQL99.g:933:16: '='
 			{
 			match('='); 
 			}
@@ -2311,8 +2311,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = COLON;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:934:6: ( ':' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:934:16: ':'
+			// SQL99.g:934:6: ( ':' )
+			// SQL99.g:934:16: ':'
 			{
 			match(':'); 
 			}
@@ -2331,8 +2331,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = LESS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:935:5: ( '<' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:935:16: '<'
+			// SQL99.g:935:5: ( '<' )
+			// SQL99.g:935:16: '<'
 			{
 			match('<'); 
 			}
@@ -2351,8 +2351,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = GREATER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:936:8: ( '>' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:936:16: '>'
+			// SQL99.g:936:8: ( '>' )
+			// SQL99.g:936:16: '>'
 			{
 			match('>'); 
 			}
@@ -2371,8 +2371,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = SOLIDUS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:937:8: ( '/' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:937:16: '/'
+			// SQL99.g:937:8: ( '/' )
+			// SQL99.g:937:16: '/'
 			{
 			match('/'); 
 			}
@@ -2391,8 +2391,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = DOUBLE_SLASH;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:938:13: ( '//' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:938:16: '//'
+			// SQL99.g:938:13: ( '//' )
+			// SQL99.g:938:16: '//'
 			{
 			match("//"); 
 
@@ -2412,8 +2412,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = BACKSLASH;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:939:10: ( '\\\\' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:939:16: '\\\\'
+			// SQL99.g:939:10: ( '\\\\' )
+			// SQL99.g:939:16: '\\\\'
 			{
 			match('\\'); 
 			}
@@ -2432,8 +2432,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = TILDE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:940:6: ( '~' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:940:16: '~'
+			// SQL99.g:940:6: ( '~' )
+			// SQL99.g:940:16: '~'
 			{
 			match('~'); 
 			}
@@ -2452,8 +2452,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = CARET;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:941:6: ( '^' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:941:16: '^'
+			// SQL99.g:941:6: ( '^' )
+			// SQL99.g:941:16: '^'
 			{
 			match('^'); 
 			}
@@ -2472,8 +2472,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = CONCATENATION;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:942:14: ( '||' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:942:16: '||'
+			// SQL99.g:942:14: ( '||' )
+			// SQL99.g:942:16: '||'
 			{
 			match("||"); 
 
@@ -2491,8 +2491,8 @@ public class SQL99Lexer extends Lexer {
 	// $ANTLR start "ALPHA"
 	public final void mALPHA() throws RecognitionException {
 		try {
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:945:3: ( 'a' .. 'z' | 'A' .. 'Z' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+			// SQL99.g:945:3: ( 'a' .. 'z' | 'A' .. 'Z' )
+			// SQL99.g:
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -2514,8 +2514,8 @@ public class SQL99Lexer extends Lexer {
 	// $ANTLR start "DIGIT"
 	public final void mDIGIT() throws RecognitionException {
 		try {
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:950:3: ( '0' .. '9' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+			// SQL99.g:950:3: ( '0' .. '9' )
+			// SQL99.g:
 			{
 			if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 				input.consume();
@@ -2537,8 +2537,8 @@ public class SQL99Lexer extends Lexer {
 	// $ANTLR start "ALPHANUM"
 	public final void mALPHANUM() throws RecognitionException {
 		try {
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:954:3: ( ALPHA | DIGIT )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+			// SQL99.g:954:3: ( ALPHA | DIGIT )
+			// SQL99.g:
 			{
 			if ( (input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -2560,8 +2560,8 @@ public class SQL99Lexer extends Lexer {
 	// $ANTLR start "CHAR"
 	public final void mCHAR() throws RecognitionException {
 		try {
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:959:3: ( ALPHANUM | UNDERSCORE | MINUS )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+			// SQL99.g:959:3: ( ALPHANUM | UNDERSCORE | MINUS )
+			// SQL99.g:
 			{
 			if ( input.LA(1)=='-'||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -2583,8 +2583,8 @@ public class SQL99Lexer extends Lexer {
 	// $ANTLR start "ECHAR"
 	public final void mECHAR() throws RecognitionException {
 		try {
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:965:3: ( '\\\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\\\\' | '\"' | '\\'' ) )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:965:5: '\\\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\\\\' | '\"' | '\\'' )
+			// SQL99.g:965:3: ( '\\\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\\\\' | '\"' | '\\'' ) )
+			// SQL99.g:965:5: '\\\\' ( 't' | 'b' | 'n' | 'r' | 'f' | '\\\\' | '\"' | '\\'' )
 			{
 			match('\\'); 
 			if ( input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||input.LA(1)=='t' ) {
@@ -2609,10 +2609,10 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = INTEGER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:969:3: ( ( DIGIT )+ )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:969:5: ( DIGIT )+
+			// SQL99.g:969:3: ( ( DIGIT )+ )
+			// SQL99.g:969:5: ( DIGIT )+
 			{
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:969:5: ( DIGIT )+
+			// SQL99.g:969:5: ( DIGIT )+
 			int cnt1=0;
 			loop1:
 			while (true) {
@@ -2624,7 +2624,7 @@ public class SQL99Lexer extends Lexer {
 
 				switch (alt1) {
 				case 1 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+					// SQL99.g:
 					{
 					if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 						input.consume();
@@ -2661,7 +2661,7 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = DECIMAL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:973:3: ( ( DIGIT )+ PERIOD ( DIGIT )+ | PERIOD ( DIGIT )+ )
+			// SQL99.g:973:3: ( ( DIGIT )+ PERIOD ( DIGIT )+ | PERIOD ( DIGIT )+ )
 			int alt5=2;
 			int LA5_0 = input.LA(1);
 			if ( ((LA5_0 >= '0' && LA5_0 <= '9')) ) {
@@ -2679,9 +2679,9 @@ public class SQL99Lexer extends Lexer {
 
 			switch (alt5) {
 				case 1 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:973:5: ( DIGIT )+ PERIOD ( DIGIT )+
+					// SQL99.g:973:5: ( DIGIT )+ PERIOD ( DIGIT )+
 					{
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:973:5: ( DIGIT )+
+					// SQL99.g:973:5: ( DIGIT )+
 					int cnt2=0;
 					loop2:
 					while (true) {
@@ -2693,7 +2693,7 @@ public class SQL99Lexer extends Lexer {
 
 						switch (alt2) {
 						case 1 :
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+							// SQL99.g:
 							{
 							if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 								input.consume();
@@ -2716,7 +2716,7 @@ public class SQL99Lexer extends Lexer {
 
 					mPERIOD(); 
 
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:973:19: ( DIGIT )+
+					// SQL99.g:973:19: ( DIGIT )+
 					int cnt3=0;
 					loop3:
 					while (true) {
@@ -2728,7 +2728,7 @@ public class SQL99Lexer extends Lexer {
 
 						switch (alt3) {
 						case 1 :
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+							// SQL99.g:
 							{
 							if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 								input.consume();
@@ -2752,11 +2752,11 @@ public class SQL99Lexer extends Lexer {
 					}
 					break;
 				case 2 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:974:5: PERIOD ( DIGIT )+
+					// SQL99.g:974:5: PERIOD ( DIGIT )+
 					{
 					mPERIOD(); 
 
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:974:12: ( DIGIT )+
+					// SQL99.g:974:12: ( DIGIT )+
 					int cnt4=0;
 					loop4:
 					while (true) {
@@ -2768,7 +2768,7 @@ public class SQL99Lexer extends Lexer {
 
 						switch (alt4) {
 						case 1 :
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+							// SQL99.g:
 							{
 							if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 								input.consume();
@@ -2807,8 +2807,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = INTEGER_POSITIVE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:978:3: ( PLUS INTEGER )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:978:5: PLUS INTEGER
+			// SQL99.g:978:3: ( PLUS INTEGER )
+			// SQL99.g:978:5: PLUS INTEGER
 			{
 			mPLUS(); 
 
@@ -2830,8 +2830,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = INTEGER_NEGATIVE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:982:3: ( MINUS INTEGER )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:982:5: MINUS INTEGER
+			// SQL99.g:982:3: ( MINUS INTEGER )
+			// SQL99.g:982:5: MINUS INTEGER
 			{
 			mMINUS(); 
 
@@ -2853,8 +2853,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = DECIMAL_POSITIVE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:986:3: ( PLUS DECIMAL )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:986:5: PLUS DECIMAL
+			// SQL99.g:986:3: ( PLUS DECIMAL )
+			// SQL99.g:986:5: PLUS DECIMAL
 			{
 			mPLUS(); 
 
@@ -2876,8 +2876,8 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = DECIMAL_NEGATIVE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:990:3: ( MINUS DECIMAL )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:990:5: MINUS DECIMAL
+			// SQL99.g:990:3: ( MINUS DECIMAL )
+			// SQL99.g:990:5: MINUS DECIMAL
 			{
 			mMINUS(); 
 
@@ -2899,12 +2899,12 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = VARNAME;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:994:3: ( ALPHA ( CHAR )* )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:994:5: ALPHA ( CHAR )*
+			// SQL99.g:994:3: ( ALPHA ( CHAR )* )
+			// SQL99.g:994:5: ALPHA ( CHAR )*
 			{
 			mALPHA(); 
 
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:994:11: ( CHAR )*
+			// SQL99.g:994:11: ( CHAR )*
 			loop6:
 			while (true) {
 				int alt6=2;
@@ -2915,7 +2915,7 @@ public class SQL99Lexer extends Lexer {
 
 				switch (alt6) {
 				case 1 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+					// SQL99.g:
 					{
 					if ( input.LA(1)=='-'||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 						input.consume();
@@ -2949,11 +2949,11 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = STRING_WITH_QUOTE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:998:3: ( '\\'' ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\\'' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:998:5: '\\'' ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\\''
+			// SQL99.g:998:3: ( '\\'' ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\\'' )
+			// SQL99.g:998:5: '\\'' ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\\''
 			{
 			match('\''); 
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:998:10: ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )*
+			// SQL99.g:998:10: ( options {greedy=false; } :~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )*
 			loop7:
 			while (true) {
 				int alt7=3;
@@ -2970,7 +2970,7 @@ public class SQL99Lexer extends Lexer {
 
 				switch (alt7) {
 				case 1 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:998:40: ~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' )
+					// SQL99.g:998:40: ~ ( '\\u0027' | '\\u005C' | '\\u000A' | '\\u000D' )
 					{
 					if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '&')||(input.LA(1) >= '(' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
 						input.consume();
@@ -2983,7 +2983,7 @@ public class SQL99Lexer extends Lexer {
 					}
 					break;
 				case 2 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:998:87: ECHAR
+					// SQL99.g:998:87: ECHAR
 					{
 					mECHAR(); 
 
@@ -3012,11 +3012,11 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = STRING_WITH_QUOTE_DOUBLE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1002:3: ( '\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\"' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1002:5: '\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\"'
+			// SQL99.g:1002:3: ( '\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\"' )
+			// SQL99.g:1002:5: '\"' ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )* '\"'
 			{
 			match('\"'); 
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1002:10: ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )*
+			// SQL99.g:1002:10: ( options {greedy=false; } :~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' ) | ECHAR )*
 			loop8:
 			while (true) {
 				int alt8=3;
@@ -3033,7 +3033,7 @@ public class SQL99Lexer extends Lexer {
 
 				switch (alt8) {
 				case 1 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1002:40: ~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' )
+					// SQL99.g:1002:40: ~ ( '\\u0022' | '\\u005C' | '\\u000A' | '\\u000D' )
 					{
 					if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '!')||(input.LA(1) >= '#' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
 						input.consume();
@@ -3046,7 +3046,7 @@ public class SQL99Lexer extends Lexer {
 					}
 					break;
 				case 2 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1002:87: ECHAR
+					// SQL99.g:1002:87: ECHAR
 					{
 					mECHAR(); 
 
@@ -3075,11 +3075,11 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = DATETIME;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:3: ( '\\'' ( DIGIT )+ MINUS ( DIGIT )+ MINUS ( DIGIT )+ ( WS ( DIGIT )+ COLON ( DIGIT )+ COLON ( DIGIT )+ ( PERIOD ( DIGIT )+ )? )? '\\'' )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:5: '\\'' ( DIGIT )+ MINUS ( DIGIT )+ MINUS ( DIGIT )+ ( WS ( DIGIT )+ COLON ( DIGIT )+ COLON ( DIGIT )+ ( PERIOD ( DIGIT )+ )? )? '\\''
+			// SQL99.g:1006:3: ( '\\'' ( DIGIT )+ MINUS ( DIGIT )+ MINUS ( DIGIT )+ ( WS ( DIGIT )+ COLON ( DIGIT )+ COLON ( DIGIT )+ ( PERIOD ( DIGIT )+ )? )? '\\'' )
+			// SQL99.g:1006:5: '\\'' ( DIGIT )+ MINUS ( DIGIT )+ MINUS ( DIGIT )+ ( WS ( DIGIT )+ COLON ( DIGIT )+ COLON ( DIGIT )+ ( PERIOD ( DIGIT )+ )? )? '\\''
 			{
 			match('\''); 
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:10: ( DIGIT )+
+			// SQL99.g:1006:10: ( DIGIT )+
 			int cnt9=0;
 			loop9:
 			while (true) {
@@ -3091,7 +3091,7 @@ public class SQL99Lexer extends Lexer {
 
 				switch (alt9) {
 				case 1 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+					// SQL99.g:
 					{
 					if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 						input.consume();
@@ -3114,7 +3114,7 @@ public class SQL99Lexer extends Lexer {
 
 			mMINUS(); 
 
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:23: ( DIGIT )+
+			// SQL99.g:1006:23: ( DIGIT )+
 			int cnt10=0;
 			loop10:
 			while (true) {
@@ -3126,7 +3126,7 @@ public class SQL99Lexer extends Lexer {
 
 				switch (alt10) {
 				case 1 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+					// SQL99.g:
 					{
 					if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 						input.consume();
@@ -3149,7 +3149,7 @@ public class SQL99Lexer extends Lexer {
 
 			mMINUS(); 
 
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:36: ( DIGIT )+
+			// SQL99.g:1006:36: ( DIGIT )+
 			int cnt11=0;
 			loop11:
 			while (true) {
@@ -3161,7 +3161,7 @@ public class SQL99Lexer extends Lexer {
 
 				switch (alt11) {
 				case 1 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+					// SQL99.g:
 					{
 					if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 						input.consume();
@@ -3182,7 +3182,7 @@ public class SQL99Lexer extends Lexer {
 				cnt11++;
 			}
 
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:43: ( WS ( DIGIT )+ COLON ( DIGIT )+ COLON ( DIGIT )+ ( PERIOD ( DIGIT )+ )? )?
+			// SQL99.g:1006:43: ( WS ( DIGIT )+ COLON ( DIGIT )+ COLON ( DIGIT )+ ( PERIOD ( DIGIT )+ )? )?
 			int alt17=2;
 			int LA17_0 = input.LA(1);
 			if ( ((LA17_0 >= '\t' && LA17_0 <= '\n')||LA17_0=='\r'||LA17_0==' ') ) {
@@ -3190,11 +3190,11 @@ public class SQL99Lexer extends Lexer {
 			}
 			switch (alt17) {
 				case 1 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:44: WS ( DIGIT )+ COLON ( DIGIT )+ COLON ( DIGIT )+ ( PERIOD ( DIGIT )+ )?
+					// SQL99.g:1006:44: WS ( DIGIT )+ COLON ( DIGIT )+ COLON ( DIGIT )+ ( PERIOD ( DIGIT )+ )?
 					{
 					mWS(); 
 
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:47: ( DIGIT )+
+					// SQL99.g:1006:47: ( DIGIT )+
 					int cnt12=0;
 					loop12:
 					while (true) {
@@ -3206,7 +3206,7 @@ public class SQL99Lexer extends Lexer {
 
 						switch (alt12) {
 						case 1 :
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+							// SQL99.g:
 							{
 							if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 								input.consume();
@@ -3229,7 +3229,7 @@ public class SQL99Lexer extends Lexer {
 
 					mCOLON(); 
 
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:60: ( DIGIT )+
+					// SQL99.g:1006:60: ( DIGIT )+
 					int cnt13=0;
 					loop13:
 					while (true) {
@@ -3241,7 +3241,7 @@ public class SQL99Lexer extends Lexer {
 
 						switch (alt13) {
 						case 1 :
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+							// SQL99.g:
 							{
 							if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 								input.consume();
@@ -3264,7 +3264,7 @@ public class SQL99Lexer extends Lexer {
 
 					mCOLON(); 
 
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:73: ( DIGIT )+
+					// SQL99.g:1006:73: ( DIGIT )+
 					int cnt14=0;
 					loop14:
 					while (true) {
@@ -3276,7 +3276,7 @@ public class SQL99Lexer extends Lexer {
 
 						switch (alt14) {
 						case 1 :
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+							// SQL99.g:
 							{
 							if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 								input.consume();
@@ -3297,7 +3297,7 @@ public class SQL99Lexer extends Lexer {
 						cnt14++;
 					}
 
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:80: ( PERIOD ( DIGIT )+ )?
+					// SQL99.g:1006:80: ( PERIOD ( DIGIT )+ )?
 					int alt16=2;
 					int LA16_0 = input.LA(1);
 					if ( (LA16_0=='.') ) {
@@ -3305,11 +3305,11 @@ public class SQL99Lexer extends Lexer {
 					}
 					switch (alt16) {
 						case 1 :
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:81: PERIOD ( DIGIT )+
+							// SQL99.g:1006:81: PERIOD ( DIGIT )+
 							{
 							mPERIOD(); 
 
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1006:88: ( DIGIT )+
+							// SQL99.g:1006:88: ( DIGIT )+
 							int cnt15=0;
 							loop15:
 							while (true) {
@@ -3321,7 +3321,7 @@ public class SQL99Lexer extends Lexer {
 
 								switch (alt15) {
 								case 1 :
-									// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:
+									// SQL99.g:
 									{
 									if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
 										input.consume();
@@ -3369,10 +3369,10 @@ public class SQL99Lexer extends Lexer {
 		try {
 			int _type = WS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:3: ( ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+ )
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:5: ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+
+			// SQL99.g:1009:3: ( ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+ )
+			// SQL99.g:1009:5: ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+
 			{
-			// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:5: ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+
+			// SQL99.g:1009:5: ( ' ' | '\\t' | ( '\\n' | '\\r' ( '\\n' ) ) )+
 			int cnt19=0;
 			loop19:
 			while (true) {
@@ -3397,21 +3397,21 @@ public class SQL99Lexer extends Lexer {
 				}
 				switch (alt19) {
 				case 1 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:6: ' '
+					// SQL99.g:1009:6: ' '
 					{
 					match(' '); 
 					}
 					break;
 				case 2 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:10: '\\t'
+					// SQL99.g:1009:10: '\\t'
 					{
 					match('\t'); 
 					}
 					break;
 				case 3 :
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:15: ( '\\n' | '\\r' ( '\\n' ) )
+					// SQL99.g:1009:15: ( '\\n' | '\\r' ( '\\n' ) )
 					{
-					// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:15: ( '\\n' | '\\r' ( '\\n' ) )
+					// SQL99.g:1009:15: ( '\\n' | '\\r' ( '\\n' ) )
 					int alt18=2;
 					int LA18_0 = input.LA(1);
 					if ( (LA18_0=='\n') ) {
@@ -3429,17 +3429,17 @@ public class SQL99Lexer extends Lexer {
 
 					switch (alt18) {
 						case 1 :
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:16: '\\n'
+							// SQL99.g:1009:16: '\\n'
 							{
 							match('\n'); 
 							}
 							break;
 						case 2 :
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:21: '\\r' ( '\\n' )
+							// SQL99.g:1009:21: '\\r' ( '\\n' )
 							{
 							match('\r'); 
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:25: ( '\\n' )
-							// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1009:26: '\\n'
+							// SQL99.g:1009:25: ( '\\n' )
+							// SQL99.g:1009:26: '\\n'
 							{
 							match('\n'); 
 							}
@@ -3474,537 +3474,537 @@ public class SQL99Lexer extends Lexer {
 
 	@Override
 	public void mTokens() throws RecognitionException {
-		// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:8: ( SELECT | DISTINCT | ALL | AVG | MAX | MIN | SUM | EVERY | ANY | SOME | COUNT | FROM | WHERE | AND | OR | NOT | ORDER | GROUP | BY | AS | JOIN | INNER | OUTER | LEFT | RIGHT | FULL | UNION | USING | ON | IN | IS | NULL | FALSE | TRUE | SEMI | PERIOD | COMMA | LSQ_BRACKET | RSQ_BRACKET | LPAREN | RPAREN | QUESTION | DOLLAR | QUOTE_DOUBLE | QUOTE_SINGLE | APOSTROPHE | UNDERSCORE | MINUS | ASTERISK | AMPERSAND | AT | EXCLAMATION | HASH | PERCENT | PLUS | EQUALS | COLON | LESS | GREATER | SOLIDUS | DOUBLE_SLASH | BACKSLASH | TILDE | CARET | CONCATENATION | INTEGER | DECIMAL | INTEGER_POSITIVE | INTEGER_NEGATIVE | DECIMAL_POSITIVE | DECIMAL_NEGATIVE | VARNAME | STRING_WITH_QUOTE | STRING_WITH_QUOTE_DOUBLE | DATETIME | WS )
+		// SQL99.g:1:8: ( SELECT | DISTINCT | ALL | AVG | MAX | MIN | SUM | EVERY | ANY | SOME | COUNT | FROM | WHERE | AND | OR | NOT | ORDER | GROUP | BY | AS | JOIN | INNER | OUTER | LEFT | RIGHT | FULL | UNION | USING | ON | IN | IS | NULL | FALSE | TRUE | SEMI | PERIOD | COMMA | LSQ_BRACKET | RSQ_BRACKET | LPAREN | RPAREN | QUESTION | DOLLAR | QUOTE_DOUBLE | QUOTE_SINGLE | APOSTROPHE | UNDERSCORE | MINUS | ASTERISK | AMPERSAND | AT | EXCLAMATION | HASH | PERCENT | PLUS | EQUALS | COLON | LESS | GREATER | SOLIDUS | DOUBLE_SLASH | BACKSLASH | TILDE | CARET | CONCATENATION | INTEGER | DECIMAL | INTEGER_POSITIVE | INTEGER_NEGATIVE | DECIMAL_POSITIVE | DECIMAL_NEGATIVE | VARNAME | STRING_WITH_QUOTE | STRING_WITH_QUOTE_DOUBLE | DATETIME | WS )
 		int alt20=76;
 		alt20 = dfa20.predict(input);
 		switch (alt20) {
 			case 1 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:10: SELECT
+				// SQL99.g:1:10: SELECT
 				{
 				mSELECT(); 
 
 				}
 				break;
 			case 2 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:17: DISTINCT
+				// SQL99.g:1:17: DISTINCT
 				{
 				mDISTINCT(); 
 
 				}
 				break;
 			case 3 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:26: ALL
+				// SQL99.g:1:26: ALL
 				{
 				mALL(); 
 
 				}
 				break;
 			case 4 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:30: AVG
+				// SQL99.g:1:30: AVG
 				{
 				mAVG(); 
 
 				}
 				break;
 			case 5 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:34: MAX
+				// SQL99.g:1:34: MAX
 				{
 				mMAX(); 
 
 				}
 				break;
 			case 6 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:38: MIN
+				// SQL99.g:1:38: MIN
 				{
 				mMIN(); 
 
 				}
 				break;
 			case 7 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:42: SUM
+				// SQL99.g:1:42: SUM
 				{
 				mSUM(); 
 
 				}
 				break;
 			case 8 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:46: EVERY
+				// SQL99.g:1:46: EVERY
 				{
 				mEVERY(); 
 
 				}
 				break;
 			case 9 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:52: ANY
+				// SQL99.g:1:52: ANY
 				{
 				mANY(); 
 
 				}
 				break;
 			case 10 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:56: SOME
+				// SQL99.g:1:56: SOME
 				{
 				mSOME(); 
 
 				}
 				break;
 			case 11 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:61: COUNT
+				// SQL99.g:1:61: COUNT
 				{
 				mCOUNT(); 
 
 				}
 				break;
 			case 12 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:67: FROM
+				// SQL99.g:1:67: FROM
 				{
 				mFROM(); 
 
 				}
 				break;
 			case 13 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:72: WHERE
+				// SQL99.g:1:72: WHERE
 				{
 				mWHERE(); 
 
 				}
 				break;
 			case 14 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:78: AND
+				// SQL99.g:1:78: AND
 				{
 				mAND(); 
 
 				}
 				break;
 			case 15 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:82: OR
+				// SQL99.g:1:82: OR
 				{
 				mOR(); 
 
 				}
 				break;
 			case 16 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:85: NOT
+				// SQL99.g:1:85: NOT
 				{
 				mNOT(); 
 
 				}
 				break;
 			case 17 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:89: ORDER
+				// SQL99.g:1:89: ORDER
 				{
 				mORDER(); 
 
 				}
 				break;
 			case 18 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:95: GROUP
+				// SQL99.g:1:95: GROUP
 				{
 				mGROUP(); 
 
 				}
 				break;
 			case 19 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:101: BY
+				// SQL99.g:1:101: BY
 				{
 				mBY(); 
 
 				}
 				break;
 			case 20 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:104: AS
+				// SQL99.g:1:104: AS
 				{
 				mAS(); 
 
 				}
 				break;
 			case 21 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:107: JOIN
+				// SQL99.g:1:107: JOIN
 				{
 				mJOIN(); 
 
 				}
 				break;
 			case 22 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:112: INNER
+				// SQL99.g:1:112: INNER
 				{
 				mINNER(); 
 
 				}
 				break;
 			case 23 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:118: OUTER
+				// SQL99.g:1:118: OUTER
 				{
 				mOUTER(); 
 
 				}
 				break;
 			case 24 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:124: LEFT
+				// SQL99.g:1:124: LEFT
 				{
 				mLEFT(); 
 
 				}
 				break;
 			case 25 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:129: RIGHT
+				// SQL99.g:1:129: RIGHT
 				{
 				mRIGHT(); 
 
 				}
 				break;
 			case 26 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:135: FULL
+				// SQL99.g:1:135: FULL
 				{
 				mFULL(); 
 
 				}
 				break;
 			case 27 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:140: UNION
+				// SQL99.g:1:140: UNION
 				{
 				mUNION(); 
 
 				}
 				break;
 			case 28 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:146: USING
+				// SQL99.g:1:146: USING
 				{
 				mUSING(); 
 
 				}
 				break;
 			case 29 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:152: ON
+				// SQL99.g:1:152: ON
 				{
 				mON(); 
 
 				}
 				break;
 			case 30 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:155: IN
+				// SQL99.g:1:155: IN
 				{
 				mIN(); 
 
 				}
 				break;
 			case 31 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:158: IS
+				// SQL99.g:1:158: IS
 				{
 				mIS(); 
 
 				}
 				break;
 			case 32 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:161: NULL
+				// SQL99.g:1:161: NULL
 				{
 				mNULL(); 
 
 				}
 				break;
 			case 33 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:166: FALSE
+				// SQL99.g:1:166: FALSE
 				{
 				mFALSE(); 
 
 				}
 				break;
 			case 34 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:172: TRUE
+				// SQL99.g:1:172: TRUE
 				{
 				mTRUE(); 
 
 				}
 				break;
 			case 35 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:177: SEMI
+				// SQL99.g:1:177: SEMI
 				{
 				mSEMI(); 
 
 				}
 				break;
 			case 36 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:182: PERIOD
+				// SQL99.g:1:182: PERIOD
 				{
 				mPERIOD(); 
 
 				}
 				break;
 			case 37 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:189: COMMA
+				// SQL99.g:1:189: COMMA
 				{
 				mCOMMA(); 
 
 				}
 				break;
 			case 38 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:195: LSQ_BRACKET
+				// SQL99.g:1:195: LSQ_BRACKET
 				{
 				mLSQ_BRACKET(); 
 
 				}
 				break;
 			case 39 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:207: RSQ_BRACKET
+				// SQL99.g:1:207: RSQ_BRACKET
 				{
 				mRSQ_BRACKET(); 
 
 				}
 				break;
 			case 40 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:219: LPAREN
+				// SQL99.g:1:219: LPAREN
 				{
 				mLPAREN(); 
 
 				}
 				break;
 			case 41 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:226: RPAREN
+				// SQL99.g:1:226: RPAREN
 				{
 				mRPAREN(); 
 
 				}
 				break;
 			case 42 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:233: QUESTION
+				// SQL99.g:1:233: QUESTION
 				{
 				mQUESTION(); 
 
 				}
 				break;
 			case 43 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:242: DOLLAR
+				// SQL99.g:1:242: DOLLAR
 				{
 				mDOLLAR(); 
 
 				}
 				break;
 			case 44 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:249: QUOTE_DOUBLE
+				// SQL99.g:1:249: QUOTE_DOUBLE
 				{
 				mQUOTE_DOUBLE(); 
 
 				}
 				break;
 			case 45 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:262: QUOTE_SINGLE
+				// SQL99.g:1:262: QUOTE_SINGLE
 				{
 				mQUOTE_SINGLE(); 
 
 				}
 				break;
 			case 46 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:275: APOSTROPHE
+				// SQL99.g:1:275: APOSTROPHE
 				{
 				mAPOSTROPHE(); 
 
 				}
 				break;
 			case 47 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:286: UNDERSCORE
+				// SQL99.g:1:286: UNDERSCORE
 				{
 				mUNDERSCORE(); 
 
 				}
 				break;
 			case 48 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:297: MINUS
+				// SQL99.g:1:297: MINUS
 				{
 				mMINUS(); 
 
 				}
 				break;
 			case 49 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:303: ASTERISK
+				// SQL99.g:1:303: ASTERISK
 				{
 				mASTERISK(); 
 
 				}
 				break;
 			case 50 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:312: AMPERSAND
+				// SQL99.g:1:312: AMPERSAND
 				{
 				mAMPERSAND(); 
 
 				}
 				break;
 			case 51 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:322: AT
+				// SQL99.g:1:322: AT
 				{
 				mAT(); 
 
 				}
 				break;
 			case 52 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:325: EXCLAMATION
+				// SQL99.g:1:325: EXCLAMATION
 				{
 				mEXCLAMATION(); 
 
 				}
 				break;
 			case 53 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:337: HASH
+				// SQL99.g:1:337: HASH
 				{
 				mHASH(); 
 
 				}
 				break;
 			case 54 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:342: PERCENT
+				// SQL99.g:1:342: PERCENT
 				{
 				mPERCENT(); 
 
 				}
 				break;
 			case 55 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:350: PLUS
+				// SQL99.g:1:350: PLUS
 				{
 				mPLUS(); 
 
 				}
 				break;
 			case 56 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:355: EQUALS
+				// SQL99.g:1:355: EQUALS
 				{
 				mEQUALS(); 
 
 				}
 				break;
 			case 57 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:362: COLON
+				// SQL99.g:1:362: COLON
 				{
 				mCOLON(); 
 
 				}
 				break;
 			case 58 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:368: LESS
+				// SQL99.g:1:368: LESS
 				{
 				mLESS(); 
 
 				}
 				break;
 			case 59 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:373: GREATER
+				// SQL99.g:1:373: GREATER
 				{
 				mGREATER(); 
 
 				}
 				break;
 			case 60 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:381: SOLIDUS
+				// SQL99.g:1:381: SOLIDUS
 				{
 				mSOLIDUS(); 
 
 				}
 				break;
 			case 61 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:389: DOUBLE_SLASH
+				// SQL99.g:1:389: DOUBLE_SLASH
 				{
 				mDOUBLE_SLASH(); 
 
 				}
 				break;
 			case 62 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:402: BACKSLASH
+				// SQL99.g:1:402: BACKSLASH
 				{
 				mBACKSLASH(); 
 
 				}
 				break;
 			case 63 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:412: TILDE
+				// SQL99.g:1:412: TILDE
 				{
 				mTILDE(); 
 
 				}
 				break;
 			case 64 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:418: CARET
+				// SQL99.g:1:418: CARET
 				{
 				mCARET(); 
 
 				}
 				break;
 			case 65 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:424: CONCATENATION
+				// SQL99.g:1:424: CONCATENATION
 				{
 				mCONCATENATION(); 
 
 				}
 				break;
 			case 66 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:438: INTEGER
+				// SQL99.g:1:438: INTEGER
 				{
 				mINTEGER(); 
 
 				}
 				break;
 			case 67 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:446: DECIMAL
+				// SQL99.g:1:446: DECIMAL
 				{
 				mDECIMAL(); 
 
 				}
 				break;
 			case 68 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:454: INTEGER_POSITIVE
+				// SQL99.g:1:454: INTEGER_POSITIVE
 				{
 				mINTEGER_POSITIVE(); 
 
 				}
 				break;
 			case 69 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:471: INTEGER_NEGATIVE
+				// SQL99.g:1:471: INTEGER_NEGATIVE
 				{
 				mINTEGER_NEGATIVE(); 
 
 				}
 				break;
 			case 70 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:488: DECIMAL_POSITIVE
+				// SQL99.g:1:488: DECIMAL_POSITIVE
 				{
 				mDECIMAL_POSITIVE(); 
 
 				}
 				break;
 			case 71 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:505: DECIMAL_NEGATIVE
+				// SQL99.g:1:505: DECIMAL_NEGATIVE
 				{
 				mDECIMAL_NEGATIVE(); 
 
 				}
 				break;
 			case 72 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:522: VARNAME
+				// SQL99.g:1:522: VARNAME
 				{
 				mVARNAME(); 
 
 				}
 				break;
 			case 73 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:530: STRING_WITH_QUOTE
+				// SQL99.g:1:530: STRING_WITH_QUOTE
 				{
 				mSTRING_WITH_QUOTE(); 
 
 				}
 				break;
 			case 74 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:548: STRING_WITH_QUOTE_DOUBLE
+				// SQL99.g:1:548: STRING_WITH_QUOTE_DOUBLE
 				{
 				mSTRING_WITH_QUOTE_DOUBLE(); 
 
 				}
 				break;
 			case 75 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:573: DATETIME
+				// SQL99.g:1:573: DATETIME
 				{
 				mDATETIME(); 
 
 				}
 				break;
 			case 76 :
-				// /home/dagc/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/SQL99.g:1:582: WS
+				// SQL99.g:1:582: WS
 				{
 				mWS(); 
 
