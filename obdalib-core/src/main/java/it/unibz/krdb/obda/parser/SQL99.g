@@ -460,12 +460,14 @@ reference_value_expression returns [ReferenceValueExpression value]
   ;
 
 column_reference returns [ColumnReference value]
-  : (t=table_identifier PERIOD)? column_name {
+  : ((s=schema_name)? PERIOD t=table_identifier PERIOD)? column_name {
       String table = "";
       if (t != null) {
-        table = $t.value;
+        table = $t.value.get(0);
+        if (s != null) 
+        	table = $s.value.get(0) + "." + table;
+        $value = new ColumnReference(table, $column_name.value);
       }
-      $value = new ColumnReference(table, $column_name.value);
     }
   ;  
   
