@@ -43,7 +43,7 @@ public class TablePrimary implements ITable {
 		this("", tableName, givenName);
 	}
 	
-	public TablePrimary(String schema, String tableName, String givename) {
+	public TablePrimary(String schema, String tableName, String givenName) {
 		setSchema(schema);
 		setTableName(tableName);
 		setGivenName(givenName);
