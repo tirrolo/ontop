@@ -79,7 +79,7 @@ public class MappingParser {
 			for (String error: errorMessage) {
 				errors.append(error + "\n");
 			}
-			final String msg = "There was an error analyzing the following mappings. Please correct the issue(s) to continue.\n" + errors.toString();
+			final String msg = "There was an error parsing the following mappings. Please correct the issue(s) to continue.\n" + errors.toString();
 			RuntimeException r = new RuntimeException(msg);
 			throw r;
 		}

@@ -466,8 +466,8 @@ column_reference returns [ColumnReference value]
         table = $t.value.get(0);
         if (s != null) 
         	table = $s.value.get(0) + "." + table;
-        $value = new ColumnReference(table, $column_name.value);
       }
+      $value = new ColumnReference(table, $column_name.value);
     }
   ;  
   

@@ -1,4 +1,4 @@
-// $ANTLR 3.5 SQL99.g 2013-09-18 09:16:00
+// $ANTLR 3.5 SQL99.g 2013-09-18 09:20:45
 
 package it.unibz.krdb.obda.parser;
 
@@ -1391,8 +1391,8 @@ public class SQL99Parser extends Parser {
 			        table = t.get(0);
 			        if (s != null) 
 			        	table = s.get(0) + "." + table;
-			        value = new ColumnReference(table, column_name15);
 			      }
+			      value = new ColumnReference(table, column_name15);
 			    
 			}
 
