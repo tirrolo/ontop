@@ -744,7 +744,7 @@ table_name returns [TablePrimary value]
   : (schema_name PERIOD)? table_identifier {
       String schema = $schema_name.value.get(1);      
       if (schema != null && schema != "") {
-        $value = new TablePrimary(schema_name.value.get(1), $table_identifier.value.get(1), $schema_name.value.get(0) + "." + $table_identifier.value.get(0));
+        $value = new TablePrimary($schema_name.value.get(1), $table_identifier.value.get(1), $schema_name.value.get(0) + "." + $table_identifier.value.get(0));
       }
       else {
         $value = new TablePrimary($table_identifier.value.get(1), $table_identifier.value.get(0));
@@ -786,8 +786,8 @@ regular_identifier returns [ArrayList<String> value]
 delimited_identifier returns [ArrayList<String> value]
   : STRING_WITH_QUOTE_DOUBLE { 
 	$value = new ArrayList<String>();  
-      $value.add($STRING_WITH_QUOTE_DOUBLE.text);
- 	$value.add($STRING_WITH_QUOTE_DOUBLE.text.substring(1, $value.length()-1);
+    $value.add($STRING_WITH_QUOTE_DOUBLE.text);
+ 	$value.add($STRING_WITH_QUOTE_DOUBLE.text.substring(1, $STRING_WITH_QUOTE_DOUBLE.text.length()-1));
     }
   ;
 

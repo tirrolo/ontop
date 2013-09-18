@@ -1,4 +1,4 @@
-// $ANTLR 3.5 SQL99.g 2013-09-18 00:33:09
+// $ANTLR 3.5 SQL99.g 2013-09-18 09:06:00
 
 package it.unibz.krdb.obda.parser;
 
@@ -3802,7 +3802,7 @@ public class SQL99Parser extends Parser {
 
 			      String schema = schema_name48.get(1);      
 			      if (schema != null && schema != "") {
-			        value = new TablePrimary(schema_name.value.get(1), table_identifier49.get(1), schema_name48.get(0) + "." + table_identifier49.get(0));
+			        value = new TablePrimary(schema_name48.get(1), table_identifier49.get(1), schema_name48.get(0) + "." + table_identifier49.get(0));
 			      }
 			      else {
 			        value = new TablePrimary(table_identifier49.get(1), table_identifier49.get(0));
@@ -4097,8 +4097,8 @@ public class SQL99Parser extends Parser {
 			STRING_WITH_QUOTE_DOUBLE55=(Token)match(input,STRING_WITH_QUOTE_DOUBLE,FOLLOW_STRING_WITH_QUOTE_DOUBLE_in_delimited_identifier1996); 
 			 
 				value = new ArrayList<String>();  
-			      value.add((STRING_WITH_QUOTE_DOUBLE55!=null?STRING_WITH_QUOTE_DOUBLE55.getText():null));
-			 	value.add((STRING_WITH_QUOTE_DOUBLE55!=null?STRING_WITH_QUOTE_DOUBLE55.getText():null).substring(1, value.length()-1);
+			    value.add((STRING_WITH_QUOTE_DOUBLE55!=null?STRING_WITH_QUOTE_DOUBLE55.getText():null));
+			 	value.add((STRING_WITH_QUOTE_DOUBLE55!=null?STRING_WITH_QUOTE_DOUBLE55.getText():null).substring(1, (STRING_WITH_QUOTE_DOUBLE55!=null?STRING_WITH_QUOTE_DOUBLE55.getText():null).length()-1));
 			    
 			}
 

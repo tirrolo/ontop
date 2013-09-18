@@ -1,4 +1,4 @@
-// $ANTLR 3.5 SQL99.g 2013-09-18 00:33:09
+// $ANTLR 3.5 SQL99.g 2013-09-18 09:06:01
 
 package it.unibz.krdb.obda.parser;
 
