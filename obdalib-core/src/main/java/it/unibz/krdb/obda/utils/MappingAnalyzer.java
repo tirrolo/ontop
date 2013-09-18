@@ -56,6 +56,7 @@ import java.util.Stack;
 
 public class MappingAnalyzer {
 
+
 	private DBMetadata dbMetaData;
 	private ArrayList<ParsedMapping> parsedMappings;
 

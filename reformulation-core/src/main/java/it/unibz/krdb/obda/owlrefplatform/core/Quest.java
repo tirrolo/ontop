@@ -28,6 +28,7 @@ import it.unibz.krdb.obda.ontology.Axiom;
 import it.unibz.krdb.obda.ontology.Description;
 import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
+import it.unibz.krdb.obda.owlrefplatform.core.abox.ABoxToFactRuleConverter;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSSIRepositoryManager;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.RepositoryChangedListener;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.AxiomToRuleTranslator;
@@ -58,7 +59,8 @@ import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.UnfoldingMechanism;
 import it.unibz.krdb.obda.utils.MappingAnalyzer;
 import it.unibz.krdb.obda.utils.MappingParser;
-import it.unibz.krdb.obda.utils.ParsedMapping;
+import it.unibz.krdb.obda.utils.MappingSplitter;
+import it.unibz.krdb.obda.utils.MetaMappingExpander;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
@@ -490,10 +492,10 @@ public class Quest implements Serializable, RepositoryChangedListener {
 			throw new Exception("ERROR: Working in virtual mode but no OBDA model has been defined.");
 		}
 
+		//TODO: check and remove this block
 		/*
 		 * Fixing the typing of predicates, in case they are not properly given.
 		 */
-
 		if (inputOBDAModel != null && !inputTBox.getVocabulary().isEmpty()) {
 			MappingVocabularyRepair repairmodel = new MappingVocabularyRepair();
 			repairmodel.fixOBDAModel(inputOBDAModel, inputTBox.getVocabulary());
@@ -691,13 +693,30 @@ public class Quest implements Serializable, RepositoryChangedListener {
 			/***
 			 * Starting mapping processing
 			 */
+			
+			
+			/**
+			 * Split the mapping
+			 */
+			MappingSplitter mappingSplitler = new MappingSplitter();
+			
+			mappingSplitler.splitMappings(unfoldingOBDAModel, sourceId);
+			
+			
+			/**
+			 * Expand the meta mapping 
+			 */
+			MetaMappingExpander metaMappingExpander = new MetaMappingExpander(localConnection, metadata);
+			
+			metaMappingExpander.expand(unfoldingOBDAModel, sourceId);
+			
 
 			MappingAnalyzer analyzer = new MappingAnalyzer(mParser.getParsedMappings(), metadata);
 
 			unfoldingProgram = analyzer.constructDatalogProgram();
 
 			/***
-			 * T-Mappings
+			 * T-Mappings and Fact mappings
 			 */
 			boolean optimizeMap = true;
 
@@ -707,7 +726,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 				/*
 				 * Normalizing language tags. Making all LOWER CASE
 				 */
-
+				
 				normalizeLanguageTagsinMappings(fac, unfoldingProgram);
 
 				/*
@@ -715,6 +734,12 @@ public class Quest implements Serializable, RepositoryChangedListener {
 				 */
 
 				DatalogNormalizer.enforceEqualities(unfoldingProgram);
+				
+				/*
+				 * Adding ontology assertions (ABox) as rules (facts, head with no body).
+				 */
+				ABoxToFactRuleConverter.addFacts(inputTBox.getABox().iterator(), unfoldingProgram, equivalenceMaps);
+				
 
 				unfoldingProgram = applyTMappings(metadata, optimizeMap, unfoldingProgram, sigma, true);
 
@@ -722,12 +747,14 @@ public class Quest implements Serializable, RepositoryChangedListener {
 				 * Adding data typing on the mapping axioms.
 				 */
 				extendTypesWithMetadata(metadata, unfoldingProgram);
-
+				
 				/*
 				 * Adding NOT NULL conditions to the variables used in the head
 				 * of all mappings to preserve SQL-RDF semantics
 				 */
 				addNOTNULLToMappings(fac, unfoldingProgram);
+				
+				
 
 			}
 
@@ -1185,11 +1212,11 @@ public class Quest implements Serializable, RepositoryChangedListener {
 				 */
 				terms.add(currenthead.getTerm(0));
 				Function rdfTypeConstant = fac.getFunction(fac.getUriTemplatePredicate(1),
-						fac.getConstantURI(OBDAVocabulary.RDF_TYPE));
+						fac.getConstantLiteral(OBDAVocabulary.RDF_TYPE));
 				terms.add(rdfTypeConstant);
 
 				String classname = currenthead.getFunctionSymbol().getName();
-				terms.add(fac.getFunction(fac.getUriTemplatePredicate(1), fac.getConstantURI(classname)));
+				terms.add(fac.getFunction(fac.getUriTemplatePredicate(1), fac.getConstantLiteral(classname)));
 				newhead = fac.getFunction(pred, terms);
 
 			} else if (currenthead.getArity() == 2) {
@@ -1200,7 +1227,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 				terms.add(currenthead.getTerm(0));
 
 				String propname = currenthead.getFunctionSymbol().getName();
-				Function propconstant = fac.getFunction(fac.getUriTemplatePredicate(1), fac.getConstantURI(propname));
+				Function propconstant = fac.getFunction(fac.getUriTemplatePredicate(1), fac.getConstantLiteral(propname));
 				terms.add(propconstant);
 				terms.add(currenthead.getTerm(1));
 				newhead = fac.getFunction(pred, terms);

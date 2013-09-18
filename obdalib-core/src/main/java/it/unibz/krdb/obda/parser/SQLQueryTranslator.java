@@ -26,16 +26,23 @@ import org.slf4j.LoggerFactory;
 public class SQLQueryTranslator {
 
 	private ArrayList<ViewDefinition> viewDefinitions;
-	
+	private DBMetadata dbMetaData;
 	private static int id_counter;
 	
 	private static Logger log = LoggerFactory.getLogger(SQLQueryTranslator.class);
 	
 	public SQLQueryTranslator() {
 		this.viewDefinitions = new ArrayList<ViewDefinition>();
+		this.dbMetaData = null;
 		id_counter = 0;		
 	}
 
+	public SQLQueryTranslator(DBMetadata md) {
+		this.viewDefinitions = null;
+		this.dbMetaData = md;
+		id_counter = 0;		
+	}
+	
 	public QueryTree contructQueryTree(String query) {
 		ANTLRStringStream inputStream = new ANTLRStringStream(query);
 		SQL99Lexer lexer = new SQL99Lexer(inputStream);
@@ -70,7 +77,10 @@ public class SQLQueryTranslator {
 		String viewName = String.format("view_%s", id_counter++);
 		
 		ViewDefinition vd = createViewDefintion(viewName, query);
-		viewDefinitions.add(vd);
+		if(this.dbMetaData != null)
+			dbMetaData.add(vd);
+		else
+			viewDefinitions.add(vd);
 		
 		QueryTree vt = createViewTree(viewName, query);
 		return vt;

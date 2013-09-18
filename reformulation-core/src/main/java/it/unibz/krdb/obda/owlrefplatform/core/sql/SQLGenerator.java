@@ -396,8 +396,9 @@ public class SQLGenerator implements SQLQueryGenerator {
 		int size = tableDefinitions.size();
 		if (isTopLevel) {
 			if (size == 0) {
-				throw new RuntimeException("No table definitions");
-			}
+				tableDefinitionsString.append("(" + jdbcutil.getDummyTable() + ") tdummy ");
+				
+			} else {
 			Iterator<String> tableDefinitionsIterator = tableDefinitions.iterator();
 			tableDefinitionsString.append(indent);
 			tableDefinitionsString.append(tableDefinitionsIterator.next());
@@ -405,6 +406,7 @@ public class SQLGenerator implements SQLQueryGenerator {
 				tableDefinitionsString.append(",\n");
 				tableDefinitionsString.append(indent);
 				tableDefinitionsString.append(tableDefinitionsIterator.next());
+			}
 			}
 		} else {
 			/*
@@ -1112,9 +1114,12 @@ public class SQLGenerator implements SQLQueryGenerator {
 		}
 		if (term instanceof ValueConstant) {
 			ValueConstant ct = (ValueConstant) term;
-			if (ct.getType() == COL_TYPE.OBJECT) {
-				int id = getUriid(ct.getValue());
-				return jdbcutil.getSQLLexicalForm(String.valueOf(id));
+			if (isSI) {
+				if (ct.getType() == COL_TYPE.OBJECT || ct.getType() == COL_TYPE.LITERAL) {
+					int id = getUriid(ct.getValue());
+					if (id >= 0)
+						return jdbcutil.getSQLLexicalForm(String.valueOf(id));
+				}
 			}
 			return jdbcutil.getSQLLexicalForm(ct);
 		} else if (term instanceof URIConstant) {

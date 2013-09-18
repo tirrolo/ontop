@@ -151,7 +151,7 @@ public class JDBCUtility implements Serializable {
 		String datetime = rdfliteral.getValue().replace('T', ' ');
 		int dotlocation = datetime.indexOf('.');
 		int zlocation = datetime.indexOf('Z');
-		int minuslocation = datetime.indexOf('-');
+		int minuslocation = datetime.indexOf('-', 10); // added search from 10th pos, because we need to ignore minuses in date
 		int pluslocation = datetime.indexOf('+');
 		StringBuilder bf = new StringBuilder(datetime);
 		if (zlocation != -1) {
@@ -235,5 +235,15 @@ public class JDBCUtility implements Serializable {
 			throw new RuntimeException("Invalid lexical form for xsd:boolean. Found: " + value);
 		}
 		return sql;
+	}
+
+
+
+
+	/**
+	 * @return
+	 */
+	public String getDummyTable() {
+		return "(SELECT 1)";
 	}
 }
