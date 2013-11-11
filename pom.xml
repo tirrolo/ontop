@@ -15,7 +15,7 @@
 		<module>obdalib-core</module>
 		<module>reformulation-core</module>
 		<module>obdalib-owlapi3</module>
-		<module>obdalib-protege41</module>
+		<module>obdalib-protege4</module>
 		<module>obdalib-sesame</module>
 		<module>quest-owlapi3</module>
 		<module>quest-distribution</module>
