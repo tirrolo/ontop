@@ -8,19 +8,19 @@
  */
 package org.semanticweb.ontop.api.io;
 
-import it.unibz.krdb.obda.exception.InvalidMappingException;
-import it.unibz.krdb.obda.exception.InvalidPredicateDeclarationException;
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.SimplePrefixManager;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
-import it.unibz.krdb.obda.parser.TurtleOBDASyntaxParser;
+import org.semanticweb.ontop.exception.InvalidMappingException;
+import org.semanticweb.ontop.exception.InvalidPredicateDeclarationException;
+import org.semanticweb.ontop.io.ModelIOManager;
+import org.semanticweb.ontop.io.PrefixManager;
+import org.semanticweb.ontop.io.SimplePrefixManager;
+import org.semanticweb.ontop.model.OBDADataFactory;
+import org.semanticweb.ontop.model.OBDADataSource;
+import org.semanticweb.ontop.model.OBDAMappingAxiom;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.Predicate;
+import org.semanticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanticweb.ontop.model.impl.RDBMSourceParameterConstants;
+import org.semanticweb.ontop.parser.TurtleOBDASyntaxParser;
 
 import java.io.File;
 import java.io.IOException;

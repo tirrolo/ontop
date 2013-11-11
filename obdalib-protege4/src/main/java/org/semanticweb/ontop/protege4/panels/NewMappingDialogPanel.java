@@ -8,22 +8,22 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.exception.DuplicateMappingException;
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.OBDARDBMappingAxiom;
-import it.unibz.krdb.obda.model.OBDASQLQuery;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.parser.TargetQueryParserException;
-import it.unibz.krdb.obda.parser.TurtleOBDASyntaxParser;
-import it.unibz.krdb.obda.renderer.SourceQueryRenderer;
-import it.unibz.krdb.obda.renderer.TargetQueryRenderer;
+import org.semanticweb.ontop.exception.DuplicateMappingException;
+import org.semanticweb.ontop.io.PrefixManager;
+import org.semanticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanticweb.ontop.model.CQIE;
+import org.semanticweb.ontop.model.OBDADataFactory;
+import org.semanticweb.ontop.model.OBDADataSource;
+import org.semanticweb.ontop.model.OBDAMappingAxiom;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.OBDAQuery;
+import org.semanticweb.ontop.model.OBDARDBMappingAxiom;
+import org.semanticweb.ontop.model.OBDASQLQuery;
+import org.semanticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanticweb.ontop.parser.TargetQueryParserException;
+import org.semanticweb.ontop.parser.TurtleOBDASyntaxParser;
+import org.semanticweb.ontop.renderer.SourceQueryRenderer;
+import org.semanticweb.ontop.renderer.TargetQueryRenderer;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
 import java.awt.Component;

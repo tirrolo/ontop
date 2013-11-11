@@ -8,26 +8,26 @@
  */
 package org.semanticweb.ontop.protege4.core;
 
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.QueryIOManager;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAMappingListener;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAModelListener;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.owlapi3.OBDAModelValidator;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.querymanager.QueryController;
-import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
-import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
-import it.unibz.krdb.obda.querymanager.QueryControllerListener;
-import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
+import org.semanticweb.ontop.io.ModelIOManager;
+import org.semanticweb.ontop.io.PrefixManager;
+import org.semanticweb.ontop.io.QueryIOManager;
+import org.semanticweb.ontop.model.OBDADataFactory;
+import org.semanticweb.ontop.model.OBDADataSource;
+import org.semanticweb.ontop.model.OBDAException;
+import org.semanticweb.ontop.model.OBDAMappingAxiom;
+import org.semanticweb.ontop.model.OBDAMappingListener;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.OBDAModelListener;
+import org.semanticweb.ontop.model.Predicate;
+import org.semanticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanticweb.ontop.owlapi3.OBDAModelValidator;
+import org.semanticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanticweb.ontop.querymanager.QueryController;
+import org.semanticweb.ontop.querymanager.QueryControllerEntity;
+import org.semanticweb.ontop.querymanager.QueryControllerGroup;
+import org.semanticweb.ontop.querymanager.QueryControllerListener;
+import org.semanticweb.ontop.querymanager.QueryControllerQuery;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
 import java.io.File;

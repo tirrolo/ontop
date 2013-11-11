@@ -8,11 +8,11 @@
  */
 package org.semanticweb.ontop.protege4.dialogs;
 
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
+import org.semanticweb.ontop.model.OBDADataFactory;
+import org.semanticweb.ontop.model.OBDADataSource;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanticweb.ontop.model.impl.RDBMSourceParameterConstants;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

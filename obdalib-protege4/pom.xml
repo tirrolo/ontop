@@ -44,8 +44,8 @@
 		<!-- These are dependencies to the OBDA related classes. -->
 
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>obdalib-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-obdalib-core</artifactId>
 			<version>1.9</version>
 		</dependency>
 
@@ -55,13 +55,13 @@
 		<!-- Reasoner libraries -->
 
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>reformulation-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-reformulation-core</artifactId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>quest-owlapi3</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-quest-owlapi3</artifactId>
 			<version>1.9</version>
 			<exclusions>
 				<exclusion>
@@ -75,19 +75,19 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>quest-db</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-quest-db</artifactId>
 			<version>1.9</version>
 		</dependency>
 
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>obdalib-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-obdalib-core</artifactId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>obdalib-owlapi3</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-obdalib-owlapi3</artifactId>
 			<version>1.9</version>
 			<exclusions>
 				<exclusion>
@@ -101,19 +101,19 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>reformulation-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-reformulation-core</artifactId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>obdalib-sesame</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-obdalib-sesame</artifactId>
 			<version>1.9</version>
 
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>quest-sesame</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-quest-sesame</artifactId>
 			<version>1.9</version>
 			<exclusions>
 				<exclusion>
@@ -128,7 +128,7 @@
 		</dependency>
 
 
-		<!-- <dependency> <groupId>inf.unibz.it.obda</groupId> <artifactId>quest-sesame</artifactId> 
+		<!-- <dependency> <groupId>org.semanticweb.ontop</groupId> <artifactId>quest-sesame</artifactId> 
 			<version>1.8</version> </dependency> -->
 
 		<!-- All the following dependencies are required at compilation or runtime 
@@ -379,8 +379,8 @@
 						<!-- This makes sure any dependency in the obdalib <dependency> dependencies 
 							are packed as .classes (uncompressed, no jars) and the rest is packed as 
 							.jars -->
-						<!-- <Embed-Dependency>*;groupId=inf.unibz.it.obda;inline=true,obdalib*;groupId=inf.unibz.it*;inline=true,*;groupId=!it.unibz.krdb;scope=compile|runtime</Embed-Dependency> -->
-						<Embed-Dependency>*;groupId=inf.unibz.it.obda.*;inline=true,*;groupId=it.unibz.krdb.obda.protege4.*;inline=true,*;groupId=!inf.unibz.it.obda;scope=compile|runtime</Embed-Dependency>
+						<!-- <Embed-Dependency>*;groupId=org.semanticweb.ontop;inline=true,obdalib*;groupId=inf.unibz.it*;inline=true,*;groupId=!it.unibz.krdb;scope=compile|runtime</Embed-Dependency> -->
+						<Embed-Dependency>*;groupId=org.semanticweb.ontop.*;inline=true,*;groupId=org.semanticweb.ontop.protege4.*;inline=true,*;groupId=!org.semanticweb.ontop;scope=compile|runtime</Embed-Dependency>
 
 						<Bundle-Name>-ontopPro-</Bundle-Name>
 						<!-- necessary for protege 4 plugins -->
@@ -398,8 +398,8 @@
 						<Bundle-Version>1.9</Bundle-Version>
 						<Build-Number>0</Build-Number>
 						<!-- <Private-Package>!osgi.wiring.package, !org.w3c.dom.ranges, !org.w3c.dom.traversal*</Private-Package> -->
-						<Export-Package>it.unibz.krdb.obda.protege4.*</Export-Package>
-						<Import-Package>it.unibz.krdb.obda.protege4.*,
+						<Export-Package>org.semanticweb.ontop.protege4.*</Export-Package>
+						<Import-Package>org.semanticweb.ontop.protege4.*,
 							!org.json,
 							!org.codehaus.groovy.*,
 							!groovy.*,
@@ -407,7 +407,7 @@
 							javax.accessibility,
 							javax.naming.*,javax.management.*,javax.sql.*,
 							javax.xml.parsers.*,org.xml.sax.*,
-							it.unibz.krdb.obda.*,
+							org.semanticweb.ontop.*,
 							org.protege.osgi.jdbc, org.protege.osgi.*,
 							uk.ac.manchester.*,
 							org.protege.*,
@@ -437,7 +437,7 @@
 
 						<!-- The name of the plugin for OSGi dependencies. It has to be singleton 
 							or protege wont load it -->
-						<Bundle-SymbolicName>it.unibz.krdb.obda.protege4;singleton:=true</Bundle-SymbolicName>
+						<Bundle-SymbolicName>org.semanticweb.ontop.protege4;singleton:=true</Bundle-SymbolicName>
 
 						<!-- This makes sure ONLY the necessary dependencies are imported. 
 							If this is not supplied, maven-bundle-plugin will attempt to import ALL classes 

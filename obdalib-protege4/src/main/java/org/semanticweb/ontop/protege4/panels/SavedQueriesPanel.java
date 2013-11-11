@@ -8,11 +8,11 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.querymanager.QueryController;
-import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
-import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
-import it.unibz.krdb.obda.querymanager.QueryControllerListener;
-import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
+import org.semanticweb.ontop.querymanager.QueryController;
+import org.semanticweb.ontop.querymanager.QueryControllerEntity;
+import org.semanticweb.ontop.querymanager.QueryControllerGroup;
+import org.semanticweb.ontop.querymanager.QueryControllerListener;
+import org.semanticweb.ontop.querymanager.QueryControllerQuery;
 
 import java.awt.Dialog.ModalityType;
 import java.util.Vector;

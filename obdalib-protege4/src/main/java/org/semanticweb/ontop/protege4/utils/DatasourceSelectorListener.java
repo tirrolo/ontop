@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.utils;
 
-import it.unibz.krdb.obda.model.OBDADataSource;
+import org.semanticweb.ontop.model.OBDADataSource;
 
 public interface DatasourceSelectorListener
 {

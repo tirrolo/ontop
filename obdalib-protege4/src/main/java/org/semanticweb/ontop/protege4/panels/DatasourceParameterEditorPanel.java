@@ -8,12 +8,12 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAModelListener;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
+import org.semanticweb.ontop.model.OBDADataSource;
+import org.semanticweb.ontop.model.OBDAException;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.OBDAModelListener;
+import org.semanticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanticweb.ontop.model.impl.RDBMSourceParameterConstants;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
 import java.awt.BorderLayout;

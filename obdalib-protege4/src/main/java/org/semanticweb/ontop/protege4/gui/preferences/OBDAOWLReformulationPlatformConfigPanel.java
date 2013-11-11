@@ -11,7 +11,7 @@ package org.semanticweb.ontop.protege4.gui.preferences;
 
 import java.awt.BorderLayout;
 
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
+import org.semanticweb.ontop.owlrefplatform.core.QuestPreferences;
 
 import org.protege.editor.owl.ui.preferences.OWLPreferencesPanel;
 import org.semanticweb.ontop.protege4.panels.ConfigPanel;

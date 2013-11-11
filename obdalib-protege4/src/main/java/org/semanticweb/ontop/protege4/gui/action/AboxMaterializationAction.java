@@ -8,12 +8,12 @@
  */
 package org.semanticweb.ontop.protege4.gui.action;
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.owlapi3.OBDAModelSynchronizer;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.OWLAPI3Materializer;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanticweb.ontop.ontology.Ontology;
+import org.semanticweb.ontop.owlapi3.OBDAModelSynchronizer;
+import org.semanticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanticweb.ontop.owlrefplatform.owlapi3.OWLAPI3Materializer;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -59,7 +59,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sesameWrapper.SesameMaterializer;
+import org.semanticweb.ontop.sesame.wrapper.SesameMaterializer;
 import uk.ac.manchester.cs.owl.owlapi.OWLOntologyImpl;
 
 /***

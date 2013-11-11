@@ -8,9 +8,9 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.SimplePrefixManager;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
+import org.semanticweb.ontop.io.PrefixManager;
+import org.semanticweb.ontop.io.SimplePrefixManager;
+import org.semanticweb.ontop.model.impl.OBDAVocabulary;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

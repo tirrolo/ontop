@@ -8,10 +8,10 @@
  */
 package org.semanticweb.ontop.protege4.views;
 
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.owlapi3.TargetQueryValidator;
+import org.semanticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanticweb.ontop.owlapi3.TargetQueryValidator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

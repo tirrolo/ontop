@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.utils.VirtualABoxStatistics;
+import org.semanticweb.ontop.utils.VirtualABoxStatistics;
 
 import java.util.HashMap;
 

@@ -8,9 +8,9 @@
  */
 package org.semanticweb.ontop.protege4.gui.action;
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.utils.VirtualABoxStatistics;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanticweb.ontop.utils.VirtualABoxStatistics;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

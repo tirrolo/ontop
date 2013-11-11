@@ -8,13 +8,13 @@
  */
 package org.semanticweb.ontop.protege4.views;
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.owlapi3.OWLResultSetWriter;
-import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SPARQLQueryUtility;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLResultSet;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLStatement;
+import org.semanticweb.ontop.io.PrefixManager;
+import org.semanticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanticweb.ontop.owlapi3.OWLResultSetWriter;
+import org.semanticweb.ontop.owlrefplatform.core.queryevaluation.SPARQLQueryUtility;
+import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWL;
+import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLResultSet;
+import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLStatement;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

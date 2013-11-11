@@ -8,8 +8,8 @@
  */
 package org.semanticweb.ontop.protege4.gui;
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLResultSet;
+import org.semanticweb.ontop.io.PrefixManager;
+import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLResultSet;
 
 import java.util.Iterator;
 import java.util.List;

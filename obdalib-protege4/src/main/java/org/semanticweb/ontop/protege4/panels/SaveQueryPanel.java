@@ -8,8 +8,8 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.querymanager.QueryController;
-import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
+import org.semanticweb.ontop.querymanager.QueryController;
+import org.semanticweb.ontop.querymanager.QueryControllerGroup;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

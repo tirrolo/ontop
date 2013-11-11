@@ -8,13 +8,13 @@
  */
 package org.semanticweb.ontop.protege4.gui.treemodels;
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.impl.CQIEImpl;
-import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
-import it.unibz.krdb.obda.model.impl.VariableImpl;
+import org.semanticweb.ontop.model.Function;
+import org.semanticweb.ontop.model.CQIE;
+import org.semanticweb.ontop.model.OBDAMappingAxiom;
+import org.semanticweb.ontop.model.Term;
+import org.semanticweb.ontop.model.impl.CQIEImpl;
+import org.semanticweb.ontop.model.impl.FunctionalTermImpl;
+import org.semanticweb.ontop.model.impl.VariableImpl;
 
 import java.util.List;
 

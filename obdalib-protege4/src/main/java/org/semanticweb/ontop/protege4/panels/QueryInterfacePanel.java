@@ -8,9 +8,9 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.querymanager.QueryController;
-import it.unibz.krdb.obda.utils.OBDAPreferenceChangeListener;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.querymanager.QueryController;
+import org.semanticweb.ontop.utils.OBDAPreferenceChangeListener;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;

@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.gui.treemodels;
 
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
+import org.semanticweb.ontop.model.OBDAMappingAxiom;
 
 import java.util.List;
 

@@ -8,8 +8,8 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
+import org.semanticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanticweb.ontop.owlrefplatform.core.QuestPreferences;
 
 import java.awt.Dimension;
 

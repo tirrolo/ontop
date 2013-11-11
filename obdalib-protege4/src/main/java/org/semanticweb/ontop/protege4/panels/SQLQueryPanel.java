@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.model.OBDADataSource;
+import org.semanticweb.ontop.model.OBDADataSource;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
 import java.sql.Connection;

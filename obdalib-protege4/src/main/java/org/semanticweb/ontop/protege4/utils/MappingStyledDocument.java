@@ -8,8 +8,8 @@
  */
 package org.semanticweb.ontop.protege4.utils;
 
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.OBDAModel;
+import org.semanticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanticweb.ontop.model.OBDAModel;
 
 import javax.swing.JTextPane;
 import javax.swing.text.DefaultStyledDocument;

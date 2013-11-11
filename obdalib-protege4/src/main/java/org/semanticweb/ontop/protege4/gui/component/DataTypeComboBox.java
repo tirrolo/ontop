@@ -8,8 +8,8 @@
  */
 package org.semanticweb.ontop.protege4.gui.component;
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
+import org.semanticweb.ontop.model.Predicate;
+import org.semanticweb.ontop.model.impl.OBDAVocabulary;
 
 import java.awt.Component;
 import java.awt.Dimension;

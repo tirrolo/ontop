@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.utils.OBDAPreferences;
+import org.semanticweb.ontop.utils.OBDAPreferences;
 
 import java.awt.Color;
 import java.awt.Font;

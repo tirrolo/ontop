@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.gui.action;
 
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.OWLAPI3Materializer;
+import org.semanticweb.ontop.owlrefplatform.owlapi3.OWLAPI3Materializer;
 
 import java.awt.Container;
 import java.util.Iterator;

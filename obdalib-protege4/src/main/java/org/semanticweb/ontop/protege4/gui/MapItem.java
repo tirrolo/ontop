@@ -8,8 +8,8 @@
  */
 package org.semanticweb.ontop.protege4.gui;
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.Predicate;
+import org.semanticweb.ontop.io.PrefixManager;
+import org.semanticweb.ontop.model.Predicate;
 
 public class MapItem {
 

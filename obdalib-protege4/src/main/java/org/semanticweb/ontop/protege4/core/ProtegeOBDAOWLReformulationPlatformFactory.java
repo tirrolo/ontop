@@ -8,8 +8,8 @@
  */
 package org.semanticweb.ontop.protege4.core;
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLFactory;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLFactory;
 
 import java.util.Properties;
 

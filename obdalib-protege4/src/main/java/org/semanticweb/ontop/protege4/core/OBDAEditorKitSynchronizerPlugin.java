@@ -8,10 +8,10 @@
  */
 package org.semanticweb.ontop.protege4.core;
 
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.utils.OBDAPreferences;
+import org.semanticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanticweb.ontop.utils.OBDAPreferences;
 
 import java.util.Iterator;
 import java.util.List;

@@ -8,10 +8,10 @@
  */
 package org.semanticweb.ontop.protege4.gui.treemodels;
 
-import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
-import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
-import it.unibz.krdb.obda.querymanager.QueryControllerListener;
-import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
+import org.semanticweb.ontop.querymanager.QueryControllerEntity;
+import org.semanticweb.ontop.querymanager.QueryControllerGroup;
+import org.semanticweb.ontop.querymanager.QueryControllerListener;
+import org.semanticweb.ontop.querymanager.QueryControllerQuery;
 
 import java.util.Enumeration;
 import java.util.List;

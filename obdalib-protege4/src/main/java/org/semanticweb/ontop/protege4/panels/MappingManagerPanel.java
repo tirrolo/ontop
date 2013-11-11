@@ -8,13 +8,13 @@
  */
 package org.semanticweb.ontop.protege4.panels;
 
-import it.unibz.krdb.obda.exception.DuplicateMappingException;
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.utils.IDGenerator;
-import it.unibz.krdb.obda.utils.SourceQueryValidator;
+import org.semanticweb.ontop.exception.DuplicateMappingException;
+import org.semanticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanticweb.ontop.model.OBDADataSource;
+import org.semanticweb.ontop.model.OBDAMappingAxiom;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.utils.IDGenerator;
+import org.semanticweb.ontop.utils.SourceQueryValidator;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

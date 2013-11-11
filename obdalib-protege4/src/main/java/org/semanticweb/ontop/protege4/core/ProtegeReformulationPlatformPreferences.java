@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.core;
 
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
+import org.semanticweb.ontop.owlrefplatform.core.QuestPreferences;
 
 import org.protege.editor.core.Disposable;
 

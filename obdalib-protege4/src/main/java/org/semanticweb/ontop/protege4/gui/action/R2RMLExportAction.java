@@ -8,10 +8,10 @@
  */
 package org.semanticweb.ontop.protege4.gui.action;
 
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.sesame.r2rml.R2RMLWriter;
+import org.semanticweb.ontop.model.OBDAMappingAxiom;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanticweb.ontop.sesame.r2rml.R2RMLWriter;
 
 import java.awt.event.ActionEvent;
 import java.io.File;

@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.views;
 
-import it.unibz.krdb.obda.io.PrefixManager;
+import org.semanticweb.ontop.io.PrefixManager;
 
 import java.util.Map;
 

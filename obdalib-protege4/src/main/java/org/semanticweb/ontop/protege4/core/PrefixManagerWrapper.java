@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.core;
 
-import it.unibz.krdb.obda.io.AbstractPrefixManager;
+import org.semanticweb.ontop.io.AbstractPrefixManager;
 
 import java.util.ArrayList;
 import java.util.Collections;

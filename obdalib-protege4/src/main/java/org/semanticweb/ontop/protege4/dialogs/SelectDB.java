@@ -8,8 +8,8 @@
  */
 package org.semanticweb.ontop.protege4.dialogs;
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAModel;
+import org.semanticweb.ontop.model.OBDADataSource;
+import org.semanticweb.ontop.model.OBDAModel;
 
 import java.util.Iterator;
 

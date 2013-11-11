@@ -8,10 +8,10 @@
  */
 package org.semanticweb.ontop.protege4.gui.action;
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.owlapi3.bootstrapping.DirectMappingBootstrapper;
+import org.semanticweb.ontop.model.OBDADataSource;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanticweb.ontop.owlapi3.bootstrapping.DirectMappingBootstrapper;
 
 import java.awt.Component;
 import java.awt.Dimension;

@@ -10,7 +10,7 @@ package org.semanticweb.ontop.protege4.gui.treemodels;
 
 import org.semanticweb.ontop.protege4.gui.treemodels.TreeModelFilter;
 
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
+import org.semanticweb.ontop.model.OBDAMappingAxiom;
 
 public class MappingIDTreeModelFilter extends TreeModelFilter<OBDAMappingAxiom> {
 

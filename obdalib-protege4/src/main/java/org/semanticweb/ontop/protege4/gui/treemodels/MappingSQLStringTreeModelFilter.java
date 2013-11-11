@@ -10,8 +10,8 @@ package org.semanticweb.ontop.protege4.gui.treemodels;
 
 import org.semanticweb.ontop.protege4.gui.treemodels.TreeModelFilter;
 
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDASQLQuery;
+import org.semanticweb.ontop.model.OBDAMappingAxiom;
+import org.semanticweb.ontop.model.OBDASQLQuery;
 
 /**
  * This filter receives a string in the constructor and returns true if any mapping contains the string in the body.

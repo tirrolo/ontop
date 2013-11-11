@@ -8,16 +8,16 @@
  */
 package org.semanticweb.ontop.protege4.utils;
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.parser.TargetQueryParserException;
-import it.unibz.krdb.obda.parser.TurtleOBDASyntaxParser;
+import org.semanticweb.ontop.io.PrefixManager;
+import org.semanticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanticweb.ontop.model.CQIE;
+import org.semanticweb.ontop.model.Function;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.Predicate;
+import org.semanticweb.ontop.model.Term;
+import org.semanticweb.ontop.model.URIConstant;
+import org.semanticweb.ontop.parser.TargetQueryParserException;
+import org.semanticweb.ontop.parser.TurtleOBDASyntaxParser;
 
 import java.awt.Color;
 import java.awt.Font;

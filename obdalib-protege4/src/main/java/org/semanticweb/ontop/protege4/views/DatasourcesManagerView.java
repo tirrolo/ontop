@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.views;
 
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
+import org.semanticweb.ontop.model.impl.OBDAModelImpl;
 
 import java.awt.BorderLayout;
 
