@@ -8,9 +8,9 @@
  */
 package org.semanticweb.ontop.protege4.gui.component;
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.Predicate;
+import org.semanticweb.ontop.io.PrefixManager;
+import org.semanticweb.ontop.model.OBDAModel;
+import org.semanticweb.ontop.model.Predicate;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

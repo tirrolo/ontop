@@ -14,7 +14,7 @@ import org.semanticweb.ontop.model.OBDAModel;
 import org.semanticweb.ontop.model.OBDAModelListener;
 import org.semanticweb.ontop.model.impl.OBDADataFactoryImpl;
 import org.semanticweb.ontop.model.impl.RDBMSourceParameterConstants;
-import it.unibz.krdb.sql.JDBCConnectionManager;
+import org.semanticweb.ontop.sql.JDBCConnectionManager;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

@@ -28,7 +28,7 @@ import org.semanticweb.ontop.querymanager.QueryControllerEntity;
 import org.semanticweb.ontop.querymanager.QueryControllerGroup;
 import org.semanticweb.ontop.querymanager.QueryControllerListener;
 import org.semanticweb.ontop.querymanager.QueryControllerQuery;
-import it.unibz.krdb.sql.JDBCConnectionManager;
+import org.semanticweb.ontop.sql.JDBCConnectionManager;
 
 import java.io.File;
 import java.io.IOException;

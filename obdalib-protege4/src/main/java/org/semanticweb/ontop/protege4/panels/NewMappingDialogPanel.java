@@ -24,7 +24,7 @@ import org.semanticweb.ontop.parser.TargetQueryParserException;
 import org.semanticweb.ontop.parser.TurtleOBDASyntaxParser;
 import org.semanticweb.ontop.renderer.SourceQueryRenderer;
 import org.semanticweb.ontop.renderer.TargetQueryRenderer;
-import it.unibz.krdb.sql.JDBCConnectionManager;
+import org.semanticweb.ontop.sql.JDBCConnectionManager;
 
 import java.awt.Component;
 import java.awt.Font;

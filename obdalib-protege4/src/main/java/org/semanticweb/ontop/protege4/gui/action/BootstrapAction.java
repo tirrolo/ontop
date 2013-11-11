@@ -11,7 +11,7 @@ package org.semanticweb.ontop.protege4.gui.action;
 import org.semanticweb.ontop.model.OBDADataSource;
 import org.semanticweb.ontop.model.OBDAModel;
 import org.semanticweb.ontop.model.impl.OBDAModelImpl;
-import org.semanticweb.ontop.owlapi3.bootstrapping.DirectMappingBootstrapper;
+import org.semanticweb.ontop.bootstrapping.DirectMappingBootstrapper;
 
 import java.awt.Component;
 import java.awt.Dimension;

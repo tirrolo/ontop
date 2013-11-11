@@ -8,7 +8,7 @@
  */
 package org.semanticweb.ontop.protege4.gui.preferences;
 
-import it.unibz.krdb.obda.utils.OBDAPreferences;
+import org.semanticweb.ontop.utils.OBDAPreferences;
 
 import java.awt.GridBagConstraints;
 
