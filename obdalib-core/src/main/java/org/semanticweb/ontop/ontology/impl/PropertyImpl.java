@@ -1,0 +1,57 @@
+/*
+ * Copyright (C) 2009-2013, Free University of Bozen Bolzano
+ * This source code is available under the terms of the Affero General Public
+ * License v3.
+ * 
+ * Please see LICENSE.txt for full license terms, including the availability of
+ * proprietary exceptions.
+ */
+package org.semanticweb.ontop.ontology.impl;
+
+import org.semanticweb.ontop.model.Predicate;
+import org.semanticweb.ontop.ontology.Property;
+
+public class PropertyImpl implements Property {
+
+	private static final long serialVersionUID = -2514037755762973974L;
+	
+	private boolean inverse = false;
+	private Predicate predicate = null;
+
+	protected PropertyImpl(Predicate p, boolean isInverse) {
+		this.predicate = p;
+		this.inverse = isInverse;
+	}
+
+	public boolean isInverse() {
+		return inverse;
+	}
+
+	public Predicate getPredicate() {
+		return predicate;
+	}
+
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
+	public boolean equals(Object obj) {
+		if (!(obj instanceof PropertyImpl)) {
+			return false;
+		}
+		PropertyImpl concept2 = (PropertyImpl) obj;
+		if (inverse != concept2.inverse) {
+			return false;
+		}
+		return (predicate.equals(concept2.predicate));
+	}
+
+	public String toString() {
+		StringBuilder bf = new StringBuilder();
+		bf.append(predicate.toString());
+		if (inverse) {
+			bf.append("^-");
+		}
+		return bf.toString();
+	}
+}

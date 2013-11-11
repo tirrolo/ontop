@@ -1,161 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.0.10" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true">  
-  <class id="1" corner="BOTTOM_RIGHT" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.Quest" 
-    project="reformulation-core" 
-    file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/Quest.java" binary="false">    
+  <class id="1" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.Quest" project="reformulation-core" 
+    file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/Quest.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="532" width="323" x="950" y="368"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="2" corner="BOTTOM_RIGHT" language="java" 
-    name="it.unibz.krdb.obda.owlrefplatform.core.mappingprocessing.TMappingProcessor" project="reformulation-core" 
+  <class id="2" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.mappingprocessing.TMappingProcessor" 
+    project="reformulation-core" 
     file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/mappingprocessing/TMappingProcessor.java" 
-    binary="false">    
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="284" width="335" x="29" y="465"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <interface id="3" corner="BOTTOM_RIGHT" language="java" 
-    name="it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.EvaluationEngine" project="reformulation-core" 
+  <interface id="3" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.EvaluationEngine" 
+    project="reformulation-core" 
     file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/queryevaluation/EvaluationEngine.java" 
-    binary="false">    
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="143" width="311" x="1379" y="704"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <interface id="4" corner="BOTTOM_RIGHT" language="java" 
-    name="it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter" project="reformulation-core" 
+  <interface id="4" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter" 
+    project="reformulation-core" 
     file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/reformulation/QueryRewriter.java" 
-    binary="false">    
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="109" width="307" x="1379" y="400"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <interface id="5" corner="BOTTOM_RIGHT" language="java" 
-    name="it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator" project="reformulation-core" 
+  <interface id="5" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator" 
+    project="reformulation-core" 
     file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/srcquerygeneration/SQLQueryGenerator.java" 
-    binary="false">    
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="58" width="314" x="1376" y="624"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <class id="6" corner="BOTTOM_RIGHT" language="java" 
-    name="it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.EquivalenceTBoxOptimizer" project="reformulation-core" 
+  <class id="6" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.EquivalenceTBoxOptimizer" 
+    project="reformulation-core" 
     file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/tboxprocessing/EquivalenceTBoxOptimizer.java" 
-    binary="false">    
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="163" width="335" x="28" y="241"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="7" corner="BOTTOM_RIGHT" language="java" 
-    name="it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.SigmaTBoxOptimizer" project="reformulation-core" 
+  <class id="7" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.SigmaTBoxOptimizer" 
+    project="reformulation-core" 
     file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/tboxprocessing/SigmaTBoxOptimizer.java" 
-    binary="false">    
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="299" width="333" x="31" y="799"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <interface id="8" corner="BOTTOM_RIGHT" language="java" 
-    name="it.unibz.krdb.obda.owlrefplatform.core.unfolding.UnfoldingMechanism" project="reformulation-core" 
+  <interface id="8" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.unfolding.UnfoldingMechanism" 
+    project="reformulation-core" 
     file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/unfolding/UnfoldingMechanism.java" 
-    binary="false">    
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="72" width="313" x="1377" y="530"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <interface id="9" corner="BOTTOM_RIGHT" language="java" name="it.unibz.krdb.obda.ontology.Ontology" 
-    project="obdalib-core" file="/obdalib-core/src/main/java/it/unibz/krdb/obda/ontology/Ontology.java" binary="false">    
+  <interface id="9" language="java" name="org.semanticweb.ontop.ontology.Ontology" project="obdalib-core" 
+    file="/obdalib-core/src/main/java/org/semanticweb/ontop/ontology/Ontology.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="403" width="326" x="485" y="477"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <class id="10" corner="BOTTOM_RIGHT" language="java" name="it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL" 
-    project="quest-owlapi3" file="/quest-owlapi3/src/main/java/it/unibz/krdb/obda/owlrefplatform/owlapi3/QuestOWL.java" 
-    binary="false">    
+  <class id="10" language="java" name="org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWL" project="quest-owlapi3" 
+    file="/quest-owlapi3/src/main/java/org/semanticweb/ontop/owlrefplatform/owlapi3/QuestOWL.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="942" width="288" x="2462" y="894"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="11" corner="BOTTOM_RIGHT" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.QuestStatement" 
+  <class id="11" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.QuestStatement" 
     project="reformulation-core" 
-    file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/QuestStatement.java" binary="false">    
+    file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/QuestStatement.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="45" width="294" x="2094" y="365"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="false" package="false" protected="false" private="false"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="12" corner="BOTTOM_RIGHT" language="java" name="it.unibz.krdb.obda.model.OBDAStatement" 
-    project="obdalib-core" file="/obdalib-core/src/main/java/it/unibz/krdb/obda/model/OBDAStatement.java" binary="false">    
+  <interface id="12" language="java" name="org.semanticweb.ontop.model.OBDAStatement" project="obdalib-core" 
+    file="/obdalib-core/src/main/java/org/semanticweb/ontop/model/OBDAStatement.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="283" width="286" x="2094" y="38"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <interface id="13" corner="BOTTOM_RIGHT" language="java" name="it.unibz.krdb.obda.model.OBDAModel" 
-    project="obdalib-core" file="/obdalib-core/src/main/java/it/unibz/krdb/obda/model/OBDAModel.java" binary="false">    
+  <interface id="13" language="java" name="org.semanticweb.ontop.model.OBDAModel" project="obdalib-core" 
+    file="/obdalib-core/src/main/java/org/semanticweb/ontop/model/OBDAModel.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="37" width="273" x="1742" y="896"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="false" package="false" protected="false" private="false"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <class id="14" corner="BOTTOM_RIGHT" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.QuestConnection" 
+  <class id="14" language="java" name="it.unibz.krdb.obda.owlrefplatform.core.QuestConnection" 
     project="reformulation-core" 
-    file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/QuestConnection.java" binary="false">    
+    file="/reformulation-core/src/main/java/it/unibz/krdb/obda/owlrefplatform/core/QuestConnection.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="221" width="287" x="2101" y="492"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="15" corner="BOTTOM_RIGHT" language="java" 
-    name="it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLConnection" project="obdalib-protege41" 
+  <class id="15" language="java" name="it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLConnection" 
+    project="obdalib-protege41" 
     file="/obdalib-protege41/quest-owlapi3-java/it/unibz/krdb/obda/owlrefplatform/owlapi3/QuestOWLConnection.java" 
-    binary="false">    
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="227" width="286" x="2463" y="490"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="16" corner="BOTTOM_RIGHT" language="java" 
-    name="it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLStatement" project="quest-owlapi3" 
-    file="/quest-owlapi3/src/main/java/it/unibz/krdb/obda/owlrefplatform/owlapi3/QuestOWLStatement.java" binary="false">    
+  <class id="16" language="java" name="org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLStatement" 
+    project="quest-owlapi3" 
+    file="/quest-owlapi3/src/main/java/org/semanticweb/ontop/owlrefplatform/owlapi3/QuestOWLStatement.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="57" width="289" x="2459" y="359"/>    
-    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="false" package="false" protected="false" private="false"/>    
+    <display autosize="false" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="false" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="17" corner="BOTTOM_RIGHT" language="java" name="it.unibz.krdb.obda.owlapi3.OWLQueryReasoner" 
-    project="obdalib-owlapi3" file="/obdalib-owlapi3/src/main/java/it/unibz/krdb/obda/owlapi3/OWLQueryReasoner.java" 
-    binary="false">    
+  <interface id="17" language="java" name="it.unibz.krdb.obda.owlapi3.OWLQueryReasoner" project="obdalib-owlapi3" 
+    file="/obdalib-owlapi3/src/main/java/it/unibz/krdb/obda/owlapi3/OWLQueryReasoner.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="95" width="281" x="2467" y="751"/>    
-    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
   <association id="18">    
@@ -460,9 +482,9 @@
     <display labels="true" multiplicity="false"/>  
   </association>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-    visibility="true">    
-    <attributes public="true" package="true" protected="true" private="true"/>    
-    <operations public="true" package="true" protected="true" private="true"/>  
+    accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true" static="true"/>    
+    <operations public="true" package="true" protected="true" private="true" static="true"/>  
   </classifier-display>  
   <association-display labels="true" multiplicity="true"/>
 </class-diagram>

@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2009-2013, Free University of Bozen Bolzano
+ * This source code is available under the terms of the Affero General Public
+ * License v3.
+ * 
+ * Please see LICENSE.txt for full license terms, including the availability of
+ * proprietary exceptions.
+ */
+package org.semanticweb.ontop.owlrefplatform.core.reformulation;
+
+import java.io.Serializable;
+
+import org.semanticweb.ontop.model.OBDAException;
+import org.semanticweb.ontop.model.OBDAQuery;
+import org.semanticweb.ontop.ontology.Ontology;
+
+public interface QueryRewriter extends Serializable {
+
+	public OBDAQuery rewrite(OBDAQuery input) throws OBDAException;
+
+	/***
+	 * Sets the ontology that this rewriter should use to compute any
+	 * reformulation.
+	 * 
+	 * @param ontology
+	 */
+	public void setTBox(Ontology ontology);
+
+	/**
+	 * Sets the ABox dependencies that the reformulator can use to optimize the
+	 * reformulations (if it is able to do so).
+	 * 
+	 * @param sigma
+	 */
+	public void setCBox(Ontology sigma);
+
+	/***
+	 * Initializes the rewriter. This method must be called before calling
+	 * "rewrite" and after the TBox and CBox have been updated.
+	 */
+	public void initialize();
+
+}

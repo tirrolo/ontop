@@ -8,7 +8,8 @@
  */
 package it.unibz.krdb.obda.testsuite;
 
-import it.unibz.krdb.obda.quest.sparql.QuestMemorySPARQLQueryTest;
+import org.semanticweb.ontop.quest.sparql.QuestMemorySPARQLQueryTest;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

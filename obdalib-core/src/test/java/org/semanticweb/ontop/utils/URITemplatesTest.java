@@ -1,0 +1,22 @@
+package org.semanticweb.ontop.utils;
+
+import java.util.Arrays;
+
+import org.semanticweb.ontop.utils.URITemplates;
+
+import junit.framework.TestCase;
+
+public class URITemplatesTest extends TestCase {
+	
+	@SuppressWarnings("unchecked")
+	public void testFormat(){
+		assertEquals("http://example.org/A/1", URITemplates.format("http://example.org/{}/{}", "A", 1));
+		
+		assertEquals("http://example.org/A", URITemplates.format("http://example.org/{}", "A"));
+		
+		assertEquals("http://example.org/A/1", URITemplates.format("http://example.org/{}/{}", Arrays.asList("A", 1)));
+		
+		assertEquals("http://example.org/A", URITemplates.format("http://example.org/{}", Arrays.asList("A")));
+	}
+
+}
