@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>inf.unibz.it.obda</groupId>
-    <artifactId>obdalib-parent</artifactId>
+    <groupId>org.semanticweb.ontop</groupId>
+    <artifactId>ontop-parent</artifactId>
     <version>1.9</version>
   </parent>
-  <artifactId>quest-test</artifactId>
+  <artifactId>ontop-test</artifactId>
 
 	<dependencies>
 		<dependency>
@@ -21,23 +21,23 @@
 			<artifactId>logback-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>obdalib-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-obdalib-core</artifactId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>obdalib-owlapi3</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-obdalib-owlapi3</artifactId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>reformulation-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-reformulation-core</artifactId>
 			<version>1.9</version>
 		</dependency> 
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>quest-sesame</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-quest-sesame</artifactId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>

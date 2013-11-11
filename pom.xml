@@ -1,28 +1,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>inf.unibz.it.obda</groupId>
-	<artifactId>obdalib-parent</artifactId>
+	<groupId>org.semanticweb.ontop</groupId>
+	<artifactId>ontop-parent</artifactId>
 	<packaging>pom</packaging>
 	<version>1.9</version>
-	<name>obdalib-parent</name>
+	<name>ontop-parent</name>
 	<url>http://obda.inf.unibz.it/</url>
 
 	<dependencies>
 	</dependencies>
 
 	<modules>
-		<module>obdalib-core</module>
-		<module>reformulation-core</module>
-		<module>obdalib-owlapi3</module>
-		<module>obdalib-protege41</module>
-		<module>obdalib-sesame</module>
-		<module>quest-owlapi3</module>
-		<module>quest-distribution</module>
-		<module>quest-sparql-compliance</module>
-		<module>quest-sesame</module>
-		<module>quest-db</module>
-		<module>quest-rdb2rdf-compliance</module>
+		<module>ontop-obdalib-core</module>
+		<module>ontop-reformulation-core</module>
+		<module>ontop-obdalib-owlapi3</module>
+		<module>ontop-obdalib-protege41</module>
+		<module>ontop-obdalib-sesame</module>
+		<module>ontop-quest-owlapi3</module>
+		<module>ontop-distribution</module>
+		<module>ontop-sparql-compliance</module>
+		<module>ontop-quest-sesame</module>
+		<module>ontop-quest-db</module>
+		<module>ontop-rdb2rdf-compliance</module>
 
 		<module>quest-test</module>
 	</modules>

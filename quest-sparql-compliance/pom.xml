@@ -2,14 +2,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>obdalib-parent</artifactId>
-		<groupId>inf.unibz.it.obda</groupId>
+		<artifactId>ontop-parent</artifactId>
+		<groupId>org.semanticweb.ontop</groupId>
 		<version>1.9</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>quest-sparql-compliance</artifactId>
-	<name>sparql-compliance-tests</name>
-	
+	<artifactId>ontop-sparql-compliance</artifactId>
+	<name>ontop-sparql-compliance-tests</name>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -24,23 +24,23 @@
 			<artifactId>logback-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>obdalib-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-obdalib-core</artifactId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>obdalib-owlapi3</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-obdalib-owlapi3</artifactId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>reformulation-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-reformulation-core</artifactId>
 			<version>1.9</version>
-		</dependency> 
+		</dependency>
 		<dependency>
-			<groupId>inf.unibz.it.obda</groupId>
-			<artifactId>quest-sesame</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
+			<artifactId>ontop-quest-sesame</artifactId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
@@ -76,7 +76,7 @@
 		<dependency>
 			<groupId>com.ibm</groupId>
 			<artifactId>db2jcc4.jar</artifactId>
-			<scope>test</scope>		
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
@@ -94,27 +94,27 @@
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-api</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-sparql-compliance</artifactId>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-sparql-testsuite</artifactId>
-        </dependency>      
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-sparql-compliance</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openrdf.sesame</groupId>
+			<artifactId>sesame-sparql-testsuite</artifactId>
+		</dependency>
 	</dependencies>
-                          
+
 	<repositories>
 		<repository>
 			<id>sesame-official-repository</id>
 			<url>http://repo.aduna-software.org/maven2/releases</url>
 			<releases>
 				<enabled>true</enabled>
-			</releases> 
-			 <snapshots>
-    				<enabled>true</enabled>
-    			</snapshots>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 		<repository>
 			<id>bolzano-nexus-public</id>
@@ -133,7 +133,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
- 					
+
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>

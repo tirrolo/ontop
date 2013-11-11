@@ -2,12 +2,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>obdalib-parent</artifactId>
-		<groupId>inf.unibz.it.obda</groupId>
+		<artifactId>ontop-parent</artifactId>
+		<groupId>org.semanticweb.ontop</groupId>
 		<version>1.9</version>
 	</parent>
-	<artifactId>quest-sesame</artifactId>
-	<name>quest-sesame</name>
+	<artifactId>ontop-quest-sesame</artifactId>
+	<name>ontop-quest-sesame</name>
 	<description>This is the Sesame API implementation based on Quest</description>
 
 	<dependencies>
@@ -27,8 +27,8 @@
 				<scope>test</scope>
 		</dependency>
 		<dependency>
-			<artifactId>obdalib-core</artifactId>
-			<groupId>inf.unibz.it.obda</groupId>
+			<artifactId>ontop-obdalib-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
 			<version>1.9</version>
 			<exclusions>
 				<exclusion>
@@ -38,28 +38,28 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<artifactId>obdalib-owlapi3</artifactId>
-			<groupId>inf.unibz.it.obda</groupId>
+			<artifactId>ontop-obdalib-owlapi3</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<artifactId>obdalib-sesame</artifactId>
-			<groupId>inf.unibz.it.obda</groupId>
+			<artifactId>ontop-obdalib-sesame</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<artifactId>reformulation-core</artifactId>
-			<groupId>inf.unibz.it.obda</groupId>
+			<artifactId>ontop-reformulation-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<artifactId>quest-owlapi3</artifactId>
-			<groupId>inf.unibz.it.obda</groupId>
+			<artifactId>ontop-quest-owlapi3</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
 			<version>1.9</version>
 		</dependency> 
 		<dependency>
-			<artifactId>quest-db</artifactId>
-			<groupId>inf.unibz.it.obda</groupId>
+			<artifactId>ontop-quest-db</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
 			<version>1.9</version>
 		</dependency>
 		 <!-- <dependency> -->

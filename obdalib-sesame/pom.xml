@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>obdalib-parent</artifactId>
-    <groupId>inf.unibz.it.obda</groupId>
+    <artifactId>ontop-parent</artifactId>
+    <groupId>org.semanticweb.ontop</groupId>
     <version>1.9</version>
   </parent>
-  <artifactId>obdalib-sesame</artifactId>
+  <artifactId>ontop-obdalib-sesame</artifactId>
   
   
 	<dependencies>
@@ -24,8 +24,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<artifactId>obdalib-core</artifactId>
-			<groupId>inf.unibz.it.obda</groupId>
+			<artifactId>ontop-obdalib-core</artifactId>
+			<groupId>org.semanticweb.ontop</groupId>
 			<version>1.9</version>
 			<exclusions>
 				<exclusion>
