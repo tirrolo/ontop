@@ -1,0 +1,38 @@
+@prefix ns1: <http://resource.geosciml.org/classifier/ics/ischart/> .
+@prefix ns2: <http://sws.ifi.uio.no/vocab/norlex#> .
+@prefix ns3: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ns4: <http://sws.ifi.uio.no/data/npd-v2/> .
+@prefix ns5: <http://rdfs.org/ns/void#> .
+@prefix ns6: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ns7: <http://www.w3.org/2002/07/owl#> .
+@prefix ns8: <http://example.org/ex#> .
+@prefix ns9: <http://sws.ifi.uio.no/data/diskos/> .
+@prefix ns10: <http://sws.ifi.uio.no/data/norlex/> .
+@prefix ns11: <http://sws.ifi.uio.no/vocab/npd-v2-ptl#> .
+@prefix ns12: <http://sws.ifi.uio.no/vocab/npd-v2#> .
+@prefix ns13: <http://resource.geosciml.org/ontology/timescale/gtrs-30#> .
+@prefix ns14: <http://sws.ifi.uio.no/vocab/sql#> .
+@prefix ns15: <http://www.opengis.net/ont/geosparql#> .
+@prefix ns16: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ns17: <http://purl.org/dc/elements/1.1/> .
+@prefix ns18: <http://sws.ifi.uio.no/vocab/diskos#> .
+
+<http://example.org/Mapping:00151:Literal:company:cmpShortName> a <http://www.w3.org/ns/r2rml#TriplesMap> ;
+	<http://www.w3.org/ns/r2rml#logicalTable> _:logicalTablebc88dc40f3cb4b9da9e3564787dcbd1e .
+
+_:logicalTablebc88dc40f3cb4b9da9e3564787dcbd1e a <http://www.w3.org/ns/r2rml#R2RMLView> ;
+	<http://www.w3.org/ns/r2rml#sqlQuery> "SELECT cmpNpdidCompany,cmpShortName FROM company" .
+
+<http://example.org/Mapping:00151:Literal:company:cmpShortName> <http://www.w3.org/ns/r2rml#subjectMap> _:subjectMapbc88dc40f3cb4b9da9e3564787dcbd1e .
+
+_:subjectMapbc88dc40f3cb4b9da9e3564787dcbd1e a <http://www.w3.org/ns/r2rml#TermMap> ;
+	<http://www.w3.org/ns/r2rml#template> "http://sws.ifi.uio.no/data/npd-v2/company/{cmpNpdidCompany}" .
+
+<http://example.org/Mapping:00151:Literal:company:cmpShortName> <http://www.w3.org/ns/r2rml#predicateObjectMap> _:predicateObjectMapb07bcc8f23d84d73badc384563b378cb .
+
+_:predicateObjectMapb07bcc8f23d84d73badc384563b378cb <http://www.w3.org/ns/r2rml#predicate> ns12:shortName ;
+	<http://www.w3.org/ns/r2rml#objectMap> _:objectMapb07bcc8f23d84d73badc384563b378cb .
+
+_:objectMapb07bcc8f23d84d73badc384563b378cb <http://www.w3.org/ns/r2rml#template> "{cmpShortName}" ;
+	<http://www.w3.org/ns/r2rml#datatype> ns6:string ;
+	<http://www.w3.org/ns/r2rml#termType> <http://www.w3.org/ns/r2rml#Literal> .

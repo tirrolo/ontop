@@ -377,7 +377,7 @@ public class R2RMLParser {
 			}
 			// process termType declaration
 			newiterator = myGraph.match(object, R2RMLVocabulary.termType, null);
-			if (newiterator.hasNext()) {
+			if (newiterator.hasNext()) {  
 				parsedString = newiterator.next().getObject().toString();
 				// System.out.println(parsedString);
 				objectAtom = getTermTypeAtom(parsedString, (objectString));
@@ -470,21 +470,25 @@ public class R2RMLParser {
 		return joinPredObjNodes;
 	}
 
+	// TOOD: document this method
+	// do not use magic number 2/3
 	private Function getTermTypeAtom(String type, String string) {
+		
+		Function result = null;
 		
 		if (type.contentEquals(R2RMLVocabulary.iri.stringValue())) {
 			
-			return getURIFunction(string);
+			result = getURIFunction(string);
 			
 		} else if (type.contentEquals(R2RMLVocabulary.blankNode.stringValue())) {
 			
-			return getTypedFunction(string, 2);
+			result = getTypedFunction(string, 2);
 			
 		} else if (type.contentEquals(R2RMLVocabulary.literal.stringValue())) {
 			
-			return getTypedFunction(trim(string), 3);
+			result = getTypedFunction(trim(string), 3);
 		}
-		return null;
+		return result;
 	}
 
 	private Function getURIFunction(String string, String joinCond) {
@@ -517,7 +521,7 @@ public class R2RMLParser {
 			}
 		if (type == 1 && !string.startsWith("http://"))
 			string = R2RMLVocabulary.baseuri + string;
-		
+		// FIXME!
 		string = string.replace("\\{", "[");
 		string = string.replace("\\}", "]");
 		
@@ -558,9 +562,11 @@ public class R2RMLParser {
 			break;
 		// LITERAL
 		case 3:
-			uriTemplate = fac.getVariable(string);
+			uriTemplate = fac.getConstantLiteral(string);
+			//uriTemplate = fac.getVariable(string);
 			pred = OBDAVocabulary.RDFS_LITERAL_LANG;//lang?
-			terms.add(OBDAVocabulary.NULL);
+			// WHY? TODO:Check 
+			//terms.add(OBDAVocabulary.NULL);
 			break;
 		}
 

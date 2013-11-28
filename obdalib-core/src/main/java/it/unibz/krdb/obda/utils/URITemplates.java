@@ -4,6 +4,7 @@ import it.unibz.krdb.obda.exception.InvalidPrefixWritingException;
 import it.unibz.krdb.obda.io.PrefixManager;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.Term;
+import it.unibz.krdb.obda.model.ValueConstant;
 import it.unibz.krdb.obda.model.Variable;
 
 import java.util.Arrays;
@@ -81,28 +82,56 @@ public class URITemplates {
 	}
 
 	
+
 	public static String getUriTemplateString(Function uriFunction) {
 		Term term = uriFunction.getTerm(0);
-		String template = term.toString();
+		
+		 
+		String template = ((ValueConstant) term).getValue();
 		Iterator<Variable> vars = uriFunction.getVariables().iterator();
-		String[] split = template.split("\\{\\}");
-		int i = 0;
-		template = "";
+		
+		StringBuilder sb = new StringBuilder();
+		
+		int beginIndex = 0;
+		
 		while (vars.hasNext()) {
-			template += split[i] + "{" + vars.next().toString() + "}";
-			i++;
-		}
-		//the number of place holdes should be equal to the number of variables.
-		if (split.length-i == 1){
-			template += split[i];
-			//we remove the quotes cos later the literal constructor adds them
-			template= template.substring(1, template.length()-1);
-		}else{
-			throw new IllegalArgumentException("the number of place holdes should be equal to the number of variables.");
+			
+			Variable var = vars.next();
+			
+			String varName = var.getName();
+			
+			int endIndex = template.indexOf(PLACE_HOLDER, beginIndex);
+			
+			sb.append(template.subSequence(beginIndex, endIndex)).append("{").append(varName).append("}");
+			
+			beginIndex = endIndex + PLACE_HOLDER_LENGTH;
 		}
 		
+		sb.append(template.substring(beginIndex));
 		
-		return template;
+		String result = sb.toString();
+		
+		return result;
+		
+		// FIXME: handle the escaped case
+//		String[] split = template.split("\\{\\}");
+//		int i = 0;
+//		template = "";
+//		while (vars.hasNext()) {
+//			template += split[i] + "{" + vars.next().toString() + "}";
+//			i++;
+//		}
+//		//the number of place holdes should be equal to the number of variables.
+//		if (split.length-i == 1){
+//			template += split[i];
+//			//we remove the quotes cos later the literal constructor adds them
+//			template= template.substring(1, template.length()-1);
+//		}else{
+//			throw new IllegalArgumentException("the number of place holdes should be equal to the number of variables.");
+//		}
+		
+		
+		//return template;
 	}
 
 	public static String getUriTemplateString(Function uriTemplate,
