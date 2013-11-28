@@ -82,10 +82,24 @@ public class URITemplates {
 	}
 
 	
-
+	/**
+	 * This method gets a URI Template String from the a function
+	 * 
+	 * <p>
+	 * 
+	 * Example:
+	 * <p>
+	 * 
+	 * Given the function term  URI("http://www.example.org/{}/{}", A, B),
+	 * this method will return the String "http://www.example.org/{A}/{B}"
+	 * 
+	 * 
+	 * @param uriFunction
+	 * 			a Function in which the functor is 'URI', the first term is a ValueConstant and the rest terms are Variables
+	 * @return
+	 */
 	public static String getUriTemplateString(Function uriFunction) {
 		Term term = uriFunction.getTerm(0);
-		
 		 
 		String template = ((ValueConstant) term).getValue();
 		Iterator<Variable> vars = uriFunction.getVariables().iterator();
@@ -108,30 +122,9 @@ public class URITemplates {
 		}
 		
 		sb.append(template.substring(beginIndex));
+				
+		return sb.toString();
 		
-		String result = sb.toString();
-		
-		return result;
-		
-		// FIXME: handle the escaped case
-//		String[] split = template.split("\\{\\}");
-//		int i = 0;
-//		template = "";
-//		while (vars.hasNext()) {
-//			template += split[i] + "{" + vars.next().toString() + "}";
-//			i++;
-//		}
-//		//the number of place holdes should be equal to the number of variables.
-//		if (split.length-i == 1){
-//			template += split[i];
-//			//we remove the quotes cos later the literal constructor adds them
-//			template= template.substring(1, template.length()-1);
-//		}else{
-//			throw new IllegalArgumentException("the number of place holdes should be equal to the number of variables.");
-//		}
-		
-		
-		//return template;
 	}
 
 	public static String getUriTemplateString(Function uriTemplate,

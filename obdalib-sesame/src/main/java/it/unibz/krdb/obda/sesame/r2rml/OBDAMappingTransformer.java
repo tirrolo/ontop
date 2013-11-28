@@ -205,10 +205,13 @@ public class OBDAMappingTransformer {
 							
 						} else if (objectTerm instanceof Constant) {
 							statements.add(vf.createStatement(objNode, R2RMLVocabulary.constant, vf.createLiteral(((Constant) objectTerm).getValue())));
+							
 						} else if (objectTerm instanceof Function) {
+							
 							Function funcObjectTerm = (Function)objectTerm;
-							 String uriTemplateString = URITemplates.getUriTemplateString(funcObjectTerm, prefixmng);
-							funcObjectTerm.getTerm(0);
+							String uriTemplateString = URITemplates.getUriTemplateString(funcObjectTerm, prefixmng);
+							// add the template
+							statements.add(vf.createStatement(objNode, R2RMLVocabulary.template, vf.createLiteral(uriTemplateString)));
 						}
 						
 						statements.add(vf.createStatement(objNode, R2RMLVocabulary.datatype, vf.createURI(objectPred.getName())));

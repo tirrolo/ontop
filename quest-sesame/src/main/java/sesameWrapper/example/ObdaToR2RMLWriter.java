@@ -130,8 +130,10 @@ public class ObdaToR2RMLWriter {
 	public static void main(String args[]) throws OWLOntologyCreationException, IOException, InvalidPredicateDeclarationException, InvalidMappingException
 	{
 		String owlfile = "src/main/resources/example/npd-ql.owl";
-		String obdafile = "src/main/resources/example/npd-ql.obda";
-		String outFile= "src/main/resources/example/mapping1out.ttl";
+		//String obdafile = "src/main/resources/example/npd-ql.obda";
+		String obdafile = "src/main/resources/example/npd-ql-original.obda";
+		String outFile= "src/main/resources/example/npd-mappings.ttl";
+		//String outFile= "src/main/resources/example/mapping1out.ttl";
 
 		/*
 		 * Load the ontology from an external .owl file.
