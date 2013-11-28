@@ -18,21 +18,20 @@
 @prefix ns18: <http://sws.ifi.uio.no/vocab/diskos#> .
 
 <http://example.org/Mapping:00151:Literal:company:cmpShortName> a <http://www.w3.org/ns/r2rml#TriplesMap> ;
-	<http://www.w3.org/ns/r2rml#logicalTable> _:logicalTablebc88dc40f3cb4b9da9e3564787dcbd1e .
+	<http://www.w3.org/ns/r2rml#logicalTable> _:logicalTable9341b8dd07d045bd87204f2420d7a978 .
 
-_:logicalTablebc88dc40f3cb4b9da9e3564787dcbd1e a <http://www.w3.org/ns/r2rml#R2RMLView> ;
+_:logicalTable9341b8dd07d045bd87204f2420d7a978 a <http://www.w3.org/ns/r2rml#R2RMLView> ;
 	<http://www.w3.org/ns/r2rml#sqlQuery> "SELECT cmpNpdidCompany,cmpShortName FROM company" .
 
-<http://example.org/Mapping:00151:Literal:company:cmpShortName> <http://www.w3.org/ns/r2rml#subjectMap> _:subjectMapbc88dc40f3cb4b9da9e3564787dcbd1e .
+<http://example.org/Mapping:00151:Literal:company:cmpShortName> <http://www.w3.org/ns/r2rml#subjectMap> _:subjectMap9341b8dd07d045bd87204f2420d7a978 .
 
-_:subjectMapbc88dc40f3cb4b9da9e3564787dcbd1e a <http://www.w3.org/ns/r2rml#TermMap> ;
+_:subjectMap9341b8dd07d045bd87204f2420d7a978 a <http://www.w3.org/ns/r2rml#TermMap> ;
 	<http://www.w3.org/ns/r2rml#template> "http://sws.ifi.uio.no/data/npd-v2/company/{cmpNpdidCompany}" .
 
-<http://example.org/Mapping:00151:Literal:company:cmpShortName> <http://www.w3.org/ns/r2rml#predicateObjectMap> _:predicateObjectMapb07bcc8f23d84d73badc384563b378cb .
+<http://example.org/Mapping:00151:Literal:company:cmpShortName> <http://www.w3.org/ns/r2rml#predicateObjectMap> _:predicateObjectMapda8305068cca474d964a371276d24e36 .
 
-_:predicateObjectMapb07bcc8f23d84d73badc384563b378cb <http://www.w3.org/ns/r2rml#predicate> ns12:shortName ;
-	<http://www.w3.org/ns/r2rml#objectMap> _:objectMapb07bcc8f23d84d73badc384563b378cb .
+_:predicateObjectMapda8305068cca474d964a371276d24e36 <http://www.w3.org/ns/r2rml#predicate> ns12:shortName ;
+	<http://www.w3.org/ns/r2rml#objectMap> _:objectMapda8305068cca474d964a371276d24e36 .
 
-_:objectMapb07bcc8f23d84d73badc384563b378cb <http://www.w3.org/ns/r2rml#template> "{cmpShortName}" ;
-	<http://www.w3.org/ns/r2rml#datatype> ns6:string ;
-	<http://www.w3.org/ns/r2rml#termType> <http://www.w3.org/ns/r2rml#Literal> .
+_:objectMapda8305068cca474d964a371276d24e36 <http://www.w3.org/ns/r2rml#column> "{cmpShortName}" ;
+	<http://www.w3.org/ns/r2rml#datatype> ns6:string .

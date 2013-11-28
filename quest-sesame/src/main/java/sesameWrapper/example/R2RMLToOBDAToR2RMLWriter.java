@@ -139,7 +139,6 @@ public class R2RMLToOBDAToR2RMLWriter {
 		
 		OBDAModel obdaModel =  reader.readModel(uri);
 		
-		System.out.println();
 		for(OBDAMappingAxiom mapping : obdaModel.getMappings(uri)){
 			System.out.println(mapping);
 		}

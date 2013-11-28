@@ -198,9 +198,13 @@ public class OBDAMappingTransformer {
 
 						if (objectTerm instanceof Variable) {
 							//Now we add the template!!
-							String objectTemplate =  "{"+ ((Variable) objectTerm).getName() +"}" ;
+
+							//String objectTemplate =  "{"+ ((Variable) objectTerm).getName() +"}" ;
 							//add template subject
-							statements.add(vf.createStatement(objNode, R2RMLVocabulary.template, vf.createLiteral(objectTemplate)));
+							String objectTemplate =  ((Variable) objectTerm).getName()  ;
+							statements.add(vf.createStatement(objNode, R2RMLVocabulary.column, vf.createLiteral(objectTemplate)));
+						
+							
 							//TODO: deal with column and termType
 							
 						} else if (objectTerm instanceof Constant) {
