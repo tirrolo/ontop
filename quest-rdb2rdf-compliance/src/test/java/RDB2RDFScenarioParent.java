@@ -47,7 +47,7 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.sail.memory.MemoryStore;
-import org.semanaticweb.ontop.sesame.SesameVirtualRepo;
+import org.semanticweb.ontop.sesame.SesameVirtualRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
