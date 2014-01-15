@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.reformulation.tests;
+package org.semanaticweb.ontop.reformulation.tests;
 
 /*
  * #%L
@@ -20,14 +20,6 @@ package it.unibz.krdb.obda.reformulation.tests;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.TableDefinition;
 import it.unibz.krdb.sql.api.Attribute;
@@ -36,6 +28,15 @@ import java.sql.Types;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.unfolding.DatalogUnfolder;
 
 import junit.framework.TestCase;
 

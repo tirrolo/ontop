@@ -1,6 +1,6 @@
 // $ANTLR 3.4 C:\\Project\\Obdalib\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\gui\\swing\\utils\\MappingFilter.g 2012-05-18 10:51:12
 
-package it.unibz.krdb.obda.protege4.utils;
+package org.semanaticweb.ontop.protege4.utils;
 
 /*
  * #%L

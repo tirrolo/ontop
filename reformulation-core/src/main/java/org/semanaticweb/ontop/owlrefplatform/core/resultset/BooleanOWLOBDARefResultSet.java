@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.resultset;
+package org.semanaticweb.ontop.owlrefplatform.core.resultset;
 
 /*
  * #%L
@@ -20,19 +20,19 @@ package it.unibz.krdb.obda.owlrefplatform.core.resultset;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAStatement;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.TupleResultSet;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAStatement;
+import org.semanaticweb.ontop.model.TupleResultSet;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 
 /**
  * The boolean result set returned by an OBDA statement.

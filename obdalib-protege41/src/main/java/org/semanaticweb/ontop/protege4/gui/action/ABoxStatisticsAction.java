@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.action;
+package org.semanaticweb.ontop.protege4.gui.action;
 
 /*
  * #%L
@@ -20,13 +20,6 @@ package it.unibz.krdb.obda.protege4.gui.action;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManager;
-import it.unibz.krdb.obda.protege4.panels.OBDAModelStatisticsPanel;
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
-import it.unibz.krdb.obda.utils.VirtualABoxStatistics;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -38,6 +31,12 @@ import javax.swing.JPanel;
 
 import org.protege.editor.core.ui.action.ProtegeAction;
 import org.protege.editor.owl.OWLEditorKit;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManager;
+import org.semanaticweb.ontop.protege4.panels.OBDAModelStatisticsPanel;
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
+import org.semanaticweb.ontop.utils.VirtualABoxStatistics;
 
 public class ABoxStatisticsAction extends ProtegeAction {
 

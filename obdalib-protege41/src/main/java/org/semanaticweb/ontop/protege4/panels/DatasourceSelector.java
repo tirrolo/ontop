@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,11 +20,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAModelListener;
-import it.unibz.krdb.obda.protege4.utils.DatasourceSelectorListener;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -37,6 +32,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.OBDAModelListener;
+import org.semanaticweb.ontop.protege4.utils.DatasourceSelectorListener;
 
 /**
  * A combo box component to select a data source.

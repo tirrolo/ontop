@@ -5,7 +5,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.owlapi3;
+package org.semanaticweb.ontop.owlapi3;
 
 /*
  * #%L
@@ -27,15 +27,14 @@ package it.unibz.krdb.obda.owlapi3;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import org.semanaticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 /***

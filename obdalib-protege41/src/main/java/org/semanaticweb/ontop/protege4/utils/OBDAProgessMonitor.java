@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.utils;
+package org.semanaticweb.ontop.protege4.utils;
 
 /*
  * #%L
@@ -20,14 +20,14 @@ package it.unibz.krdb.obda.protege4.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.protege4.utils.OBDAProgessMonitor;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgressListener;
-import it.unibz.krdb.obda.protege4.utils.ProgressPanel;
-
 import java.util.Vector;
 
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
+
+import org.semanaticweb.ontop.protege4.utils.OBDAProgessMonitor;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgressListener;
+import org.semanaticweb.ontop.protege4.utils.ProgressPanel;
 
 public class OBDAProgessMonitor {
 

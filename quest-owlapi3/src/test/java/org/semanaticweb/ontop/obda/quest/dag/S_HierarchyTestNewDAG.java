@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.obda.quest.dag;
+package org.semanaticweb.ontop.obda.quest.dag;
 
 /*
  * #%L
@@ -21,16 +21,15 @@ package it.unibz.krdb.obda.obda.quest.dag;
  */
 
 
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDAGBuilderImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
-
 import java.util.ArrayList;
 import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAGImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.NamedDAGBuilderImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

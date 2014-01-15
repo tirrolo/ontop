@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model.impl;
+package org.semanaticweb.ontop.model.impl;
 
 /*
  * #%L
@@ -20,9 +20,9 @@ package it.unibz.krdb.obda.model.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers;
-import it.unibz.krdb.obda.model.OBDASQLQuery;
+import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.model.OBDAQueryModifiers;
+import org.semanaticweb.ontop.model.OBDASQLQuery;
 
 public class SQLQueryImpl implements OBDAQuery, OBDASQLQuery {
 

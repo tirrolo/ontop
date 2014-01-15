@@ -7,7 +7,7 @@
  * proprietary exceptions.
  */
 
-package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
+package org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht;
 
 /*
  * #%L
@@ -29,10 +29,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
  * #L%
  */
 
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.OClass;
-import it.unibz.krdb.obda.ontology.Property;
-
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -41,6 +37,9 @@ import java.util.Set;
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.OClass;
+import org.semanaticweb.ontop.ontology.Property;
 
 /** 
  * Used to represent a DAG and a named DAG.

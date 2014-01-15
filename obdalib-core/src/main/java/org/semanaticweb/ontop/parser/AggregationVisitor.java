@@ -6,7 +6,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
 import it.unibz.krdb.sql.api.AggregationJSQL;
 import net.sf.jsqlparser.schema.Table;

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.quest.datatypes;
+package org.semanaticweb.ontop.quest.datatypes;
 
 /*
  * #%L
@@ -21,8 +21,6 @@ package it.unibz.krdb.obda.quest.datatypes;
  */
 
 import info.aduna.io.IOUtil;
-import it.unibz.krdb.obda.quest.ResultSetInfo;
-import it.unibz.krdb.obda.quest.ResultSetInfoTupleUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,10 +52,11 @@ import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.sail.memory.MemoryStore;
+import org.semanaticweb.ontop.quest.ResultSetInfo;
+import org.semanaticweb.ontop.quest.ResultSetInfoTupleUtil;
+import org.semanaticweb.ontop.sesame.SesameVirtualRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import sesameWrapper.SesameVirtualRepo;
 
 
 

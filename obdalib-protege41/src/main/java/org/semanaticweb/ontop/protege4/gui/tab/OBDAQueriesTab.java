@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.tab;
+package org.semanaticweb.ontop.protege4.gui.tab;
 
 /*
  * #%L
@@ -20,13 +20,12 @@ package it.unibz.krdb.obda.protege4.gui.tab;
  * #L%
  */
 
-import it.unibz.krdb.obda.protege4.views.QueryInterfaceView;
-import it.unibz.krdb.obda.protege4.views.QueryManagerView;
-
 import java.util.HashSet;
 import java.util.Iterator;
 
 import org.protege.editor.owl.ui.OWLWorkspaceViewsTab;
+import org.semanaticweb.ontop.protege4.views.QueryInterfaceView;
+import org.semanaticweb.ontop.protege4.views.QueryManagerView;
 
 public class OBDAQueriesTab extends OWLWorkspaceViewsTab {
 

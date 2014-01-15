@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.action;
+package org.semanaticweb.ontop.protege4.gui.action;
 
 /*
  * #%L
@@ -20,13 +20,6 @@ package it.unibz.krdb.obda.protege4.gui.action;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.DuplicateMappingException;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManager;
-import it.unibz.krdb.obda.sesame.r2rml.R2RMLReader;
-
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URI;
@@ -37,6 +30,12 @@ import javax.swing.JOptionPane;
 import org.protege.editor.core.ui.action.ProtegeAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLWorkspace;
+import org.semanaticweb.ontop.exception.DuplicateMappingException;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManager;
+import org.semanaticweb.ontop.sesame.r2rml.R2RMLReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

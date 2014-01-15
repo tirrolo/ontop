@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
+package org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht;
 
 /*
  * #%L
@@ -21,21 +21,20 @@ package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
  */
 
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.Axiom;
-import it.unibz.krdb.obda.ontology.ClassDescription;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.ontology.impl.SubClassAxiomImpl;
-import it.unibz.krdb.obda.ontology.impl.SubPropertyAxiomImpl;
-
 import java.util.Collection;
 import java.util.Set;
 
 import org.jgrapht.graph.DefaultEdge;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.ontology.Axiom;
+import org.semanaticweb.ontop.ontology.ClassDescription;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
+import org.semanaticweb.ontop.ontology.impl.SubClassAxiomImpl;
+import org.semanaticweb.ontop.ontology.impl.SubPropertyAxiomImpl;
 
 /**
  * Builds a graph starting from the axioms of a TBox.

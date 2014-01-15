@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
+package org.semanaticweb.ontop.owlrefplatform.core.unfolding;
 
 /*
  * #%L
@@ -20,36 +20,35 @@ package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.BNodePredicate;
-import it.unibz.krdb.obda.model.BooleanOperationPredicate;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.DataTypePredicate;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.NonBooleanOperationPredicate;
-import it.unibz.krdb.obda.model.NumericalOperationPredicate;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OperationPredicate;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.URITemplatePredicate;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.UriTemplateMatcher;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.AlgebraOperatorPredicate;
+import org.semanaticweb.ontop.model.BNodePredicate;
+import org.semanaticweb.ontop.model.BooleanOperationPredicate;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.DataTypePredicate;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.NonBooleanOperationPredicate;
+import org.semanaticweb.ontop.model.NumericalOperationPredicate;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OperationPredicate;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.URITemplatePredicate;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.Unifier;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.UriTemplateMatcher;
 
 //import com.hp.hpl.jena.iri.IRIFactory;
 

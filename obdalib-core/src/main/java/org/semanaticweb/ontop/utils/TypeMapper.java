@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.utils;
+package org.semanaticweb.ontop.utils;
 
 /*
  * #%L
@@ -20,12 +20,12 @@ package it.unibz.krdb.obda.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-
 import java.sql.Types;
 import java.util.HashMap;
+
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 
 /**
  * This class maps SQL datatypes to XML datatypes.

@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -20,16 +20,6 @@ package sesameWrapper;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3ABoxIterator;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.EquivalentTriplePredicateIterator;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSSIRepositoryManager;
-import it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.EquivalenceTBoxOptimizer;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
-import it.unibz.krdb.obda.sesame.SesameRDFIterator;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -43,6 +33,15 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.rio.ntriples.NTriplesParser;
 import org.openrdf.rio.turtle.TurtleParser;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3ABoxIterator;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.EquivalentTriplePredicateIterator;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.RDBMSSIRepositoryManager;
+import org.semanaticweb.ontop.owlrefplatform.core.tboxprocessing.EquivalenceTBoxOptimizer;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWL;
+import org.semanaticweb.ontop.sesame.SesameRDFIterator;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

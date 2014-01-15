@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.questdb;
+package org.semanaticweb.ontop.owlrefplatform.questdb;
 
 /*
  * #%L
@@ -19,26 +19,6 @@ package it.unibz.krdb.obda.owlrefplatform.questdb;
  * limitations under the License.
  * #L%
  */
-
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.Axiom;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3ABoxIterator;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.core.Quest;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConnection;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestStatement;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.QuestMaterializer;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,6 +42,25 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.helpers.RDFHandlerBase;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.Axiom;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3ABoxIterator;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlrefplatform.core.Quest;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConnection;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestStatement;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.QuestMaterializer;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;

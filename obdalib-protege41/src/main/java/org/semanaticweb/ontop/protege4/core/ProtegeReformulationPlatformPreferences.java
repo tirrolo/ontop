@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.core;
+package org.semanaticweb.ontop.protege4.core;
 
 /*
  * #%L
@@ -20,9 +20,8 @@ package it.unibz.krdb.obda.protege4.core;
  * #L%
  */
 
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-
 import org.protege.editor.core.Disposable;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
 
 public class ProtegeReformulationPlatformPreferences extends QuestPreferences implements Disposable {
 

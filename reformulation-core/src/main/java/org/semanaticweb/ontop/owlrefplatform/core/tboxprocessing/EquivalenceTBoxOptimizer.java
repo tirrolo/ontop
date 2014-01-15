@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing;
+package org.semanaticweb.ontop.owlrefplatform.core.tboxprocessing;
 
 /*
  * #%L
@@ -20,25 +20,25 @@ package it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.Axiom;
-import it.unibz.krdb.obda.ontology.ClassDescription;
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.OClass;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.ontology.Axiom;
+import org.semanaticweb.ontop.ontology.ClassDescription;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.OClass;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAGImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 
 /***
  * An optimizer that will eliminate equivalences implied by the ontology,

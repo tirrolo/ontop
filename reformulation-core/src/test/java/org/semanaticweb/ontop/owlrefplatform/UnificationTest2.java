@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform;
+package org.semanaticweb.ontop.owlrefplatform;
 
 /*
  * #%L
@@ -20,20 +20,20 @@ package it.unibz.krdb.obda.owlrefplatform;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.AnonymousVariable;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.DLRPerfectReformulator;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
-
 import java.util.List;
 import java.util.Vector;
+
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.AnonymousVariable;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.reformulation.DLRPerfectReformulator;
+import org.semanaticweb.ontop.owlrefplatform.core.reformulation.QueryRewriter;
 
 import junit.framework.TestCase;
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
 /*
  * #%L
@@ -20,20 +20,20 @@ package it.unibz.krdb.obda.parser;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
-import it.unibz.krdb.obda.model.impl.URIConstantImpl;
-import it.unibz.krdb.obda.model.impl.ValueConstantImpl;
-import it.unibz.krdb.obda.model.impl.VariableImpl;
-
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.antlr.runtime.RecognitionException;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.impl.FunctionalTermImpl;
+import org.semanaticweb.ontop.model.impl.URIConstantImpl;
+import org.semanaticweb.ontop.model.impl.ValueConstantImpl;
+import org.semanaticweb.ontop.model.impl.VariableImpl;
+import org.semanaticweb.ontop.parser.DatalogProgramParser;
 
 public class DatalogParserTest extends TestCase {
 

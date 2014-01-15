@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.reformulation.owlapi3;
+package org.semanaticweb.ontop.reformulation.owlapi3;
 
 /*
  * #%L
@@ -38,13 +38,13 @@ import static org.semanticweb.owlapi.apibinding.OWLFunctionalSyntaxFactory.Funct
 import static org.semanticweb.owlapi.apibinding.OWLFunctionalSyntaxFactory.FunctionalObjectProperty;
 import static org.semanticweb.owlapi.apibinding.OWLFunctionalSyntaxFactory.Literal;
 import static org.semanticweb.owlapi.apibinding.OWLFunctionalSyntaxFactory.Ontology;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLFactory;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWL;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWLFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;

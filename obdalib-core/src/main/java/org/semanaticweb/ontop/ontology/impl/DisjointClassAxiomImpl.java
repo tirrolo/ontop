@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology.impl;
+package org.semanaticweb.ontop.ontology.impl;
 
 /*
  * #%L
@@ -20,12 +20,12 @@ package it.unibz.krdb.obda.ontology.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.DisjointClassAxiom;
-import it.unibz.krdb.obda.ontology.OClass;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.ontology.DisjointClassAxiom;
+import org.semanaticweb.ontop.ontology.OClass;
 
 public class DisjointClassAxiomImpl implements DisjointClassAxiom {
 

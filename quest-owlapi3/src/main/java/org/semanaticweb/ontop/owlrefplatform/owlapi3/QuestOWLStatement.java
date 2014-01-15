@@ -5,7 +5,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.owlrefplatform.owlapi3;
+package org.semanaticweb.ontop.owlrefplatform.owlapi3;
 
 /*
  * #%L
@@ -26,22 +26,6 @@ package it.unibz.krdb.obda.owlrefplatform.owlapi3;
  * limitations under the License.
  * #L%
  */
-
-import it.unibz.krdb.obda.model.GraphResultSet;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.TupleResultSet;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.ClassAssertion;
-import it.unibz.krdb.obda.ontology.DataPropertyAssertion;
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.ObjectPropertyAssertion;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3ABoxIterator;
-import it.unibz.krdb.obda.owlapi3.OntopOWLException;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestStatement;
-import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SPARQLQueryUtility;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
-import it.unibz.krdb.obda.sesame.SesameRDFIterator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -64,6 +48,21 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.BasicParserSettings;
+import org.semanaticweb.ontop.model.GraphResultSet;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.TupleResultSet;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.ClassAssertion;
+import org.semanaticweb.ontop.ontology.DataPropertyAssertion;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.ObjectPropertyAssertion;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3ABoxIterator;
+import org.semanaticweb.ontop.owlapi3.OntopOWLException;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestStatement;
+import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.SPARQLQueryUtility;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
+import org.semanaticweb.ontop.sesame.SesameRDFIterator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;

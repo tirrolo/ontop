@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.dag;
+package org.semanaticweb.ontop.owlrefplatform.core.dag;
 
 /*
  * #%L
@@ -20,17 +20,17 @@ package it.unibz.krdb.obda.owlrefplatform.core.dag;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.DataType;
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.OClass;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.ontology.DataType;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.OClass;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
 
 /**
  * @author Sergejs Pugacs

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.io;
+package org.semanaticweb.ontop.io;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.io;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.CQIE;
+import org.semanaticweb.ontop.model.CQIE;
 
 /**
  * Classes that extend this abstract class must include a prefix manager to

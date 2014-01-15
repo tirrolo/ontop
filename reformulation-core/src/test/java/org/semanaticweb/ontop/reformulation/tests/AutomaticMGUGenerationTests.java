@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.reformulation.tests;
+package org.semanaticweb.ontop.reformulation.tests;
 
 /*
  * #%L
@@ -20,12 +20,6 @@ package it.unibz.krdb.obda.reformulation.tests;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Substitution;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -35,6 +29,11 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.Substitution;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.Unifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +64,7 @@ public class AutomaticMGUGenerationTests extends TestCase {
 
 	/**
 	 * Test method for
-	 * {@link it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier#getMGU(it.unibz.krdb.obda.model.Atom, it.unibz.krdb.obda.model.Atom)}
+	 * {@link org.semanaticweb.ontop.owlrefplatform.core.basicoperations.Unifier#getMGU(it.unibz.krdb.obda.model.Atom, it.unibz.krdb.obda.model.Atom)}
 	 * .
 	 * 
 	 * @throws Exception

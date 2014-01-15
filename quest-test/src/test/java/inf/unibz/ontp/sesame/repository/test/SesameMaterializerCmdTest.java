@@ -20,17 +20,6 @@ package inf.unibz.ontp.sesame.repository.test;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.InvalidMappingException;
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.impl.PunningException;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlapi3.QuestOWLIndividualIterator;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.OWLAPI3Materializer;
-import it.unibz.krdb.obda.sesame.SesameStatementIterator;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -45,6 +34,17 @@ import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.n3.N3Writer;
 import org.openrdf.rio.rdfxml.RDFXMLWriter;
 import org.openrdf.rio.turtle.TurtleWriter;
+import org.semanaticweb.ontop.exception.InvalidMappingException;
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.impl.PunningException;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlapi3.QuestOWLIndividualIterator;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.OWLAPI3Materializer;
+import org.semanaticweb.ontop.sesame.SesameMaterializer;
+import org.semanaticweb.ontop.sesame.SesameStatementIterator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
 import org.semanticweb.owlapi.io.WriterDocumentTarget;
@@ -52,8 +52,6 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-
-import sesameWrapper.SesameMaterializer;
 
 public class SesameMaterializerCmdTest extends TestCase {
 	

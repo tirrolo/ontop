@@ -6,7 +6,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
+package org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht;
 
 /*
  * #%L
@@ -29,17 +29,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
  */
 
 
-import it.unibz.krdb.obda.ontology.Axiom;
-import it.unibz.krdb.obda.ontology.ClassDescription;
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.OClass;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.ontology.impl.SubClassAxiomImpl;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -53,6 +42,16 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.traverse.AbstractGraphIterator;
 import org.jgrapht.traverse.BreadthFirstIterator;
+import org.semanaticweb.ontop.ontology.Axiom;
+import org.semanaticweb.ontop.ontology.ClassDescription;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.OClass;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
+import org.semanaticweb.ontop.ontology.impl.SubClassAxiomImpl;
 
 /**
  * Allows to reason over the TBox using  DAG or graph

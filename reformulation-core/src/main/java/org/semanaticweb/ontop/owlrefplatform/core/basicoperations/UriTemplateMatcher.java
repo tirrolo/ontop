@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
+package org.semanaticweb.ontop.owlrefplatform.core.basicoperations;
 
 /*
  * #%L
@@ -20,13 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,6 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 
 public class UriTemplateMatcher {
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.preferences;
+package org.semanaticweb.ontop.protege4.gui.preferences;
 
 /*
  * #%L
@@ -23,10 +23,9 @@ package it.unibz.krdb.obda.protege4.gui.preferences;
 
 import java.awt.BorderLayout;
 
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.protege4.panels.ConfigPanel;
-
 import org.protege.editor.owl.ui.preferences.OWLPreferencesPanel;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.protege4.panels.ConfigPanel;
 
 public class OBDAOWLReformulationPlatformConfigPanel extends OWLPreferencesPanel {
 

@@ -6,7 +6,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package inf.unibz.ontop.sesame.tests.general;
+package org.semanaticweb.ontop.sesame.tests.general;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -22,15 +22,6 @@ import static org.semanticweb.owlapi.apibinding.OWLFunctionalSyntaxFactory.Liter
 import static org.semanticweb.owlapi.apibinding.OWLFunctionalSyntaxFactory.NamedIndividual;
 import static org.semanticweb.owlapi.apibinding.OWLFunctionalSyntaxFactory.ObjectProperty;
 import static org.semanticweb.owlapi.apibinding.OWLFunctionalSyntaxFactory.ObjectPropertyAssertion;
-import it.unibz.krdb.obda.exception.InvalidMappingException;
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +30,15 @@ import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.semanaticweb.ontop.exception.InvalidMappingException;
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWL;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWLFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;

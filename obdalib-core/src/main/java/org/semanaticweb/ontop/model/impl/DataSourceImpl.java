@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model.impl;
+package org.semanaticweb.ontop.model.impl;
 
 /*
  * #%L
@@ -20,12 +20,12 @@ package it.unibz.krdb.obda.model.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-
 import java.net.URI;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.OBDADataSource;
 
 public class DataSourceImpl implements OBDADataSource {
 

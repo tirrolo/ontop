@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.reformulation.tests;
+package org.semanaticweb.ontop.reformulation.tests;
 
 /*
  * #%L
@@ -20,17 +20,6 @@ package it.unibz.krdb.obda.reformulation.tests;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLFactory;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLResultSet;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLStatement;
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -41,6 +30,16 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWL;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWLFactory;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWLResultSet;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWLStatement;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.obda.quest.dag;
+package org.semanaticweb.ontop.obda.quest.dag;
 
 /*
  * #%L
@@ -21,15 +21,14 @@ package it.unibz.krdb.obda.obda.quest.dag;
  */
 
 
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
-
 import java.util.Random;
 
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAGImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;

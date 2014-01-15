@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
+package org.semanaticweb.ontop.owlrefplatform.core.basicoperations;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Term;
+import org.semanaticweb.ontop.model.Term;
 
 
 public class Substitution {

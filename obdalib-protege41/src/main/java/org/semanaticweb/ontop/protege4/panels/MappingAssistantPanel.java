@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,37 +20,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.DuplicateMappingException;
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDALibConstants;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLAdapterFactory;
-import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
-import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLServerSQLDialectAdapter;
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.protege4.gui.MapItem;
-import it.unibz.krdb.obda.protege4.gui.PredicateItem;
-import it.unibz.krdb.obda.protege4.gui.SQLResultSetTableModel;
-import it.unibz.krdb.obda.protege4.gui.component.AutoSuggestComboBox;
-import it.unibz.krdb.obda.protege4.gui.component.PropertyMappingPanel;
-import it.unibz.krdb.obda.protege4.gui.component.SQLResultTable;
-import it.unibz.krdb.obda.protege4.gui.treemodels.IncrementalResultSetTableModel;
-import it.unibz.krdb.obda.protege4.utils.DatasourceSelectorListener;
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgessMonitor;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgressListener;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.DataDefinition;
 import it.unibz.krdb.sql.JDBCConnectionManager;
@@ -85,6 +54,38 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalComboBoxButton;
 import javax.swing.table.TableModel;
+
+import org.semanaticweb.ontop.exception.DuplicateMappingException;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDALibConstants;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.RDBMSourceParameterConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.SQLAdapterFactory;
+import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
+import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.SQLServerSQLDialectAdapter;
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.protege4.gui.MapItem;
+import org.semanaticweb.ontop.protege4.gui.PredicateItem;
+import org.semanaticweb.ontop.protege4.gui.SQLResultSetTableModel;
+import org.semanaticweb.ontop.protege4.gui.component.AutoSuggestComboBox;
+import org.semanaticweb.ontop.protege4.gui.component.PropertyMappingPanel;
+import org.semanaticweb.ontop.protege4.gui.component.SQLResultTable;
+import org.semanaticweb.ontop.protege4.gui.treemodels.IncrementalResultSetTableModel;
+import org.semanaticweb.ontop.protege4.utils.DatasourceSelectorListener;
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgessMonitor;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgressListener;
 
 public class MappingAssistantPanel extends javax.swing.JPanel implements DatasourceSelectorListener {
 

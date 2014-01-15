@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.abox;
+package org.semanaticweb.ontop.owlrefplatform.core.abox;
 
 /*
  * #%L
@@ -20,10 +20,10 @@ package it.unibz.krdb.obda.owlrefplatform.core.abox;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.BinaryAssertion;
-import it.unibz.krdb.obda.ontology.ClassAssertion;
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.BinaryAssertion;
+import org.semanaticweb.ontop.ontology.ClassAssertion;
 
 /***
  * A record to keep track of which tables in the semantic index tables have rows

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.reformulation.tests;
+package org.semanaticweb.ontop.reformulation.tests;
 
 /*
  * #%L
@@ -20,19 +20,6 @@ package it.unibz.krdb.obda.reformulation.tests;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.ClassAssertion;
-import it.unibz.krdb.obda.ontology.DataPropertyAssertion;
-import it.unibz.krdb.obda.ontology.ObjectPropertyAssertion;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.QuestMaterializer;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -47,6 +34,18 @@ import java.util.Iterator;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.ClassAssertion;
+import org.semanaticweb.ontop.ontology.DataPropertyAssertion;
+import org.semanaticweb.ontop.ontology.ObjectPropertyAssertion;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.QuestMaterializer;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;

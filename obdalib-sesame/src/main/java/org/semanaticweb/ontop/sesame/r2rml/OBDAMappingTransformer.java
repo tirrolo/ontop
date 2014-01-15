@@ -8,7 +8,7 @@
  * 
  * @author Timea Bagosi
  */
-package it.unibz.krdb.obda.sesame.r2rml;
+package org.semanaticweb.ontop.sesame.r2rml;
 
 /*
  * #%L
@@ -30,24 +30,6 @@ package it.unibz.krdb.obda.sesame.r2rml;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.DataTypePredicate;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.URITemplatePredicate;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.model.impl.SQLQueryImpl;
-import it.unibz.krdb.obda.utils.IDGenerator;
-import it.unibz.krdb.obda.utils.URITemplates;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -60,6 +42,23 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.DataTypePredicate;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAQueryModifiers;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.URITemplatePredicate;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.model.impl.SQLQueryImpl;
+import org.semanaticweb.ontop.utils.IDGenerator;
+import org.semanaticweb.ontop.utils.URITemplates;
 
 //import com.hp.hpl.jena.vocabulary.RDFS;
 

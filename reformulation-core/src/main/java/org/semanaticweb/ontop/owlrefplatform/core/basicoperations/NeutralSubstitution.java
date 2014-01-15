@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
+package org.semanaticweb.ontop.owlrefplatform.core.basicoperations;
 
 /*
  * #%L

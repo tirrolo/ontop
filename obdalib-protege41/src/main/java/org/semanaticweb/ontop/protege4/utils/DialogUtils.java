@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.utils;
+package org.semanaticweb.ontop.protege4.utils;
 
 /*
  * #%L
@@ -19,8 +19,6 @@ package it.unibz.krdb.obda.protege4.utils;
  * limitations under the License.
  * #L%
  */
-
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -47,6 +45,8 @@ import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
 
 public class DialogUtils {
 

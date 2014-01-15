@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.treemodels;
+package org.semanaticweb.ontop.protege4.gui.treemodels;
 
 /*
  * #%L
@@ -20,14 +20,6 @@ package it.unibz.krdb.obda.protege4.gui.treemodels;
  * #L%
  */
 
-import it.unibz.krdb.obda.protege4.gui.treemodels.QueryGroupTreeElement;
-import it.unibz.krdb.obda.protege4.gui.treemodels.QueryTreeElement;
-import it.unibz.krdb.obda.protege4.gui.treemodels.TreeElement;
-import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
-import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
-import it.unibz.krdb.obda.querymanager.QueryControllerListener;
-import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
-
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -36,6 +28,14 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+
+import org.semanaticweb.ontop.protege4.gui.treemodels.QueryGroupTreeElement;
+import org.semanaticweb.ontop.protege4.gui.treemodels.QueryTreeElement;
+import org.semanaticweb.ontop.protege4.gui.treemodels.TreeElement;
+import org.semanaticweb.ontop.querymanager.QueryControllerEntity;
+import org.semanaticweb.ontop.querymanager.QueryControllerGroup;
+import org.semanaticweb.ontop.querymanager.QueryControllerListener;
+import org.semanaticweb.ontop.querymanager.QueryControllerQuery;
 
 public class QueryControllerTreeModel extends DefaultTreeModel implements QueryControllerListener {
 

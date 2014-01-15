@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.mappingprocessing;
+package org.semanaticweb.ontop.owlrefplatform.core.mappingprocessing;
 
 /*
  * #%L
@@ -20,29 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.mappingprocessing;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.BuiltinPredicate;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.ontology.ClassDescription;
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.OClass;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAG;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDAGBuilderImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,6 +31,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.semanaticweb.ontop.model.BuiltinPredicate;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.ontology.ClassDescription;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.OClass;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.CQCUtilities;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.Unifier;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAG;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.NamedDAGBuilderImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

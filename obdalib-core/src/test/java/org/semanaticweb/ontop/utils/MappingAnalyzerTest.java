@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.utils;
+package org.semanaticweb.ontop.utils;
 
 /*
  * #%L
@@ -20,19 +20,21 @@ package it.unibz.krdb.obda.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.SimplePrefixManager;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.parser.TurtleOBDASyntaxParser;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.TableDefinition;
 import it.unibz.krdb.sql.api.Attribute;
 
 import java.sql.Types;
 import java.util.ArrayList;
+
+import org.semanaticweb.ontop.io.SimplePrefixManager;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.parser.TurtleOBDASyntaxParser;
+import org.semanaticweb.ontop.utils.MappingAnalyzer;
 
 import junit.framework.TestCase;
 

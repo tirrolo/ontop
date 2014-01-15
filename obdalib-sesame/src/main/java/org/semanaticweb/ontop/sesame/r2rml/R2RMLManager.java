@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.sesame.r2rml;
+package org.semanaticweb.ontop.sesame.r2rml;
 
 /*
  * #%L
@@ -25,17 +25,6 @@ package it.unibz.krdb.obda.sesame.r2rml;
  * Class responsible of parsing R2RML mappings from file or from an RDF graph
  */
 
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDALibConstants;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -53,6 +42,16 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.StatementCollector;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDALibConstants;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
 
 public class R2RMLManager {
 	

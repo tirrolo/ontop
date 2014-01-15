@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.exception;
+package org.semanaticweb.ontop.exception;
 
 /*
  * #%L
@@ -20,11 +20,11 @@ package it.unibz.krdb.obda.exception;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.Indicator;
-import it.unibz.krdb.obda.model.Predicate;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.semanaticweb.ontop.exception.Indicator;
+import org.semanaticweb.ontop.model.Predicate;
 
 /**
  * This happens if the declared predicates in the OBDA file do not match to the ones

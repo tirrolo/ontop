@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.sesame.r2rml;
+package org.semanaticweb.ontop.sesame.r2rml;
 
 /*
  * #%L
@@ -23,23 +23,6 @@ package it.unibz.krdb.obda.sesame.r2rml;
  * @author timea bagosi
  * Class responsible to write an r2rml turtle file given an obda model
  */
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.DataTypePredicate;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.URITemplatePredicate;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.BNodePredicateImpl;
-import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,6 +40,22 @@ import org.openrdf.model.Graph;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.GraphImpl;
 import org.openrdf.rio.turtle.TurtleWriter;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.DataTypePredicate;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.URIConstant;
+import org.semanaticweb.ontop.model.URITemplatePredicate;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.BNodePredicateImpl;
+import org.semanaticweb.ontop.model.impl.FunctionalTermImpl;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
 
 
 public class R2RMLWriter {

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology;
+package org.semanaticweb.ontop.ontology;
 
 /*
  * #%L
@@ -20,9 +20,9 @@ package it.unibz.krdb.obda.ontology;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.ObjectConstant;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.ValueConstant;
+import org.semanaticweb.ontop.model.ObjectConstant;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.ValueConstant;
 
 /***
  * An assertion for data properties, e.g., name(mariano,"Mariano Rodriguez").

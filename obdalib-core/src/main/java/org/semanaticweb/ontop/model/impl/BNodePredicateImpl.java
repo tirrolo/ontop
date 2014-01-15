@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model.impl;
+package org.semanaticweb.ontop.model.impl;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.model.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.BNodePredicate;
+import org.semanaticweb.ontop.model.BNodePredicate;
 
 public class BNodePredicateImpl extends PredicateImpl implements BNodePredicate {
 

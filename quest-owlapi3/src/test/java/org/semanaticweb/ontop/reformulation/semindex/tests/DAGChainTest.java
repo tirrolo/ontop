@@ -1,5 +1,5 @@
 
-package it.unibz.krdb.obda.reformulation.semindex.tests;
+package org.semanaticweb.ontop.reformulation.semindex.tests;
 
 /*
  * #%L
@@ -22,21 +22,21 @@ package it.unibz.krdb.obda.reformulation.semindex.tests;
  */
 
 
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.OClass;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAG;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphBuilderImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
-
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.OClass;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAG;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.GraphBuilderImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.GraphImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 
 import junit.framework.TestCase;
 

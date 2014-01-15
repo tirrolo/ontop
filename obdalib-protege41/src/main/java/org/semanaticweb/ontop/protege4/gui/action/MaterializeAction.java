@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.action;
+package org.semanaticweb.ontop.protege4.gui.action;
 
 /*
  * #%L
@@ -20,15 +20,14 @@ package it.unibz.krdb.obda.protege4.gui.action;
  * #L%
  */
 
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.OWLAPI3Materializer;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgressListener;
-
 import java.awt.Container;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JOptionPane;
 
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.OWLAPI3Materializer;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgressListener;
 import org.semanticweb.owlapi.model.OWLIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;

@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -20,17 +20,6 @@ package sesameWrapper;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.InvalidMappingException;
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.owlapi3.OBDAModelSynchronizer;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.questdb.QuestDBVirtualStore;
-import it.unibz.krdb.obda.sesame.SesameStatementIterator;
-import it.unibz.krdb.obda.sesame.r2rml.R2RMLReader;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,6 +32,16 @@ import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.n3.N3Writer;
 import org.openrdf.rio.rdfxml.RDFXMLWriter;
 import org.openrdf.rio.turtle.TurtleWriter;
+import org.semanaticweb.ontop.exception.InvalidMappingException;
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.owlapi3.OBDAModelSynchronizer;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlrefplatform.questdb.QuestDBVirtualStore;
+import org.semanaticweb.ontop.sesame.SesameStatementIterator;
+import org.semanaticweb.ontop.sesame.r2rml.R2RMLReader;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;

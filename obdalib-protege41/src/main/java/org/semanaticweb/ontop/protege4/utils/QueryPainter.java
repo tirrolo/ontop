@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.utils;
+package org.semanaticweb.ontop.protege4.utils;
 
 /*
  * #%L
@@ -20,17 +20,6 @@ package it.unibz.krdb.obda.protege4.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.parser.TargetQueryParserException;
-import it.unibz.krdb.obda.parser.TurtleOBDASyntaxParser;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -50,6 +39,17 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.URIConstant;
+import org.semanaticweb.ontop.parser.TargetQueryParserException;
+import org.semanaticweb.ontop.parser.TurtleOBDASyntaxParser;
 
 public class QueryPainter {
 	private final OBDAModel apic;

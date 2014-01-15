@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,31 +20,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.DuplicateMappingException;
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.OBDARDBMappingAxiom;
-import it.unibz.krdb.obda.model.OBDASQLQuery;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.parser.TargetQueryParserException;
-import it.unibz.krdb.obda.parser.TurtleOBDASyntaxParser;
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.protege4.gui.treemodels.IncrementalResultSetTableModel;
-import it.unibz.krdb.obda.protege4.utils.CustomTraversalPolicy;
-import it.unibz.krdb.obda.protege4.utils.DatasourceSelectorListener;
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgessMonitor;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgressListener;
-import it.unibz.krdb.obda.protege4.utils.QueryPainter;
-import it.unibz.krdb.obda.protege4.utils.QueryPainter.ValidatorListener;
-import it.unibz.krdb.obda.renderer.SourceQueryRenderer;
-import it.unibz.krdb.obda.renderer.TargetQueryRenderer;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
 import java.awt.Component;
@@ -68,6 +43,31 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.semanaticweb.ontop.exception.DuplicateMappingException;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.model.OBDARDBMappingAxiom;
+import org.semanaticweb.ontop.model.OBDASQLQuery;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.parser.TargetQueryParserException;
+import org.semanaticweb.ontop.parser.TurtleOBDASyntaxParser;
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.protege4.gui.treemodels.IncrementalResultSetTableModel;
+import org.semanaticweb.ontop.protege4.utils.CustomTraversalPolicy;
+import org.semanaticweb.ontop.protege4.utils.DatasourceSelectorListener;
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgessMonitor;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgressListener;
+import org.semanaticweb.ontop.protege4.utils.QueryPainter;
+import org.semanaticweb.ontop.protege4.utils.QueryPainter.ValidatorListener;
+import org.semanaticweb.ontop.renderer.SourceQueryRenderer;
+import org.semanaticweb.ontop.renderer.TargetQueryRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

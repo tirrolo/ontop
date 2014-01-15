@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.testsuite;
+package org.semanaticweb.ontop.testsuite;
 
 /*
  * #%L
@@ -20,7 +20,8 @@ package it.unibz.krdb.obda.testsuite;
  * #L%
  */
 
-import it.unibz.krdb.obda.quest.sparql.QuestMemorySPARQLQueryTest;
+import org.semanaticweb.ontop.quest.sparql.QuestMemorySPARQLQueryTest;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

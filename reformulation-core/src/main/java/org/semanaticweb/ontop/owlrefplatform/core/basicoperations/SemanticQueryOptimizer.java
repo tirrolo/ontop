@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
+package org.semanaticweb.ontop.owlrefplatform.core.basicoperations;
 
 /*
  * #%L
@@ -20,27 +20,27 @@ package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.impl.AnonymousVariable;
-import it.unibz.krdb.obda.ontology.ClassDescription;
-import it.unibz.krdb.obda.ontology.OClass;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.SubDescriptionAxiom;
-import it.unibz.krdb.obda.ontology.impl.PropertySomeRestrictionImpl;
-import it.unibz.krdb.obda.ontology.impl.SubClassAxiomImpl;
-import it.unibz.krdb.obda.ontology.impl.SubPropertyAxiomImpl;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.impl.AnonymousVariable;
+import org.semanaticweb.ontop.ontology.ClassDescription;
+import org.semanaticweb.ontop.ontology.OClass;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.ontology.SubDescriptionAxiom;
+import org.semanaticweb.ontop.ontology.impl.PropertySomeRestrictionImpl;
+import org.semanaticweb.ontop.ontology.impl.SubClassAxiomImpl;
+import org.semanaticweb.ontop.ontology.impl.SubPropertyAxiomImpl;
 
 public class SemanticQueryOptimizer {
 	

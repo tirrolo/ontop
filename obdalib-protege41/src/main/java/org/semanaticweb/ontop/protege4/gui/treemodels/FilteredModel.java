@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.treemodels;
+package org.semanaticweb.ontop.protege4.gui.treemodels;
 
 /*
  * #%L
@@ -20,10 +20,10 @@ package it.unibz.krdb.obda.protege4.gui.treemodels;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.protege4.gui.treemodels.TreeModelFilter;
-
 import java.util.List;
+
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.protege4.gui.treemodels.TreeModelFilter;
 
 /**
  * Interface that implements a set of functions to add and remove filters of the

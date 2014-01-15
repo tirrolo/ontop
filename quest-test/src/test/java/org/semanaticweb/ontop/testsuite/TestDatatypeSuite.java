@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.testsuite;
+package org.semanaticweb.ontop.testsuite;
 
 /*
  * #%L
@@ -20,9 +20,10 @@ package it.unibz.krdb.obda.testsuite;
  * #L%
  */
 
-import it.unibz.krdb.obda.quest.datatypes.MysqlDatatypeTest;
-import it.unibz.krdb.obda.quest.datatypes.OracleDatatypeTest;
-import it.unibz.krdb.obda.quest.datatypes.PgsqlDatatypeTest;
+import org.semanaticweb.ontop.quest.datatypes.MysqlDatatypeTest;
+import org.semanaticweb.ontop.quest.datatypes.OracleDatatypeTest;
+import org.semanaticweb.ontop.quest.datatypes.PgsqlDatatypeTest;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

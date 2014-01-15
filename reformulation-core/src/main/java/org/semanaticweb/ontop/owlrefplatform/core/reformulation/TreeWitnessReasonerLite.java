@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
+package org.semanaticweb.ontop.owlrefplatform.core.reformulation;
 
 /*
  * #%L
@@ -20,22 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.Axiom;
-import it.unibz.krdb.obda.ontology.BasicClassDescription;
-import it.unibz.krdb.obda.ontology.ClassDescription;
-import it.unibz.krdb.obda.ontology.OClass;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertySomeClassRestriction;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.ontology.impl.SubClassAxiomImpl;
-import it.unibz.krdb.obda.ontology.impl.SubPropertyAxiomImpl;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,6 +29,21 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.ontology.Axiom;
+import org.semanaticweb.ontop.ontology.BasicClassDescription;
+import org.semanaticweb.ontop.ontology.ClassDescription;
+import org.semanaticweb.ontop.ontology.OClass;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertySomeClassRestriction;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
+import org.semanaticweb.ontop.ontology.impl.SubClassAxiomImpl;
+import org.semanaticweb.ontop.ontology.impl.SubPropertyAxiomImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

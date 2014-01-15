@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.views;
+package org.semanaticweb.ontop.protege4.views;
 
 /*
  * #%L
@@ -20,15 +20,14 @@ package it.unibz.krdb.obda.protege4.views;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManager;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManagerListener;
-import it.unibz.krdb.obda.protege4.panels.SavedQueriesPanel;
-import it.unibz.krdb.obda.protege4.panels.SavedQueriesPanelListener;
-
 import java.awt.BorderLayout;
 
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
+import org.semanaticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManager;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManagerListener;
+import org.semanaticweb.ontop.protege4.panels.SavedQueriesPanel;
+import org.semanaticweb.ontop.protege4.panels.SavedQueriesPanelListener;
 
 public class QueryManagerView extends AbstractOWLViewComponent implements OBDAModelManagerListener {
 

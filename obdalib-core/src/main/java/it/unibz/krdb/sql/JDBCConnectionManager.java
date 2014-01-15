@@ -20,9 +20,6 @@ package it.unibz.krdb.sql;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
 import it.unibz.krdb.sql.api.Attribute;
 import it.unibz.krdb.sql.api.Relation;
 import it.unibz.krdb.sql.api.RelationJSQL;
@@ -41,6 +38,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.impl.RDBMSourceParameterConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

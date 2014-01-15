@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.testsuite;
+package org.semanaticweb.ontop.testsuite;
 
 /*
  * #%L
@@ -20,11 +20,11 @@ package it.unibz.krdb.obda.testsuite;
  * #L%
  */
 
-import it.unibz.krdb.obda.quest.scenarios.Db2VirtualScenarioTest;
-import it.unibz.krdb.obda.quest.scenarios.MssqlVirtualScenarioTest;
-import it.unibz.krdb.obda.quest.scenarios.MysqlVirtualScenarioTest;
-import it.unibz.krdb.obda.quest.scenarios.OracleVirtualScenarioTest;
-import it.unibz.krdb.obda.quest.scenarios.PgsqlVirtualScenarioTest;
+import org.semanaticweb.ontop.quest.scenarios.Db2VirtualScenarioTest;
+import org.semanaticweb.ontop.quest.scenarios.MssqlVirtualScenarioTest;
+import org.semanaticweb.ontop.quest.scenarios.MysqlVirtualScenarioTest;
+import org.semanaticweb.ontop.quest.scenarios.OracleVirtualScenarioTest;
+import org.semanaticweb.ontop.quest.scenarios.PgsqlVirtualScenarioTest;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

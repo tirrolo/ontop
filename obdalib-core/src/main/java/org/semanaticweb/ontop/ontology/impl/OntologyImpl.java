@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology.impl;
+package org.semanaticweb.ontop.ontology.impl;
 
 /*
  * #%L
@@ -20,20 +20,6 @@ package it.unibz.krdb.obda.ontology.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.Axiom;
-import it.unibz.krdb.obda.ontology.ClassDescription;
-import it.unibz.krdb.obda.ontology.DataType;
-import it.unibz.krdb.obda.ontology.DisjointDescriptionAxiom;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertyFunctionalAxiom;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.SubDescriptionAxiom;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,6 +27,19 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.Axiom;
+import org.semanaticweb.ontop.ontology.ClassDescription;
+import org.semanaticweb.ontop.ontology.DataType;
+import org.semanaticweb.ontop.ontology.DisjointDescriptionAxiom;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertyFunctionalAxiom;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.ontology.SubDescriptionAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

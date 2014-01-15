@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core;
+package org.semanaticweb.ontop.owlrefplatform.core;
 
 /*
  * #%L
@@ -20,8 +20,9 @@ package it.unibz.krdb.obda.owlrefplatform.core;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAConnection;
-import it.unibz.krdb.obda.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAConnection;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConnection;
 
 public class QuestDBConnection implements OBDAConnection {
 

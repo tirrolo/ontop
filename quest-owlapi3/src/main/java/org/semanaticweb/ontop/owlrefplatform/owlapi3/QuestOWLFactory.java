@@ -5,7 +5,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.owlrefplatform.owlapi3;
+package org.semanaticweb.ontop.owlrefplatform.owlapi3;
 
 /*
  * #%L
@@ -27,12 +27,11 @@ package it.unibz.krdb.obda.owlrefplatform.owlapi3;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-
 import java.util.Properties;
 
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.IllegalConfigurationException;

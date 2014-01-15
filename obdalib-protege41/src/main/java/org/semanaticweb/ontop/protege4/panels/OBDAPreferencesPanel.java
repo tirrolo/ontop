@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,8 +20,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.utils.OBDAPreferences;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -41,6 +39,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+
+import org.semanaticweb.ontop.utils.OBDAPreferences;
 
 public class OBDAPreferencesPanel extends javax.swing.JPanel {
 	

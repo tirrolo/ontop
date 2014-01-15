@@ -5,7 +5,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.owlapi3;
+package org.semanaticweb.ontop.owlapi3;
 
 /*
  * #%L
@@ -27,10 +27,6 @@ package it.unibz.krdb.obda.owlapi3;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.Description;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +34,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.Description;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;

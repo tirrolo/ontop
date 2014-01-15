@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model.impl;
+package org.semanaticweb.ontop.model.impl;
 
 /*
  * #%L
@@ -20,14 +20,14 @@ package it.unibz.krdb.obda.model.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.Variable;
-
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.URIConstant;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
 
 /**
  * Provides a storage to put the URI constant.

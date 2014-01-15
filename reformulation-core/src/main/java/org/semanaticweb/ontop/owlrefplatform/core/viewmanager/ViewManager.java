@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.viewmanager;
+package org.semanaticweb.ontop.owlrefplatform.core.viewmanager;
 
 /*
  * #%L
@@ -20,9 +20,9 @@ package it.unibz.krdb.obda.owlrefplatform.core.viewmanager;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-
 import java.io.Serializable;
+
+import org.semanaticweb.ontop.model.Function;
 
 
 /**

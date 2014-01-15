@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
+package org.semanaticweb.ontop.owlrefplatform.core.reformulation;
 
 /*
  * #%L
@@ -25,10 +25,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.ontology.BasicClassDescription;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessReasonerLite.IntersectionOfConceptSets;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.ontology.BasicClassDescription;
+import org.semanaticweb.ontop.owlrefplatform.core.reformulation.TreeWitnessReasonerLite.IntersectionOfConceptSets;
 
 /**
  * TreeWitness: universal tree witnesses as in the KR 2012 paper

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.treemodels;
+package org.semanaticweb.ontop.protege4.gui.treemodels;
 
 /*
  * #%L
@@ -20,12 +20,12 @@ package it.unibz.krdb.obda.protege4.gui.treemodels;
  * #L%
  */
 
-import it.unibz.krdb.obda.protege4.gui.treemodels.QueryTreeElement;
-import it.unibz.krdb.obda.protege4.gui.treemodels.TreeElement;
-
 import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.semanaticweb.ontop.protege4.gui.treemodels.QueryTreeElement;
+import org.semanaticweb.ontop.protege4.gui.treemodels.TreeElement;
 
 public class QueryGroupTreeElement extends DefaultMutableTreeNode implements TreeElement {
 

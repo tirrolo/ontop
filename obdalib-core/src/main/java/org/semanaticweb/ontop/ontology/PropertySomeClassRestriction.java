@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology;
+package org.semanaticweb.ontop.ontology;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.ontology;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
+import org.semanaticweb.ontop.model.Predicate;
 
 /**
  * An OWL2 property restriction on a named class. Corresponds to owl 2 QL

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model.impl;
+package org.semanaticweb.ontop.model.impl;
 
 /*
  * #%L
@@ -20,11 +20,11 @@ package it.unibz.krdb.obda.model.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.OBDARDBMappingAxiom;
-import it.unibz.krdb.obda.model.OBDASQLQuery;
-
 import java.security.InvalidParameterException;
+
+import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.model.OBDARDBMappingAxiom;
+import org.semanaticweb.ontop.model.OBDASQLQuery;
 
 public class RDBMSMappingAxiomImpl extends AbstractOBDAMappingAxiom implements OBDARDBMappingAxiom {
 

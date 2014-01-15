@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.translator;
+package org.semanaticweb.ontop.owlrefplatform.core.translator;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.owlrefplatform.core.translator;
  * #L%
  */
 
-import it.unibz.krdb.obda.owlrefplatform.core.translator.UnknownFunctionSymbolException;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.UnknownFunctionSymbolException;
 
 public class UnknownBooleanSymbolException extends UnknownFunctionSymbolException {
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.reformulation.tests;
+package org.semanaticweb.ontop.reformulation.tests;
 
 /*
  * #%L
@@ -20,21 +20,20 @@ package it.unibz.krdb.obda.reformulation.tests;
  * #L%
  */
 
-import it.unibz.krdb.obda.ontology.Axiom;
-import it.unibz.krdb.obda.ontology.OClass;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.impl.PropertySomeRestrictionImpl;
-import it.unibz.krdb.obda.ontology.impl.SubClassAxiomImpl;
-import it.unibz.krdb.obda.ontology.impl.SubPropertyAxiomImpl;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-
 import java.net.URI;
 import java.util.Iterator;
 import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.ontology.Axiom;
+import org.semanaticweb.ontop.ontology.OClass;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.impl.PropertySomeRestrictionImpl;
+import org.semanaticweb.ontop.ontology.impl.SubClassAxiomImpl;
+import org.semanaticweb.ontop.ontology.impl.SubPropertyAxiomImpl;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;

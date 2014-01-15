@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,13 +20,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.protege4.gui.action.OBDADataQueryAction;
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
-import it.unibz.krdb.obda.querymanager.QueryController;
-import it.unibz.krdb.obda.utils.OBDAPreferenceChangeListener;
-
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -38,6 +31,13 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.StyleContext;
+
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.protege4.gui.action.OBDADataQueryAction;
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
+import org.semanaticweb.ontop.querymanager.QueryController;
+import org.semanaticweb.ontop.utils.OBDAPreferenceChangeListener;
 
 /**
  * Creates a new panel to execute queries. Remember to execute the

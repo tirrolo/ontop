@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.dialogs;
+package org.semanaticweb.ontop.protege4.dialogs;
 
 /*
  * #%L
@@ -20,12 +20,12 @@ package it.unibz.krdb.obda.protege4.dialogs;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAModel;
-
 import java.util.Iterator;
 
 import javax.swing.JFrame;
+
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAModel;
 
 /*
  * SelectDB.java

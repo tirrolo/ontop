@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.core;
+package org.semanaticweb.ontop.protege4.core;
 
 /*
  * #%L
@@ -20,9 +20,8 @@ package it.unibz.krdb.obda.protege4.core;
  * #L%
  */
 
-import it.unibz.krdb.obda.utils.OBDAPreferences;
-
 import org.protege.editor.core.Disposable;
+import org.semanaticweb.ontop.utils.OBDAPreferences;
 
 public class ProtegeOBDAPreferences extends OBDAPreferences 
 		implements Disposable {

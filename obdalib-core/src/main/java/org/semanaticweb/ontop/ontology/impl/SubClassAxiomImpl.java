@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology.impl;
+package org.semanaticweb.ontop.ontology.impl;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.ontology.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.ontology.ClassDescription;
+import org.semanaticweb.ontop.ontology.ClassDescription;
 
 public class SubClassAxiomImpl extends AbstractSubDescriptionAxiom {
 

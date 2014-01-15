@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.renderer;
+package org.semanaticweb.ontop.renderer;
 
 /*
  * #%L

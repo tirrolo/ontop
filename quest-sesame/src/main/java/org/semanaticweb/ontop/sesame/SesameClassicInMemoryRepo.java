@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -20,14 +20,13 @@ package sesameWrapper;
  * #L%
  */
 
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
 
 import org.openrdf.query.Dataset;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
 
 public class SesameClassicInMemoryRepo extends SesameClassicRepo {
 	

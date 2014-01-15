@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
+package org.semanaticweb.ontop.owlrefplatform.core.reformulation;
 
 /*
  * #%L
@@ -20,11 +20,12 @@ package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.semanaticweb.ontop.model.Function;
 
 public class MinimalCQProducer {
 	private final TreeWitnessReasonerLite reasoner;

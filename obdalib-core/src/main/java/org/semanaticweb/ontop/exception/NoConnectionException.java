@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.exception;
+package org.semanaticweb.ontop.exception;
 
 /*
  * #%L

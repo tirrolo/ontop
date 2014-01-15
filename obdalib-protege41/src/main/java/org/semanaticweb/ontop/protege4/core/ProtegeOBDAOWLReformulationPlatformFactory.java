@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.core;
+package org.semanaticweb.ontop.protege4.core;
 
 /*
  * #%L
@@ -20,12 +20,11 @@ package it.unibz.krdb.obda.protege4.core;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLFactory;
-
 import java.util.Properties;
 
 import org.protege.editor.owl.model.inference.AbstractProtegeOWLReasonerInfo;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWLFactory;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 

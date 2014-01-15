@@ -1,6 +1,6 @@
 // $ANTLR 3.5 /Users/xiao/Projects/ontop/obdalib-core/src/main/java/it/unibz/krdb/obda/parser/TurtleOBDA.g 2013-09-02 21:10:10
 
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
 /*
  * #%L

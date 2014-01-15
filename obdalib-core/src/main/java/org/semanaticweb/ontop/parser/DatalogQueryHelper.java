@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
 /*
  * #%L
@@ -20,11 +20,11 @@ package it.unibz.krdb.obda.parser;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDALibConstants;
-import it.unibz.krdb.obda.io.PrefixManager;
-
 import java.util.Map;
 import java.util.Set;
+
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.model.OBDALibConstants;
 
 /**
  * Provides additional strings for constructing a proper datalog query.

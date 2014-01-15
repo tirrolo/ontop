@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model.impl;
+package org.semanaticweb.ontop.model.impl;
 
 /*
  * #%L
@@ -20,21 +20,6 @@ package it.unibz.krdb.obda.model.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.DuplicateMappingException;
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.SimplePrefixManager;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAMappingListener;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAModelListener;
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.querymanager.QueryController;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -50,6 +35,20 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.semanaticweb.ontop.exception.DuplicateMappingException;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.io.SimplePrefixManager;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAMappingListener;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.OBDAModelListener;
+import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.querymanager.QueryController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology.impl;
+package org.semanaticweb.ontop.ontology.impl;
 
 /*
  * #%L
@@ -20,14 +20,14 @@ package it.unibz.krdb.obda.ontology.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.ObjectConstant;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.ClassAssertion;
-import it.unibz.krdb.obda.ontology.UnaryAssertion;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.ObjectConstant;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.ontology.ClassAssertion;
+import org.semanaticweb.ontop.ontology.UnaryAssertion;
 
 public class ClassAssertionImpl implements ClassAssertion, UnaryAssertion {
 

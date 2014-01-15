@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.utils;
+package org.semanaticweb.ontop.utils;
 
 /*
  * #%L
@@ -19,6 +19,8 @@ package it.unibz.krdb.obda.utils;
  * limitations under the License.
  * #L%
  */
+
+import org.semanaticweb.ontop.utils.LookupTable;
 
 import junit.framework.TestCase;
 

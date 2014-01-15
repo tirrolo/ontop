@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -20,11 +20,6 @@ package sesameWrapper;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.TupleResultSet;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBStatement;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +37,10 @@ import org.openrdf.query.TupleQueryResultHandler;
 import org.openrdf.query.TupleQueryResultHandlerException;
 import org.openrdf.query.impl.MapBindingSet;
 import org.openrdf.query.impl.TupleQueryResultImpl;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.TupleResultSet;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBConnection;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBStatement;
 
 public class SesameTupleQuery implements TupleQuery {
 

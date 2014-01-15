@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -20,13 +20,13 @@ package sesameWrapper;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.QuestMaterializer;
-import it.unibz.krdb.obda.sesame.SesameStatementIterator;
-
 import java.util.Iterator;
+
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.QuestMaterializer;
+import org.semanaticweb.ontop.sesame.SesameStatementIterator;
 
 public class SesameMaterializer {
 	

@@ -1,4 +1,4 @@
-package inf.unibz.ontop.sesame.tests.general;
+package org.semanaticweb.ontop.sesame.tests.general;
 
 /*
  * #%L
@@ -31,8 +31,7 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFFormat;
-
-import sesameWrapper.SesameClassicInMemoryRepo;
+import org.semanaticweb.ontop.sesame.SesameClassicInMemoryRepo;
 
 public class QuestSesameInMemoryExample {
 

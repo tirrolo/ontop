@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.action;
+package org.semanaticweb.ontop.protege4.gui.action;
 
 /*
  * #%L
@@ -20,8 +20,6 @@ package it.unibz.krdb.obda.protege4.gui.action;
  * #L%
  */
 
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
-
 import java.awt.event.ActionEvent;
 
 import javax.swing.JOptionPane;
@@ -30,6 +28,7 @@ import org.protege.editor.core.ui.action.ProtegeAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.OWLWorkspace;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWL;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

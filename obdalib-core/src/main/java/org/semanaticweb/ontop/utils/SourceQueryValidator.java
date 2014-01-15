@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.utils;
+package org.semanaticweb.ontop.utils;
 
 /*
  * #%L
@@ -20,14 +20,15 @@ package it.unibz.krdb.obda.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAQuery;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAQuery;
 
 public class SourceQueryValidator {
 

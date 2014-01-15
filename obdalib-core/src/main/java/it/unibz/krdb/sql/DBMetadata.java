@@ -20,11 +20,6 @@ package it.unibz.krdb.sql;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.BooleanOperationPredicate;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Predicate;
 import it.unibz.krdb.sql.api.Attribute;
 
 import java.io.Serializable;
@@ -35,6 +30,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.semanaticweb.ontop.model.BooleanOperationPredicate;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.Predicate;
 
 public class DBMetadata implements Serializable {
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.treemodels;
+package org.semanaticweb.ontop.protege4.gui.treemodels;
 
 /*
  * #%L
@@ -20,14 +20,14 @@ package it.unibz.krdb.obda.protege4.gui.treemodels;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.impl.CQIEImpl;
-import it.unibz.krdb.obda.protege4.gui.treemodels.TreeModelFilter;
-
 import java.util.List;
+
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.impl.CQIEImpl;
+import org.semanaticweb.ontop.protege4.gui.treemodels.TreeModelFilter;
 
 /**
  * This Filter receives a string and returns true if any mapping contains the

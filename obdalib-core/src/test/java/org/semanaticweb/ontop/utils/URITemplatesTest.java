@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.utils;
+package org.semanaticweb.ontop.utils;
 
 /*
  * #%L
@@ -21,6 +21,8 @@ package it.unibz.krdb.obda.utils;
  */
 
 import java.util.Arrays;
+
+import org.semanaticweb.ontop.utils.URITemplates;
 
 import junit.framework.TestCase;
 

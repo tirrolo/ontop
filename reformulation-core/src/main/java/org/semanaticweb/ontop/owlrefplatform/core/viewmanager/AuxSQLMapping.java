@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.viewmanager;
+package org.semanaticweb.ontop.owlrefplatform.core.viewmanager;
 
 /*
  * #%L

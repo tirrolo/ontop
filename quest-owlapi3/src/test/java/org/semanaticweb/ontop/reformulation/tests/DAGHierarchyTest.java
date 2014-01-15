@@ -6,7 +6,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.reformulation.tests;
+package org.semanaticweb.ontop.reformulation.tests;
 
 /*
  * #%L
@@ -29,27 +29,26 @@ package it.unibz.krdb.obda.reformulation.tests;
  */
 
 
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAG;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGBuilder;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGBuilderImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphBuilder;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphBuilderImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDAGBuilderImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasoner;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
-
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAG;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAGBuilder;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAGBuilderImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.GraphBuilder;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.GraphBuilderImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.GraphImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.NamedDAGBuilderImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.TBoxReasoner;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;

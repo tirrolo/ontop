@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.io;
+package org.semanaticweb.ontop.io;
 
 /*
  * #%L
@@ -20,10 +20,10 @@ package it.unibz.krdb.obda.io;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Predicate;
-
 import java.util.Vector;
+
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Predicate;
 
 public interface TargetQueryVocabularyValidator {
 

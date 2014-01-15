@@ -8,16 +8,16 @@
  */
 package it.unibz.krdb.sql.api;
 
-import it.unibz.krdb.obda.parser.AggregationVisitor;
-import it.unibz.krdb.obda.parser.AliasMapVisitor;
-import it.unibz.krdb.obda.parser.JoinConditionVisitor;
-import it.unibz.krdb.obda.parser.ProjectionVisitor;
-import it.unibz.krdb.obda.parser.SelectionVisitor;
-import it.unibz.krdb.obda.parser.TablesNameVisitor;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.semanaticweb.ontop.parser.AggregationVisitor;
+import org.semanaticweb.ontop.parser.AliasMapVisitor;
+import org.semanaticweb.ontop.parser.JoinConditionVisitor;
+import org.semanaticweb.ontop.parser.ProjectionVisitor;
+import org.semanaticweb.ontop.parser.SelectionVisitor;
+import org.semanaticweb.ontop.parser.TablesNameVisitor;
 
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;

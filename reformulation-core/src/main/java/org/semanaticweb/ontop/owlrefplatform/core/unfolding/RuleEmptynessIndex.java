@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
+package org.semanaticweb.ontop.owlrefplatform.core.unfolding;
 
 /*
  * #%L
@@ -20,9 +20,9 @@ package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.URIConstant;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.URIConstant;
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
 
 /***
  * An emptyness index is an utility that helps two components comunicate about

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.io;
+package org.semanaticweb.ontop.io;
 
 /*
  * #%L

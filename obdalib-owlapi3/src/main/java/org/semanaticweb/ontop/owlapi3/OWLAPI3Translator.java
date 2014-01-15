@@ -5,7 +5,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.owlapi3;
+package org.semanaticweb.ontop.owlapi3;
 
 /*
  * #%L
@@ -27,36 +27,6 @@ package it.unibz.krdb.obda.owlapi3;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.BasicClassDescription;
-import it.unibz.krdb.obda.ontology.ClassDescription;
-import it.unibz.krdb.obda.ontology.DataType;
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.DisjointClassAxiom;
-import it.unibz.krdb.obda.ontology.DisjointDataPropertyAxiom;
-import it.unibz.krdb.obda.ontology.DisjointObjectPropertyAxiom;
-import it.unibz.krdb.obda.ontology.LanguageProfile;
-import it.unibz.krdb.obda.ontology.OClass;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertyFunctionalAxiom;
-import it.unibz.krdb.obda.ontology.PropertySomeClassRestriction;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.SubDescriptionAxiom;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.ontology.impl.OntologyImpl;
-import it.unibz.krdb.obda.ontology.impl.PropertySomeDataTypeRestrictionImpl;
-import it.unibz.krdb.obda.ontology.impl.PunningException;
-import it.unibz.krdb.obda.ontology.impl.SubClassAxiomImpl;
-import it.unibz.krdb.obda.ontology.impl.SubPropertyAxiomImpl;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -69,6 +39,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.URIConstant;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.BasicClassDescription;
+import org.semanaticweb.ontop.ontology.ClassDescription;
+import org.semanaticweb.ontop.ontology.DataType;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.DisjointClassAxiom;
+import org.semanaticweb.ontop.ontology.DisjointDataPropertyAxiom;
+import org.semanaticweb.ontop.ontology.DisjointObjectPropertyAxiom;
+import org.semanaticweb.ontop.ontology.LanguageProfile;
+import org.semanaticweb.ontop.ontology.OClass;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertyFunctionalAxiom;
+import org.semanaticweb.ontop.ontology.PropertySomeClassRestriction;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.ontology.SubDescriptionAxiom;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
+import org.semanaticweb.ontop.ontology.impl.OntologyImpl;
+import org.semanaticweb.ontop.ontology.impl.PropertySomeDataTypeRestrictionImpl;
+import org.semanaticweb.ontop.ontology.impl.PunningException;
+import org.semanaticweb.ontop.ontology.impl.SubClassAxiomImpl;
+import org.semanaticweb.ontop.ontology.impl.SubPropertyAxiomImpl;
 import org.semanticweb.owlapi.model.OWLAnnotationAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;

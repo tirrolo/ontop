@@ -6,13 +6,8 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.sql.api.VisitedQuery;
 
 import java.net.URI;
@@ -23,6 +18,11 @@ import java.util.Hashtable;
 import junit.framework.TestCase;
 import net.sf.jsqlparser.JSQLParserException;
 
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.utils;
+package org.semanaticweb.ontop.protege4.utils;
 
 /*
  * #%L
@@ -20,9 +20,9 @@ package it.unibz.krdb.obda.protege4.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.protege4.utils.OBDAProgessMonitor;
-
 import javax.swing.JOptionPane;
+
+import org.semanaticweb.ontop.protege4.utils.OBDAProgessMonitor;
 
 public class ProgressPanel extends javax.swing.JPanel {
 

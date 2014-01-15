@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.sql;
+package org.semanaticweb.ontop.owlrefplatform.core.sql;
 
 /*
  * #%L
@@ -20,31 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.sql;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
-import it.unibz.krdb.obda.model.BNode;
-import it.unibz.krdb.obda.model.BooleanOperationPredicate;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.DataTypePredicate;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.NumericalOperationPredicate;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.URITemplatePredicate;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.owlrefplatform.core.Quest;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
-import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.DB2SQLDialectAdapter;
-import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.JDBCUtility;
-import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
-import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
 import it.unibz.krdb.sql.DBMetadata;
 import it.unibz.krdb.sql.DataDefinition;
 import it.unibz.krdb.sql.TableDefinition;
@@ -62,6 +37,31 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openrdf.model.Literal;
+import org.semanaticweb.ontop.model.AlgebraOperatorPredicate;
+import org.semanaticweb.ontop.model.BNode;
+import org.semanaticweb.ontop.model.BooleanOperationPredicate;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.DataTypePredicate;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.NumericalOperationPredicate;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.URIConstant;
+import org.semanaticweb.ontop.model.URITemplatePredicate;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.OBDAQueryModifiers.OrderCondition;
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.owlrefplatform.core.Quest;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.DatalogNormalizer;
+import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.DB2SQLDialectAdapter;
+import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.JDBCUtility;
+import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
+import org.semanaticweb.ontop.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
 import org.slf4j.LoggerFactory;
 
 //import com.hp.hpl.jena.rdf.model.Literal;

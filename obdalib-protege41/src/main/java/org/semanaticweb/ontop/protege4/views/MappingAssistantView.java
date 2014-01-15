@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.views;
+package org.semanaticweb.ontop.protege4.views;
 
 /*
  * #%L
@@ -20,13 +20,6 @@ package it.unibz.krdb.obda.protege4.views;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManager;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManagerListener;
-import it.unibz.krdb.obda.protege4.panels.DatasourceSelector;
-import it.unibz.krdb.obda.protege4.panels.MappingAssistantPanel;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -39,6 +32,12 @@ import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManager;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManagerListener;
+import org.semanaticweb.ontop.protege4.panels.DatasourceSelector;
+import org.semanaticweb.ontop.protege4.panels.MappingAssistantPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.utils;
+package org.semanaticweb.ontop.utils;
 
 /*
  * #%L
@@ -20,11 +20,12 @@ package it.unibz.krdb.obda.utils;
  * #L%
  */
  
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.OBDASQLQuery;
-import it.unibz.krdb.obda.parser.SQLQueryTranslator;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.model.OBDASQLQuery;
+import org.semanaticweb.ontop.parser.SQLQueryTranslator;
+
 import it.unibz.krdb.sql.api.VisitedQuery;
 
 /**

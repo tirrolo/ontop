@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology;
+package org.semanaticweb.ontop.ontology;
 
 /*
  * #%L

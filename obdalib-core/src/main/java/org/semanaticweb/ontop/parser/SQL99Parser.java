@@ -1,6 +1,6 @@
 // $ANTLR 3.5 SQL99.g 2013-10-04 11:38:33
 
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
 /*
  * #%L

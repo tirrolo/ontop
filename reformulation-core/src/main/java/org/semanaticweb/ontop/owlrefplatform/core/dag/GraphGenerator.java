@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.dag;
+package org.semanaticweb.ontop.owlrefplatform.core.dag;
 
 /*
  * #%L
@@ -20,17 +20,17 @@ package it.unibz.krdb.obda.owlrefplatform.core.dag;
  * #L%
  */
 
-import it.unibz.krdb.obda.ontology.Axiom;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.semanaticweb.ontop.ontology.Axiom;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
 
 
 /**

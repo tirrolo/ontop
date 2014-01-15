@@ -5,7 +5,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.owlrefplatform.owlapi3;
+package org.semanaticweb.ontop.owlrefplatform.owlapi3;
 
 /*
  * #%L
@@ -27,13 +27,12 @@ package it.unibz.krdb.obda.owlrefplatform.owlapi3;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.TupleResultSet;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3IndividualTranslator;
-import it.unibz.krdb.obda.owlapi3.OntopOWLException;
-
 import java.util.List;
 
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.TupleResultSet;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3IndividualTranslator;
+import org.semanaticweb.ontop.owlapi3.OntopOWLException;
 import org.semanticweb.owlapi.model.OWLAnonymousIndividual;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLIndividual;

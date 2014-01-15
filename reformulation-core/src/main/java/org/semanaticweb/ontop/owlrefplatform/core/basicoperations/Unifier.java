@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
+package org.semanaticweb.ontop.owlrefplatform.core.basicoperations;
 
 /*
  * #%L
@@ -30,26 +30,25 @@ package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
  * variables ie. A(#1,#2)
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.AlgebraOperatorPredicateImpl;
-import it.unibz.krdb.obda.model.impl.AnonymousVariable;
-import it.unibz.krdb.obda.model.impl.FunctionalTermImpl;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.URIConstantImpl;
-import it.unibz.krdb.obda.model.impl.ValueConstantImpl;
-import it.unibz.krdb.obda.model.impl.VariableImpl;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.AlgebraOperatorPredicateImpl;
+import org.semanaticweb.ontop.model.impl.AnonymousVariable;
+import org.semanaticweb.ontop.model.impl.FunctionalTermImpl;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.URIConstantImpl;
+import org.semanaticweb.ontop.model.impl.ValueConstantImpl;
+import org.semanaticweb.ontop.model.impl.VariableImpl;
 
 /***
  * A Class that provides general utilities related to unification, of terms and

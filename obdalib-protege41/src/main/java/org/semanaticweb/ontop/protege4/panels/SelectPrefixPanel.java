@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,11 +20,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.SimplePrefixManager;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
-
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,6 +33,11 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
+
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.io.SimplePrefixManager;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
 
 public class SelectPrefixPanel extends javax.swing.JPanel {
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
+package org.semanaticweb.ontop.owlrefplatform.core.queryevaluation;
 
 /*
  * #%L
@@ -20,15 +20,14 @@ package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.impl.RDBMSourceParameterConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

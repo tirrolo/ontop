@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -20,11 +20,6 @@ package sesameWrapper;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.owlrefplatform.questdb.QuestDBVirtualStore;
 import it.unibz.krdb.sql.DBMetadata;
 
 import java.io.File;
@@ -36,6 +31,11 @@ import java.util.Properties;
 
 import org.openrdf.model.Graph;
 import org.openrdf.repository.RepositoryException;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBConnection;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.owlrefplatform.questdb.QuestDBVirtualStore;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 public class SesameVirtualRepo extends SesameAbstractRepo {

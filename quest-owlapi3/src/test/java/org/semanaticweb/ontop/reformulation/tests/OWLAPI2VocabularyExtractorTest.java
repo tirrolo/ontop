@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.reformulation.tests;
+package org.semanaticweb.ontop.reformulation.tests;
 
 /*
  * #%L
@@ -20,14 +20,13 @@ package it.unibz.krdb.obda.reformulation.tests;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3VocabularyExtractor;
-
 import java.io.File;
 import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3VocabularyExtractor;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;

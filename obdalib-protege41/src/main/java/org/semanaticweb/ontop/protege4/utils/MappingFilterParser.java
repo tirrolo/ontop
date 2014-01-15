@@ -1,6 +1,6 @@
 // $ANTLR 3.4 C:\\Project\\Obdalib\\obdalib-parent\\obdalib-core\\src\\main\\java\\it\\unibz\\krdb\\obda\\gui\\swing\\utils\\MappingFilter.g 2012-05-18 10:51:12
 
-package it.unibz.krdb.obda.protege4.utils;
+package org.semanaticweb.ontop.protege4.utils;
 
 /*
  * #%L
@@ -22,15 +22,6 @@ package it.unibz.krdb.obda.protege4.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.protege4.gui.treemodels.MappingFunctorTreeModelFilter;
-import it.unibz.krdb.obda.protege4.gui.treemodels.MappingHeadVariableTreeModelFilter;
-import it.unibz.krdb.obda.protege4.gui.treemodels.MappingIDTreeModelFilter;
-import it.unibz.krdb.obda.protege4.gui.treemodels.MappingPredicateTreeModelFilter;
-import it.unibz.krdb.obda.protege4.gui.treemodels.MappingSQLStringTreeModelFilter;
-import it.unibz.krdb.obda.protege4.gui.treemodels.MappingStringTreeModelFilter;
-import it.unibz.krdb.obda.protege4.gui.treemodels.TreeModelFilter;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +33,14 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.protege4.gui.treemodels.MappingFunctorTreeModelFilter;
+import org.semanaticweb.ontop.protege4.gui.treemodels.MappingHeadVariableTreeModelFilter;
+import org.semanaticweb.ontop.protege4.gui.treemodels.MappingIDTreeModelFilter;
+import org.semanaticweb.ontop.protege4.gui.treemodels.MappingPredicateTreeModelFilter;
+import org.semanaticweb.ontop.protege4.gui.treemodels.MappingSQLStringTreeModelFilter;
+import org.semanaticweb.ontop.protege4.gui.treemodels.MappingStringTreeModelFilter;
+import org.semanaticweb.ontop.protege4.gui.treemodels.TreeModelFilter;
 
 @SuppressWarnings({"all", "warnings", "unchecked"})
 public class MappingFilterParser extends Parser {

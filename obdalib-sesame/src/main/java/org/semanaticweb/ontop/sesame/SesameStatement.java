@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.sesame;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -20,18 +20,6 @@ package it.unibz.krdb.obda.sesame;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.BNode;
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.BinaryAssertion;
-import it.unibz.krdb.obda.ontology.ClassAssertion;
-import it.unibz.krdb.obda.ontology.UnaryAssertion;
-
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -39,6 +27,17 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import org.semanaticweb.ontop.model.BNode;
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.URIConstant;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.BinaryAssertion;
+import org.semanaticweb.ontop.ontology.ClassAssertion;
+import org.semanaticweb.ontop.ontology.UnaryAssertion;
 
 public class SesameStatement implements Statement {
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
+package org.semanaticweb.ontop.owlrefplatform.core.reformulation;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAException;
 
 public class ReformulationException extends OBDAException {
 

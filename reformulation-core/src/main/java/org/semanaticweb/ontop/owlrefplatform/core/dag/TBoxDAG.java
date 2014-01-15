@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.dag;
+package org.semanaticweb.ontop.owlrefplatform.core.dag;
 
 /*
  * #%L
@@ -20,9 +20,9 @@ package it.unibz.krdb.obda.owlrefplatform.core.dag;
  * #L%
  */
 
-import it.unibz.krdb.obda.ontology.Description;
-
 import java.util.Set;
+
+import org.semanaticweb.ontop.ontology.Description;
 
 /***
  * A class that provides TBox entailment computation based on a DAG

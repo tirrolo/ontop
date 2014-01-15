@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.io;
+package org.semanaticweb.ontop.io;
 
 /*
  * #%L
@@ -20,14 +20,14 @@ package it.unibz.krdb.obda.io;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
 
 public class SimplePrefixManager extends AbstractPrefixManager {
 

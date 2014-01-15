@@ -1,4 +1,4 @@
-package it.unibz.ontop.sesame.completeness.test;
+package org.semanaticweb.ontop.sesame.completeness.test;
 
 /*
  * #%L

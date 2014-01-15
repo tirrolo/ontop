@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.views;
+package org.semanaticweb.ontop.protege4.views;
 
 /*
  * #%L
@@ -20,10 +20,9 @@ package it.unibz.krdb.obda.protege4.views;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.PrefixManager;
-
 import java.util.Map;
 
+import org.semanaticweb.ontop.io.PrefixManager;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyRangeAxiom;

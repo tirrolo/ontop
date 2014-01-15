@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core;
+package org.semanaticweb.ontop.owlrefplatform.core;
 
 /*
  * #%L
@@ -20,20 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.core;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDAConnection;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAStatement;
-import it.unibz.krdb.obda.model.ResultSet;
-import it.unibz.krdb.obda.model.TupleResultSet;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3ABoxIterator;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.NTripleAssertionIterator;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.QuestMaterializer;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
-
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -45,6 +31,20 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.QueryParser;
 import org.openrdf.query.parser.QueryParserUtil;
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDAConnection;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.OBDAStatement;
+import org.semanaticweb.ontop.model.ResultSet;
+import org.semanaticweb.ontop.model.TupleResultSet;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3ABoxIterator;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestStatement;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.NTripleAssertionIterator;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.QuestMaterializer;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;

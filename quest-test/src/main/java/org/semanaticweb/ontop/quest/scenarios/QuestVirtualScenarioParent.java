@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.quest.scenarios;
+package org.semanaticweb.ontop.quest.scenarios;
 
 /*
  * #%L
@@ -21,8 +21,7 @@ package it.unibz.krdb.obda.quest.scenarios;
  */
 
 import org.openrdf.repository.Repository;
-
-import sesameWrapper.SesameVirtualRepo;
+import org.semanaticweb.ontop.sesame.SesameVirtualRepo;
 
 public abstract class QuestVirtualScenarioParent extends QuestScenarioParent {
 

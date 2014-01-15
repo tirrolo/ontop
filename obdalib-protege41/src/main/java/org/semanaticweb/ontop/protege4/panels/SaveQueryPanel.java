@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -19,10 +19,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * limitations under the License.
  * #L%
  */
-
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.querymanager.QueryController;
-import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -45,6 +41,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.querymanager.QueryController;
+import org.semanaticweb.ontop.querymanager.QueryControllerGroup;
 
 public class SaveQueryPanel extends JPanel {
 

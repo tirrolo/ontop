@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.questdb;
+package org.semanaticweb.ontop.owlrefplatform.questdb;
 
 /*
  * #%L
@@ -20,13 +20,13 @@ package it.unibz.krdb.obda.owlrefplatform.questdb;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.owlrefplatform.core.Quest;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConnection;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
-
 import java.io.Serializable;
 import java.util.Properties;
+
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.owlrefplatform.core.Quest;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConnection;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBConnection;
 
 public abstract class QuestDBAbstractStore implements Serializable {
 

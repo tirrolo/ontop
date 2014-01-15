@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
+package org.semanaticweb.ontop.owlrefplatform.core.queryevaluation;
 
 /*
  * #%L
@@ -20,9 +20,9 @@ package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
-
 import java.util.List;
+
+import org.semanaticweb.ontop.model.OBDAQueryModifiers.OrderCondition;
 
 public interface SQLDialectAdapter {
 

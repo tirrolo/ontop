@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui;
+package org.semanaticweb.ontop.protege4.gui;
 
 /*
  * #%L
@@ -20,9 +20,6 @@ package it.unibz.krdb.obda.protege4.gui;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLResultSet;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -31,6 +28,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWLResultSet;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLPropertyAssertionObject;
 

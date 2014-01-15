@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
+package org.semanaticweb.ontop.owlrefplatform.core.queryevaluation;
 
 /*
  * #%L

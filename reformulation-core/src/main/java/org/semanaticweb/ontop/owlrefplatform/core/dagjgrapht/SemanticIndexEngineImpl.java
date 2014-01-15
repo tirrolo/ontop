@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
+package org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht;
 
 /*
  * #%L
@@ -21,8 +21,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
  */
 
 
-import it.unibz.krdb.obda.ontology.Description;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +35,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.GraphIterator;
+import org.semanaticweb.ontop.ontology.Description;
 
 
 /** 

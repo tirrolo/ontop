@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui;
+package org.semanaticweb.ontop.protege4.gui;
 
 /*
  * #%L

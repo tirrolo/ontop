@@ -6,7 +6,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.reformulation.semindex.tests;
+package org.semanaticweb.ontop.reformulation.semindex.tests;
 
 /*
  * #%L
@@ -29,17 +29,17 @@ package it.unibz.krdb.obda.reformulation.semindex.tests;
  */
 
 
-import it.unibz.krdb.obda.ontology.ClassDescription;
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAG;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGNode;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.semanaticweb.ontop.ontology.ClassDescription;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.owlrefplatform.core.dag.DAGNode;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAG;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAGImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 
 import junit.framework.TestCase;
 

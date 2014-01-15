@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model;
+package org.semanaticweb.ontop.model;
 
 /*
  * #%L
@@ -20,9 +20,9 @@ package it.unibz.krdb.obda.model;
  * #L%
  */
 
-import it.unibz.krdb.obda.ontology.Assertion;
-
 import java.util.List;
+
+import org.semanaticweb.ontop.ontology.Assertion;
 
 //import com.hp.hpl.jena.sparql.syntax.Template;
 

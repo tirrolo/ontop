@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.core;
+package org.semanaticweb.ontop.protege4.core;
 
 /*
  * #%L
@@ -20,13 +20,12 @@ package it.unibz.krdb.obda.protege4.core;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.AbstractPrefixManager;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.semanaticweb.ontop.io.AbstractPrefixManager;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 
 /**

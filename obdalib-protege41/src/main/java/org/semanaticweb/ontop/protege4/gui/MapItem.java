@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui;
+package org.semanaticweb.ontop.protege4.gui;
 
 /*
  * #%L
@@ -20,8 +20,8 @@ package it.unibz.krdb.obda.protege4.gui;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.Predicate;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.model.Predicate;
 
 public class MapItem {
 

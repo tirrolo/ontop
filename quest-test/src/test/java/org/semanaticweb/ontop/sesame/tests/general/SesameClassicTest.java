@@ -1,4 +1,4 @@
-package inf.unibz.ontop.sesame.tests.general;
+package org.semanaticweb.ontop.sesame.tests.general;
 
 /*
  * #%L
@@ -42,14 +42,13 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
-
-import sesameWrapper.RepositoryConnection;
-import sesameWrapper.SesameClassicInMemoryRepo;
+import org.semanaticweb.ontop.sesame.RepositoryConnection;
+import org.semanaticweb.ontop.sesame.SesameClassicInMemoryRepo;
 
 
 public class SesameClassicTest extends TestCase {
 
-	sesameWrapper.RepositoryConnection con = null;
+	org.semanaticweb.ontop.sesame.RepositoryConnection con = null;
 	Repository repo = null;
 	String baseURI = "http://it.unibz.krdb/obda/ontologies/test/translation/onto2.owl#";
 	

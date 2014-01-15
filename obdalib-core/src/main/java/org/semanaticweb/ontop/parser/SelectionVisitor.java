@@ -7,7 +7,7 @@
  * proprietary exceptions.
  */
 
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
 import it.unibz.krdb.sql.api.AllComparison;
 import it.unibz.krdb.sql.api.AnyComparison;

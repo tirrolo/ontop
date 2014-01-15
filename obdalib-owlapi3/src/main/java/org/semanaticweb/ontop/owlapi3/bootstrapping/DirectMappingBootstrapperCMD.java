@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlapi3.bootstrapping;
+package org.semanaticweb.ontop.owlapi3.bootstrapping;
 
 /*
  * #%L
@@ -20,12 +20,11 @@ package it.unibz.krdb.obda.owlapi3.bootstrapping;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDAModel;
-
 import java.io.File;
 import java.net.URI;
 
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDAModel;
 import org.semanticweb.owlapi.io.FileDocumentTarget;
 import org.semanticweb.owlapi.model.OWLOntology;
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.utils;
+package org.semanaticweb.ontop.protege4.utils;
 
 /*
  * #%L
@@ -19,15 +19,6 @@ package it.unibz.krdb.obda.protege4.utils;
  * limitations under the License.
  * #L%
  */
-
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.renderer.SourceQueryRenderer;
-import it.unibz.krdb.obda.renderer.TargetQueryRenderer;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -50,6 +41,15 @@ import javax.swing.UIManager;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.renderer.SourceQueryRenderer;
+import org.semanaticweb.ontop.renderer.TargetQueryRenderer;
 
 public class OBDAMappingListRenderer implements ListCellRenderer {
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlapi3;
+package org.semanaticweb.ontop.owlapi3;
 
 /*
  * #%L
@@ -20,10 +20,9 @@ package it.unibz.krdb.obda.owlapi3;
  * #L%
  */
 
-import it.unibz.krdb.obda.ontology.Assertion;
-
 import java.util.Iterator;
 
+import org.semanaticweb.ontop.ontology.Assertion;
 import org.semanticweb.owlapi.model.OWLIndividualAxiom;
 
 public class QuestOWLIndividualIterator  implements Iterator<OWLIndividualAxiom> {

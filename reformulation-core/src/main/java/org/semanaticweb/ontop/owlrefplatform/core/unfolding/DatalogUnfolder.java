@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
+package org.semanaticweb.ontop.owlrefplatform.core.unfolding;
 
 /*
  * #%L
@@ -20,26 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.AlgebraOperatorPredicate;
-import it.unibz.krdb.obda.model.BooleanOperationPredicate;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.model.impl.VariableImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.QueryAnonymizer;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
-import it.unibz.krdb.obda.utils.QueryUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,6 +32,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.semanaticweb.ontop.model.AlgebraOperatorPredicate;
+import org.semanaticweb.ontop.model.BooleanOperationPredicate;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.model.impl.VariableImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.CQCUtilities;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.DatalogNormalizer;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.QueryAnonymizer;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.Unifier;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
+import org.semanaticweb.ontop.utils.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

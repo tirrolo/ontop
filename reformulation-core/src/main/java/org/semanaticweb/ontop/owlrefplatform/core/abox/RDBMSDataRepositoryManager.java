@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.abox;
+package org.semanaticweb.ontop.owlrefplatform.core.abox;
 
 /*
  * #%L
@@ -20,13 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.abox;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.impl.PunningException;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -36,6 +29,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.impl.PunningException;
 
 /***
  * A Data Repository Manager is an utility setup the data back end of the

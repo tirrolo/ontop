@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.renderer;
+package org.semanaticweb.ontop.renderer;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.renderer;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAQuery;
+import org.semanaticweb.ontop.model.OBDAQuery;
 
 /**
  * A utility class to render a Source Query object into its representational

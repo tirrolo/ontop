@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.exception;
+package org.semanaticweb.ontop.owlrefplatform.exception;
 
 /*
  * #%L

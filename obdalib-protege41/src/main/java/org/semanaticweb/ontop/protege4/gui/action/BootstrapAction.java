@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.action;
+package org.semanaticweb.ontop.protege4.gui.action;
 
 /*
  * #%L
@@ -20,14 +20,6 @@ package it.unibz.krdb.obda.protege4.gui.action;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.owlapi3.bootstrapping.DirectMappingBootstrapper;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManager;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgessMonitor;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgressListener;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -46,6 +38,13 @@ import org.protege.editor.core.ui.action.ProtegeAction;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.OWLWorkspace;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanaticweb.ontop.owlapi3.bootstrapping.DirectMappingBootstrapper;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManager;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgessMonitor;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgressListener;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

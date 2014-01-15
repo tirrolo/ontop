@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology;
+package org.semanaticweb.ontop.ontology;
 
 /*
  * #%L
@@ -20,8 +20,8 @@ package it.unibz.krdb.obda.ontology;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.ObjectConstant;
-import it.unibz.krdb.obda.model.Predicate;
+import org.semanaticweb.ontop.model.ObjectConstant;
+import org.semanaticweb.ontop.model.Predicate;
 
 public interface ObjectPropertyAssertion extends Assertion {
 

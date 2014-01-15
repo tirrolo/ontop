@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology.impl;
+package org.semanaticweb.ontop.ontology.impl;
 
 /*
  * #%L
@@ -20,12 +20,12 @@ package it.unibz.krdb.obda.ontology.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.PropertyFunctionalAxiom;
-
 import java.util.Collections;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.PropertyFunctionalAxiom;
 
 public class PropertyFunctionalAxiomImpl implements PropertyFunctionalAxiom{
 

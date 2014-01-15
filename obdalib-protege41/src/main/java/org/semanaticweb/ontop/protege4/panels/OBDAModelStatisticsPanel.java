@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,13 +20,13 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.utils.VirtualABoxStatistics;
-
 import java.util.HashMap;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import org.semanaticweb.ontop.utils.VirtualABoxStatistics;
 
 public class OBDAModelStatisticsPanel extends javax.swing.JPanel {
 

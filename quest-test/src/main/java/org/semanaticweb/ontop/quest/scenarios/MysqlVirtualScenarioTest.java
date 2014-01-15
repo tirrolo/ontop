@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.quest.scenarios;
+package org.semanaticweb.ontop.quest.scenarios;
 
 /*
  * #%L

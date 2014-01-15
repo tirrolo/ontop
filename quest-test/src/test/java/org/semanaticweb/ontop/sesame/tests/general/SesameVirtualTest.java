@@ -1,4 +1,4 @@
-package inf.unibz.ontop.sesame.tests.general;
+package org.semanaticweb.ontop.sesame.tests.general;
 
 /*
  * #%L
@@ -32,8 +32,7 @@ import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
-
-import sesameWrapper.SesameVirtualRepo;
+import org.semanaticweb.ontop.sesame.SesameVirtualRepo;
 
 
 public class SesameVirtualTest extends TestCase {

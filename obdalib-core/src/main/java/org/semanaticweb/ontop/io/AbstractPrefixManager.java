@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.io;
+package org.semanaticweb.ontop.io;
 
 /*
  * #%L
@@ -20,9 +20,9 @@ package it.unibz.krdb.obda.io;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.InvalidPrefixWritingException;
-
 import java.util.List;
+
+import org.semanaticweb.ontop.exception.InvalidPrefixWritingException;
 
 public abstract class AbstractPrefixManager implements PrefixManager {
 

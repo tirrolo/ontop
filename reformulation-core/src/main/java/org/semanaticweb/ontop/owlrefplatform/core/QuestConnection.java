@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core;
+package org.semanaticweb.ontop.owlrefplatform.core;
 
 /*
  * #%L
@@ -20,11 +20,11 @@ package it.unibz.krdb.obda.owlrefplatform.core;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAConnection;
-import it.unibz.krdb.obda.model.OBDAException;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import org.semanaticweb.ontop.model.OBDAConnection;
+import org.semanaticweb.ontop.model.OBDAException;
 
 /***
  * Quest connection is responsible for wrapping a JDBC connection to the data

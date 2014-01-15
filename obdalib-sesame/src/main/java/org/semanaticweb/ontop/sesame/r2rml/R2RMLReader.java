@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.sesame.r2rml;
+package org.semanaticweb.ontop.sesame.r2rml;
 
 /*
  * #%L
@@ -23,17 +23,16 @@ package it.unibz.krdb.obda.sesame.r2rml;
  * @author timea bagosi
  * Class responsible to construct an OBDA model from an R2RML mapping file or graph.
  */
-import it.unibz.krdb.obda.exception.DuplicateMappingException;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 
 import org.openrdf.model.Graph;
+import org.semanaticweb.ontop.exception.DuplicateMappingException;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 
 public class R2RMLReader {
 	

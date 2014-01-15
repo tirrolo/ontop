@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.quest.sparql;
+package org.semanaticweb.ontop.quest.sparql;
 
 /*
  * #%L
@@ -24,8 +24,7 @@ import junit.framework.Test;
 
 import org.openrdf.query.Dataset;
 import org.openrdf.repository.Repository;
-
-import sesameWrapper.SesameClassicInMemoryRepo;
+import org.semanaticweb.ontop.sesame.SesameClassicInMemoryRepo;
 
 public class QuestMemorySPARQLQueryTest extends SPARQLQueryParent {
 

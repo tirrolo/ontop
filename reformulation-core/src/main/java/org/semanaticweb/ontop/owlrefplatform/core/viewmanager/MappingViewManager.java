@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.viewmanager;
+package org.semanaticweb.ontop.owlrefplatform.core.viewmanager;
 
 /*
  * #%L
@@ -20,18 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.viewmanager;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDASQLQuery;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.CQIEImpl;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,6 +29,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDASQLQuery;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.CQIEImpl;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 
 /**
  * The mapping view manager is the module which allows us to translate CQIEs

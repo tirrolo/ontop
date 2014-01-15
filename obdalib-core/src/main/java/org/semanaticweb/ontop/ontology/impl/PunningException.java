@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology.impl;
+package org.semanaticweb.ontop.ontology.impl;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.ontology.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
+import org.semanaticweb.ontop.model.Predicate;
 
 /***
  * Indicates that a URI has been PUNNED, i.e., it has been used as a Class and

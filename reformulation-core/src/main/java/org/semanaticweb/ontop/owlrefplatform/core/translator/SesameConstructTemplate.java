@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.translator;
+package org.semanaticweb.ontop.owlrefplatform.core.translator;
 
 /*
  * #%L

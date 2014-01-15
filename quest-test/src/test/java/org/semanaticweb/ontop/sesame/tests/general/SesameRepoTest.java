@@ -1,4 +1,4 @@
-package inf.unibz.ontop.sesame.tests.general;
+package org.semanaticweb.ontop.sesame.tests.general;
 
 /*
  * #%L

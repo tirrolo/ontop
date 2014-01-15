@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.owlapi3;
+package org.semanaticweb.ontop.owlrefplatform.owlapi3;
 
 /*
  * #%L

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.sesame.r2rml;
+package org.semanaticweb.ontop.sesame.r2rml;
 
 /*
  * #%L

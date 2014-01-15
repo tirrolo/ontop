@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.views;
+package org.semanaticweb.ontop.protege4.views;
 
 /*
  * #%L
@@ -20,26 +20,6 @@ package it.unibz.krdb.obda.protege4.views;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.owlapi3.OWLResultSetWriter;
-import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SPARQLQueryUtility;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLResultSet;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLStatement;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManager;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManagerListener;
-import it.unibz.krdb.obda.protege4.gui.OWLResultSetTableModel;
-import it.unibz.krdb.obda.protege4.gui.action.OBDADataQueryAction;
-import it.unibz.krdb.obda.protege4.gui.action.OBDASaveQueryResultToFileAction;
-import it.unibz.krdb.obda.protege4.panels.QueryInterfacePanel;
-import it.unibz.krdb.obda.protege4.panels.ResultViewTablePanel;
-import it.unibz.krdb.obda.protege4.panels.SavedQueriesPanelListener;
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgessMonitor;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgressListener;
-import it.unibz.krdb.obda.protege4.utils.TextMessageFrame;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.BufferedWriter;
@@ -57,6 +37,25 @@ import javax.swing.table.DefaultTableModel;
 
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanaticweb.ontop.owlapi3.OWLResultSetWriter;
+import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.SPARQLQueryUtility;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWL;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWLResultSet;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWLStatement;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManager;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManagerListener;
+import org.semanaticweb.ontop.protege4.gui.OWLResultSetTableModel;
+import org.semanaticweb.ontop.protege4.gui.action.OBDADataQueryAction;
+import org.semanaticweb.ontop.protege4.gui.action.OBDASaveQueryResultToFileAction;
+import org.semanaticweb.ontop.protege4.panels.QueryInterfacePanel;
+import org.semanaticweb.ontop.protege4.panels.ResultViewTablePanel;
+import org.semanaticweb.ontop.protege4.panels.SavedQueriesPanelListener;
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgessMonitor;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgressListener;
+import org.semanaticweb.ontop.protege4.utils.TextMessageFrame;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntologyChange;

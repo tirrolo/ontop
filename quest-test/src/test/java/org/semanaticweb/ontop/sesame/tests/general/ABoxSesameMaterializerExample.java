@@ -1,4 +1,4 @@
-package inf.unibz.ontop.sesame.tests.general;
+package org.semanaticweb.ontop.sesame.tests.general;
 
 /*
  * #%L
@@ -20,12 +20,6 @@ package inf.unibz.ontop.sesame.tests.general;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.sesame.SesameStatementIterator;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,8 +28,12 @@ import java.io.OutputStreamWriter;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.n3.N3Writer;
-
-import sesameWrapper.SesameMaterializer;
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.sesame.SesameMaterializer;
+import org.semanaticweb.ontop.sesame.SesameStatementIterator;
 
 public class ABoxSesameMaterializerExample {
 

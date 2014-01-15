@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.api.io;
+package org.semanaticweb.ontop.api.io;
 
 /*
  * #%L
@@ -20,20 +20,6 @@ package it.unibz.krdb.obda.api.io;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.InvalidMappingException;
-import it.unibz.krdb.obda.exception.InvalidPredicateDeclarationException;
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.SimplePrefixManager;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
-import it.unibz.krdb.obda.parser.TurtleOBDASyntaxParser;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -43,6 +29,19 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.exception.InvalidMappingException;
+import org.semanaticweb.ontop.exception.InvalidPredicateDeclarationException;
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.io.SimplePrefixManager;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.RDBMSourceParameterConstants;
+import org.semanaticweb.ontop.parser.TurtleOBDASyntaxParser;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataProperty;

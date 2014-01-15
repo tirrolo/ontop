@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
+package org.semanaticweb.ontop.owlrefplatform.core.queryevaluation;
 
 /*
  * #%L
@@ -20,11 +20,11 @@ package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.semanaticweb.ontop.model.OBDADataSource;
 
 /**
  * An interface representing the Evaluation engine for a Technique wrapper.

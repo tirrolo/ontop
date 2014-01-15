@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.questdb;
+package org.semanaticweb.ontop.owlrefplatform.questdb;
 
 /*
  * #%L
@@ -20,24 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.questdb;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.InvalidMappingException;
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.owlapi3.OBDAModelSynchronizer;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlapi3.directmapping.DirectMappingEngine;
-import it.unibz.krdb.obda.owlrefplatform.core.Quest;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConnection;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.sesame.r2rml.R2RMLReader;
 import it.unibz.krdb.sql.DBMetadata;
 
 import java.io.File;
@@ -47,6 +29,24 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.openrdf.model.Graph;
+import org.semanaticweb.ontop.exception.InvalidMappingException;
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.RDBMSourceParameterConstants;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
+import org.semanaticweb.ontop.owlapi3.OBDAModelSynchronizer;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlapi3.directmapping.DirectMappingEngine;
+import org.semanaticweb.ontop.owlrefplatform.core.Quest;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConnection;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.sesame.r2rml.R2RMLReader;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
+package org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht;
 
 /*
  * #%L
@@ -21,11 +21,11 @@ package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
  */
 
 
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.Interval;
-
 import java.util.List;
 import java.util.Map;
+
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.Interval;
 
 /** 
  * An interface for the class SemanticIndexEngine that builds the indexes for the DAG

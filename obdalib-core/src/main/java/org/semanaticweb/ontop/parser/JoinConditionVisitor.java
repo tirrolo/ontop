@@ -7,7 +7,7 @@
  * proprietary exceptions.
  */
 
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
+package org.semanaticweb.ontop.owlrefplatform.core.reformulation;
 
 /*
  * #%L
@@ -20,16 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.core.reformulation;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.ontology.BasicClassDescription;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Edge;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Loop;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessReasonerLite.IntersectionOfConceptSets;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessReasonerLite.IntersectionOfProperties;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessSet.PropertiesCache;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,6 +27,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.ontology.BasicClassDescription;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.owlrefplatform.core.reformulation.QueryConnectedComponent.Edge;
+import org.semanaticweb.ontop.owlrefplatform.core.reformulation.QueryConnectedComponent.Loop;
+import org.semanaticweb.ontop.owlrefplatform.core.reformulation.TreeWitnessReasonerLite.IntersectionOfConceptSets;
+import org.semanaticweb.ontop.owlrefplatform.core.reformulation.TreeWitnessReasonerLite.IntersectionOfProperties;
+import org.semanaticweb.ontop.owlrefplatform.core.reformulation.TreeWitnessSet.PropertiesCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

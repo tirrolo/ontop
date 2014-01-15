@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core;
+package org.semanaticweb.ontop.owlrefplatform.core;
 
 /*
  * #%L
@@ -20,47 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.core;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.BuiltinPredicate;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.GraphResultSet;
-import it.unibz.krdb.obda.model.OBDAConnection;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.OBDAStatement;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.TupleResultSet;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.EquivalentTriplePredicateIterator;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.RDBMSDataRepositoryManager;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.DatalogNormalizer;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.QueryVocabularyValidator;
-import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
-import it.unibz.krdb.obda.owlrefplatform.core.queryevaluation.SPARQLQueryUtility;
-import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryRewriter;
-import it.unibz.krdb.obda.owlrefplatform.core.resultset.BooleanOWLOBDARefResultSet;
-import it.unibz.krdb.obda.owlrefplatform.core.resultset.EmptyQueryResultSet;
-import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestGraphResultSet;
-import it.unibz.krdb.obda.owlrefplatform.core.resultset.QuestResultset;
-import it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.DatalogToSparqlTranslator;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.SesameConstructTemplate;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlPrefixManager;
-import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
-import it.unibz.krdb.obda.owlrefplatform.core.unfolding.ExpressionEvaluator;
-import it.unibz.krdb.obda.renderer.DatalogProgramRenderer;
-
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -80,6 +39,46 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.QueryParser;
 import org.openrdf.query.parser.QueryParserUtil;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.model.BuiltinPredicate;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.GraphResultSet;
+import org.semanaticweb.ontop.model.OBDAConnection;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.model.OBDAStatement;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.TupleResultSet;
+import org.semanaticweb.ontop.model.URIConstant;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.EquivalentTriplePredicateIterator;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.RDBMSDataRepositoryManager;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.DatalogNormalizer;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.QueryVocabularyValidator;
+import org.semanaticweb.ontop.owlrefplatform.core.basicoperations.Unifier;
+import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.SPARQLQueryUtility;
+import org.semanaticweb.ontop.owlrefplatform.core.reformulation.QueryRewriter;
+import org.semanaticweb.ontop.owlrefplatform.core.resultset.BooleanOWLOBDARefResultSet;
+import org.semanaticweb.ontop.owlrefplatform.core.resultset.EmptyQueryResultSet;
+import org.semanaticweb.ontop.owlrefplatform.core.resultset.QuestGraphResultSet;
+import org.semanaticweb.ontop.owlrefplatform.core.resultset.QuestResultset;
+import org.semanaticweb.ontop.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.DatalogToSparqlTranslator;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.SesameConstructTemplate;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.SparqlPrefixManager;
+import org.semanaticweb.ontop.owlrefplatform.core.unfolding.DatalogUnfolder;
+import org.semanaticweb.ontop.owlrefplatform.core.unfolding.ExpressionEvaluator;
+import org.semanaticweb.ontop.renderer.DatalogProgramRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -313,7 +312,7 @@ public class QuestStatement implements OBDAStatement {
 	 * uri or var logic Returns the result set for the given query
 	 */
 	@Override
-	public it.unibz.krdb.obda.model.ResultSet execute(String strquery) throws OBDAException {
+	public org.semanaticweb.ontop.model.ResultSet execute(String strquery) throws OBDAException {
 		if (strquery.isEmpty()) {
 			throw new OBDAException("Cannot execute an empty query");
 		}
@@ -346,7 +345,7 @@ public class QuestStatement implements OBDAStatement {
 			if (SPARQLQueryUtility.isVarDescribe(strquery)) {
 				// if describe ?var, we have to do select distinct ?var first
 				String sel = SPARQLQueryUtility.getSelectVarDescribe(strquery);
-				it.unibz.krdb.obda.model.ResultSet resultSet = (it.unibz.krdb.obda.model.ResultSet) this.executeTupleQuery(sel, 1);
+				org.semanaticweb.ontop.model.ResultSet resultSet = (org.semanaticweb.ontop.model.ResultSet) this.executeTupleQuery(sel, 1);
 				if (resultSet instanceof EmptyQueryResultSet)
 					return null;
 				else if (resultSet instanceof QuestResultset) {

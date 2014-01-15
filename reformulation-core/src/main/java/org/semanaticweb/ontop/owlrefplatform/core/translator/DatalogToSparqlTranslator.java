@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.translator;
+package org.semanaticweb.ontop.owlrefplatform.core.translator;
 
 /*
  * #%L
@@ -20,27 +20,27 @@ package it.unibz.krdb.obda.owlrefplatform.core.translator;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.SimplePrefixManager;
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers.OrderCondition;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.model.impl.TermUtil;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.DatalogToSparqlTranslator;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlKeyword;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.UnknownArithmeticSymbolException;
-import it.unibz.krdb.obda.owlrefplatform.core.translator.UnknownBooleanSymbolException;
-
 import java.util.List;
+
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.io.SimplePrefixManager;
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAQueryModifiers;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.URIConstant;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.model.OBDAQueryModifiers.OrderCondition;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.model.impl.TermUtil;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.DatalogToSparqlTranslator;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.SparqlKeyword;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.UnknownArithmeticSymbolException;
+import org.semanaticweb.ontop.owlrefplatform.core.translator.UnknownBooleanSymbolException;
 
 /**
  * This class provides the translation service from Datalog Program to SPARQL string.

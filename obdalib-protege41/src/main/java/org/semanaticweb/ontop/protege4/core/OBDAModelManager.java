@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.core;
+package org.semanaticweb.ontop.protege4.core;
 
 /*
  * #%L
@@ -20,27 +20,6 @@ package it.unibz.krdb.obda.protege4.core;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.io.QueryIOManager;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAMappingListener;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDAModelListener;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.owlapi3.OBDAModelValidator;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
-import it.unibz.krdb.obda.querymanager.QueryController;
-import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
-import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
-import it.unibz.krdb.obda.querymanager.QueryControllerListener;
-import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
 import java.io.File;
@@ -62,6 +41,27 @@ import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.model.inference.ProtegeOWLReasonerInfo;
 import org.protege.editor.owl.ui.prefix.PrefixUtilities;
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.io.QueryIOManager;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAMappingListener;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.OBDAModelListener;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.owlapi3.OBDAModelValidator;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
+import org.semanaticweb.ontop.querymanager.QueryController;
+import org.semanaticweb.ontop.querymanager.QueryControllerEntity;
+import org.semanaticweb.ontop.querymanager.QueryControllerGroup;
+import org.semanaticweb.ontop.querymanager.QueryControllerListener;
+import org.semanaticweb.ontop.querymanager.QueryControllerQuery;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.resultset;
+package org.semanaticweb.ontop.owlrefplatform.core.resultset;
 
 /*
  * #%L
@@ -20,15 +20,15 @@ package it.unibz.krdb.obda.owlrefplatform.core.resultset;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.BNode;
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.TupleResultSet;
-import it.unibz.krdb.obda.model.OBDAStatement;
-import it.unibz.krdb.obda.model.ValueConstant;
-
 import java.net.URI;
 import java.util.List;
+
+import org.semanaticweb.ontop.model.BNode;
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAStatement;
+import org.semanaticweb.ontop.model.TupleResultSet;
+import org.semanaticweb.ontop.model.ValueConstant;
 
 //import com.hp.hpl.jena.iri.IRI;
 

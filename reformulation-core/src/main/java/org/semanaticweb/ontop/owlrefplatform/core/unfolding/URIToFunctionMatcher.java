@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
+package org.semanaticweb.ontop.owlrefplatform.core.unfolding;
 
 /*
  * #%L
@@ -20,16 +20,16 @@ package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.URIConstant;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.URIConstant;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 
 public class URIToFunctionMatcher implements Serializable {
 

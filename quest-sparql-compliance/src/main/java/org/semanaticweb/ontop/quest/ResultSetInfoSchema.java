@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.quest;
+package org.semanaticweb.ontop.quest;
 
 /*
  * #%L

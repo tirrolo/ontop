@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,12 +20,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.protege4.gui.treemodels.IncrementalResultSetTableModel;
-import it.unibz.krdb.obda.protege4.utils.DatasourceSelectorListener;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgessMonitor;
-import it.unibz.krdb.obda.protege4.utils.OBDAProgressListener;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
 import java.sql.Connection;
@@ -37,6 +31,12 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.protege4.gui.treemodels.IncrementalResultSetTableModel;
+import org.semanaticweb.ontop.protege4.utils.DatasourceSelectorListener;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgessMonitor;
+import org.semanaticweb.ontop.protege4.utils.OBDAProgressListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology;
+package org.semanaticweb.ontop.ontology;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.ontology;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Constant;
+import org.semanaticweb.ontop.model.Constant;
 
 public interface UnaryAssertion extends Assertion {
 

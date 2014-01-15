@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.obda.quest.dag;
+package org.semanaticweb.ontop.obda.quest.dag;
 
 /*
  * #%L
@@ -21,18 +21,17 @@ package it.unibz.krdb.obda.obda.quest.dag;
  */
 
 
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGBuilderImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphBuilderImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.GraphImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDAGBuilderImpl;
-
 import java.io.File;
 
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAGBuilderImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAGImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.GraphBuilderImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.GraphImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.NamedDAGBuilderImpl;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;

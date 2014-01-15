@@ -1,4 +1,4 @@
-package it.unibz.ontop.sesame.completeness.test;
+package org.semanaticweb.ontop.sesame.completeness.test;
 
 /*
  * #%L
@@ -23,8 +23,6 @@ package it.unibz.ontop.sesame.completeness.test;
 import info.aduna.io.IOUtil;
 import info.aduna.iteration.Iterations;
 import info.aduna.text.StringUtil;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,14 +79,15 @@ import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.sail.memory.MemoryStore;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWL;
+import org.semanaticweb.ontop.sesame.SesameClassicInMemoryRepo;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import sesameWrapper.SesameClassicInMemoryRepo;
 
 public abstract class CompletenessParent extends TestCase {
 

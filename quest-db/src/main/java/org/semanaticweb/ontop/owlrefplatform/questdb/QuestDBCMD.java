@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.questdb;
+package org.semanaticweb.ontop.owlrefplatform.questdb;
 
 /*
  * #%L
@@ -20,11 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.questdb;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.TupleResultSet;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBStatement;
-import it.unibz.krdb.obda.owlrefplatform.questdb.QuestDB.StoreStatus;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -38,6 +33,10 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.TupleResultSet;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBStatement;
+import org.semanaticweb.ontop.owlrefplatform.questdb.QuestDB.StoreStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.component;
+package org.semanaticweb.ontop.protege4.gui.component;
 
 /*
  * #%L
@@ -19,14 +19,6 @@ package it.unibz.krdb.obda.protege4.gui.component;
  * limitations under the License.
  * #L%
  */
-
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.protege4.gui.MapItem;
-import it.unibz.krdb.obda.protege4.gui.PredicateItem;
-import it.unibz.krdb.obda.protege4.gui.action.EditableCellFocusAction;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -58,6 +50,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.protege4.gui.MapItem;
+import org.semanaticweb.ontop.protege4.gui.PredicateItem;
+import org.semanaticweb.ontop.protege4.gui.action.EditableCellFocusAction;
 
 public class PropertyMappingPanel extends javax.swing.JPanel {
 

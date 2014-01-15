@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.dialogs;
+package org.semanaticweb.ontop.protege4.dialogs;
 
 /*
  * #%L
@@ -21,8 +21,6 @@ package it.unibz.krdb.obda.protege4.dialogs;
  */
 
 
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -42,6 +40,8 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
+
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
 
 public class MappingValidationDialog extends JDialog {
 

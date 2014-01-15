@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.utils;
+package org.semanaticweb.ontop.protege4.utils;
 
 /*
  * #%L
@@ -20,11 +20,11 @@ package it.unibz.krdb.obda.protege4.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.OBDAModel;
-
 import javax.swing.JTextPane;
 import javax.swing.text.DefaultStyledDocument;
+
+import org.semanaticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanaticweb.ontop.model.OBDAModel;
 
 public class MappingStyledDocument extends DefaultStyledDocument {
 

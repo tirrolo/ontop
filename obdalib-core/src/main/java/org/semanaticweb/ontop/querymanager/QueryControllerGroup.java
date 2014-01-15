@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.querymanager;
+package org.semanaticweb.ontop.querymanager;
 
 /*
  * #%L

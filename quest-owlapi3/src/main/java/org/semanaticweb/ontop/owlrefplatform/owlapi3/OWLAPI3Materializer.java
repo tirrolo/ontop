@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.owlapi3;
+package org.semanaticweb.ontop.owlrefplatform.owlapi3;
 
 /*
  * #%L
@@ -20,13 +20,13 @@ package it.unibz.krdb.obda.owlrefplatform.owlapi3;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.owlapi3.QuestOWLIndividualIterator;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.QuestMaterializer;
-
 import java.util.Iterator;
+
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.owlapi3.QuestOWLIndividualIterator;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.QuestMaterializer;
 
 public class OWLAPI3Materializer {
 

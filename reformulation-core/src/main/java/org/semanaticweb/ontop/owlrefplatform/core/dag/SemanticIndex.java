@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.dag;
+package org.semanaticweb.ontop.owlrefplatform.core.dag;
 
 /*
  * #%L

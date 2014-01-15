@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -19,24 +19,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * limitations under the License.
  * #L%
  */
-
-import it.unibz.krdb.obda.exception.DuplicateMappingException;
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.protege4.dialogs.MappingValidationDialog;
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.protege4.gui.treemodels.FilteredModel;
-import it.unibz.krdb.obda.protege4.gui.treemodels.SynchronizedMappingListModel;
-import it.unibz.krdb.obda.protege4.gui.treemodels.TreeModelFilter;
-import it.unibz.krdb.obda.protege4.utils.DatasourceSelectorListener;
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
-import it.unibz.krdb.obda.protege4.utils.MappingFilterLexer;
-import it.unibz.krdb.obda.protege4.utils.MappingFilterParser;
-import it.unibz.krdb.obda.protege4.utils.OBDAMappingListRenderer;
-import it.unibz.krdb.obda.utils.IDGenerator;
-import it.unibz.krdb.obda.utils.SourceQueryValidator;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,6 +44,23 @@ import javax.swing.event.ListDataListener;
 
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
+import org.semanaticweb.ontop.exception.DuplicateMappingException;
+import org.semanaticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.protege4.dialogs.MappingValidationDialog;
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.protege4.gui.treemodels.FilteredModel;
+import org.semanaticweb.ontop.protege4.gui.treemodels.SynchronizedMappingListModel;
+import org.semanaticweb.ontop.protege4.gui.treemodels.TreeModelFilter;
+import org.semanaticweb.ontop.protege4.utils.DatasourceSelectorListener;
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
+import org.semanaticweb.ontop.protege4.utils.MappingFilterLexer;
+import org.semanaticweb.ontop.protege4.utils.MappingFilterParser;
+import org.semanaticweb.ontop.protege4.utils.OBDAMappingListRenderer;
+import org.semanaticweb.ontop.utils.IDGenerator;
+import org.semanaticweb.ontop.utils.SourceQueryValidator;
 import org.slf4j.LoggerFactory;
 
 public class MappingManagerPanel extends JPanel implements DatasourceSelectorListener {

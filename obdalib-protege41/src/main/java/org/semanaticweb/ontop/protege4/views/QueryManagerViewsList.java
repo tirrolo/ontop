@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.views;
+package org.semanaticweb.ontop.protege4.views;
 
 /*
  * #%L

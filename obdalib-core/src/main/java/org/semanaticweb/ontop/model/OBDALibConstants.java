@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model;
+package org.semanaticweb.ontop.model;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.model;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 
 //import com.hp.hpl.jena.iri.IRI;
 

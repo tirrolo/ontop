@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.component;
+package org.semanaticweb.ontop.protege4.gui.component;
 
 /*
  * #%L
@@ -20,16 +20,16 @@ package it.unibz.krdb.obda.protege4.gui.component;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-
 import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
+
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
 
 public class DataTypeComboBox extends JComboBox {
 

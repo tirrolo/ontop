@@ -37,11 +37,10 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.rio.RDFFormat;
-
-import sesameWrapper.RepositoryConnection;
-import sesameWrapper.SesameClassicInMemoryRepo;
-import sesameWrapper.SesameRepositoryConfig;
-import sesameWrapper.SesameRepositoryFactory;
+import org.semanaticweb.ontop.sesame.RepositoryConnection;
+import org.semanaticweb.ontop.sesame.SesameClassicInMemoryRepo;
+import org.semanaticweb.ontop.sesame.SesameRepositoryConfig;
+import org.semanaticweb.ontop.sesame.SesameRepositoryFactory;
 
 /**
  * This unit test is to ensure the correctness of construct and describe

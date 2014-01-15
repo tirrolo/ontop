@@ -5,7 +5,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.model;
+package org.semanaticweb.ontop.model;
 
 /*
  * #%L
@@ -27,11 +27,6 @@ package it.unibz.krdb.obda.model;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.DuplicateMappingException;
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.querymanager.QueryController;
-
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
@@ -39,6 +34,11 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+
+import org.semanaticweb.ontop.exception.DuplicateMappingException;
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.querymanager.QueryController;
 
 /***
  * A container for the database and mapping declarations needed to define a

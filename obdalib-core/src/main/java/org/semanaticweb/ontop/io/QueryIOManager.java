@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.io;
+package org.semanaticweb.ontop.io;
 
 /*
  * #%L
@@ -20,17 +20,17 @@ package it.unibz.krdb.obda.io;
  * #L%
  */
 
-import it.unibz.krdb.obda.querymanager.QueryController;
-import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
-import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
-import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
+
+import org.semanaticweb.ontop.querymanager.QueryController;
+import org.semanaticweb.ontop.querymanager.QueryControllerEntity;
+import org.semanaticweb.ontop.querymanager.QueryControllerGroup;
+import org.semanaticweb.ontop.querymanager.QueryControllerQuery;
 
 public class QueryIOManager {
 

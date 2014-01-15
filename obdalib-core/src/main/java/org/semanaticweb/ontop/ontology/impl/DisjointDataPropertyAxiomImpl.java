@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology.impl;
+package org.semanaticweb.ontop.ontology.impl;
 
 /*
  * #%L
@@ -20,8 +20,8 @@ package it.unibz.krdb.obda.ontology.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.ontology.DisjointDataPropertyAxiom;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.ontology.DisjointDataPropertyAxiom;
 
 public class DisjointDataPropertyAxiomImpl extends DisjointPropertyAxiomImpl implements DisjointDataPropertyAxiom{
 

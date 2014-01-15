@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
+package org.semanaticweb.ontop.owlrefplatform.core.queryevaluation;
 
 /*
  * #%L
@@ -20,14 +20,13 @@ package it.unibz.krdb.obda.owlrefplatform.core.queryevaluation;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-import it.unibz.krdb.obda.model.ValueConstant;
-import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
-
 import java.io.Serializable;
 
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.ValueConstant;
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
+import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.views;
+package org.semanaticweb.ontop.protege4.views;
 
 /*
  * #%L
@@ -20,15 +20,6 @@ package it.unibz.krdb.obda.protege4.views;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.TargetQueryVocabularyValidator;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDAModelImpl;
-import it.unibz.krdb.obda.owlapi3.TargetQueryValidator;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManager;
-import it.unibz.krdb.obda.protege4.core.OBDAModelManagerListener;
-import it.unibz.krdb.obda.protege4.panels.DatasourceSelector;
-import it.unibz.krdb.obda.protege4.panels.MappingManagerPanel;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -46,6 +37,14 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.selection.OWLSelectionModelListener;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 import org.protege.editor.owl.ui.view.Findable;
+import org.semanaticweb.ontop.io.TargetQueryVocabularyValidator;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanaticweb.ontop.owlapi3.TargetQueryValidator;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManager;
+import org.semanaticweb.ontop.protege4.core.OBDAModelManagerListener;
+import org.semanaticweb.ontop.protege4.panels.DatasourceSelector;
+import org.semanaticweb.ontop.protege4.panels.MappingManagerPanel;
 import org.semanticweb.owlapi.model.OWLEntity;
 
 public class MappingsManagerView extends AbstractOWLViewComponent implements OBDAModelManagerListener, Findable<OWLEntity> {

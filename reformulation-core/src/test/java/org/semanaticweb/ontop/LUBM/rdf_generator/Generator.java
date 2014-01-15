@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.LUBM.rdf_generator;
+package org.semanaticweb.ontop.LUBM.rdf_generator;
 
 /*
  * #%L

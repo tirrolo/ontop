@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -20,8 +20,6 @@ package sesameWrapper;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +27,8 @@ import java.util.Map;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.repository.RepositoryException;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBConnection;
 
 public abstract class SesameAbstractRepo implements
 		org.openrdf.repository.Repository {

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model.impl;
+package org.semanaticweb.ontop.model.impl;
 
 /*
  * #%L
@@ -20,9 +20,9 @@ package it.unibz.krdb.obda.model.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
 
 public class OBDAVocabulary {
 	

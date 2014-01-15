@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,15 +20,15 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.protege4.gui.treemodels.QueryGroupTreeElement;
-import it.unibz.krdb.obda.protege4.gui.treemodels.QueryTreeElement;
-
 import java.awt.Component;
 
 import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
+
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.protege4.gui.treemodels.QueryGroupTreeElement;
+import org.semanaticweb.ontop.protege4.gui.treemodels.QueryTreeElement;
 
 public class SavedQueriesTreeCellRenderer extends DefaultTreeCellRenderer {
 

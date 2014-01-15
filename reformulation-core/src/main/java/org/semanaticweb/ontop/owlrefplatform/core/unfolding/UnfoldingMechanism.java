@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
+package org.semanaticweb.ontop.owlrefplatform.core.unfolding;
 
 /*
  * #%L
@@ -20,11 +20,11 @@ package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.Predicate;
-
 import java.io.Serializable;
+
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.Predicate;
 
 /**
  * This interface should be implemented by any class which implements an

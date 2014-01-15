@@ -5,7 +5,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.owlrefplatform.owlapi3;
+package org.semanaticweb.ontop.owlrefplatform.owlapi3;
 
 /*
  * #%L
@@ -27,10 +27,9 @@ package it.unibz.krdb.obda.owlrefplatform.owlapi3;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConnection;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestStatement;
-
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConnection;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestStatement;
 import org.semanticweb.owlapi.model.OWLException;
 
 /***

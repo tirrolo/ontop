@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.abox;
+package org.semanaticweb.ontop.owlrefplatform.core.abox;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.owlrefplatform.core.abox;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDADataSource;
 
 /**
  * A simple listener interface that notifies its classes when a 

@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -20,13 +20,6 @@ package sesameWrapper;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.GraphResultSet;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBStatement;
-import it.unibz.krdb.obda.sesame.SesameStatement;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +38,12 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.impl.GraphQueryResultImpl;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
+import org.semanaticweb.ontop.model.GraphResultSet;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBConnection;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBStatement;
+import org.semanaticweb.ontop.sesame.SesameStatement;
 
 public class SesameGraphQuery implements GraphQuery {
 

@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -22,11 +22,6 @@ package sesameWrapper;
 import info.aduna.iteration.CloseableIteration;
 import info.aduna.iteration.CloseableIteratorIteration;
 import info.aduna.iteration.Iteration;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBStatement;
-import it.unibz.krdb.obda.sesame.SesameRDFIterator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -80,6 +75,11 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.UnsupportedRDFormatException;
 import org.openrdf.rio.helpers.BasicParserSettings;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBConnection;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBStatement;
+import org.semanaticweb.ontop.sesame.SesameRDFIterator;
 
 public class RepositoryConnection implements org.openrdf.repository.RepositoryConnection {
 

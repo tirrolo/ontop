@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model.impl;
+package org.semanaticweb.ontop.model.impl;
 
 /*
  * #%L
@@ -20,15 +20,6 @@ package it.unibz.krdb.obda.model.impl;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.Variable;
-import it.unibz.krdb.obda.utils.EventGeneratingLinkedList;
-import it.unibz.krdb.obda.utils.EventGeneratingList;
-import it.unibz.krdb.obda.utils.ListListener;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +28,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.OBDAQueryModifiers;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.Variable;
+import org.semanaticweb.ontop.utils.EventGeneratingLinkedList;
+import org.semanaticweb.ontop.utils.EventGeneratingList;
+import org.semanaticweb.ontop.utils.ListListener;
 
 /**
  * This is a rule implementation that keeps track of changes in the query by

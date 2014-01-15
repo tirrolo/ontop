@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.ontology;
+package org.semanaticweb.ontop.ontology;
 
 /*
  * #%L
@@ -20,10 +20,10 @@ package it.unibz.krdb.obda.ontology;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate;
-
 import java.io.Serializable;
 import java.util.Set;
+
+import org.semanaticweb.ontop.model.Predicate;
 
 /***
  * A logical axiom.

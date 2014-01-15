@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model;
+package org.semanaticweb.ontop.model;
 
 /*
  * #%L
@@ -20,12 +20,12 @@ package it.unibz.krdb.obda.model;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.Predicate.COL_TYPE;
-
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+
+import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
 
 public interface OBDADataFactory extends Serializable {
 

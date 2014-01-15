@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.translator;
+package org.semanaticweb.ontop.owlrefplatform.core.translator;
 
 /*
  * #%L
@@ -20,10 +20,10 @@ package it.unibz.krdb.obda.owlrefplatform.core.translator;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.AbstractPrefixManager;
-
 import java.util.List;
 import java.util.Map;
+
+import org.semanaticweb.ontop.io.AbstractPrefixManager;
 
 //import com.hp.hpl.jena.shared.PrefixMapping;
 

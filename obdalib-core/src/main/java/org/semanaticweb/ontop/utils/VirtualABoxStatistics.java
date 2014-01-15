@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.utils;
+package org.semanaticweb.ontop.utils;
 
 /*
  * #%L
@@ -20,12 +20,6 @@ package it.unibz.krdb.obda.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.NoDatasourceSelectedException;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.OBDASQLQuery;
-import it.unibz.krdb.obda.model.impl.CQIEImpl;
 import it.unibz.krdb.sql.JDBCConnectionManager;
 
 import java.net.URI;
@@ -37,6 +31,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.semanaticweb.ontop.exception.NoDatasourceSelectedException;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.OBDASQLQuery;
+import org.semanaticweb.ontop.model.impl.CQIEImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

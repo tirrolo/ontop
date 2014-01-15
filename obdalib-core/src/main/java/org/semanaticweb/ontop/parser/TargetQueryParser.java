@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
 /*
  * #%L
@@ -20,8 +20,8 @@ package it.unibz.krdb.obda.parser;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.io.PrefixManager;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.model.CQIE;
 
 public interface TargetQueryParser {
 	

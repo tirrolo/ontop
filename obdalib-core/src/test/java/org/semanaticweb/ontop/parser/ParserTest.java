@@ -6,7 +6,7 @@
  * Please see LICENSE.txt for full license terms, including the availability of
  * proprietary exceptions.
  */
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
 import it.unibz.krdb.sql.api.VisitedQuery;
 import it.unibz.krdb.sql.api.QueryTree;
@@ -16,6 +16,8 @@ import net.sf.jsqlparser.JSQLParserException;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.semanaticweb.ontop.parser.SQL99Lexer;
+import org.semanaticweb.ontop.parser.SQL99Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.gui.treemodels;
+package org.semanaticweb.ontop.protege4.gui.treemodels;
 
 /*
  * #%L
@@ -20,17 +20,17 @@ package it.unibz.krdb.obda.protege4.gui.treemodels;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAMappingAxiom;
-import it.unibz.krdb.obda.model.OBDAMappingListener;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.protege4.gui.treemodels.FilteredModel;
-import it.unibz.krdb.obda.protege4.gui.treemodels.TreeModelFilter;
-
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+
+import org.semanaticweb.ontop.model.OBDAMappingAxiom;
+import org.semanaticweb.ontop.model.OBDAMappingListener;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.protege4.gui.treemodels.FilteredModel;
+import org.semanaticweb.ontop.protege4.gui.treemodels.TreeModelFilter;
 
 public class SynchronizedMappingListModel extends AbstractListModel implements FilteredModel, OBDAMappingListener {
 

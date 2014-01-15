@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.dag;
+package org.semanaticweb.ontop.owlrefplatform.core.dag;
 
 /*
  * #%L
@@ -20,14 +20,13 @@ package it.unibz.krdb.obda.owlrefplatform.core.dag;
  * #L%
  */
 
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.PropertySomeRestriction;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.PropertySomeRestriction;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

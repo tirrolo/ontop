@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,18 +20,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.protege4.gui.treemodels.QueryControllerTreeModel;
-import it.unibz.krdb.obda.protege4.gui.treemodels.QueryGroupTreeElement;
-import it.unibz.krdb.obda.protege4.gui.treemodels.QueryTreeElement;
-import it.unibz.krdb.obda.protege4.gui.treemodels.TreeElement;
-import it.unibz.krdb.obda.protege4.utils.DialogUtils;
-import it.unibz.krdb.obda.querymanager.QueryController;
-import it.unibz.krdb.obda.querymanager.QueryControllerEntity;
-import it.unibz.krdb.obda.querymanager.QueryControllerGroup;
-import it.unibz.krdb.obda.querymanager.QueryControllerListener;
-import it.unibz.krdb.obda.querymanager.QueryControllerQuery;
-
 import java.awt.Dialog.ModalityType;
 import java.util.Vector;
 
@@ -42,6 +30,18 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.protege4.gui.treemodels.QueryControllerTreeModel;
+import org.semanaticweb.ontop.protege4.gui.treemodels.QueryGroupTreeElement;
+import org.semanaticweb.ontop.protege4.gui.treemodels.QueryTreeElement;
+import org.semanaticweb.ontop.protege4.gui.treemodels.TreeElement;
+import org.semanaticweb.ontop.protege4.utils.DialogUtils;
+import org.semanaticweb.ontop.querymanager.QueryController;
+import org.semanaticweb.ontop.querymanager.QueryControllerEntity;
+import org.semanaticweb.ontop.querymanager.QueryControllerGroup;
+import org.semanaticweb.ontop.querymanager.QueryControllerListener;
+import org.semanaticweb.ontop.querymanager.QueryControllerQuery;
 
 /**
  * This class represents the display of stored queries using a tree structure.

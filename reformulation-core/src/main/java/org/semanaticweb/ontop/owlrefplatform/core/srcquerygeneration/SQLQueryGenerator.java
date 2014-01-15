@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration;
+package org.semanaticweb.ontop.owlrefplatform.core.srcquerygeneration;
 
 /*
  * #%L
@@ -20,13 +20,13 @@ package it.unibz.krdb.obda.owlrefplatform.core.srcquerygeneration;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.DatalogProgram;
-import it.unibz.krdb.obda.model.OBDAException;
-
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+
+import org.semanaticweb.ontop.model.DatalogProgram;
+import org.semanaticweb.ontop.model.OBDAException;
 
 /**
  * A general interface which should be use to implement new source query

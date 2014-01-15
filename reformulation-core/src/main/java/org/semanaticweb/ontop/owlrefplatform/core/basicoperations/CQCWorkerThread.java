@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
+package org.semanaticweb.ontop.owlrefplatform.core.basicoperations;
 
 /*
  * #%L
@@ -20,10 +20,10 @@ package it.unibz.krdb.obda.owlrefplatform.core.basicoperations;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.CQIE;
-
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import org.semanaticweb.ontop.model.CQIE;
 
 
 

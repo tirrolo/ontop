@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.owlapi3.example;
+package org.semanaticweb.ontop.owlrefplatform.owlapi3.example;
 
 /*
  * #%L
@@ -20,18 +20,17 @@ package it.unibz.krdb.obda.owlrefplatform.owlapi3.example;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.owlapi3.QuestOWLIndividualIterator;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.OWLAPI3Materializer;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
+import org.semanaticweb.ontop.io.ModelIOManager;
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.owlapi3.QuestOWLIndividualIterator;
+import org.semanaticweb.ontop.owlrefplatform.owlapi3.OWLAPI3Materializer;
 import org.semanticweb.owlapi.model.OWLIndividualAxiom;
 
 /**

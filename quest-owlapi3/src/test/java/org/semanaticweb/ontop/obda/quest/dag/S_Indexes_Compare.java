@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.obda.quest.dag;
+package org.semanaticweb.ontop.obda.quest.dag;
 
 /*
  * #%L
@@ -21,22 +21,6 @@ package it.unibz.krdb.obda.obda.quest.dag;
  */
 
 
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.OntologyFactory;
-import it.unibz.krdb.obda.ontology.Property;
-import it.unibz.krdb.obda.ontology.impl.OntologyFactoryImpl;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAG;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGConstructor;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGNode;
-import it.unibz.krdb.obda.owlrefplatform.core.dag.DAGOperations;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.DAGImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.NamedDAGBuilderImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.SemanticIndexEngineImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.SemanticIndexRange;
-import it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
@@ -44,6 +28,21 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.jgrapht.Graphs;
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.OntologyFactory;
+import org.semanaticweb.ontop.ontology.Property;
+import org.semanaticweb.ontop.ontology.impl.OntologyFactoryImpl;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlrefplatform.core.dag.DAG;
+import org.semanaticweb.ontop.owlrefplatform.core.dag.DAGConstructor;
+import org.semanaticweb.ontop.owlrefplatform.core.dag.DAGNode;
+import org.semanaticweb.ontop.owlrefplatform.core.dag.DAGOperations;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.DAGImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.NamedDAGBuilderImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.SemanticIndexEngineImpl;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.SemanticIndexRange;
+import org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht.TBoxReasonerImpl;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;

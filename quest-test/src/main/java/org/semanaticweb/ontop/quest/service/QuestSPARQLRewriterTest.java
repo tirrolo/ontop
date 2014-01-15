@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.quest.service;
+package org.semanaticweb.ontop.quest.service;
 
 /*
  * #%L
@@ -21,16 +21,17 @@ package it.unibz.krdb.obda.quest.service;
  */
 
 import info.aduna.io.IOUtil;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBStatement;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBStatement;
+import org.semanaticweb.ontop.sesame.SesameVirtualRepo;
+
 import junit.framework.TestCase;
-import sesameWrapper.SesameVirtualRepo;
 
 /**
  * Test class using StockExchange scenario in MySQL

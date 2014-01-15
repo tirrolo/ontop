@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -20,10 +20,10 @@ package sesameWrapper;
  * #L%
  */
 
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.owlrefplatform.questdb.QuestDB;
-import it.unibz.krdb.obda.owlrefplatform.questdb.QuestDBClassicStore;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.owlrefplatform.questdb.QuestDB;
+import org.semanaticweb.ontop.owlrefplatform.questdb.QuestDBClassicStore;
 
 public class SesameClassicJDBCRepo extends SesameClassicRepo {
 

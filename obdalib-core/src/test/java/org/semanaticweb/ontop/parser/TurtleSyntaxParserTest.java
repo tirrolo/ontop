@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.parser;
+package org.semanaticweb.ontop.parser;
 
 /*
  * #%L
@@ -20,10 +20,12 @@ package it.unibz.krdb.obda.parser;
  * #L%
  */
 
-import it.unibz.krdb.obda.io.SimplePrefixManager;
-import it.unibz.krdb.obda.io.PrefixManager;
 import junit.framework.TestCase;
 
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.io.SimplePrefixManager;
+import org.semanaticweb.ontop.parser.TargetQueryParserException;
+import org.semanaticweb.ontop.parser.TurtleOBDASyntaxParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

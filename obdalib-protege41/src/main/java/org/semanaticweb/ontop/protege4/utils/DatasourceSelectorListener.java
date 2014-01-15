@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.utils;
+package org.semanaticweb.ontop.protege4.utils;
 
 /*
  * #%L
@@ -20,7 +20,7 @@ package it.unibz.krdb.obda.protege4.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDADataSource;
 
 public interface DatasourceSelectorListener
 {

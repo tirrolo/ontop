@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.model;
+package org.semanaticweb.ontop.model;
 
 /*
  * #%L

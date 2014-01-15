@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.utils;
+package org.semanaticweb.ontop.utils;
 
 /*
  * #%L
@@ -20,15 +20,15 @@ package it.unibz.krdb.obda.utils;
  * #L%
  */
 
-import it.unibz.krdb.obda.exception.InvalidPrefixWritingException;
-import it.unibz.krdb.obda.io.PrefixManager;
-import it.unibz.krdb.obda.model.Function;
-import it.unibz.krdb.obda.model.Term;
-import it.unibz.krdb.obda.model.Variable;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+
+import org.semanaticweb.ontop.exception.InvalidPrefixWritingException;
+import org.semanaticweb.ontop.io.PrefixManager;
+import org.semanaticweb.ontop.model.Function;
+import org.semanaticweb.ontop.model.Term;
+import org.semanaticweb.ontop.model.Variable;
 
 /**
  * A utility class for URI templates

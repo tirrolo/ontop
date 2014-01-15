@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.panels;
+package org.semanaticweb.ontop.protege4.panels;
 
 /*
  * #%L
@@ -20,11 +20,6 @@ package it.unibz.krdb.obda.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.obda.protege4.gui.IconLoader;
-import it.unibz.krdb.obda.protege4.gui.action.OBDADataQueryAction;
-import it.unibz.krdb.obda.protege4.gui.action.OBDASaveQueryResultToFileAction;
-import it.unibz.krdb.obda.protege4.gui.treemodels.IncrementalResultSetTableModel;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -37,6 +32,11 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.table.TableModel;
+
+import org.semanaticweb.ontop.protege4.gui.IconLoader;
+import org.semanaticweb.ontop.protege4.gui.action.OBDADataQueryAction;
+import org.semanaticweb.ontop.protege4.gui.action.OBDASaveQueryResultToFileAction;
+import org.semanaticweb.ontop.protege4.gui.treemodels.IncrementalResultSetTableModel;
 
 public class ResultViewTablePanel extends javax.swing.JPanel {
 

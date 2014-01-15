@@ -7,7 +7,7 @@
  * proprietary exceptions.
  */
 
-package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
+package org.semanaticweb.ontop.owlrefplatform.core.dagjgrapht;
 
 /*
  * #%L
@@ -30,10 +30,10 @@ package it.unibz.krdb.obda.owlrefplatform.core.dagjgrapht;
  */
 
 
-import it.unibz.krdb.obda.ontology.Description;
-import it.unibz.krdb.obda.ontology.Ontology;
-
 import java.util.Set;
+
+import org.semanaticweb.ontop.ontology.Description;
+import org.semanaticweb.ontop.ontology.Ontology;
 
 
 /**

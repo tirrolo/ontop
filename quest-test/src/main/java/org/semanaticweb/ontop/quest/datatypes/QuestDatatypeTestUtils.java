@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.quest.datatypes;
+package org.semanaticweb.ontop.quest.datatypes;
 
 /*
  * #%L
@@ -22,7 +22,6 @@ package it.unibz.krdb.obda.quest.datatypes;
 
 import info.aduna.io.FileUtil;
 import info.aduna.io.ZipUtil;
-import it.unibz.krdb.obda.quest.scenarios.ScenarioManifestTestUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +53,7 @@ import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.turtle.TurtleParser;
 import org.openrdf.sail.memory.MemoryStore;
+import org.semanaticweb.ontop.quest.scenarios.ScenarioManifestTestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

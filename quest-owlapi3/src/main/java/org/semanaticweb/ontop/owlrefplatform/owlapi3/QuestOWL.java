@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.owlrefplatform.owlapi3;
+package org.semanaticweb.ontop.owlrefplatform.owlapi3;
 
 /*
  * #%L
@@ -20,29 +20,6 @@ package it.unibz.krdb.obda.owlrefplatform.owlapi3;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.Predicate;
-import it.unibz.krdb.obda.model.ResultSet;
-import it.unibz.krdb.obda.model.TupleResultSet;
-import it.unibz.krdb.obda.ontology.Assertion;
-import it.unibz.krdb.obda.ontology.Axiom;
-import it.unibz.krdb.obda.ontology.DisjointClassAxiom;
-import it.unibz.krdb.obda.ontology.DisjointDescriptionAxiom;
-import it.unibz.krdb.obda.ontology.DisjointPropertyAxiom;
-import it.unibz.krdb.obda.ontology.Ontology;
-import it.unibz.krdb.obda.ontology.PropertyFunctionalAxiom;
-import it.unibz.krdb.obda.ontology.impl.DisjointClassAxiomImpl;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3ABoxIterator;
-import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
-import it.unibz.krdb.obda.owlrefplatform.core.Quest;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConnection;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestStatement;
-import it.unibz.krdb.obda.owlrefplatform.core.abox.QuestMaterializer;
-import it.unibz.krdb.obda.utils.VersionInfo;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +32,28 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.Predicate;
+import org.semanaticweb.ontop.model.ResultSet;
+import org.semanaticweb.ontop.model.TupleResultSet;
+import org.semanaticweb.ontop.ontology.Assertion;
+import org.semanaticweb.ontop.ontology.Axiom;
+import org.semanaticweb.ontop.ontology.DisjointClassAxiom;
+import org.semanaticweb.ontop.ontology.DisjointDescriptionAxiom;
+import org.semanaticweb.ontop.ontology.DisjointPropertyAxiom;
+import org.semanaticweb.ontop.ontology.Ontology;
+import org.semanaticweb.ontop.ontology.PropertyFunctionalAxiom;
+import org.semanaticweb.ontop.ontology.impl.DisjointClassAxiomImpl;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3ABoxIterator;
+import org.semanaticweb.ontop.owlapi3.OWLAPI3Translator;
+import org.semanaticweb.ontop.owlrefplatform.core.Quest;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConnection;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestStatement;
+import org.semanaticweb.ontop.owlrefplatform.core.abox.QuestMaterializer;
+import org.semanaticweb.ontop.utils.VersionInfo;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -204,7 +203,7 @@ public class QuestOWL extends OWLReasonerBase {
 	}
 
 	/**
-	 * extract version from {@link it.unibz.krdb.obda.utils.VersionInfo}, which is from the file {@code version.properties}
+	 * extract version from {@link org.semanaticweb.ontop.utils.VersionInfo}, which is from the file {@code version.properties}
 	 */
 	private void extractVersion() {
 		VersionInfo versonInfo = VersionInfo.getVersionInfo();

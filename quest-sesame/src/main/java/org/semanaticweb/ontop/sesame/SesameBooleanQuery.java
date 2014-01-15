@@ -1,4 +1,4 @@
-package sesameWrapper;
+package org.semanaticweb.ontop.sesame;
 
 /*
  * #%L
@@ -22,21 +22,20 @@ package sesameWrapper;
 
 import java.sql.SQLException;
 
-import it.unibz.krdb.obda.model.Constant;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAQuery;
-import it.unibz.krdb.obda.model.OBDAQueryModifiers;
-import it.unibz.krdb.obda.model.TupleResultSet;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBConnection;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestDBStatement;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestStatement;
-
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.Dataset;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
+import org.semanaticweb.ontop.model.Constant;
+import org.semanaticweb.ontop.model.OBDAException;
+import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.model.OBDAQueryModifiers;
+import org.semanaticweb.ontop.model.TupleResultSet;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBConnection;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestDBStatement;
+import org.semanaticweb.ontop.owlrefplatform.core.QuestStatement;
 
 public class SesameBooleanQuery implements BooleanQuery {
 

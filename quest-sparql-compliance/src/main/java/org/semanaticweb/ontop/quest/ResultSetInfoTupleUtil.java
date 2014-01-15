@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.quest;
+package org.semanaticweb.ontop.quest;
 
 /*
  * #%L
@@ -20,8 +20,8 @@ package it.unibz.krdb.obda.quest;
  * #L%
  */
 
-import static it.unibz.krdb.obda.quest.ResultSetInfoSchema.RESULTSET_SIZE;
-import static it.unibz.krdb.obda.quest.ResultSetInfoSchema.THROWN_EXCEPTION;
+import static org.semanaticweb.ontop.quest.ResultSetInfoSchema.RESULTSET_SIZE;
+import static org.semanaticweb.ontop.quest.ResultSetInfoSchema.THROWN_EXCEPTION;
 
 import java.util.Set;
 

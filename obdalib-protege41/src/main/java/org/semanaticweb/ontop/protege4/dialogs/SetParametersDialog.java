@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.protege4.dialogs;
+package org.semanaticweb.ontop.protege4.dialogs;
 
 /*
  * #%L
@@ -20,18 +20,18 @@ package it.unibz.krdb.obda.protege4.dialogs;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDADataSource;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.model.impl.RDBMSourceParameterConstants;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.util.Iterator;
 
 import javax.swing.JOptionPane;
+
+import org.semanaticweb.ontop.model.OBDADataFactory;
+import org.semanaticweb.ontop.model.OBDADataSource;
+import org.semanaticweb.ontop.model.OBDAModel;
+import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.model.impl.RDBMSourceParameterConstants;
 
 /*
  * SetParametersDialog.java

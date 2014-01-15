@@ -1,4 +1,4 @@
-package it.unibz.krdb.obda.renderer;
+package org.semanaticweb.ontop.renderer;
 
 /*
  * #%L
@@ -20,11 +20,11 @@ package it.unibz.krdb.obda.renderer;
  * #L%
  */
 
-import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.DatalogProgram;
-
 import java.util.Iterator;
 import java.util.List;
+
+import org.semanaticweb.ontop.model.CQIE;
+import org.semanaticweb.ontop.model.DatalogProgram;
 
 /**
  * A utility class to render a Datalog Program object into its representational
