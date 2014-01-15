@@ -20,10 +20,6 @@ package org.semanaticweb.ontop.owlrefplatform.core.mappingprocessing;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.DataDefinition;
-import it.unibz.krdb.sql.api.Attribute;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,6 +43,9 @@ import org.semanaticweb.ontop.model.impl.AnonymousVariable;
 import org.semanaticweb.ontop.model.impl.FunctionalTermImpl;
 import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 import org.semanaticweb.ontop.model.impl.VariableImpl;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.DataDefinition;
+import org.semanaticweb.ontop.sql.api.Attribute;
 import org.semanaticweb.ontop.utils.TypeMapper;
 
 public class MappingDataTypeRepair {

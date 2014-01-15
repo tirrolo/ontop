@@ -21,11 +21,10 @@ package org.semanaticweb.ontop.owlapi3.directmapping;
  */
 
 
-import it.unibz.krdb.sql.DataDefinition;
-import it.unibz.krdb.sql.api.Attribute;
-
 import java.util.List;
 
+import org.semanaticweb.ontop.sql.DataDefinition;
+import org.semanaticweb.ontop.sql.api.Attribute;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;

@@ -8,8 +8,6 @@
  */
 package org.semanaticweb.ontop.parser;
 
-import it.unibz.krdb.sql.api.VisitedQuery;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -23,6 +21,7 @@ import org.semanaticweb.ontop.model.OBDADataFactory;
 import org.semanaticweb.ontop.model.OBDAMappingAxiom;
 import org.semanaticweb.ontop.model.OBDAModel;
 import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.sql.api.VisitedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

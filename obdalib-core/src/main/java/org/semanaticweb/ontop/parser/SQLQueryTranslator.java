@@ -20,11 +20,6 @@ package org.semanaticweb.ontop.parser;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.ViewDefinition;
-import it.unibz.krdb.sql.api.Attribute;
-import it.unibz.krdb.sql.api.VisitedQuery;
-
 import java.util.ArrayList;
 
 import net.sf.jsqlparser.JSQLParserException;
@@ -35,6 +30,10 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectItem;
 
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.ViewDefinition;
+import org.semanaticweb.ontop.sql.api.Attribute;
+import org.semanaticweb.ontop.sql.api.VisitedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

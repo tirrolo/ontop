@@ -25,8 +25,7 @@ import org.semanaticweb.ontop.model.OBDAMappingAxiom;
 import org.semanaticweb.ontop.model.OBDAQuery;
 import org.semanaticweb.ontop.model.OBDASQLQuery;
 import org.semanaticweb.ontop.parser.SQLQueryTranslator;
-
-import it.unibz.krdb.sql.api.VisitedQuery;
+import org.semanaticweb.ontop.sql.api.VisitedQuery;
 
 /**
  * Contains the target query and parsed source part, sql of a mapping

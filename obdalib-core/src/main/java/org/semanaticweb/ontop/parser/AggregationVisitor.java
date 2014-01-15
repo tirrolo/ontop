@@ -8,7 +8,8 @@
  */
 package org.semanaticweb.ontop.parser;
 
-import it.unibz.krdb.sql.api.AggregationJSQL;
+import org.semanaticweb.ontop.sql.api.AggregationJSQL;
+
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.FromItemVisitor;
 import net.sf.jsqlparser.statement.select.LateralSubSelect;

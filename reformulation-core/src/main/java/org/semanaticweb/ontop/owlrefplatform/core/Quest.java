@@ -20,9 +20,6 @@ package org.semanaticweb.ontop.owlrefplatform.core;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.JDBCConnectionManager;
-
 import java.io.Serializable;
 import java.net.URI;
 import java.security.InvalidParameterException;
@@ -96,6 +93,8 @@ import org.semanaticweb.ontop.owlrefplatform.core.tboxprocessing.SigmaTBoxOptimi
 import org.semanaticweb.ontop.owlrefplatform.core.translator.MappingVocabularyRepair;
 import org.semanaticweb.ontop.owlrefplatform.core.unfolding.DatalogUnfolder;
 import org.semanaticweb.ontop.owlrefplatform.core.unfolding.UnfoldingMechanism;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
 import org.semanaticweb.ontop.utils.MappingAnalyzer;
 import org.semanaticweb.ontop.utils.MappingParser;
 import org.semanaticweb.ontop.utils.MappingSplitter;

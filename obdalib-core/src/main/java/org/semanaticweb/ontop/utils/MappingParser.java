@@ -20,16 +20,15 @@ package org.semanaticweb.ontop.utils;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.ViewDefinition;
-import it.unibz.krdb.sql.api.RelationJSQL;
-import it.unibz.krdb.sql.api.VisitedQuery;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.semanaticweb.ontop.model.OBDAMappingAxiom;
 import org.semanaticweb.ontop.parser.SQLQueryTranslator;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.ViewDefinition;
+import org.semanaticweb.ontop.sql.api.RelationJSQL;
+import org.semanaticweb.ontop.sql.api.VisitedQuery;
 
 
 

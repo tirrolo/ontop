@@ -20,8 +20,6 @@ package org.semanaticweb.ontop.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.sql.JDBCConnectionManager;
-
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -68,6 +66,7 @@ import org.semanaticweb.ontop.protege4.utils.QueryPainter;
 import org.semanaticweb.ontop.protege4.utils.QueryPainter.ValidatorListener;
 import org.semanaticweb.ontop.renderer.SourceQueryRenderer;
 import org.semanaticweb.ontop.renderer.TargetQueryRenderer;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

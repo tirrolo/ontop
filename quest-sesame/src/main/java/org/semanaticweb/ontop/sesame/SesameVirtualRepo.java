@@ -20,8 +20,6 @@ package org.semanaticweb.ontop.sesame;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,6 +34,7 @@ import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
 import org.semanaticweb.ontop.owlrefplatform.core.QuestDBConnection;
 import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
 import org.semanaticweb.ontop.owlrefplatform.questdb.QuestDBVirtualStore;
+import org.semanaticweb.ontop.sql.DBMetadata;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 public class SesameVirtualRepo extends SesameAbstractRepo {

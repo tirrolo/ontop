@@ -20,8 +20,6 @@ package org.semanaticweb.ontop.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.sql.JDBCConnectionManager;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -48,6 +46,7 @@ import org.semanaticweb.ontop.protege4.gui.IconLoader;
 import org.semanaticweb.ontop.protege4.utils.CustomTraversalPolicy;
 import org.semanaticweb.ontop.protege4.utils.DatasourceSelectorListener;
 import org.semanaticweb.ontop.protege4.utils.DialogUtils;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
 
 public class DatasourceParameterEditorPanel extends javax.swing.JPanel implements DatasourceSelectorListener {
 

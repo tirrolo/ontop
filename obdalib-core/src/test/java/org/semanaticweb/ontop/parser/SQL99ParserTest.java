@@ -20,11 +20,6 @@ package org.semanaticweb.ontop.parser;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.TableDefinition;
-import it.unibz.krdb.sql.api.Attribute;
-import it.unibz.krdb.sql.api.QueryTree;
-
 import java.sql.Types;
 
 import junit.framework.TestCase;
@@ -34,6 +29,10 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.semanaticweb.ontop.parser.SQL99Lexer;
 import org.semanaticweb.ontop.parser.SQL99Parser;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.TableDefinition;
+import org.semanaticweb.ontop.sql.api.Attribute;
+import org.semanaticweb.ontop.sql.api.QueryTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

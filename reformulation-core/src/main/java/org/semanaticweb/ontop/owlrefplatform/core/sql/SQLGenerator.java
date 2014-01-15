@@ -20,12 +20,6 @@ package org.semanaticweb.ontop.owlrefplatform.core.sql;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.DataDefinition;
-import it.unibz.krdb.sql.TableDefinition;
-import it.unibz.krdb.sql.ViewDefinition;
-import it.unibz.krdb.sql.api.Attribute;
-
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +56,11 @@ import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.DB2SQLDialectA
 import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.JDBCUtility;
 import org.semanaticweb.ontop.owlrefplatform.core.queryevaluation.SQLDialectAdapter;
 import org.semanaticweb.ontop.owlrefplatform.core.srcquerygeneration.SQLQueryGenerator;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.DataDefinition;
+import org.semanaticweb.ontop.sql.TableDefinition;
+import org.semanaticweb.ontop.sql.ViewDefinition;
+import org.semanaticweb.ontop.sql.api.Attribute;
 import org.slf4j.LoggerFactory;
 
 //import com.hp.hpl.jena.rdf.model.Literal;

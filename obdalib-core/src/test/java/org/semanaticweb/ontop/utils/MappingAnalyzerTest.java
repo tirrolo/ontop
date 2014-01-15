@@ -20,10 +20,6 @@ package org.semanaticweb.ontop.utils;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.TableDefinition;
-import it.unibz.krdb.sql.api.Attribute;
-
 import java.sql.Types;
 import java.util.ArrayList;
 
@@ -34,6 +30,9 @@ import org.semanaticweb.ontop.model.OBDADataFactory;
 import org.semanaticweb.ontop.model.OBDAMappingAxiom;
 import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 import org.semanaticweb.ontop.parser.TurtleOBDASyntaxParser;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.TableDefinition;
+import org.semanaticweb.ontop.sql.api.Attribute;
 import org.semanaticweb.ontop.utils.MappingAnalyzer;
 
 import junit.framework.TestCase;

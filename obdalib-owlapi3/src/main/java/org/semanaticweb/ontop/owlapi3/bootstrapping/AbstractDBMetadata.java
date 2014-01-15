@@ -20,9 +20,6 @@ package org.semanaticweb.ontop.owlapi3.bootstrapping;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.JDBCConnectionManager;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,6 +28,8 @@ import org.semanaticweb.ontop.model.OBDADataSource;
 import org.semanaticweb.ontop.model.OBDAModel;
 import org.semanaticweb.ontop.model.impl.RDBMSourceParameterConstants;
 import org.semanaticweb.ontop.owlapi3.directmapping.DirectMappingEngine;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 public abstract class AbstractDBMetadata

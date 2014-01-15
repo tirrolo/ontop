@@ -20,8 +20,6 @@ package org.semanaticweb.ontop.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.sql.JDBCConnectionManager;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +35,7 @@ import org.semanaticweb.ontop.protege4.gui.treemodels.IncrementalResultSetTableM
 import org.semanaticweb.ontop.protege4.utils.DatasourceSelectorListener;
 import org.semanaticweb.ontop.protege4.utils.OBDAProgessMonitor;
 import org.semanaticweb.ontop.protege4.utils.OBDAProgressListener;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

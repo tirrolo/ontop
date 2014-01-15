@@ -20,7 +20,7 @@ package org.semanaticweb.ontop.owlrefplatform.core.basicoperations;
  * #L%
  */
 
-import it.unibz.krdb.sql.Reference;
+import org.semanaticweb.ontop.sql.Reference;
 
 public class BrokenForeignKeyException extends Exception {
 

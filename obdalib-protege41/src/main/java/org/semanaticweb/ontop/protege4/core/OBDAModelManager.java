@@ -20,8 +20,6 @@ package org.semanaticweb.ontop.protege4.core;
  * #L%
  */
 
-import it.unibz.krdb.sql.JDBCConnectionManager;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -62,6 +60,7 @@ import org.semanaticweb.ontop.querymanager.QueryControllerEntity;
 import org.semanaticweb.ontop.querymanager.QueryControllerGroup;
 import org.semanaticweb.ontop.querymanager.QueryControllerListener;
 import org.semanaticweb.ontop.querymanager.QueryControllerQuery;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;

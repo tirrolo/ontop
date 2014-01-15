@@ -20,11 +20,6 @@ package org.semanaticweb.ontop.owlapi3.directmapping;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.DataDefinition;
-import it.unibz.krdb.sql.JDBCConnectionManager;
-import it.unibz.krdb.sql.TableDefinition;
-
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -45,6 +40,10 @@ import org.semanaticweb.ontop.model.Predicate;
 import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
 import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 import org.semanaticweb.ontop.model.impl.OBDAModelImpl;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.DataDefinition;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
+import org.semanaticweb.ontop.sql.TableDefinition;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;

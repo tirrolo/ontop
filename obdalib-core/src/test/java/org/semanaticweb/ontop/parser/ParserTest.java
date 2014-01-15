@@ -8,8 +8,6 @@
  */
 package org.semanaticweb.ontop.parser;
 
-import it.unibz.krdb.sql.api.VisitedQuery;
-import it.unibz.krdb.sql.api.QueryTree;
 import junit.framework.TestCase;
 import net.sf.jsqlparser.JSQLParserException;
 
@@ -18,6 +16,8 @@ import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.semanaticweb.ontop.parser.SQL99Lexer;
 import org.semanaticweb.ontop.parser.SQL99Parser;
+import org.semanaticweb.ontop.sql.api.QueryTree;
+import org.semanaticweb.ontop.sql.api.VisitedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

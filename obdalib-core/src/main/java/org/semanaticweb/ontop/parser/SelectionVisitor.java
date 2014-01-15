@@ -9,9 +9,10 @@
 
 package org.semanaticweb.ontop.parser;
 
-import it.unibz.krdb.sql.api.AllComparison;
-import it.unibz.krdb.sql.api.AnyComparison;
-import it.unibz.krdb.sql.api.SelectionJSQL;
+import org.semanaticweb.ontop.sql.api.AllComparison;
+import org.semanaticweb.ontop.sql.api.AnyComparison;
+import org.semanaticweb.ontop.sql.api.SelectionJSQL;
+
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.AllComparisonExpression;
 import net.sf.jsqlparser.expression.AnalyticExpression;

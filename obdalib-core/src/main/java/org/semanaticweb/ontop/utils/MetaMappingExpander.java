@@ -20,10 +20,6 @@ package org.semanaticweb.ontop.utils;
  * #L%
  */
  
-import it.unibz.krdb.sql.api.VisitedQuery;
-import it.unibz.krdb.sql.api.ProjectionJSQL;
-import it.unibz.krdb.sql.api.SelectionJSQL;
-
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -56,6 +52,9 @@ import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
 import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
 import org.semanaticweb.ontop.parser.SQLQueryTranslator;
+import org.semanaticweb.ontop.sql.api.ProjectionJSQL;
+import org.semanaticweb.ontop.sql.api.SelectionJSQL;
+import org.semanaticweb.ontop.sql.api.VisitedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

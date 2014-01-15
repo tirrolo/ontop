@@ -20,12 +20,11 @@ package org.semanaticweb.ontop.owlapi3.bootstrapping;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-
 import org.semanaticweb.ontop.model.OBDADataFactory;
 import org.semanaticweb.ontop.model.OBDADataSource;
 import org.semanaticweb.ontop.model.OBDAModel;
 import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.sql.DBMetadata;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;

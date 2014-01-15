@@ -20,12 +20,6 @@ package org.semanaticweb.ontop.owlapi3.directmapping;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.DataDefinition;
-import it.unibz.krdb.sql.Reference;
-import it.unibz.krdb.sql.TableDefinition;
-import it.unibz.krdb.sql.api.Attribute;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +33,11 @@ import org.semanaticweb.ontop.model.Predicate;
 import org.semanaticweb.ontop.model.Term;
 import org.semanaticweb.ontop.model.Variable;
 import org.semanaticweb.ontop.model.impl.OBDAVocabulary;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.DataDefinition;
+import org.semanaticweb.ontop.sql.Reference;
+import org.semanaticweb.ontop.sql.TableDefinition;
+import org.semanaticweb.ontop.sql.api.Attribute;
 import org.semanaticweb.ontop.utils.TypeMapper;
 
 public class DirectMappingAxiom {

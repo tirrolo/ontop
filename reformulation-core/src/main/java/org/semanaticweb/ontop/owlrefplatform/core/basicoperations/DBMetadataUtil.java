@@ -20,11 +20,6 @@ package org.semanaticweb.ontop.owlrefplatform.core.basicoperations;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.Reference;
-import it.unibz.krdb.sql.TableDefinition;
-import it.unibz.krdb.sql.api.Attribute;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +31,10 @@ import org.semanaticweb.ontop.model.OBDADataFactory;
 import org.semanaticweb.ontop.model.Predicate;
 import org.semanaticweb.ontop.model.Term;
 import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.Reference;
+import org.semanaticweb.ontop.sql.TableDefinition;
+import org.semanaticweb.ontop.sql.api.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

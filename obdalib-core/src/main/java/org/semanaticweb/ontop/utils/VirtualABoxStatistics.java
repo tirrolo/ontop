@@ -20,8 +20,6 @@ package org.semanaticweb.ontop.utils;
  * #L%
  */
 
-import it.unibz.krdb.sql.JDBCConnectionManager;
-
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -37,6 +35,7 @@ import org.semanaticweb.ontop.model.OBDAMappingAxiom;
 import org.semanaticweb.ontop.model.OBDAModel;
 import org.semanaticweb.ontop.model.OBDASQLQuery;
 import org.semanaticweb.ontop.model.impl.CQIEImpl;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

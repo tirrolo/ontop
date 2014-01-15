@@ -20,13 +20,6 @@ package org.semanaticweb.ontop.protege4.panels;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.DataDefinition;
-import it.unibz.krdb.sql.JDBCConnectionManager;
-import it.unibz.krdb.sql.TableDefinition;
-import it.unibz.krdb.sql.ViewDefinition;
-import it.unibz.krdb.sql.api.Attribute;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -86,6 +79,12 @@ import org.semanaticweb.ontop.protege4.utils.DatasourceSelectorListener;
 import org.semanaticweb.ontop.protege4.utils.DialogUtils;
 import org.semanaticweb.ontop.protege4.utils.OBDAProgessMonitor;
 import org.semanaticweb.ontop.protege4.utils.OBDAProgressListener;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.DataDefinition;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
+import org.semanaticweb.ontop.sql.TableDefinition;
+import org.semanaticweb.ontop.sql.ViewDefinition;
+import org.semanaticweb.ontop.sql.api.Attribute;
 
 public class MappingAssistantPanel extends javax.swing.JPanel implements DatasourceSelectorListener {
 

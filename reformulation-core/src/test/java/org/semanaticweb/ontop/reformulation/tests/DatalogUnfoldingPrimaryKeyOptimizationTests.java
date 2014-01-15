@@ -20,10 +20,6 @@ package org.semanaticweb.ontop.reformulation.tests;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.TableDefinition;
-import it.unibz.krdb.sql.api.Attribute;
-
 import java.sql.Types;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +33,9 @@ import org.semanaticweb.ontop.model.Predicate;
 import org.semanaticweb.ontop.model.Term;
 import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 import org.semanaticweb.ontop.owlrefplatform.core.unfolding.DatalogUnfolder;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.TableDefinition;
+import org.semanaticweb.ontop.sql.api.Attribute;
 
 import junit.framework.TestCase;
 

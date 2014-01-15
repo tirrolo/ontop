@@ -8,11 +8,11 @@
  */
 package org.semanaticweb.ontop.parser;
 
-import it.unibz.krdb.sql.api.RelationJSQL;
-import it.unibz.krdb.sql.api.TableJSQL;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.semanaticweb.ontop.sql.api.RelationJSQL;
+import org.semanaticweb.ontop.sql.api.TableJSQL;
 
 import net.sf.jsqlparser.expression.AllComparisonExpression;
 import net.sf.jsqlparser.expression.AnalyticExpression;

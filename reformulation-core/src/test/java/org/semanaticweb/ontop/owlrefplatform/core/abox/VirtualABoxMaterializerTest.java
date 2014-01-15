@@ -20,8 +20,6 @@ package org.semanaticweb.ontop.owlrefplatform.core.abox;
  * #L%
  */
 
-import it.unibz.krdb.sql.JDBCConnectionManager;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.net.URI;
@@ -43,6 +41,7 @@ import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 import org.semanaticweb.ontop.model.impl.RDBMSourceParameterConstants;
 import org.semanaticweb.ontop.ontology.Assertion;
 import org.semanaticweb.ontop.owlrefplatform.core.abox.QuestMaterializer;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
 
 import junit.framework.TestCase;
 

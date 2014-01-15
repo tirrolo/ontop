@@ -20,12 +20,6 @@ package org.semanaticweb.ontop.utils;
  * #L%
  */
  
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.DataDefinition;
-import it.unibz.krdb.sql.api.RelationJSQL;
-import it.unibz.krdb.sql.api.SelectionJSQL;
-import it.unibz.krdb.sql.api.VisitedQuery;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,6 +40,11 @@ import org.semanaticweb.ontop.model.Variable;
 import org.semanaticweb.ontop.model.Predicate.COL_TYPE;
 import org.semanaticweb.ontop.model.impl.OBDADataFactoryImpl;
 import org.semanaticweb.ontop.parser.SQLQueryTranslator;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.DataDefinition;
+import org.semanaticweb.ontop.sql.api.RelationJSQL;
+import org.semanaticweb.ontop.sql.api.SelectionJSQL;
+import org.semanaticweb.ontop.sql.api.VisitedQuery;
 
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.DateValue;

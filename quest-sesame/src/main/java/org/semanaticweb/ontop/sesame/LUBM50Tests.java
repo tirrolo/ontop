@@ -20,8 +20,6 @@ package org.semanaticweb.ontop.sesame;
  * #L%
  */
 
-import it.unibz.krdb.sql.JDBCConnectionManager;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -46,6 +44,7 @@ import org.semanaticweb.ontop.owlrefplatform.owlapi3.QuestOWLStatement;
 import org.semanaticweb.ontop.querymanager.QueryController;
 import org.semanaticweb.ontop.querymanager.QueryControllerEntity;
 import org.semanaticweb.ontop.querymanager.QueryControllerQuery;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;

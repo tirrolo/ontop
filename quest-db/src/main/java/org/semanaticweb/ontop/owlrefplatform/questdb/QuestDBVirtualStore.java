@@ -20,8 +20,6 @@ package org.semanaticweb.ontop.owlrefplatform.questdb;
  * #L%
  */
 
-import it.unibz.krdb.sql.DBMetadata;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -47,6 +45,7 @@ import org.semanaticweb.ontop.owlrefplatform.core.QuestConnection;
 import org.semanaticweb.ontop.owlrefplatform.core.QuestConstants;
 import org.semanaticweb.ontop.owlrefplatform.core.QuestPreferences;
 import org.semanaticweb.ontop.sesame.r2rml.R2RMLReader;
+import org.semanaticweb.ontop.sql.DBMetadata;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyIRIMapper;

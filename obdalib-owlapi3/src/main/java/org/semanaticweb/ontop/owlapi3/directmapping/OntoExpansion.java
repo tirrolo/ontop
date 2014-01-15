@@ -20,11 +20,10 @@ package org.semanaticweb.ontop.owlapi3.directmapping;
  * #L%
  */
 
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.DataDefinition;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-
-import it.unibz.krdb.sql.DBMetadata;
-import it.unibz.krdb.sql.DataDefinition;
 
 public class OntoExpansion {
 	

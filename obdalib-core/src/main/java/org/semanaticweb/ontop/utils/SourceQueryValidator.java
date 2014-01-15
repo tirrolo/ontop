@@ -20,8 +20,6 @@ package org.semanaticweb.ontop.utils;
  * #L%
  */
 
-import it.unibz.krdb.sql.JDBCConnectionManager;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,6 +27,7 @@ import java.sql.Statement;
 
 import org.semanaticweb.ontop.model.OBDADataSource;
 import org.semanaticweb.ontop.model.OBDAQuery;
+import org.semanaticweb.ontop.sql.JDBCConnectionManager;
 
 public class SourceQueryValidator {
 

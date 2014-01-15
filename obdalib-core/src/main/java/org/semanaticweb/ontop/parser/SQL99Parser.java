@@ -26,54 +26,46 @@ import java.util.Stack;
 import java.util.Queue;
 import java.util.LinkedList;
 import java.util.EmptyStackException;
-
 import java.lang.Number;
 
-import it.unibz.krdb.sql.DBMetadata;
-
-import it.unibz.krdb.sql.api.IValueExpression;
-import it.unibz.krdb.sql.api.IPredicate;
-
-import it.unibz.krdb.sql.api.QueryTree;
-import it.unibz.krdb.sql.api.Projection;
-import it.unibz.krdb.sql.api.Selection;
-import it.unibz.krdb.sql.api.Aggregation;
-
-import it.unibz.krdb.sql.api.Attribute;
-import it.unibz.krdb.sql.api.JoinOperator;
-import it.unibz.krdb.sql.api.SetUnion;
-import it.unibz.krdb.sql.api.Relation;
-import it.unibz.krdb.sql.api.RelationalAlgebra;
-
-import it.unibz.krdb.sql.api.TableExpression;
-import it.unibz.krdb.sql.api.AbstractValueExpression;
-import it.unibz.krdb.sql.api.NumericValueExpression;
-import it.unibz.krdb.sql.api.StringValueExpression;
-import it.unibz.krdb.sql.api.ReferenceValueExpression;
-import it.unibz.krdb.sql.api.CollectionValueExpression;
-import it.unibz.krdb.sql.api.BooleanValueExpression;
-
-import it.unibz.krdb.sql.api.TablePrimary;
-import it.unibz.krdb.sql.api.DerivedColumn;
-import it.unibz.krdb.sql.api.GroupingElement;
-import it.unibz.krdb.sql.api.ComparisonPredicate;
-import it.unibz.krdb.sql.api.NullPredicate;
-import it.unibz.krdb.sql.api.AndOperator;
-import it.unibz.krdb.sql.api.OrOperator;
-import it.unibz.krdb.sql.api.LeftParenthesis;
-import it.unibz.krdb.sql.api.RightParenthesis;
-import it.unibz.krdb.sql.api.ColumnReference;
-
-import it.unibz.krdb.sql.api.Literal;
-import it.unibz.krdb.sql.api.StringLiteral;
-import it.unibz.krdb.sql.api.BooleanLiteral;
-import it.unibz.krdb.sql.api.NumericLiteral;
-import it.unibz.krdb.sql.api.IntegerLiteral;
-import it.unibz.krdb.sql.api.DecimalLiteral;
-import it.unibz.krdb.sql.api.DateTimeLiteral;
-
-
 import org.antlr.runtime.*;
+import org.semanaticweb.ontop.sql.DBMetadata;
+import org.semanaticweb.ontop.sql.api.AbstractValueExpression;
+import org.semanaticweb.ontop.sql.api.Aggregation;
+import org.semanaticweb.ontop.sql.api.AndOperator;
+import org.semanaticweb.ontop.sql.api.Attribute;
+import org.semanaticweb.ontop.sql.api.BooleanLiteral;
+import org.semanaticweb.ontop.sql.api.BooleanValueExpression;
+import org.semanaticweb.ontop.sql.api.CollectionValueExpression;
+import org.semanaticweb.ontop.sql.api.ColumnReference;
+import org.semanaticweb.ontop.sql.api.ComparisonPredicate;
+import org.semanaticweb.ontop.sql.api.DateTimeLiteral;
+import org.semanaticweb.ontop.sql.api.DecimalLiteral;
+import org.semanaticweb.ontop.sql.api.DerivedColumn;
+import org.semanaticweb.ontop.sql.api.GroupingElement;
+import org.semanaticweb.ontop.sql.api.IPredicate;
+import org.semanaticweb.ontop.sql.api.IValueExpression;
+import org.semanaticweb.ontop.sql.api.IntegerLiteral;
+import org.semanaticweb.ontop.sql.api.JoinOperator;
+import org.semanaticweb.ontop.sql.api.LeftParenthesis;
+import org.semanaticweb.ontop.sql.api.Literal;
+import org.semanaticweb.ontop.sql.api.NullPredicate;
+import org.semanaticweb.ontop.sql.api.NumericLiteral;
+import org.semanaticweb.ontop.sql.api.NumericValueExpression;
+import org.semanaticweb.ontop.sql.api.OrOperator;
+import org.semanaticweb.ontop.sql.api.Projection;
+import org.semanaticweb.ontop.sql.api.QueryTree;
+import org.semanaticweb.ontop.sql.api.ReferenceValueExpression;
+import org.semanaticweb.ontop.sql.api.Relation;
+import org.semanaticweb.ontop.sql.api.RelationalAlgebra;
+import org.semanaticweb.ontop.sql.api.RightParenthesis;
+import org.semanaticweb.ontop.sql.api.Selection;
+import org.semanaticweb.ontop.sql.api.SetUnion;
+import org.semanaticweb.ontop.sql.api.StringLiteral;
+import org.semanaticweb.ontop.sql.api.StringValueExpression;
+import org.semanaticweb.ontop.sql.api.TableExpression;
+import org.semanaticweb.ontop.sql.api.TablePrimary;
+
 import java.util.Stack;
 import java.util.List;
 import java.util.ArrayList;
