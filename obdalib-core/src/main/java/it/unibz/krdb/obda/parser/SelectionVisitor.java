@@ -90,6 +90,7 @@ public class SelectionVisitor implements SelectVisitor, ExpressionVisitor, FromI
 	SelectionJSQL selection;
 	boolean notSupported=false;
 	boolean setSel=false;
+	boolean unquote=false; //remove quotes if present from the columns
 	
 	/**
 	 * Give the WHERE clause of the select statement
@@ -97,10 +98,12 @@ public class SelectionVisitor implements SelectVisitor, ExpressionVisitor, FromI
 	 * @return a SelectionJSQL
 	 * @throws JSQLParserException 
 	 */
-	public SelectionJSQL getSelection(Select select) throws JSQLParserException
+	public SelectionJSQL getSelection(Select select, boolean unquote) throws JSQLParserException
 	{
 		
 //		selections= new ArrayList<SelectionJSQL>(); // use when we want to consider the UNION
+		this.unquote=unquote;
+		
 		if (select.getWithItemsList() != null) {
 			for (WithItem withItem : select.getWithItemsList()) {
 				withItem.accept(this);
@@ -429,7 +432,7 @@ public class SelectionVisitor implements SelectVisitor, ExpressionVisitor, FromI
 	@Override
 	public void visit(Column tableColumn) {
 		Table table= tableColumn.getTable();
-		if(table.getName()!=null){
+		if(table.getName()!=null && unquote ){
 			
 			TableJSQL fixTable = new TableJSQL(table);
 			table.setAlias(fixTable.getAlias());
@@ -438,7 +441,7 @@ public class SelectionVisitor implements SelectVisitor, ExpressionVisitor, FromI
 		
 		}
 		String columnName= tableColumn.getColumnName();
-		if(VisitedQuery.pQuotes.matcher(columnName).matches())
+		if(unquote && VisitedQuery.pQuotes.matcher(columnName).matches())
 			tableColumn.setColumnName(columnName.substring(1, columnName.length()-1));
 		
 	}

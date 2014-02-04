@@ -85,7 +85,7 @@ public class MetaMappingVirtualABoxTest extends TestCase {
 		 * Initializing and H2 database with the stock exchange data
 		 */
 		// String driver = "org.h2.Driver";
-		String url = "jdbc:h2:mem:questjunitdb;DATABASE_TO_UPPER=FALSE";
+		String url = "jdbc:h2:mem:questjunitdb;DATABASE_TO_UPPER=FALSE;";
 		String username = "sa";
 		String password = "";
 

@@ -94,10 +94,8 @@ public class SQLQueryTranslator {
 	}
 
 	/**
-	 * Called from ParsedMapping. Returns the query tree, even if there were 
-	 * parsing errors. This is because the ParsedMapping only need the table names,
-	 * and it needs them, especially in the cases like "select *", that are treated like parsing
-	 * errors, but are treated by preprocessProjection
+	 * Called from ParsedMapping. Returns the query, even if there were 
+	 * parsing errors.
 	 * 
 	 * @param query The sql query to be parsed
 	 * @return A VisitedQuery (possible with null values)
@@ -125,7 +123,7 @@ public class SQLQueryTranslator {
 		VisitedQuery queryParser = null;
 		
 		try {
-			queryParser = new VisitedQuery(query);
+			queryParser = new VisitedQuery(query,generateViews);
 			
 		} catch (JSQLParserException e) 
 		{
@@ -190,7 +188,7 @@ public class SQLQueryTranslator {
 		
 		VisitedQuery queryParsed = null;
 		try {
-			queryParsed = new VisitedQuery(select);
+			queryParsed = new VisitedQuery(select,true);
 			
 		} catch (JSQLParserException e) {
 			if(e.getCause() instanceof ParseException)

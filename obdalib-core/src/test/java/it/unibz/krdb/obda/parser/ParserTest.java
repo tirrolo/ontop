@@ -653,7 +653,7 @@ public class ParserTest extends TestCase {
 		queryText = input;
 
 		try {
-			queryP = new VisitedQuery(input);
+			queryP = new VisitedQuery(input,true);
 		} catch (Exception e) {
 
 			return false;

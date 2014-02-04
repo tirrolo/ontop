@@ -41,6 +41,7 @@ public class VisitedQuery implements Serializable{
 
 	private String query; 
 	private Statement stm;
+	boolean unquote=false; //used to remove all quotes from the query
 	 
 	private Select select; //the parsed query
 	
@@ -65,10 +66,11 @@ public class VisitedQuery implements Serializable{
 	/**
 	 * Parse a query given as a String
 	 * @param queryString the SQL query to parse
+	 * @param unquote if true removes quotes from columns
 	 * @throws JSQLParserException 
 	 */
 	
-	public VisitedQuery(String queryString) throws JSQLParserException {
+	public VisitedQuery(String queryString, boolean unquote) throws JSQLParserException {
 		
 		/**
 		 * pattern used to remove quotes from the beginning and the end of columns
@@ -77,18 +79,23 @@ public class VisitedQuery implements Serializable{
 		
 		query = queryString;
 	 
-	
-			stm = CCJSqlParserUtil.parse(query);
+	    this.unquote=unquote;
+	    
+		stm = CCJSqlParserUtil.parse(query);
+		
 			if (stm instanceof Select) {
 				select = (Select)stm;
 				
-				//getting the values we also eliminate or handle the quotes
+				
+				//getting the values we also eliminate or handle the quotes if unquote is set to true
+				if(unquote){	
 				tableSet = getTableSet();
 				selection = getSelection();
 				projection = getProjection();
 				joins = getJoinCondition();
 				aliasMap = getAliasMap();
 				groupByClause =getGroupByClause();
+				}
 				
 			}
 						//catch exception about wrong inserted columns
@@ -98,12 +105,46 @@ public class VisitedQuery implements Serializable{
 		
 	}
 	
-	public VisitedQuery(Statement statement) throws JSQLParserException{
+	/**
+	 * The query is not parsed again
+	 * @param statement we pass already a parsed statement
+	 * @param unquote emove quotes if present
+	 * @throws JSQLParserException
+	 */
+	public VisitedQuery(Statement statement, boolean unquote) throws JSQLParserException{
 		
-		this(statement.toString());
+		pQuotes= Pattern.compile("[\"`\\[].*[\"`\\]]"); 
+		
+		query = statement.toString();
+	 
+		stm=statement;
+	    
+		this.unquote=unquote;
+	  
+		
+			if (stm instanceof Select) {
+				select = (Select)stm;
+				
+				
+				//getting the values we also eliminate or handle the quotes if unquote is set to true
+				if(unquote){	
+				tableSet = getTableSet();
+				selection = getSelection();
+				projection = getProjection();
+				joins = getJoinCondition();
+				aliasMap = getAliasMap();
+				groupByClause =getGroupByClause();
+				}
+				
+			}
+						//catch exception about wrong inserted columns
+			else 
+				throw new JSQLParserException("The inserted query is not a SELECT statement");
 		
 
 	}
+	
+	
 	
 
 	@Override
@@ -141,7 +182,7 @@ public class VisitedQuery implements Serializable{
 	public HashMap<String, String> getAliasMap() {
 		if(aliasMap== null){
 			AliasMapVisitor aliasV = new AliasMapVisitor();
-			aliasMap= aliasV.getAliasMap(select);
+			aliasMap= aliasV.getAliasMap(select, unquote);
 		}
 		return aliasMap;
 	}
@@ -153,7 +194,7 @@ public class VisitedQuery implements Serializable{
 	public ArrayList<Expression> getJoinCondition() throws JSQLParserException {
 		if(joins==null){
 			JoinConditionVisitor joinCV = new JoinConditionVisitor();
-			joins= joinCV.getJoinConditions(select);
+			joins= joinCV.getJoinConditions(select,unquote);
 		}
 		return joins;
 	}
@@ -165,7 +206,7 @@ public class VisitedQuery implements Serializable{
 	public SelectionJSQL getSelection() throws JSQLParserException {
 		if(selection==null){
 			SelectionVisitor sel= new SelectionVisitor();
-			selection= sel.getSelection(select);
+			selection= sel.getSelection(select,unquote);
 		}
 		return selection;
 	}
@@ -177,7 +218,7 @@ public class VisitedQuery implements Serializable{
 	public ProjectionJSQL getProjection() throws JSQLParserException {
 		if(projection==null){
 			ProjectionVisitor proj = new ProjectionVisitor();
-			projection= proj.getProjection(select);
+			projection= proj.getProjection(select,unquote);
 		}
 		return projection;
 		
@@ -224,7 +265,7 @@ public class VisitedQuery implements Serializable{
 	public AggregationJSQL getGroupByClause() {
 		if(groupByClause== null){
 			AggregationVisitor agg = new AggregationVisitor();
-			groupByClause = agg.getAggregation(select);
+			groupByClause = agg.getAggregation(select,unquote);
 		}
 		
 		return groupByClause;
