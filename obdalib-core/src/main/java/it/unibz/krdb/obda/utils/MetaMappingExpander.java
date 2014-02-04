@@ -136,6 +136,15 @@ public class MetaMappingExpander {
 				
 				// Construct the SQL query tree from the source query
 				VisitedQuery sourceQueryParsed = translator.constructParser(sourceQuery.toString());
+//				Select selectQuery;
+//				// Construct the SQL query tree from the source query
+////				VisitedQuery sourceQueryParsed = translator.constructParser(sourceQuery.toString());
+//				try {
+//					selectQuery = (Select) CCJSqlParserUtil.parse(sourceQuery.toString());
+//				} catch (JSQLParserException e3) {
+//					// TODO Auto-generated catch block
+//					e3.printStackTrace();
+//				}
 				
 				ProjectionJSQL distinctParamsProjection = new ProjectionJSQL();
 				
@@ -275,13 +284,11 @@ public class MetaMappingExpander {
 			
 			e1.printStackTrace();
 		}
-		SelectionJSQL newSelection;
+		SelectionJSQL newSelection = new SelectionJSQL();
 		
-		if(selection != null){
-			newSelection = selection;
-		} else {
-			newSelection = new SelectionJSQL();
-		}
+		if(selection != null)
+			newSelection.addCondition(selection.getRawConditions());
+	
 		
 			int j=0;
 			for(SelectExpressionItem column : columnsForTemplate){
@@ -356,7 +363,7 @@ public class MetaMappingExpander {
 //					expression= expression.substring(1, expression.length()-1);
 									
 				if ((column.getAlias()==null && expression.equals(var.getName())) ||
-						(column.getAlias()!=null && column.getAlias().equals(var.getName()))) {
+						(column.getAlias()!=null && column.getAlias().getName().equals(var.getName()))) {
 					columnsForTemplate.add(column);
 					found = true;
 					break;
