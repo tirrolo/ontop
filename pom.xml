@@ -172,7 +172,18 @@
 	</build>
 
 	<dependencyManagement>
-		<dependencies>
+	<dependencies>
+		
+		
+		<!--  TEIID -->
+		<dependency>
+  			<groupId>org.jboss.teiid</groupId>
+ 			<artifactId>teiid-parent</artifactId>
+  			<version>8.6.0.Final</version>
+  			<type>pom</type>
+		</dependency>
+		
+		
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
