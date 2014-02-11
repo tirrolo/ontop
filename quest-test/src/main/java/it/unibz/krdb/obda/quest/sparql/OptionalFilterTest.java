@@ -160,7 +160,7 @@ public class OptionalFilterTest extends TestCase {
 		QuestOWLConnection conn = reasoner.getConnection();
 		QuestOWLStatement st = conn.createStatement();
 
-		String query = "PREFIX : <http://it.unibz.krdb/obda/test/simple#> SELECT * WHERE{ :ID1 :REFERP ?v . OPTIONAL {  :ID3 :REFERP ?w . OPTIONAL { :ID2 :REFERP ?v }  }}";
+		String query = "PREFIX : <http://it.unibz.krdb/obda/test/simple#> SELECT * WHERE{ :ID1 :REFERP ?v . OPTIONAL {  :ID3 :REFERQ ?w . OPTIONAL { :ID2 :REFERP ?v }  }}";
 		StringBuilder bf = new StringBuilder(query);
 		try {
 			
@@ -168,10 +168,10 @@ public class OptionalFilterTest extends TestCase {
 			QuestOWLResultSet rs = st.executeTuple(query);
 			assertTrue(rs.nextRow());
 			OWLLiteral ind1 = rs.getOWLLiteral("v");
-//			OWLLiteral ind2 = rs.getOWLLiteral("w");
+			OWLLiteral ind2 = rs.getOWLLiteral("w");
 			
 			assertEquals("\"1\"^^xsd:integer", ind1.toString());
-//			assertEquals("\"3\"^^xsd:integer", ind2.toString());
+			assertEquals("\"3\"^^xsd:integer", ind2.toString());
 			
 			
 			

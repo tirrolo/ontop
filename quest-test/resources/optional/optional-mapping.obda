@@ -12,11 +12,11 @@ driverClass	org.h2.Driver
 [MappingDeclaration] @collection [[
 mappingId	MAPPING-ID1
 target		:ID1 a :NUMBER ; :ID1 {ID}^^xsd:integer ; :REFERP {REFERP}^^xsd:integer ; :TYPE_LETTER {TYPE_LETTER} . 
-source		SELECT ID,REFERP, REFERQ, TYPE_LETTER FROM NUMBER WHERE REFERP='1'
+source		SELECT ID,REFERP, TYPE_LETTER FROM NUMBER WHERE REFERP='1'
 
 mappingId	MAPPING-ID2
 target		:ID2 a :NUMBER ; :ID2 {ID}^^xsd:integer ; :REFERP {REFERP}^^xsd:integer ; :TYPE_LETTER {TYPE_LETTER} . 
-source		SELECT ID,REFERP,REFERQ, TYPE_LETTER FROM NUMBER WHERE REFERP='2'
+source		SELECT ID,REFERP, TYPE_LETTER FROM NUMBER WHERE REFERP='2'
 
 mappingId	MAPPING-ID3
 target		:ID3 a :NUMBER ; :ID3 {ID}^^xsd:integer ; :REFERQ {REFERQ}^^xsd:integer ; :TYPE_LETTER {TYPE_LETTER} . 
