@@ -71,10 +71,10 @@ public class OptionalFilterTest extends TestCase {
 	private OBDAModel obdaModel;
 	private OWLOntology ontology;
 
-	final String owlfile = "resources/optional/optional-mapping.owl";
-//	final String owlfile = "resources/optional/optional-modified.owl";
-	final String obdafile = "resources/optional/optional-mapping.obda";
-//	final String obdafile = "resources/optional/optional-modified.obda";
+//	final String owlfile = "resources/optional/optional-mapping.owl";
+	final String owlfile = "resources/optional/optional-loop.owl";
+//	final String obdafile = "resources/optional/optional-mapping.obda";
+	final String obdafile = "resources/optional/optional-loop.obda";
 
 	@Override
 	public void setUp() throws Exception {
