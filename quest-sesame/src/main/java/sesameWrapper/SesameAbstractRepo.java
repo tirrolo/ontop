@@ -46,7 +46,7 @@ public abstract class SesameAbstractRepo implements
 		try {
 			this.repoConnection = new RepositoryConnection(this,
 					getQuestConnection());
-			System.out.println("New REPOSITORY Connection...");
+			//System.out.println("New REPOSITORY Connection...");
 		} catch (OBDAException e) {
 			System.out.println("Error creating repo connecion!");
 			e.printStackTrace();

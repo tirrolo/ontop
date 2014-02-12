@@ -1322,7 +1322,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 	public void releaseSQLPoolConnection(Connection co) {
 		try {
 			co.close();
-			System.out.println("Pool Connection CLOSED!");
+			//System.out.println("Pool Connection CLOSED!");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1332,7 +1332,7 @@ public class Quest implements Serializable, RepositoryChangedListener {
 		Connection conn = null;
 		try {
 			conn = tomcatPool.getConnection();
-			System.out.println("New Pool Connection...");
+			//System.out.println("New Pool Connection...");
 		} catch (SQLException e) {
 			throw new OBDAException(e);
 		}
