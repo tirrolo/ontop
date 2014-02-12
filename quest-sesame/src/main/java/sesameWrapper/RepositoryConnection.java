@@ -481,6 +481,7 @@ throw new RuntimeException(e);
 		isOpen = false;
 			try {
 				questConn.close();
+				System.out.println("REPOSITORY Connection... CLOSED!");
 			} catch (Exception e) {
 				throw new RepositoryException(e);
 			}
