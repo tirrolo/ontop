@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * We are going to create an H2 DB, the .sql file is fixed. We will map directly
  * there and then query on top.
  */
-public class OptionalFilterTest extends TestCase {
+public class OptionalFilter2Test extends TestCase {
 
 	// TODO We need to extend this test to import the contents of the mappings
 	// into OWL and repeat everything taking form OWL
@@ -71,10 +71,8 @@ public class OptionalFilterTest extends TestCase {
 	private OBDAModel obdaModel;
 	private OWLOntology ontology;
 
-	final String owlfile = "resources/optional/optional-mapping.owl";
-//	final String owlfile = "resources/optional/optional-modified.owl";
-	final String obdafile = "resources/optional/optional-mapping.obda";
-//	final String obdafile = "resources/optional/optional-modified.obda";
+	final String owlfile = "resources/optional/optional2.owl";
+	final String obdafile = "resources/optional/optional2.obda";
 
 	@Override
 	public void setUp() throws Exception {
@@ -161,7 +159,7 @@ public class OptionalFilterTest extends TestCase {
 		QuestOWLConnection conn = reasoner.getConnection();
 		QuestOWLStatement st = conn.createStatement();
 
-		String query = "PREFIX : <http://it.unibz.krdb/obda/test/simple#> SELECT * WHERE{ :ID1  :REFERP ?v . OPTIONAL {  :ID3  :REFERQ ?w . OPTIONAL { :ID2  :REFERP ?v }  }}";
+		String query = "PREFIX : <http://it.unibz.krdb/obda/test/simple#> SELECT * WHERE{ :ID1 :REFERP ?v . OPTIONAL {  :ID3 :REFERQ ?w . OPTIONAL { :ID2 :REFERP ?v }  }}";
 		StringBuilder bf = new StringBuilder(query);
 		try {
 			
