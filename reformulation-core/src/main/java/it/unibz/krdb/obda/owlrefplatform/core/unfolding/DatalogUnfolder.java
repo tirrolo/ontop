@@ -1571,7 +1571,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		List<Function> newbody = new LinkedList<Function>();
 		HashSet<Variable> variablesArg1 = new LinkedHashSet<Variable>();
 		HashSet<Variable> variablesArg2 = new LinkedHashSet<Variable>();
-
+		boolean containsVar=false;
 		// Here we build the new LJ body where we remove the 2nd
 		// data atom
 		for (Function atom : innerAtoms) {
@@ -1584,7 +1584,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 					newbody.add(atom);
 				} else if (ArgumentAtoms != 2) {
 					newbody.add(atom);
-				} else {
+				} else if (ArgumentAtoms == 2){
 					// Here we keep the variables of the second LJ
 					// data argument
 					variablesArg2 = (HashSet<Variable>) atom.getReferencedVariables();
@@ -1598,8 +1598,15 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 					} // end for removing variables
 					continue;
 				}
-			} else {
-				newbody.add(atom);
+				//TODO: is that correct?? what if there is a complex expression?????
+			} else if (atom.isBooleanFunction()&& ArgumentAtoms >=2){
+				for (Variable var: variablesArg2){
+					containsVar = atom.getReferencedVariables().contains(var);
+					if (containsVar){
+							innerAtoms.remove(atom);
+							break;
+						}
+				}
 			}
 
 		}// end for rule body
@@ -1608,9 +1615,8 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		replaceInnerLJ(freshRule, newbody, termidx1);
 		HashMap<Variable, Term> unifier = new HashMap<Variable, Term>();
 
-		OBDAVocabulary myNull = new OBDAVocabulary();
 		for (Variable var : variablesArg2) {
-			unifier.put(var, myNull.NULL);
+			unifier.put(var, OBDAVocabulary.NULL);
 		}
 		// Now I need to add the null to the variables of the second
 		// LJ data argument
