@@ -52,6 +52,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.swing.event.ListSelectionEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1568,7 +1570,13 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		List<Function> innerAtoms = (List<Function>) getNestedList(termidx1, freshRule);
 
 		int ArgumentAtoms = 0;
-		List<Function> newbody = new LinkedList<Function>();
+		
+		//List<Function> newbody = new LinkedList<Function>();
+		
+		List<Function> newInnerTerms = new ArrayList<Function>();
+		//newbody.add(body);
+		
+		
 		HashSet<Variable> variablesArg1 = new LinkedHashSet<Variable>();
 		HashSet<Variable> variablesArg2 = new LinkedHashSet<Variable>();
 		boolean containsVar=false;
@@ -1581,9 +1589,9 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 				// the variables
 				if (ArgumentAtoms == 1) {
 					variablesArg1 = (HashSet<Variable>) atom.getReferencedVariables();
-					newbody.add(atom);
+					newInnerTerms.add(atom);
 				} else if (ArgumentAtoms != 2) {
-					newbody.add(atom);
+					newInnerTerms.add(atom);
 				} else if (ArgumentAtoms == 2){
 					// Here we keep the variables of the second LJ
 					// data argument
@@ -1612,7 +1620,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 		}// end for rule body
 
 		//freshRule.updateBody(newbody);
-		replaceInnerLJ(freshRule, newbody, termidx1);
+		replaceInnerLJ(freshRule, newInnerTerms, termidx1);
 		HashMap<Variable, Term> unifier = new HashMap<Variable, Term>();
 
 		for (Variable var : variablesArg2) {
@@ -1633,6 +1641,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 			 */
 			Term nestedTerm = null;
 			for (int y = 0; y < termidx.size() - 1; y++) {
+			//for (int y = 0; y < termidx.size(); y++) {
 				int i = termidx.get(y);
 				if (nestedTerm == null)
 					nestedTerm = (Function) rule.getBody().get(i);
@@ -1648,8 +1657,11 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 				rule.updateBody(replacementTerms);
 				return;
 			}
-			List <Term> tempTerms = parentFunction.getTerms();
-			tempTerms.remove(0);
+			List <Term> tempTerms = new ArrayList<>(parentFunction.getTerms());
+			//tempTerms.remove(0);
+			
+			tempTerms.remove(tempTerms.indexOf(nestedTerm));
+			
 			List <Term> newTerms = new LinkedList<Term>();
 			newTerms.addAll(replacementTerms);
 			newTerms.addAll(tempTerms);
@@ -1850,7 +1862,7 @@ public class DatalogUnfolder implements UnfoldingMechanism {
 	 * second atom in the body of the rule.
 	 * 
 	 * <p>
-	 * Example two. IF the rule is q(x):-A(x), Join(R(x,y), Join(P(s),R(x,y) and
+	 * Example two. IF the rule is q(x) :- A(x), Join(R(x,y), Join(P(s),R(x,y)) and
 	 * termidx = <1,2>, then this method returns the the terms of the second
 	 * join atom, ie.,
 	 * <P(s),R(x,y)>
