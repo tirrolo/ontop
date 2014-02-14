@@ -1,0 +1,26 @@
+[PrefixDeclaration]
+:		http://it.unibz.krdb/obda/test/company#
+
+[SourceDeclaration]
+sourceUri	optional
+connectionUrl	jdbc:h2:mem:questjunitdb
+username	fish
+password	fish
+driverClass	org.h2.Driver
+
+[MappingDeclaration] @collection [[
+
+mappingId	MAPPING-companyName
+target		:{NAME} a :Company ; :department :{DEPID} . 
+source		SELECT NAME, DEPID FROM COMPANY
+
+mappingId	MAPID-151400736f854d41996fcb4988fe36a2
+target		:{ID} a :Department ; :depName :{NAME} ; :companyName :{C_NAME} .  
+source		Select ID, NAME, C_NAME From DEPARTMENT
+
+mappingId	MAPID-Employee
+target		:{NAME} a :Employee ; :depId :{DEPID} .  
+source		SELECT NAME, DEPID FROM EMPLOYEE
+
+]]
+
