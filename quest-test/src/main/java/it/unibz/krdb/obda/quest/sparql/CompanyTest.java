@@ -165,39 +165,45 @@ public class CompanyTest extends TestCase {
 		String queryEx =  "PREFIX : <http://it.unibz.krdb/obda/test/company#> SELECT * WHERE"
 				+ "{  ?v ?w  ?x } ";
 		String query = "PREFIX : <http://it.unibz.krdb/obda/test/company#> SELECT ?y?z WHERE"
-				+ "{ ?c a :Company . Filter (?c=:A) OPTIONAL  {  ?x :companyName ?c .  ?x :depName ?y .  FILTER (?y = :HR)} OPTIONAL{?z :depId ?x }}";
+				+ "{ ?c a :Company . Filter (?c=:A) OPTIONAL  {  ?x :companyName ?c .  ?x :depName ?y .  FILTER (?y = :HR) OPTIONAL{?z :depId ?x }}}";
 		
+		
+			
+		
+		
+		//String query = "PREFIX : <http://it.unibz.krdb/obda/test/company#> SELECT ?y?z WHERE"
+//				+ "{   ?x :companyName :A .  OPTIONAL  {  :A :hasStatus :G .  ?x :depName :HR .  OPTIONAL {?z :depId ?x }}}";
 		
 		try {
-			
-			System.out.println(queryEx);
-			
-			QuestOWLResultSet rs = st.executeTuple(queryEx);
-			
-			while (rs.nextRow()){
-				System.out.println(rs.getOWLObject(1));
-				System.out.println(rs.getOWLObject(2));
-				System.out.println(rs.getOWLObject(3));
-
-				}
+//			
+//			System.out.println(queryEx);
+//			
+//			QuestOWLResultSet rs = st.executeTuple(queryEx);
+//			
+//			while (rs.nextRow()){
+//				System.out.println(rs.getOWLObject(1));
+//				System.out.println(rs.getOWLObject(2));
+//				System.out.println(rs.getOWLObject(3));
+//
+//				}
 		
 			System.out.println(query);
 			
 			QuestOWLResultSet rs2 = st.executeTuple(query);
-			while (rs2.nextRow()){
-				System.out.println(rs2.getOWLObject(1));
-				System.out.println(rs2.getOWLObject(2));
-				System.out.println(rs2.getOWLObject(3));
-
-				}
-//			assertTrue(rs2.nextRow());
-//			OWLObject ind1 = rs2.getOWLNamedIndividual("y");
-//			OWLObject ind2 = rs2.getOWLNamedIndividual("z");
-//			
-//			assertEquals("<http://it.unibz.krdb/obda/test/company#HR>", ind1.toString());
-//			assertEquals("<http://it.unibz.krdb/obda/test/company#mark>", ind2.toString());
-//			
-//			assertFalse(rs2.nextRow());
+//			while (rs2.nextRow()){
+//				System.out.println(rs2.getOWLObject(1));
+//				System.out.println(rs2.getOWLObject(2));
+//				System.out.println(rs2.getOWLObject(3));
+//
+//				}
+			assertTrue(rs2.nextRow());
+			OWLObject ind1 = rs2.getOWLNamedIndividual("y");
+			OWLObject ind2 = rs2.getOWLNamedIndividual("z");
+			
+			assertEquals("<http://it.unibz.krdb/obda/test/company#HR>", ind1.toString());
+			assertEquals("<http://it.unibz.krdb/obda/test/company#mark>", ind2.toString());
+			
+			assertFalse(rs2.nextRow());
 
 		} catch (Exception e) {
 			throw e;
@@ -222,16 +228,16 @@ public class CompanyTest extends TestCase {
 		runTests(p);
 	}
 	
-	public void testClassicEqSig() throws Exception {
-
-		QuestPreferences p = new QuestPreferences();
-		p.setCurrentValueOf(QuestPreferences.ABOX_MODE, QuestConstants.CLASSIC);
-		p.setCurrentValueOf(QuestPreferences.OPTIMIZE_EQUIVALENCES, "true");
-		p.setCurrentValueOf(QuestPreferences.OPTIMIZE_TBOX_SIGMA, "true");
-		p.setCurrentValueOf(QuestPreferences.OBTAIN_FROM_MAPPINGS, "true");
-
-		runTests(p);
-	}
+//	public void testClassicEqSig() throws Exception {
+//
+//		QuestPreferences p = new QuestPreferences();
+//		p.setCurrentValueOf(QuestPreferences.ABOX_MODE, QuestConstants.CLASSIC);
+//		p.setCurrentValueOf(QuestPreferences.OPTIMIZE_EQUIVALENCES, "true");
+//		p.setCurrentValueOf(QuestPreferences.OPTIMIZE_TBOX_SIGMA, "true");
+//		p.setCurrentValueOf(QuestPreferences.OBTAIN_FROM_MAPPINGS, "true");
+//
+//		runTests(p);
+//	}
 
 
 }
