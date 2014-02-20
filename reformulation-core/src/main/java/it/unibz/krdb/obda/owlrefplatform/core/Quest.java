@@ -1299,10 +1299,10 @@ public class Quest implements Serializable, RepositoryChangedListener {
 		poolProperties.setMaxIdle(maxPoolSize);
 		poolProperties.setInitialSize(startPoolSize);
 		poolProperties.setMaxWait(10000);
-		poolProperties.setRemoveAbandonedTimeout(abandonedTimeout);
-		poolProperties.setMinEvictableIdleTimeMillis(30000);
-		poolProperties.setLogAbandoned(removeAbandoned);
-		poolProperties.setRemoveAbandoned(removeAbandoned);
+		poolProperties.setRemoveAbandonedTimeout(10);
+		poolProperties.setMinEvictableIdleTimeMillis(10000);
+		poolProperties.setLogAbandoned(true);
+		poolProperties.setRemoveAbandoned(true);
 		poolProperties.setJdbcInterceptors("org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;"
 				+ "org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer");
 		tomcatPool = new DataSource();
