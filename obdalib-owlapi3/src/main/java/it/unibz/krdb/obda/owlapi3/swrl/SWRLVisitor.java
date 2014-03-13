@@ -35,295 +35,268 @@ import org.semanticweb.owlapi.model.SWRLVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 /**
- * SWRLVisitor class visits the SWRL rules in the ontology 
- * to obtain the datalog. 
- * Translate seperately head and body.
+ * SWRLVisitor class visits the SWRL rules in the ontology to obtain the
+ * datalog. Translate separately head and body.
  * 
- * Do not support sameAs(x,y)	S(x) = S(y)
- * differentFrom(x,y)	S(x) ≠ S(y)
- * builtIn(r,z1,...,zn)
- *
+ * Unsupported atoms:
+ * <ul>
+ * <li>
+ * sameAs(x,y) S(x) = S(y)</li>
+ * <li>
+ * differentFrom(x,y) S(x) ≠ S(y)</li>
+ * <li>
+ * builtIn(r,z1,...,zn)</li>
+ * </ul>
  */
 public class SWRLVisitor implements SWRLObjectVisitor {
 
-	
-	//Datalog elements
+	// Datalog elements
 	OBDADataFactory fac;
 	Function head;
 	List<Function> body;
 	Function function;
 	List<Term> terms;
 	Predicate predicate;
-	Set<CQIE> facts;
-	
-	//to throw an exception when there are some swrl structure that cannot be translated in Datalog
-	boolean notSupported;
-	List<String> errors= new LinkedList<String> ();
-	private static Logger log = LoggerFactory.getLogger(SWRLVisitor.class); 
-	
-	public SWRLVisitor(){
-		
-		fac=  OBDADataFactoryImpl.getInstance();
-		facts = new HashSet<CQIE>();
-		
+	Set<CQIE> rules;
+
+	List<String> errors = new LinkedList<String>();
+	private static Logger log = LoggerFactory.getLogger(SWRLVisitor.class);
+
+	public SWRLVisitor() {
+
+		fac = OBDADataFactoryImpl.getInstance();
+		rules = new HashSet<CQIE>();
+
 	}
-	
+
 	/**
-	 * Translate the swrl_rules contained in the ontology
-	 * Return a datalog program containing the supported datalog facts
-	 * @param onto an OWLOntology
+	 * Translate the swrl_rules contained in the ontology Return a datalog
+	 * program containing the supported datalog facts
+	 * 
+	 * @param onto
+	 *            an OWLOntology
 	 * @return DatalogProgram
 	 */
 	public DatalogProgram createDatalog(OWLOntology onto) {
-		
 
-		for (OWLAxiom axiom: onto.getAxioms()){
-			
-			if(axiom.getAxiomType().equals(AxiomType.SWRL_RULE)){
-			
-			SWRLRule rule =(SWRLRule) axiom;
-			rule.accept(this);
-			
-			if (notSupported){
-				log.warn("Not Supported Translation of: "+ errors);
-				errors.clear();
+		for (OWLAxiom axiom : onto.getAxioms()) {
+
+			if (axiom.getAxiomType().equals(AxiomType.SWRL_RULE)) {
+
+				SWRLRule rule = (SWRLRule) axiom;
+				rule.accept(this);
+
+				if (!errors.isEmpty()) {
+					log.warn("Ignorning rules with unsupported features: " + errors);
+					errors.clear();
+				}
+
 			}
-			
 		}
-		}
-		
-		
-		return fac.getDatalogProgram(facts);
-		
+
+		return fac.getDatalogProgram(rules);
+
 	}
-	
+
 	/**
-	 * Translate the swrl_rule
-	 * Return a datalog program containing the supported datalog facts
-	 * @param onto an OWLOntology
+	 * Translate the swrl_rule Return a datalog program containing the supported
+	 * datalog facts
+	 * 
+	 * @param onto
+	 *            an OWLOntology
 	 * @return DatalogProgram
 	 */
-	public DatalogProgram createDatalog(SWRLRule rule){
-		
+	public DatalogProgram createDatalog(SWRLRule rule) {
 
 		rule.accept(this);
-	
-		if (notSupported){
-			log.warn("Not Supported Translation of: "+ errors);
+
+		if (!errors.isEmpty()) {
+			log.warn("Not Supported Translation of: " + errors);
 			errors.clear();
 		}
-		
-		return fac.getDatalogProgram(facts);
-		
+
+		return fac.getDatalogProgram(rules);
+
 	}
-	
+
 	private void getHead(SWRLAtom atoms) {
-		
+
 		atoms.accept(this);
-		head=function;
-		
-		
+		head = function;
+
 	}
-	
-	private void getBody(Set<SWRLAtom> atoms){
-		
-		//do not execute again if the body has already been assigned (multiple facts in the head)
-		
-		if(body.isEmpty()){ 
-			
-			for(SWRLAtom a : atoms){
+
+	private void getBody(Set<SWRLAtom> atoms) {
+
+		// do not execute again if the body has already been assigned (multiple
+		// facts in the head)
+
+		if (body.isEmpty()) {
+
+			for (SWRLAtom a : atoms) {
 				a.accept(this);
-				if(function!=null){
+				if (function != null) {
 					body.add(function);
-					function=null;
+					function = null;
 				}
 			}
 		}
-		
+
 	}
-	
+
 	@Override
 	public void visit(SWRLRule node) {
-		
-		head=null;
-		body= new LinkedList<Function>();
-		
-		for(SWRLAtom a: node.getHead())
-		{
-			
-			//transform SWRL head in Function
+
+		head = null;
+		body = new LinkedList<Function>();
+
+		for (SWRLAtom a : node.getHead()) {
+
+			// transform SWRL head in Function
 			getHead(a);
-			
-			//transform SWRL body in list Function
+
+			// transform SWRL body in list Function
 			getBody(node.getBody());
-			
-			
-			facts.add(fac.getCQIE(head, body));
-			}
-		
+
+			rules.add(fac.getCQIE(head, body));
+		}
+
 	}
 
 	@Override
 	public void visit(SWRLClassAtom node) {
-		
-		//we consider only namedOwlClass (we do not support for example ObjectMinCardinality)
-		if(!node.getPredicate().isAnonymous()){
-			
-		//get predicate for datalog
-		Predicate predicate=fac.getClassPredicate(node.getPredicate().asOWLClass().toStringID());
-		
-		terms = new ArrayList<Term>();
-		//get terms for datalog
-		for(SWRLArgument argument: node.getAllArguments()){
-			argument.accept(this);
-			
-		}
-		
-		function = fac.getFunction(predicate, terms);
-		}
-		else{
-			notSupported=false;
-			errors.add(node.toString());
+
+		// we consider only namedOwlClass (we do not support for example
+		// ObjectMinCardinality)
+		if (!node.getPredicate().isAnonymous()) {
+
+			// get predicate for datalog
+			Predicate predicate = fac.getClassPredicate(node.getPredicate().asOWLClass().toStringID());
+
+			terms = new ArrayList<Term>();
+			// get terms for datalog
+			for (SWRLArgument argument : node.getAllArguments()) {
+				argument.accept(this);
+
 			}
-		
+
+			function = fac.getFunction(predicate, terms);
+		}
+		else {
+			errors.add(node.toString());
+		}
+
 	}
 
-	
-	//Data range is not supported
+	// Data range is not supported
 	@Override
 	public void visit(SWRLDataRangeAtom node) {
-		notSupported=true;
 		errors.add(node.toString());
-	
-
 	}
 
 	@Override
 	public void visit(SWRLObjectPropertyAtom node) {
-		
-		//we consider only namedOwlObjectProperty example not an object property expression such as inv(p)
-		if(!node.getPredicate().isAnonymous()){
-			
-			predicate=fac.getObjectPropertyPredicate(node.getPredicate().asOWLObjectProperty().toStringID());
-			
+
+		// we consider only namedOwlObjectProperty example not an object
+		// property expression such as inv(p)
+		if (!node.getPredicate().isAnonymous()) {
+
+			predicate = fac.getObjectPropertyPredicate(node.getPredicate().asOWLObjectProperty().toStringID());
+
 			terms = new ArrayList<Term>();
-			//get terms for datalog
-			for(SWRLArgument argument: node.getAllArguments()){
+			// get terms for datalog
+			for (SWRLArgument argument : node.getAllArguments()) {
 				argument.accept(this);
-	
 			}
 			function = fac.getFunction(predicate, terms);
-		}
-		else{
-			notSupported=false;
+		} else {
 			errors.add(node.toString());
-			}
-		
+		}
+
 	}
 
 	@Override
 	public void visit(SWRLDataPropertyAtom node) {
-		
-		//we consider only namedOwlDataProperty 
-		if(!node.getPredicate().isAnonymous()){
-		
-			//get predicate for datalog
-			 predicate=fac.getDataPropertyPredicate(node.getPredicate().asOWLDataProperty().toStringID());
-					
+
+		// we consider only named OwlDataProperty
+		if (!node.getPredicate().isAnonymous()) {
+
+			// get predicate for datalog
+			predicate = fac.getDataPropertyPredicate(node.getPredicate().asOWLDataProperty().toStringID());
+
 			terms = new ArrayList<Term>();
-					//get terms for datalog
-			for(SWRLArgument argument: node.getAllArguments()){
-						argument.accept(this);
-			
-					}
-			function = fac.getFunction(predicate, terms);
-		}
-		else{
-			notSupported=false;
-			errors.add(node.toString());
+			// get terms for datalog
+			for (SWRLArgument argument : node.getAllArguments()) {
+				argument.accept(this);
+
 			}
-		
+			function = fac.getFunction(predicate, terms);
+		} else {
+			errors.add(node.toString());
+		}
+
 	}
 
-//	we do not support swrl built-in atom and personalized one
+	// we do not support swrl built-in atom and personalized one
 	@Override
 	public void visit(SWRLBuiltInAtom node) {
-		
-		notSupported=true;
 		errors.add(node.toString());
-		
-		
 	}
 
+	/**
+	 * 
+	 * converts the SWRL variables. NOTE that we only consider the fragment of
+	 * the IRI of the variables
+	 * 
+	 */
 	@Override
 	public void visit(SWRLVariable node) {
-		
 		terms.add(fac.getVariable(node.getIRI().getFragment()));
-		
 	}
 
 	@Override
 	public void visit(SWRLIndividualArgument node) {
-	
-		//get the id without the quotes <>
+		// get the id without the quotes <>
 		terms.add(fac.getConstantLiteral(node.getIndividual().toStringID(), Predicate.COL_TYPE.STRING));
 	}
 
 	@Override
 	public void visit(SWRLLiteralArgument node) {
 
-		OWLLiteral literal=node.getLiteral();
-		
-	if (literal.isBoolean()) {
-		if (literal.parseBoolean()){
-			terms.add(fac.getConstantTrue());
-		}
-		else
-			terms.add(fac.getConstantFalse());
-	}
-	else 
-		if(literal.hasLang()){
+		OWLLiteral literal = node.getLiteral();
+
+		if (literal.isBoolean()) {
+			if (literal.parseBoolean()) {
+				terms.add(fac.getConstantTrue());
+			} else {
+				terms.add(fac.getConstantFalse());
+			}
+		} else if (literal.hasLang()) {
 			terms.add(fac.getConstantLiteral(literal.getLiteral(), literal.getLang()));
+		} else if (literal.isDouble()) {
+			terms.add(fac.getConstantLiteral(literal.getLiteral(), Predicate.COL_TYPE.DOUBLE));
+		} else if (literal.isFloat()) {
+			terms.add(fac.getConstantLiteral(literal.getLiteral(), Predicate.COL_TYPE.DECIMAL));
+		} else if (literal.isInteger()) {
+			terms.add(fac.getConstantLiteral(literal.getLiteral(), Predicate.COL_TYPE.INTEGER));
+		} else {
+			fac.getConstantLiteral(literal.getLiteral());
 		}
-		else
-			
-			if(literal.isDouble())
-				terms.add(fac.getConstantLiteral(literal.getLiteral(), Predicate.COL_TYPE.DOUBLE));
-			else
-				if(literal.isFloat())
-					terms.add(fac.getConstantLiteral(literal.getLiteral(), Predicate.COL_TYPE.DECIMAL));
-				else
-					if(literal.isInteger())
-						terms.add(fac.getConstantLiteral(literal.getLiteral(), Predicate.COL_TYPE.INTEGER));
-	
-			 else {
-				fac.getConstantLiteral(literal.getLiteral());
-			 		}
-	
-	
+
 	}
 
-//	we do not support swrl same as
+	// we do not support swrl same as
 	@Override
 	public void visit(SWRLSameIndividualAtom node) {
-		
-		notSupported=true;
 		errors.add(node.toString());
-		
 	}
 
-//	we do not support swrl different from
+	// we do not support swrl different from
 	@Override
 	public void visit(SWRLDifferentIndividualsAtom node) {
-		notSupported=true;
 		errors.add(node.toString());
-		
+
 	}
-
-
-	
 
 }

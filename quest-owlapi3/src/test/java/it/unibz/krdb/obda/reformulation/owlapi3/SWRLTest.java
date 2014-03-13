@@ -2,7 +2,7 @@ package it.unibz.krdb.obda.reformulation.owlapi3;
 
 import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.obda.quest.dag.S_NewGraphTest;
-import it.unibz.krdb.obda.owlapi3.swrl.SWRLAPITranslator;
+import it.unibz.krdb.obda.owlapi3.swrl.SWRLToDatalogTranslator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,141 +28,122 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SWRLTest extends TestCase {
-	
-	private OWLOntology owlontology;
+
+	private OWLOntology owlOntology;
 	OWLDataFactory fac;
 	Logger log = LoggerFactory.getLogger(SWRLTest.class);
-	ArrayList<String> input= new ArrayList<String>();
-	
-	public void setUp() {
-			
-		input.add("src/test/resources/test/swrl/exampleSWRL.owl");
-		input.add("src/test/resources/test/swrl/complex_example.owl");
-		input.add("src/test/resources/test/swrl/propertyExample.owl");
+	ArrayList<String> inputs = new ArrayList<String>();
 
-		
+	public void setUp() {
+
+		inputs.add("src/test/resources/test/swrl/exampleSWRL.owl");
+		inputs.add("src/test/resources/test/swrl/complex_example.owl");
+		inputs.add("src/test/resources/test/swrl/propertyExample.owl");
+
 	}
-	
-	
+
 	@Test
 	public void testInformation() throws OWLOntologyCreationException {
-		
-		for (int i=0; i<input.size(); i++){
+
+		for (int i = 0; i < inputs.size(); i++) {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-			owlontology = man.loadOntologyFromOntologyDocument(new File(input.get(i)));	
+			owlOntology = man.loadOntologyFromOntologyDocument(new File(inputs.get(i)));
 			fac = man.getOWLDataFactory();
-			
-		Set<OWLEntity> entities = owlontology.getSignature();
-		Iterator<OWLEntity> eit = entities.iterator();
 
-		while (eit.hasNext()) {
-			OWLEntity entity = eit.next();
-			log.info(entity.toString());
-		}
-		
-		
-		//get the rules
-		for (OWLAxiom a: owlontology.getAxioms()){
-			
-			if(a.getAxiomType().equals(AxiomType.SWRL_RULE)){
-				
-				System.out.println(a);
-				SWRLRule rule =(SWRLRule) a;
-				
-				Set<SWRLAtom> body =rule.getBody();
+			Set<OWLEntity> entities = owlOntology.getSignature();
+			Iterator<OWLEntity> eit = entities.iterator();
 
-				Set<SWRLAtom> head =rule.getHead();
-				Set<SWRLVariable> variables= rule.getVariables();
-				
-				log.info("head: "+head);
-				log.info("body: "+body);
-				for (SWRLAtom one:  body){
-					log.info("predicate: "+one.getPredicate());
-					log.info("arguments: "+one.getAllArguments());
-				}
-				log.info("variables: "+ variables);
-				
-				
+			while (eit.hasNext()) {
+				OWLEntity entity = eit.next();
+				log.info(entity.toString());
 			}
+
+			// get the rules
+			for (OWLAxiom a : owlOntology.getAxioms()) {
+
+				if (a.getAxiomType().equals(AxiomType.SWRL_RULE)) {
+
+					System.out.println(a);
+					SWRLRule rule = (SWRLRule) a;
+
+					Set<SWRLAtom> body = rule.getBody();
+
+					Set<SWRLAtom> head = rule.getHead();
+					Set<SWRLVariable> variables = rule.getVariables();
+
+					log.info("head: " + head);
+					log.info("body: " + body);
+					for (SWRLAtom one : body) {
+						log.info("predicate: " + one.getPredicate());
+						log.info("arguments: " + one.getAllArguments());
+					}
+					log.info("variables: " + variables);
+
+				}
+			}
+
 		}
-		
-		}
-		
-				
+
 	}
-	
+
 	@Test
 	public void testVisitorSimpleExample() throws Exception {
-		
+
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		owlontology = man.loadOntologyFromOntologyDocument(new File(input.get(0)));	
+		owlOntology = man.loadOntologyFromOntologyDocument(new File(inputs.get(0)));
 		fac = man.getOWLDataFactory();
-		
-		SWRLAPITranslator trans= new SWRLAPITranslator(owlontology);
+
+		SWRLToDatalogTranslator trans = new SWRLToDatalogTranslator(owlOntology);
 		log.info(trans.getDatalog().toString());
-		List<CQIE> rules= trans.getDatalog().getRules();
-		assertEquals(4,rules.size());
-		
-		for(CQIE rule: rules){
+		List<CQIE> rules = trans.getDatalog().getRules();
+		assertEquals(4, rules.size());
+
+		for (CQIE rule : rules) {
 			log.info(rule.toString());
 			assertNotNull(rule.getHead());
 			assertNotNull(rule.getBody());
-			
-		}
-		
-		
-		
 
-		
+		}
+
 	}
-	
+
 	@Test
 	public void testVisitorComplexExample() throws Exception {
-		
+
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		owlontology = man.loadOntologyFromOntologyDocument(new File(input.get(1)));	
+		owlOntology = man.loadOntologyFromOntologyDocument(new File(inputs.get(1)));
 		fac = man.getOWLDataFactory();
-		
-		SWRLAPITranslator trans= new SWRLAPITranslator(owlontology);
+
+		SWRLToDatalogTranslator trans = new SWRLToDatalogTranslator(owlOntology);
 		log.info(trans.getDatalog().toString());
-		List<CQIE> rules= trans.getDatalog().getRules();
-		assertEquals(5,rules.size());
-		
-		for(CQIE rule: rules){
+		List<CQIE> rules = trans.getDatalog().getRules();
+		assertEquals(5, rules.size());
+
+		for (CQIE rule : rules) {
 			log.info(rule.toString());
 			assertNotNull(rule.getHead());
 			assertNotNull(rule.getBody());
 		}
-		
-		
-		
 
-		
 	}
-	
-public void testVisitorPropertyExample() throws Exception {
-		
+
+	public void testVisitorPropertyExample() throws Exception {
+
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		owlontology = man.loadOntologyFromOntologyDocument(new File(input.get(2)));	
+		owlOntology = man.loadOntologyFromOntologyDocument(new File(inputs.get(2)));
 		fac = man.getOWLDataFactory();
-		
-		SWRLAPITranslator trans= new SWRLAPITranslator(owlontology);
+
+		SWRLToDatalogTranslator trans = new SWRLToDatalogTranslator(owlOntology);
 		log.info(trans.getDatalog().toString());
-		List<CQIE> rules= trans.getDatalog().getRules();
-		assertEquals(2,rules.size());
-		
-		for(CQIE rule: rules){
+		List<CQIE> rules = trans.getDatalog().getRules();
+		assertEquals(2, rules.size());
+
+		for (CQIE rule : rules) {
 			log.info(rule.toString());
 			assertNotNull(rule.getHead());
 			assertNotNull(rule.getBody());
 		}
-		
-		
-		
 
-		
 	}
-	
-	
 
 }
