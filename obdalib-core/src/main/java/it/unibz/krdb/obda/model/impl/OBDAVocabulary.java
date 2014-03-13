@@ -41,7 +41,7 @@ public class OBDAVocabulary {
 	
 	public static final String ADD_STR = "add";
 	
-	public static final String SUBSTRACT_STR = "substract";
+	public static final String SUBTRACT_STR = "subtract";
 	
 	public static final String MULTIPLY_STR = "multiply";
 	
@@ -54,7 +54,7 @@ public class OBDAVocabulary {
 			ADD_STR, 2);
 	
 	public static final Predicate SUBSTRACT = new NumericalOperationPredicateImpl(
-			SUBSTRACT_STR, 2);
+			SUBTRACT_STR, 2);
 	
 	public static final Predicate MULTIPLY = new NumericalOperationPredicateImpl(
 			MULTIPLY_STR, 2);
