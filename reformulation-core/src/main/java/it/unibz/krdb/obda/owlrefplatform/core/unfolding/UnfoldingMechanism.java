@@ -20,17 +20,20 @@ package it.unibz.krdb.obda.owlrefplatform.core.unfolding;
  * #L%
  */
 
+import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * This interface should be implemented by any class which implements an
  * unfolding Mechanism which should be integrated into a technique wrapper
  * 
- * @author Manfred Gerstgrasser
+ * @author Manfred Gerstgrasser, mrezk
  * 
  */
 
@@ -44,8 +47,25 @@ public interface UnfoldingMechanism extends Serializable {
 	 * @return the unfolded query
 	 * @throws Exception
 	 */
+	@Deprecated
 	public DatalogProgram unfold(DatalogProgram query, String targetPredicate)
 			throws OBDAException;
 
-	
+	/**
+	 * unfolds the the given datalog program applying partial evaluation. It will do the partial evaluation following 
+	 * a specified strategy, for instance, bottom up or top down. The parameter includeMappings tells you if the unfolder should take the mappings
+	 * into account, or just work with the query
+	 * @param query
+	 * @param targetPredicate
+	 * @param strategy
+	 * @param includeMappings
+	 * @return
+	 * @throws OBDAException
+	 */
+	public DatalogProgram unfold(DatalogProgram query, String targetPredicate, String strategy,boolean includeMappings)
+			throws OBDAException;
+
+	//TODO: Check if this should be here!!
+	public List<CQIE> pushTypes(DatalogProgram unfolding);
+
 }

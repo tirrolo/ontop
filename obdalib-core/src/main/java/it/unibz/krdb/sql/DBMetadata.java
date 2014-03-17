@@ -25,6 +25,7 @@ import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.Predicate;
+import it.unibz.krdb.obda.parser.SQLQueryTranslator;
 import it.unibz.krdb.sql.api.Attribute;
 import it.unibz.krdb.sql.api.VisitedQuery;
 
@@ -32,12 +33,20 @@ import java.io.Serializable;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import net.sf.jsqlparser.JSQLParserException;
+/**
+ * This class keeps the meta information from the database, also keeps the 
+ * view definitions, table definitions, attributes of DB tables, etc.
+ * @author KRDB
+ *
+ */
 public class DBMetadata implements Serializable {
 
 	private static final long serialVersionUID = -806363154890865756L;
@@ -146,7 +155,7 @@ public class DBMetadata implements Serializable {
 
 	/**
 	 * Retrieves the data definition object based on its name. The
-	 * <name>name</name> can be either a table name or a view name.
+	 * <code>name</code> can be either a table name or a view name.
 	 * 
 	 * @param name
 	 *            The string name.
@@ -404,4 +413,44 @@ public class DBMetadata implements Serializable {
 		}
 		return pkeys;
 	}
+	
+	/**
+	 * Creates a view structure from an SQL string. See {@link #ViewDefinition}.
+	 * @param name
+	 * 			The name that the view will have. For instance "QEmployeeView"
+	 * @param sqlString
+	 * 			The SQL string defining the view
+	 * @param isAnsPredicate
+	 * 			It is true if the SQL comes from translating an ans predicate
+	 * @return
+	 */
+	public ViewDefinition createViewDefinition(String name, String sqlString) {
+
+		VisitedQuery visitedQuery = null;
+		List<String> columns = null;
+		SQLQueryTranslator translator = new SQLQueryTranslator();
+		visitedQuery = translator.constructParserNoView(sqlString);
+		
+		columns = visitedQuery.getColumns();
+
+		return createViewDefinition(name, sqlString, columns);
+	}
+
+	public ViewDefinition createViewDefinition(String name, String sqlString,
+			Collection<String> columns) {
+
+		
+
+		ViewDefinition vd = new ViewDefinition(name);
+		vd.setSQL(sqlString);
+		int pos = 1;
+
+		for (String column : columns) {
+			vd.setAttribute(pos, new Attribute(column));
+			pos++;
+		}
+
+		return vd;
+	}
+
 }
