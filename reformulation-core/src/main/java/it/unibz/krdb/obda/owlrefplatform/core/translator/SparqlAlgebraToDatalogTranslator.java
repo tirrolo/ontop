@@ -35,6 +35,7 @@ import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 import it.unibz.krdb.obda.model.impl.OBDAVocabulary;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.Unifier;
 import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.UriTemplateMatcher;
+import it.unibz.krdb.obda.owlrefplatform.dav.utils.Statistics;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -216,6 +217,7 @@ public class SparqlAlgebraToDatalogTranslator {
 			translate(vars, stmp, pr, i, varcount);
 
 		} else if (te instanceof Join) {
+			Statistics.addInt(Statistics.getLabel(), "n_joins_init_sparqlQ", 1);
 			Join join = (Join) te;
 			translate(vars, join, pr, i, varcount);
 
@@ -224,6 +226,7 @@ public class SparqlAlgebraToDatalogTranslator {
 			translate(vars, union, pr, i, varcount);
 
 		} else if (te instanceof LeftJoin) {
+			Statistics.addInt(Statistics.getLabel(), "n_leftJoins_sparqlQ", 1);
 			LeftJoin join = (LeftJoin) te;
 			translate(vars, join, pr, i, varcount);
 		

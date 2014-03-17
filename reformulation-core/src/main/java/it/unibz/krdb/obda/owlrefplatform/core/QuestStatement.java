@@ -56,6 +56,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.translator.SesameConstructTemplate
 import it.unibz.krdb.obda.owlrefplatform.core.translator.SparqlAlgebraToDatalogTranslator;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.ExpressionEvaluator;
+import it.unibz.krdb.obda.owlrefplatform.dav.utils.Statistics;
 import it.unibz.krdb.obda.renderer.DatalogProgramRenderer;
 
 import java.io.IOException;
@@ -467,12 +468,20 @@ public class QuestStatement implements OBDAStatement {
 			program = translator.translate(pq, signature);
 
 			log.debug("Translated query: \n{}", program);
-
+			
+			// DavideLanti> Fill statistics
+			fillStatisticsDLogProg(program, "dlog_rough_input");			
+			
 			DatalogUnfolder unfolder = new DatalogUnfolder(program.clone(), new HashMap<Predicate, List<Integer>>());
 			removeNonAnswerQueries(program);
-
+			long startTime = System.currentTimeMillis();
 			program = unfolder.unfold(program, "ans1");
-
+			long endTime = System.currentTimeMillis();
+			
+			// DavideLanti> FLATTENING STATISTICS
+			Statistics.setTime(Statistics.getLabel(), "flattening_time", endTime - startTime);
+			fillStatisticsDLogProg(program, "dlog_flattened_input");
+			
 			log.debug("Flattened query: \n{}", program);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -487,6 +496,7 @@ public class QuestStatement implements OBDAStatement {
 		}
 		log.debug("Replacing equivalences...");
 		program = validator.replaceEquivalences(program);
+		fillStatisticsDLogProg(program, "equivalences_replaced_dlog");
 		return program;
 		
 	}
@@ -743,6 +753,9 @@ public class QuestStatement implements OBDAStatement {
 				programAfterRewriting = getRewriting(program);
 				final long endTime = System.currentTimeMillis();
 				rewritingTime = endTime - startTime;
+				
+				// DavideLanti> Fill statistics
+				Statistics.setTime(Statistics.getLabel(), "rw_time", rewritingTime);
 
 				optimizeQueryWithSigmaRules(programAfterRewriting, rulesIndex);
 
@@ -758,6 +771,10 @@ public class QuestStatement implements OBDAStatement {
 				programAfterUnfolding = getUnfolding(programAfterRewriting);
 				final long endTime = System.currentTimeMillis();
 				unfoldingTime = endTime - startTime;
+				
+				// DavideLanti> Fill statistics
+				Statistics.setTime(Statistics.getLabel(), "unfolding_time", unfoldingTime);
+				fillStatisticsDLogProg(programAfterUnfolding, "programAfterUnfolding");
 			} catch (Exception e1) {
 				log.debug(e1.getMessage(), e1);
 				OBDAException obdaException = new OBDAException("Error unfolding query. \n" + e1.getMessage());
@@ -1155,5 +1172,54 @@ public class QuestStatement implements OBDAStatement {
 			}
 		}
 		return counter;
+	}
+	/**
+	 * @author Davide Lanti
+	 * @param prog
+	 * @param title
+	 */
+	private void fillStatisticsDLogProg(DatalogProgram program, String title){
+		if( title.equals("dlog_flattened_input") ){
+			System.err.println("debug");
+		}
+		Statistics.setInt(Statistics.getLabel(), title+"_n_datalog_rules", program.getRules().size());
+		Statistics.setBoolean(Statistics.getLabel(), title+"_n_isUCQ", program.isUCQ());
+
+		int n_rule = 0;
+		for( CQIE rule : program.getRules() ){
+			List<String> headVarnames = new ArrayList<String>();
+			for( Variable v : rule.getHead().getVariables() ){
+				headVarnames.add(v.getName());
+			}
+			List<String> exVarNames = new ArrayList<String>();
+			Statistics.setInt(Statistics.getLabel(), title+"_dlog_rule_"+n_rule+"_totVars", rule.getVariableCount().keySet().size() );
+			for( Function f : rule.getBody() ){
+				if( f.getArity() == 2 ) Statistics.addInt(Statistics.getLabel(), title+"_dlog_rule_"+n_rule+"_binary", 1);
+				else if( f.getArity() == 1 ) Statistics.addInt(Statistics.getLabel(), title+"_dlog_rule_"+n_rule+"_unary", 1);
+				Statistics.addInt(Statistics.getLabel(), title+"_dlog_rule_"+n_rule+"_nBodyAtoms", 1);
+				
+				// Number of existential variables
+				for( Variable v : f.getVariables() )
+					if( !headVarnames.contains(v.getName()) && !exVarNames.contains(v.getName())){ 
+						exVarNames.add(v.getName());
+						Statistics.addInt(Statistics.getLabel(), title+"_dlog_rule_"+n_rule+"_exVars", 1);
+					}
+			}
+			// Number of Join variables
+			int nJoins = 0;
+			for( Variable v : rule.getVariableCount().keySet() ){
+				if( headVarnames.contains(v.getName()) ){
+					int count = rule.getVariableCount().get(v);
+					nJoins = count > 2 ? count - 2 : nJoins;
+				}
+				else{
+					int count = rule.getVariableCount().get(v);
+					nJoins = count > 1 ? count - 1 : nJoins;
+				}
+			}
+			Statistics.addInt(Statistics.getLabel(), title+"_dlog_rule_"+n_rule+"_nJoin", nJoins); // No dup occ of preds in rules
+			++n_rule;
+		}
+		Statistics.setInt(Statistics.getLabel(), title+"_dlog_nRules", n_rule);
 	}
 }
