@@ -1,13 +1,13 @@
 package it.unibz.krdb.obda.reformulation.owlapi3;
 
 import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.obda.quest.dag.S_NewGraphTest;
+
 import it.unibz.krdb.obda.owlapi3.swrl.SWRLToDatalogTranslator;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -94,8 +94,8 @@ public class SWRLTest extends TestCase {
 		fac = man.getOWLDataFactory();
 
 		SWRLToDatalogTranslator trans = new SWRLToDatalogTranslator(owlOntology);
-		log.info(trans.getDatalog().toString());
-		List<CQIE> rules = trans.getDatalog().getRules();
+		log.info(trans.getRules().toString());
+		Collection<CQIE> rules = trans.getRules();
 		assertEquals(4, rules.size());
 
 		for (CQIE rule : rules) {
@@ -115,8 +115,8 @@ public class SWRLTest extends TestCase {
 		fac = man.getOWLDataFactory();
 
 		SWRLToDatalogTranslator trans = new SWRLToDatalogTranslator(owlOntology);
-		log.info(trans.getDatalog().toString());
-		List<CQIE> rules = trans.getDatalog().getRules();
+		log.info(trans.getRules().toString());
+		Collection<CQIE> rules = trans.getRules();
 		assertEquals(5, rules.size());
 
 		for (CQIE rule : rules) {
@@ -134,8 +134,8 @@ public class SWRLTest extends TestCase {
 		fac = man.getOWLDataFactory();
 
 		SWRLToDatalogTranslator trans = new SWRLToDatalogTranslator(owlOntology);
-		log.info(trans.getDatalog().toString());
-		List<CQIE> rules = trans.getDatalog().getRules();
+		log.info(trans.getRules().toString());
+		Collection<CQIE> rules = trans.getRules();
 		assertEquals(2, rules.size());
 
 		for (CQIE rule : rules) {

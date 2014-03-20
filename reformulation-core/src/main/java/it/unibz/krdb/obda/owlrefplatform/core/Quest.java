@@ -170,6 +170,11 @@ public class Quest implements Serializable, RepositoryChangedListener {
 
 	/* The input OBDA model */
 	protected OBDAModel inputOBDAModel = null;
+	
+	/* Rule component. Normally are SWRL rules from the OWL ontology  */
+	private Collection<CQIE> rules;
+	
+	
 
 	/*
 	 * The equivalence map for the classes/properties that have been simplified
@@ -249,6 +254,8 @@ public class Quest implements Serializable, RepositoryChangedListener {
 
 	private Map<Predicate, List<Integer>> pkeys;
 
+	private Boolean swrlEntailment;
+
 	/***
 	 * Will prepare an instance of Quest in "classic ABox mode", that is, to
 	 * work as a triple store. The property
@@ -312,6 +319,16 @@ public class Quest implements Serializable, RepositoryChangedListener {
 		this(tbox, mappings, config);
 		this.metadata = metadata;
 	}
+	
+	/**
+	 * set additional rules
+	 * 
+	 * @param rules
+	 */
+	public void setRules(Collection<CQIE> rules){
+		this.rules = rules;
+	}
+	
 
 	protected Map<String, String> getSQLCache() {
 		return querycache;
@@ -428,6 +445,8 @@ public class Quest implements Serializable, RepositoryChangedListener {
 		inmemory = preferences.getProperty(QuestPreferences.STORAGE_LOCATION).equals(QuestConstants.INMEMORY);
 		
 		obtainFullMetadata = Boolean.valueOf((String) preferences.get(QuestPreferences.OBTAIN_FULL_METADATA));
+		 
+		swrlEntailment = Boolean.valueOf((String) preferences.get(QuestPreferences.SWRL_ENTAILMENT));
 
 		if (!inmemory) {
 			aboxJdbcURL = preferences.getProperty(QuestPreferences.JDBC_URL);
@@ -775,8 +794,8 @@ public class Quest implements Serializable, RepositoryChangedListener {
 				
 
 				unfoldingProgram = applyTMappings(metadata, optimizeMap, unfoldingProgram, sigma, true);
-
-				/*
+				
+								/*
 				 * Adding data typing on the mapping axioms.
 				 */
 				extendTypesWithMetadata(metadata, unfoldingProgram);
@@ -786,8 +805,6 @@ public class Quest implements Serializable, RepositoryChangedListener {
 				 * of all mappings to preserve SQL-RDF semantics
 				 */
 				addNOTNULLToMappings(fac, unfoldingProgram);
-				
-				
 
 			}
 
@@ -805,6 +822,14 @@ public class Quest implements Serializable, RepositoryChangedListener {
 			 */
 
 			unfoldingProgram.appendRule(generateTripleMappings(fac, unfoldingProgram));
+			
+			/*
+			 * Adding SWRL rules 
+			 */
+			if(!rules.isEmpty()){
+				unfoldingProgram.appendRule(rules);
+				log.debug("append SWRL rules: \n{}", rules);
+			}
 
 			log.debug("Final set of mappings: \n{}", unfoldingProgram);
 

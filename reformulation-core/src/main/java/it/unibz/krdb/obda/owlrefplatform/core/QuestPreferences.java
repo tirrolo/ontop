@@ -73,6 +73,7 @@ public class QuestPreferences extends Properties {
 	public static final String ABANDONED_TIMEOUT = "abandoned_timeout";
 	public static final String KEEP_ALIVE = "keep_alive";
 	
+	public static final String SWRL_ENTAILMENT = "SWRL_ENTAIILMENT";
 	
 	private Logger				log						= LoggerFactory.getLogger(QuestPreferences.class);
 

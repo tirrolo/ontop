@@ -20,6 +20,7 @@ package it.unibz.krdb.obda.owlrefplatform.owlapi3;
  * #L%
  */
 
+import it.unibz.krdb.obda.model.CQIE;
 import it.unibz.krdb.obda.model.OBDAException;
 import it.unibz.krdb.obda.model.OBDAModel;
 import it.unibz.krdb.obda.model.Predicate;
@@ -34,6 +35,7 @@ import it.unibz.krdb.obda.ontology.Ontology;
 import it.unibz.krdb.obda.ontology.PropertyFunctionalAxiom;
 import it.unibz.krdb.obda.owlapi3.OWLAPI3ABoxIterator;
 import it.unibz.krdb.obda.owlapi3.OWLAPI3Translator;
+import it.unibz.krdb.obda.owlapi3.swrl.SWRLToDatalogTranslator;
 import it.unibz.krdb.obda.owlrefplatform.core.Quest;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestConnection;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
@@ -267,6 +269,15 @@ public class QuestOWL extends OWLReasonerBase {
 
 		questInstance = new Quest(translatedOntologyMerge, obdaModel, preferences);
 
+		
+		/* SWRL */
+		
+		// TODO: handle imports closure
+		SWRLToDatalogTranslator swrlToDatalogTranslator = new SWRLToDatalogTranslator(getRootOntology());
+		Collection<CQIE> rules = swrlToDatalogTranslator.getRules();
+		questInstance.setRules(rules);
+		
+		
 		
 		Set<OWLOntology> importsClosure = man.getImportsClosure(getRootOntology());
 		

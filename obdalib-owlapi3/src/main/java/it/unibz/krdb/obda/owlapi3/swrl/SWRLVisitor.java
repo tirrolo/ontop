@@ -1,7 +1,6 @@
 package it.unibz.krdb.obda.owlapi3.swrl;
 
 import it.unibz.krdb.obda.model.CQIE;
-import it.unibz.krdb.obda.model.DatalogProgram;
 import it.unibz.krdb.obda.model.Function;
 import it.unibz.krdb.obda.model.OBDADataFactory;
 import it.unibz.krdb.obda.model.Predicate;
@@ -9,7 +8,7 @@ import it.unibz.krdb.obda.model.Term;
 import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +34,8 @@ import org.semanticweb.owlapi.model.SWRLVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 /**
  * SWRLVisitor class visits the SWRL rules in the ontology to obtain the
  * datalog. Translate separately head and body.
@@ -58,7 +59,8 @@ public class SWRLVisitor implements SWRLObjectVisitor {
 	Function function;
 	List<Term> terms;
 	Predicate predicate;
-	Set<CQIE> rules;
+	
+	Collection<CQIE> rules;
 
 	List<String> errors = new LinkedList<String>();
 	private static Logger log = LoggerFactory.getLogger(SWRLVisitor.class);
@@ -66,7 +68,7 @@ public class SWRLVisitor implements SWRLObjectVisitor {
 	public SWRLVisitor() {
 
 		fac = OBDADataFactoryImpl.getInstance();
-		rules = new HashSet<CQIE>();
+		rules = Lists.newArrayList();
 
 	}
 
@@ -78,7 +80,7 @@ public class SWRLVisitor implements SWRLObjectVisitor {
 	 *            an OWLOntology
 	 * @return DatalogProgram
 	 */
-	public DatalogProgram createDatalog(OWLOntology onto) {
+	public Collection<CQIE> createDatalog(OWLOntology onto) {
 
 		for (OWLAxiom axiom : onto.getAxioms()) {
 
@@ -95,7 +97,9 @@ public class SWRLVisitor implements SWRLObjectVisitor {
 			}
 		}
 
-		return fac.getDatalogProgram(rules);
+		return rules;
+		
+
 
 	}
 
@@ -107,7 +111,7 @@ public class SWRLVisitor implements SWRLObjectVisitor {
 	 *            an OWLOntology
 	 * @return DatalogProgram
 	 */
-	public DatalogProgram createDatalog(SWRLRule rule) {
+	public Collection<CQIE> createDatalog(SWRLRule rule) {
 
 		rule.accept(this);
 
@@ -116,7 +120,9 @@ public class SWRLVisitor implements SWRLObjectVisitor {
 			errors.clear();
 		}
 
-		return fac.getDatalogProgram(rules);
+		return rules;
+		
+		
 
 	}
 
