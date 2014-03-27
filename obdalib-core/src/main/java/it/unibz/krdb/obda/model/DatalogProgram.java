@@ -22,6 +22,7 @@ package it.unibz.krdb.obda.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface DatalogProgram extends OBDAQuery {
 
@@ -46,6 +47,9 @@ public interface DatalogProgram extends OBDAQuery {
 	 * @return
 	 */
 	public List<CQIE> getRules(Predicate headPredicate);
+	
+	/** @author Davide> get all the heads of dlog rules in program **/
+	public Set<Predicate> getHeads();
 
 	public DatalogProgram clone();
 

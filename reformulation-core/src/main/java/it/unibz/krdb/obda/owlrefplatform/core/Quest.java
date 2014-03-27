@@ -69,6 +69,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.tboxprocessing.SigmaTBoxOptimizer;
 import it.unibz.krdb.obda.owlrefplatform.core.translator.MappingVocabularyRepair;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.DatalogUnfolder;
 import it.unibz.krdb.obda.owlrefplatform.core.unfolding.UnfoldingMechanism;
+import it.unibz.krdb.obda.owlrefplatform.dav.utils.Statistics;
 import it.unibz.krdb.obda.utils.MappingAnalyzer;
 import it.unibz.krdb.obda.utils.MappingParser;
 import it.unibz.krdb.obda.utils.MappingSplitter;
@@ -499,7 +500,21 @@ public class Quest implements Serializable, RepositoryChangedListener {
 		OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
 
 		log.debug("Initializing Quest...");
-
+		
+		// Davide> Statistics
+		Statistics.addInt(Statistics.getLabel(), "num_concepts_inputTBox", inputTBox.getConcepts().size());
+		Statistics.addInt(Statistics.getLabel(), "size_internal_tbox_inputTBox", inputTBox.getAssertions().size());
+		Statistics.addInt(Statistics.getLabel(), "num_properties_inputTbox", inputTBox.getRoles().size());
+		Statistics.addInt(Statistics.getLabel(), "num_funct_prop_inputTbox", inputTBox.getFunctionalPropertyAxioms().size());
+		Statistics.addInt(Statistics.getLabel(), "num_disjoint_axioms_inputTBox", inputTBox.getDisjointDescriptionAxioms().size());
+		
+//		Statistics.addInt(Statistics.getLabel(), "tot_mappings_input", inputOBDAModel.getMappings().size()); // 1
+//		Statistics.addInt(Statistics.getLabel(), "tot_declaredClassesinMappings_input", inputOBDAModel.getDeclaredClasses().size()); // 0
+//		Statistics.addInt(Statistics.getLabel(), "tot_declaredDataPropertiesMappings_input", inputOBDAModel.getDeclaredDataProperties().size()); // 0
+//		Statistics.addInt(Statistics.getLabel(), "tot_declaredObjectPropertiesMappings_input", inputOBDAModel.getDeclaredObjectProperties().size()); // 0
+//		Statistics.addInt(Statistics.getLabel(), "tot_declaredPredicatesMappings_input", inputOBDAModel.getDeclaredPredicates().size()); // 0
+		// TODO Davide> It is a bit expensive, but I might want to count the number of mapping assertions for each term // 0
+		
 		/*
 		 * Input checking (we need to extend this)
 		 */
@@ -518,6 +533,11 @@ public class Quest implements Serializable, RepositoryChangedListener {
 		}
 
 		unfoldingOBDAModel = fac.getOBDAModel();
+//		Statistics.addInt(Statistics.getLabel(), "tot_mappings_unfoldingOBDAModel", unfoldingOBDAModel.getMappings().size()); // 0
+//		Statistics.addInt(Statistics.getLabel(), "tot_declaredClassesinMappings_unfoldingOBDAModel", unfoldingOBDAModel.getDeclaredClasses().size()); // 0
+//		Statistics.addInt(Statistics.getLabel(), "tot_declaredDataPropertiesMappings_unfoldingOBDAModel", unfoldingOBDAModel.getDeclaredDataProperties().size()); // 0
+//		Statistics.addInt(Statistics.getLabel(), "tot_declaredObjectPropertiesMappings_unfoldingOBDAModel", unfoldingOBDAModel.getDeclaredObjectProperties().size()); // 0
+//		Statistics.addInt(Statistics.getLabel(), "tot_declaredPredicatesMappings_unfoldingOBDAModel", unfoldingOBDAModel.getDeclaredPredicates().size());
 
 		sigma = OntologyFactoryImpl.getInstance().createOntology();
 
@@ -745,8 +765,14 @@ public class Quest implements Serializable, RepositoryChangedListener {
 			MappingAnalyzer analyzer = new MappingAnalyzer(unfoldingOBDAModel.getMappings(obdaSource.getSourceID()), metadata);
 //			MappingAnalyzer analyzer = new MappingAnalyzer(mParser.getParsedMappings(), metadata);
 
- 			unfoldingProgram = analyzer.constructDatalogProgram();
-
+ 			unfoldingProgram = analyzer.constructDatalogProgram(); // Davide> Well, mappings term->sql are translated into term->datalog things
+ 			
+ 			// Davide> I analyze the complexity of the sql queries used in the mappings
+ 			//         by analyzing the complexity of their datalog translation
+ 			//         ---since I already have an analyzer for datalog :P
+ 			Statistics.fillStatisticsDLogProgMappings(unfoldingProgram, "mappings_queries");
+ 			
+ 			
 			/***
 			 * T-Mappings and Fact mappings
 			 */

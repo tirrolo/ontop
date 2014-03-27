@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DatalogProgramImpl implements DatalogProgram {
 
@@ -165,5 +166,9 @@ public class DatalogProgramImpl implements DatalogProgram {
 	@Override
 	public boolean hasModifiers() {
 		return modifiers.hasModifiers();
+	}
+	@Override
+	public Set<Predicate> getHeads(){
+		return Collections.unmodifiableSet(predicateIndex.keySet());
 	}
 }

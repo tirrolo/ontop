@@ -183,57 +183,86 @@ public class SparqlAlgebraToDatalogTranslator {
 
 	private void translate(List<Variable> vars, TupleExpr te,
 			DatalogProgram pr, long i, int[] varcount) {
+		// init stats
+		Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 0);
+		Statistics.addInt(Statistics.getLabel(), "n_slice_init_sparqlQ", 0);
+		Statistics.addInt(Statistics.getLabel(), "n_distinct_init_sparqlQ", 0);
+		Statistics.addInt(Statistics.getLabel(), "n_proj_init_sparqlQ", 0);
+		Statistics.addInt(Statistics.getLabel(), "n_order_init_sparqlQ", 0);
+		Statistics.addInt(Statistics.getLabel(), "n_filter_init_sparqlQ", 0);
+		Statistics.addInt(Statistics.getLabel(), "n_stmPattern_init_sparqlQ", 0);		
+		Statistics.addInt(Statistics.getLabel(), "n_join_init_sparqlQ", 0);
+		Statistics.addInt(Statistics.getLabel(), "n_union_init_sparqlQ", 0);
+		Statistics.addInt(Statistics.getLabel(), "n_leftJoin_sparqlQ", 0);
+		Statistics.addInt(Statistics.getLabel(), "n_reduced_init_sparqlQ", 0);
+		Statistics.addInt(Statistics.getLabel(), "n_extension_init_sparqlQ", 0);
+		
 		if (te instanceof Slice) {
-
+			Statistics.addInt(Statistics.getLabel(), "n_slice_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			// Add LIMIT and OFFSET modifiers, if any
 			Slice slice = (Slice) te;
 			translate(vars, slice, pr, i, varcount);
 
 		} else if (te instanceof Distinct) {
-
+			Statistics.addInt(Statistics.getLabel(), "n_distinct_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			// Add DISTINCT modifier, if any
 			Distinct distinct = (Distinct) te;
 			translate(vars, distinct, pr, i, varcount);
 
 		} else if (te instanceof Projection) {
-
+			Statistics.addInt(Statistics.getLabel(), "n_proj_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			// Add PROJECTION modifier, if any
 			Projection project = (Projection) te;
 			translate(vars, project, pr, i, varcount);
 
 		} else if (te instanceof Order) {
-
+			Statistics.addInt(Statistics.getLabel(), "n_order_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			// Add ORDER BY modifier, if any
 			Order order = (Order) te;
 			translate(vars, order, pr, i, varcount);
 
 		} else if (te instanceof Filter) {
+			Statistics.addInt(Statistics.getLabel(), "n_filter_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			Filter filter = (Filter) te;
 			translate(vars, filter, pr, i, varcount);
 
 		} else if (te instanceof StatementPattern) {
-
+			Statistics.addInt(Statistics.getLabel(), "n_stmPattern_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			StatementPattern stmp = (StatementPattern) te;
 			translate(vars, stmp, pr, i, varcount);
 
 		} else if (te instanceof Join) {
-			Statistics.addInt(Statistics.getLabel(), "n_joins_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "n_join_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			Join join = (Join) te;
 			translate(vars, join, pr, i, varcount);
 
 		} else if (te instanceof Union) {
+			Statistics.addInt(Statistics.getLabel(), "n_union_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			Union union = (Union) te;
 			translate(vars, union, pr, i, varcount);
 
 		} else if (te instanceof LeftJoin) {
-			Statistics.addInt(Statistics.getLabel(), "n_leftJoins_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "n_leftJoin_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			LeftJoin join = (LeftJoin) te;
 			translate(vars, join, pr, i, varcount);
 		
 		} else if (te instanceof Reduced) {
+			Statistics.addInt(Statistics.getLabel(), "n_reduced_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			translate(vars, ((Reduced) te).getArg(), pr, i, varcount);
 		
 		} else if (te instanceof Extension) { 
+			Statistics.addInt(Statistics.getLabel(), "n_extension_init_sparqlQ", 1);
+			Statistics.addInt(Statistics.getLabel(), "tot_op_init_sparqlQ", 1);
 			Extension extend = (Extension) te;
 			translate(vars, extend, pr, i, varcount);
 			

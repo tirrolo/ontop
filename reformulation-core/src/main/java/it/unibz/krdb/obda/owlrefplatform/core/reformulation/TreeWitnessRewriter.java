@@ -37,6 +37,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.basicoperations.CQCUtilities;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Edge;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.QueryConnectedComponent.Loop;
 import it.unibz.krdb.obda.owlrefplatform.core.reformulation.TreeWitnessSet.CompatibleTreeWitnessSetIterator;
+import it.unibz.krdb.obda.owlrefplatform.dav.utils.Statistics;
 import it.unibz.krdb.obda.utils.QueryUtils;
 
 import java.util.ArrayList;
@@ -150,7 +151,8 @@ public class TreeWitnessRewriter implements QueryRewriter {
 				output.appendRule(fac.getCQIE(headAtom, cache.getExtAtom(a))); 
 			}
 		}
-
+		
+		Statistics.addInt(Statistics.getLabel(), "tree_witnesses", tws.getTWs().size());
 		// COMPUTE AND STORE TREE WITNESS FORMULAS
 		for (TreeWitness tw : tws.getTWs()) {
 			log.debug("TREE WITNESS: {}", tw);		

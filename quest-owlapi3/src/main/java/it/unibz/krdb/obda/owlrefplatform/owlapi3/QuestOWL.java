@@ -40,6 +40,7 @@ import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
 import it.unibz.krdb.obda.owlrefplatform.core.QuestStatement;
 import it.unibz.krdb.obda.owlrefplatform.core.abox.QuestMaterializer;
+import it.unibz.krdb.obda.owlrefplatform.dav.utils.Statistics;
 import it.unibz.krdb.obda.utils.VersionInfo;
 
 import java.util.ArrayList;
@@ -273,9 +274,16 @@ public class QuestOWL extends OWLReasonerBase {
 
 		try {
 			// pm.reasonerTaskProgressChanged(1, 4);
-
+						
 			// Setup repository
-			questInstance.setupRepository();
+			questInstance.setupRepository(); // TODO Davide> Statistics? Also, mappings are here
+			Statistics.addInt(Statistics.getLabel(), "num_concepts", questInstance.getOntology().getConcepts().size());
+			Statistics.addInt(Statistics.getLabel(), "size_internal_tbox", questInstance.getTBox().getAssertions().size());
+			Statistics.addInt(Statistics.getLabel(), "size_internal_sigma_tbox", questInstance.getSigmaTBox().getAssertions().size());
+			Statistics.addInt(Statistics.getLabel(), "size_abox", questInstance.getOntology().getABox().size());
+			Statistics.addInt(Statistics.getLabel(), "num_properties", questInstance.getOntology().getRoles().size());
+			Statistics.addInt(Statistics.getLabel(), "num_funct_prop", questInstance.getOntology().getFunctionalPropertyAxioms().size());
+			Statistics.addInt(Statistics.getLabel(), "num_disjoint_axioms", questInstance.getTBox().getDisjointDescriptionAxioms().size());
 			// pm.reasonerTaskProgressChanged(2, 4);
 
 			// Retrives the connection from Quest
@@ -442,7 +450,7 @@ public class QuestOWL extends OWLReasonerBase {
 			 */
 
 			this.translatedOntologyMerge = loadOntologies(getRootOntology());
-
+			//TODO Davide> Put stats Statistics
 			classHierarchyInfo.computeHierarchy();
 			objectPropertyHierarchyInfo.computeHierarchy();
 			dataPropertyHierarchyInfo.computeHierarchy();
